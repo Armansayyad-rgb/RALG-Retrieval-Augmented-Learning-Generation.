@@ -9,6 +9,7 @@ backend file is left untouched.
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from typing import Any
 
 from rag_chat_v2 import answer_question
@@ -59,6 +60,23 @@ CONFLICT_RESPONSE = (
     "I found conflicting evidence in the retrieved sources and cannot state "
     "a single settled answer."
 )
+
+
+@dataclass
+class AnswerContract:
+    """Shared semantic answer/evidence contract for API and UI callers."""
+
+    question: str
+    answer: str
+    supported: bool
+    confidence: float | None
+    answer_type: str
+    sources: list[dict]
+    traceable: bool
+    conflict: bool
+    provenance: list[dict]
+    evidence: Any = None
+    error: str | None = None
 
 
 def _traceability_terms(text: str) -> set[str]:
@@ -279,6 +297,28 @@ def _format_v4_sources(retrieval: dict, limit: int) -> list[dict]:
     return sources
 
 
+def format_evidence_sources(evidence: Any, limit: int) -> list[dict]:
+    """Format the exact evidence object used by answer generation."""
+    if not evidence:
+        return []
+    if isinstance(evidence, list):
+        return _format_v2_sources(evidence, limit)
+    if not isinstance(evidence, dict):
+        return []
+    if evidence.get("kind") == "v2":
+        return _format_v2_sources(evidence.get("results", []), limit)
+    if evidence.get("kind") == "comparison":
+        combined = []
+        for side in ("left", "right"):
+            combined.extend((evidence.get(side) or {}).get("results", []))
+        return _format_v2_sources(combined, limit)
+    if evidence.get("kind") == "v4":
+        return _format_v4_sources(evidence, limit)
+    if isinstance(evidence.get("results"), list):
+        return _format_v4_sources(evidence, limit)
+    return []
+
+
 def collect_sources(
     pipeline: dict,
     question: str,
@@ -304,6 +344,7 @@ def collect_sources(
             v2_sources = _format_v2_sources(v2_hits, top_k)
             if answer is None or is_traceable_support(answer, True, v2_sources):
                 return v2_sources
+
         else:
             v2_sources = []
     except Exception:
@@ -322,6 +363,73 @@ def collect_sources(
         pass
 
     return v2_sources
+
+
+def build_answer_contract(
+    pipeline: dict,
+    question: str,
+    result: dict,
+    top_k: int,
+    *,
+    fallback_sources: list[dict] | None = None,
+) -> AnswerContract:
+    """Apply grounding and conflict policy to one generated answer.
+
+    ``result["evidence"]`` is authoritative. The retrieval fallback exists
+    only for legacy/mocked results that predate the evidence contract.
+    """
+    evidence = result.get("evidence")
+    sources = format_evidence_sources(evidence, top_k)
+    if not sources and fallback_sources is not None:
+        sources = fallback_sources
+
+    answer = str(result.get("answer") or "")
+    traceable = is_traceable_support(
+        answer,
+        bool(result.get("supported", False)),
+        sources,
+    )
+    supported = bool(result.get("supported", False)) and traceable
+    conflict = supported and detect_evidence_conflict(question, sources)
+    confidence = result.get("confidence")
+    if not isinstance(confidence, (int, float)):
+        confidence = None
+
+    answer_type = str(result.get("answer_type", "unknown"))
+    if conflict:
+        answer = CONFLICT_RESPONSE
+        supported = False
+        confidence = None
+        answer_type = "conflict"
+
+    provenance_keys = (
+        "document_id",
+        "document_name",
+        "chunk_index",
+        "source_type",
+        "extension",
+        "upload_timestamp",
+        "page_number",
+        "revision",
+    )
+    provenance = [
+        {key: source[key] for key in provenance_keys if key in source}
+        for source in sources
+        if any(key in source for key in provenance_keys)
+    ]
+    return AnswerContract(
+        question=question,
+        answer=answer,
+        supported=supported,
+        confidence=confidence,
+        answer_type=answer_type,
+        sources=sources,
+        traceable=traceable,
+        conflict=conflict,
+        provenance=provenance,
+        evidence=evidence,
+        error=result.get("error"),
+    )
 
 
 def chat_turn(
@@ -373,28 +481,31 @@ def chat_turn(
 
     plan = result.get("runtime_plan") or {}
     intent = plan.get("intent") or "general"
-
-    sources = collect_sources(pipeline, question, top_k, answer=result.get("answer", ""))
-    supported = is_traceable_support(
-        str(result.get("answer", "")), bool(result.get("supported", False)), sources
+    fallback_sources = None
+    if not result.get("evidence"):
+        fallback_sources = collect_sources(
+            pipeline, question, top_k, answer=result.get("answer", "")
+        )
+    contract = build_answer_contract(
+        pipeline,
+        question,
+        result,
+        top_k,
+        fallback_sources=fallback_sources,
     )
-    conflict = supported and detect_evidence_conflict(question, sources)
-
-    confidence = result.get("confidence")
-    if isinstance(confidence, (int, float)):
-        confidence = float(confidence)
-    else:
-        confidence = None
 
     return {
         "question": question,
-        "answer": CONFLICT_RESPONSE if conflict else result.get("answer", ""),
-        "confidence": confidence,
-        "supported": False if conflict else supported,
-        "answer_type": "conflict" if conflict else result.get("answer_type", "unknown"),
+        "answer": contract.answer,
+        "confidence": contract.confidence,
+        "supported": contract.supported,
+        "answer_type": contract.answer_type,
         "intent": intent,
-        "sources": sources,
-        "error": None,
+        "sources": contract.sources,
+        "traceable": contract.traceable,
+        "conflict": contract.conflict,
+        "provenance": contract.provenance,
+        "error": contract.error,
     }
 
 
