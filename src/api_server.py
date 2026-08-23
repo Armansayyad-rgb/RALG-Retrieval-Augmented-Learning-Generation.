@@ -306,13 +306,20 @@ def ingest(request: IngestRequest) -> IngestResponse:
         text=request.text,
     )
 
-    doc.chunks = chunk_text(doc.text)
+    doc.chunks = chunk_text(
+        doc.text,
+        doc.doc_id,
+        doc_name=doc.name,
+        extension=doc.ext,
+        upload_timestamp=doc.upload_timestamp,
+        revision=doc.revision,
+    )
     doc.chunk_count = len(doc.chunks)
 
     added = attach_documents(pipeline, [doc])
 
     return IngestResponse(
-        document_name=doc_name,
+        document_name=doc.safe_display_name,
         added_chunks=added,
         total_chunks=len(pipeline.get("chunks", [])),
     )

@@ -108,10 +108,10 @@ def _format_kb_table(uploaded_docs: list[dict]) -> list[list]:
     rows = []
     for d in uploaded_docs:
         rows.append([
-            d.get("name", ""),
-            d.get("ext", ""),
+            d.get("document_name", ""),
+            d.get("extension", ""),
             d.get("chunk_count", 0),
-            d.get("path", ""),
+            d.get("document_id", ""),
         ])
     return rows
 
@@ -472,7 +472,7 @@ def build_demo(pipeline: dict, polish_llm=None):
                     "No files uploaded yet."
                 )
                 kb_table = gr.Dataframe(
-                    headers=["Name", "Type", "Chunks", "Path"],
+                    headers=["Name", "Type", "Chunks", "Document ID"],
                     value=_format_kb_table(pipeline.get("uploaded_docs", [])),
                     label="Knowledge base (uploaded docs)",
                     interactive=False,

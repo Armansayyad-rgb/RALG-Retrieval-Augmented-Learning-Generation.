@@ -12,7 +12,7 @@ import re
 from typing import Any
 
 from rag_chat_v2 import answer_question
-from retriever_v2 import retrieve as retrieve_v2_fn
+from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk
 from retriever_v4 import retrieve as retrieve_v4_fn
 
 
@@ -222,18 +222,33 @@ def detect_evidence_conflict(question: str, sources: list[dict]) -> bool:
 
 
 def _format_v2_sources(results: list[dict], limit: int) -> list[dict]:
-    """Normalize retriever_v2 chunks into a UI-friendly shape."""
+    """Normalize retriever_v2 chunks into a UI-friendly shape.
+
+    For runtime-uploaded chunks (RuntimeChunk instances), provenance
+    metadata fields are added directly to the source dict.
+    """
     sources = []
     for rank, r in enumerate(results[:limit], start=1):
-        sources.append(
-            {
-                "rank": rank,
-                "id": r.get("chunk_index"),
-                "preview": (r.get("chunk", "") or "")[:240],
-                "evidence": r.get("chunk", "") or "",
-                "score": round(float(r.get("final_score", 0.0)), 3),
-            }
-        )
+        chunk = r.get("chunk", "")
+        entry = {
+            "rank": rank,
+            "id": r.get("chunk_index"),
+            "preview": (chunk or "")[:240],
+            "evidence": chunk or "",
+            "score": round(float(r.get("final_score", 0.0)), 3),
+        }
+        # Enrich with provenance for runtime-uploaded chunks
+        if isinstance(chunk, RuntimeChunk) and getattr(chunk, "metadata", None):
+            meta = chunk.metadata
+            entry["document_id"] = meta.get("document_id")
+            entry["document_name"] = meta.get("document_name")
+            entry["chunk_index"] = meta.get("chunk_index")
+            entry["page_number"] = meta.get("page_number")
+            entry["source_type"] = meta.get("source_type")
+            entry["extension"] = meta.get("extension")
+            entry["upload_timestamp"] = meta.get("upload_timestamp")
+            entry["revision"] = meta.get("revision")
+        sources.append(entry)
     return sources
 
 
@@ -242,15 +257,25 @@ def _format_v4_sources(retrieval: dict, limit: int) -> list[dict]:
     chunks = (retrieval or {}).get("results") or []
     sources = []
     for rank, c in enumerate(chunks[:limit], start=1):
-        sources.append(
-            {
-                "rank": rank,
-                "id": c.get("chunk_index"),
-                "preview": (c.get("chunk", "") or "")[:240],
-                "evidence": c.get("chunk", "") or "",
-                "score": round(float(c.get("final_score", 0.0)), 3),
-            }
-        )
+        chunk = c.get("chunk", "")
+        entry = {
+            "rank": rank,
+            "id": c.get("chunk_index"),
+            "preview": (chunk or "")[:240],
+            "evidence": chunk or "",
+            "score": round(float(c.get("final_score", 0.0)), 3),
+        }
+        if isinstance(chunk, RuntimeChunk) and getattr(chunk, "metadata", None):
+            meta = chunk.metadata
+            entry["document_id"] = meta.get("document_id")
+            entry["document_name"] = meta.get("document_name")
+            entry["chunk_index"] = meta.get("chunk_index")
+            entry["page_number"] = meta.get("page_number")
+            entry["source_type"] = meta.get("source_type")
+            entry["extension"] = meta.get("extension")
+            entry["upload_timestamp"] = meta.get("upload_timestamp")
+            entry["revision"] = meta.get("revision")
+        sources.append(entry)
     return sources
 
 
