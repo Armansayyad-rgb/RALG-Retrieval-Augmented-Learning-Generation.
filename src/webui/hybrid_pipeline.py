@@ -21,7 +21,10 @@ from typing import Optional
 
 from rag_chat_v2 import answer_question
 
-from webui.chat_handler import collect_sources
+from webui.chat_handler import (
+    build_answer_contract,
+    collect_sources,
+)
 from webui.polish_llm import (
     PolishLLM,
     polish_generative_answer,
@@ -55,6 +58,10 @@ class HybridTurn:
     confidence: Optional[float]
     supported: bool
     sources: list[dict]
+    traceable: bool = False
+    conflict: bool = False
+    provenance: list[dict] | None = None
+    evidence: object = None
     error: Optional[str] = None
 
 
@@ -103,41 +110,65 @@ def route_through_hybrid(
 
     plan = result.get("runtime_plan") or {}
     intent = plan.get("intent") or "general"
-    answer_type = result.get("answer_type", "unknown")
-    confidence = result.get("confidence")
-    if not isinstance(confidence, (int, float)):
-        confidence = None
-    supported = bool(result.get("supported", False))
+    fallback_sources = None
+    if not result.get("evidence"):
+        fallback_sources = collect_sources(pipeline, question, top_k)
+    contract = build_answer_contract(
+        pipeline,
+        question,
+        result,
+        top_k,
+        fallback_sources=fallback_sources,
+    )
+    source_texts = [s["evidence"] for s in contract.sources if s.get("evidence")]
+    base_answer = contract.answer
 
-    # Re-run V2 retrieval so we have clean chunk previews for the UI.
-    sources = collect_sources(pipeline, question, top_k)
-    source_texts = [s["preview"] for s in sources if s.get("preview")]
+    def make_turn(current_contract, mode, error=None):
+        return HybridTurn(
+            question=question,
+            answer=current_contract.answer or "(no answer)",
+            mode=mode,
+            intent=intent,
+            answer_type=current_contract.answer_type,
+            confidence=current_contract.confidence,
+            supported=current_contract.supported,
+            sources=current_contract.sources,
+            traceable=current_contract.traceable,
+            conflict=current_contract.conflict,
+            provenance=current_contract.provenance,
+            evidence=current_contract.evidence,
+            error=error,
+        )
 
-    base_answer = (result.get("answer") or "").strip()
+    def make_polished_contract(polished):
+        polished_result = dict(result)
+        polished_result["answer"] = polished or base_answer
+        # Polishing may preserve support, but never upgrade an answer that
+        # the shared base contract rejected.
+        polished_result["supported"] = contract.supported
+        polished_result["confidence"] = None
+        return build_answer_contract(
+            pipeline,
+            question,
+            polished_result,
+            top_k,
+            fallback_sources=fallback_sources,
+        )
 
     # ------------------------------------------------------------------
     # 2. Decide whether to keep the small-model answer or polish it.
     # ------------------------------------------------------------------
     # If the polish LLM is not loaded, always fall back to rag_chat_v2.
     if polish_llm is None or not polish_llm.is_ready():
-        return HybridTurn(
-            question=question,
-            answer=base_answer or "(no answer)",
-            mode="rag_only",
-            intent=intent,
-            answer_type=answer_type,
-            confidence=confidence,
-            supported=supported,
-            sources=sources,
-        )
+        return make_turn(contract, "rag_only")
 
     # Lookup path: rag_chat_v2 already produced a clean answer; only
     # repolish if the small LM was clearly weak (no confidence, no
     # support, or answer_type=system with no evidence).
     needs_polish_lookup = (
-        not supported
+        not contract.supported
         and not base_answer
-        or (answer_type == "system" and not source_texts)
+        or (contract.answer_type == "system" and not source_texts)
     )
 
     # Generative: pure open-ended question. Skip RAG's weak draft.
@@ -157,28 +188,12 @@ def route_through_hybrid(
                 question,
                 max_new_tokens=max_new_tokens,
             )
-            return HybridTurn(
-                question=question,
-                answer=polished or base_answer,
-                mode="polish_generative",
-                intent=intent,
-                answer_type=answer_type,
-                confidence=confidence,
-                supported=True,
-                sources=sources,
+            return make_turn(
+                make_polished_contract(polished),
+                "polish_generative",
             )
         except Exception as exc:
-            return HybridTurn(
-                question=question,
-                answer=base_answer or "(polish failed)",
-                mode="rag_only",
-                intent=intent,
-                answer_type=answer_type,
-                confidence=confidence,
-                supported=supported,
-                sources=sources,
-                error=repr(exc),
-            )
+            return make_turn(contract, "rag_only", repr(exc))
 
     # ------------------------------------------------------------------
     # 3b. Hybrid branch — RAG supplies facts, Qwen writes the answer.
@@ -191,28 +206,12 @@ def route_through_hybrid(
                 source_texts,
                 max_new_tokens=max_new_tokens,
             )
-            return HybridTurn(
-                question=question,
-                answer=polished or base_answer,
-                mode="polish_hybrid",
-                intent=intent,
-                answer_type=answer_type,
-                confidence=None,
-                supported=True,
-                sources=sources,
+            return make_turn(
+                make_polished_contract(polished),
+                "polish_hybrid",
             )
         except Exception as exc:
-            return HybridTurn(
-                question=question,
-                answer=base_answer or "(polish failed)",
-                mode="rag_only",
-                intent=intent,
-                answer_type=answer_type,
-                confidence=confidence,
-                supported=supported,
-                sources=sources,
-                error=repr(exc),
-            )
+            return make_turn(contract, "rag_only", repr(exc))
 
     # ------------------------------------------------------------------
     # 3c. Lookup polish — Qwen rewrites the retrieved context cleanly.
@@ -226,42 +225,17 @@ def route_through_hybrid(
                 source_texts,
                 max_new_tokens=max_new_tokens,
             )
-            return HybridTurn(
-                question=question,
-                answer=polished or base_answer,
-                mode="polish_lookup",
-                intent=intent,
-                answer_type=answer_type,
-                confidence=None,
-                supported=True,
-                sources=sources,
+            return make_turn(
+                make_polished_contract(polished),
+                "polish_lookup",
             )
         except Exception as exc:
-            return HybridTurn(
-                question=question,
-                answer=base_answer or "(polish failed)",
-                mode="rag_only",
-                intent=intent,
-                answer_type=answer_type,
-                confidence=confidence,
-                supported=supported,
-                sources=sources,
-                error=repr(exc),
-            )
+            return make_turn(contract, "rag_only", repr(exc))
 
     # ------------------------------------------------------------------
     # 4. Default: trust the small custom model.
     # ------------------------------------------------------------------
-    return HybridTurn(
-        question=question,
-        answer=base_answer or "(no answer)",
-        mode="rag_only",
-        intent=intent,
-        answer_type=answer_type,
-        confidence=confidence,
-        supported=supported,
-        sources=sources,
-    )
+    return make_turn(contract, "rag_only")
 
 
 __all__ = ["HybridTurn", "route_through_hybrid", "quick_intent_guess"]

@@ -3007,6 +3007,9 @@ def _answer_question_impl(
         "supported":
             False,
 
+        "evidence":
+            None,
+
         "runtime_plan":
             plan,
 
@@ -3107,6 +3110,13 @@ def _answer_question_impl(
                 premise_context,
             )
         )
+        result[
+            "evidence"
+        ] = {
+            "kind": "v4",
+            "results": premise_retrieval.get("results", []),
+            "context": premise_context,
+        }
 
         result[
             "premise_validation"
@@ -3204,6 +3214,14 @@ def _answer_question_impl(
         result[
             "context"
         ] = context
+
+        result[
+            "evidence"
+        ] = {
+            "kind": "v2",
+            "results": [best_result],
+            "context": context,
+        }
 
         result[
             "retrieval_score"
@@ -3496,6 +3514,15 @@ def _answer_question_impl(
             "context"
         ] = comparison_context
 
+        result[
+            "evidence"
+        ] = {
+            "kind": "comparison",
+            "left": comparison_result.get("left", {}),
+            "right": comparison_result.get("right", {}),
+            "context": comparison_context,
+        }
+
         if verbose:
             print(
                 "\n--- Comparison evidence ---\n"
@@ -3576,6 +3603,10 @@ def _answer_question_impl(
             retrieval["results"]
         )
 
+    evidence_results = list(
+        (retrieval or {}).get("results", [])
+    )
+
     logger.debug(
         "Reasoning retrieval (V4): chunks=%d",
         retrieval_chunk_count,
@@ -3655,6 +3686,9 @@ def _answer_question_impl(
                 )
                 retrieval_passes = 2
                 if extra_retrieval is not None and extra_retrieval.get("results"):
+                    evidence_results.extend(
+                        extra_retrieval.get("results", [])
+                    )
                     # Merge evidence from both passes
                     extra_context = extra_retrieval.get("context") or ""
                     if extra_context:
@@ -3662,6 +3696,14 @@ def _answer_question_impl(
                         reasoning_context = (aggregated_context + "\n" + extra_context).strip()
                     else:
                         reasoning_context = aggregated_context
+
+                    result[
+                        "evidence"
+                    ] = {
+                        "kind": "v4",
+                        "results": evidence_results,
+                        "context": reasoning_context,
+                    }
                 else:
                     reasoning_context = aggregated_context
             except Exception:
@@ -3673,6 +3715,16 @@ def _answer_question_impl(
             retrieval_passes = 1
     else:
         reasoning_context = aggregated_context
+
+    # Preserve the complete retrieval evidence that fed every downstream
+    # answer path, including single-pass V4 and multi-hop reasoning.
+    result[
+        "evidence"
+    ] = {
+        "kind": "v4",
+        "results": evidence_results,
+        "context": reasoning_context,
+    }
 
     # The ranked result list can contain a complete, high-quality document
     # chunk even when the compact aggregated context selected a neighboring

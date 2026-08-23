@@ -45,10 +45,8 @@ if str(SRC_DIR) not in sys.path:
 from rag_chat_v2 import answer_question, initialize_pipeline  # noqa: E402
 from config import DATA_DIR  # noqa: E402
 from webui.chat_handler import (  # noqa: E402
-    CONFLICT_RESPONSE,
+    build_answer_contract,
     collect_sources,
-    detect_evidence_conflict,
-    is_traceable_support,
 )
 from webui.document_processor import (
     UploadedDocument,
@@ -88,6 +86,9 @@ class QueryResponse(BaseModel):
     answer_type: str
     sources: list[dict[str, Any]]
     latency_ms: float
+    traceable: bool = False
+    conflict: bool = False
+    provenance: list[dict[str, Any]] = Field(default_factory=list)
     error: str | None = None
 
 
@@ -241,39 +242,33 @@ def query(request: QueryRequest) -> QueryResponse:
             request.question.strip(),
             verbose=False,
         )
-        # Grounding and conflict checks must not depend on whether the caller
-        # chooses to display sources. Collect evidence internally, then omit it
-        # from the response when include_sources=False.
-        grounding_sources = collect_sources(
+        fallback_sources = None
+        if not result.get("evidence"):
+            fallback_sources = collect_sources(
+                pipeline,
+                request.question.strip(),
+                request.top_k,
+                answer=str(result.get("answer", "")),
+            )
+        contract = build_answer_contract(
             pipeline,
             request.question.strip(),
+            result,
             request.top_k,
-            answer=str(result.get("answer", "")),
+            fallback_sources=fallback_sources,
         )
-
-        confidence = result.get("confidence")
-        if not isinstance(confidence, (int, float)):
-            confidence = None
-
-        answer = str(result.get("answer", ""))
-        supported = is_traceable_support(
-            answer, bool(result.get("supported", False)), grounding_sources
-        )
-        conflict = supported and detect_evidence_conflict(
-            request.question.strip(), grounding_sources
-        )
-        if conflict:
-            answer = CONFLICT_RESPONSE
-            supported = False
-            confidence = None
 
         return QueryResponse(
-            answer=answer,
-            supported=supported,
-            confidence=float(confidence) if confidence is not None else None,
-            answer_type="conflict" if conflict else str(result.get("answer_type", "unknown")),
-            sources=grounding_sources if request.include_sources else [],
+            answer=contract.answer,
+            supported=contract.supported,
+            confidence=contract.confidence,
+            answer_type=contract.answer_type,
+            sources=contract.sources if request.include_sources else [],
             latency_ms=round((time.perf_counter() - started) * 1000, 2),
+            traceable=contract.traceable,
+            conflict=contract.conflict,
+            provenance=contract.provenance,
+            error=contract.error,
         )
 
     except Exception:
