@@ -25,7 +25,14 @@ INGESTED_CHUNK_BOOST = 5.0
 
 
 class RuntimeChunk(str):
-    """String-compatible chunk marker for explicitly ingested content."""
+    """String-compatible chunk marker for explicitly ingested content.
+
+    Accepts optional metadata dict stored in the instance for provenance.
+    """
+    def __new__(cls, text, metadata=None):
+        obj = str.__new__(cls, text)
+        obj.metadata = metadata or {}
+        return obj
 
 
 STOPWORDS = {

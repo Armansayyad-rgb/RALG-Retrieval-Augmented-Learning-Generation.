@@ -29,12 +29,12 @@ if not exist ".venv\Scripts\python.exe" (
 
 set "PY=.venv\Scripts\python.exe"
 
-echo [1/9] Python version
+echo [1/10] Python version
 "%PY%" --version
 if errorlevel 1 exit /b 1
 
 echo.
-echo [2/9] Compile important files
+echo [2/10] Compile important files
 "%PY%" -m py_compile src\retrieval_proof_v1.py src\api_server.py src\webui\chat_handler.py src\webui\document_processor.py scripts\run_commercial_validation.py
 if errorlevel 1 (
     echo [FAIL] Compile check failed.
@@ -46,7 +46,7 @@ if exist "src\test_api_demo.py" (
 )
 
 echo.
-echo [3/9] Run simple 50-case benchmark
+echo [3/10] Run simple 50-case benchmark
 "%PY%" src\retrieval_proof_v1.py --dataset data\technical_doc_benchmark_v1.jsonl --knowledge-file data\technical_docs_sample.txt
 if errorlevel 1 (
     echo [FAIL] Simple benchmark failed.
@@ -54,7 +54,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [4/9] Run hard benchmark
+echo [4/10] Run hard benchmark
 "%PY%" src\retrieval_proof_v1.py --dataset data\technical_doc_benchmark_hard_v1.jsonl --knowledge-file data\technical_docs_hard_sample.txt
 if errorlevel 1 (
     echo [FAIL] Hard benchmark failed.
@@ -62,7 +62,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [5/9] Run 23-case regression suite
+echo [5/10] Run 23-case regression suite
 "%PY%" src\regression_tests_v2.py
 if errorlevel 1 (
     echo [FAIL] Regression suite failed.
@@ -70,7 +70,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [6/9] Run API input-hardening tests
+echo [6/10] Run API input-hardening tests
 "%PY%" src\test_api_input_hardening.py
 if errorlevel 1 (
     echo [FAIL] API input-hardening tests failed.
@@ -78,7 +78,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [7/9] Run evidence traceability and conflict tests
+echo [7/10] Run evidence traceability and conflict tests
 "%PY%" src\test_traceability.py
 if errorlevel 1 (
     echo [FAIL] Traceability tests failed.
@@ -91,7 +91,15 @@ if errorlevel 1 (
 )
 
 echo.
-echo [8/9] Run held-out commercial validation quality gate
+echo [8/10] Run upload/provenance tests
+"%PY%" src\test_upload_provenance.py
+if errorlevel 1 (
+    echo [FAIL] Upload/provenance tests failed.
+    exit /b 1
+)
+
+echo.
+echo [9/10] Run held-out commercial validation quality gate
 "%PY%" scripts\run_commercial_validation.py
 if errorlevel 1 (
     echo [FAIL] Commercial validation quality gate failed.
@@ -99,7 +107,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [9/9] Optional live API demo test
+echo [10/10] Optional live API demo test
 if /I "%~1"=="api" (
     if exist "src\test_api_demo.py" (
         echo Running API demo test. Make sure server is already running:
