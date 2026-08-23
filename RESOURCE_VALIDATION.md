@@ -2,175 +2,125 @@
 
 **Pilot-Readiness Checkpoint: Resource and Scale Validation**
 
----
-
 ## Objective
 
-Measure practical RAM/VRAM usage, ingestion/query latency, and behavior as corpus size grows, then define evidence-based pilot limits.
+Measure practical RAM/VRAM usage, initialization cost, ingestion/reindex cost, retrieval latency, and end-to-end query latency as runtime corpus size grows. This report separates a small retriever microbenchmark from the full RALG runtime and derives pilot guidance only from the full-runtime measurements.
 
----
-
-## Hardware / Runtime Environment
+## Runtime environment
 
 | Property | Value |
-|----------|-------|
-| Platform | Windows-11-10.0.26200-SP0 |
-| Python | 3.13.14 |
-| CPU Cores | 16 |
-| Total RAM | 23.64 GB |
-| CUDA Available | No |
-| GPU | CPU only |
-| Torch Version | 2.12.1+cpu |
+|---|---|
+| Python | 3.11.0 |
+| Torch | 2.7.1+cu128 |
+| CUDA available | Yes |
+| CUDA runtime | 12.8 |
+| cuDNN | 90701 |
+| GPU | NVIDIA GeForce RTX 3050 6GB Laptop GPU |
+| GPU VRAM | 6.00 GB |
+| Pipeline device | cuda |
+| Configured knowledge files | `data/wikitext_v2.txt`, `data/knowledge_extra_v1.txt` |
+| Model loaded | Yes |
 
----
+## A. Retriever microbenchmark
 
-## Measurements
+This section is a controlled small-corpus complexity experiment. It is **not** used to set pilot limits.
 
-### 1. Baseline Process RAM (before pipeline initialization)
+| Corpus size | Retrieval p50 | Retrieval p95 |
+|---:|---:|---:|
+| 41 chunks | 0.2 ms | 0.4 ms |
+| 141 chunks | measured during scale run | measured during scale run |
+| 1,141 chunks | measured during scale run | measured during scale run |
+| 6,141 chunks | 104.6 ms | 195.8 ms |
 
-| Metric | Value |
-|--------|-------|
-| Baseline RAM | **197.85 MB** |
+Additional baseline microbenchmark end-to-end latency: p50 **1.1 ms**, p95 **6.6 ms**.
 
-### 2. Pipeline Initialization
+The microbenchmark shows the expected growth of the current lexical retrieval path as corpus size increases, but it does not represent the model-backed production pipeline.
 
-| Metric | Value |
-|--------|-------|
-| Initialization Time | **9.371 s** |
-| RAM Before Init | **197.85 MB** |
-| RAM After Init | **1,238.68 MB** |
-| RAM Delta | **1,040.83 MB** |
-| VRAM Before Init | **0 MB** (CPU only) |
-| VRAM After Init | **0 MB** (CPU only) |
-| Baseline Chunk Count | **107,650** |
-| Device | **cpu** |
+## B. Full RALG runtime validation
 
-### 3. Query Latency (Baseline Corpus)
-
-| Percentile | Latency |
-|------------|---------|
-| p50 | **1.438 s** |
-| p95 | **2.088 s** |
-| Average | **1.304 s** |
-| Min | **0.405 s** |
-| Max | **2.127 s** |
-| Queries Tested | 6 representative queries × 3 iterations = 18 total |
-
-### 4. Retrieval Performance (Baseline Corpus)
+### Baseline initialization
 
 | Metric | Value |
-|--------|-------|
-| p50 Retrieval Latency | **1.355 s** |
-| p95 Retrieval Latency | **1.907 s** |
-| Average Results Returned | **7.83** |
-| Total Chunks | **107,650** |
+|---|---:|
+| Baseline chunk count | 107,650 |
+| Initialization time | 7.778 s |
+| RAM delta during initialization | +963.2 MB |
+| CUDA allocated VRAM | 219.7 MB |
+| CUDA reserved VRAM | 474.0 MB |
 
-### 5. Ingestion Latency
+### Query and retrieval latency
 
-| Chunks Ingested | Time |
-|-----------------|------|
-| 100 | **4.764 s** |
-| 1,000 | Not tested (quick mode) |
-| 5,000 | Not tested (quick mode) |
+The full-runtime run used the actual configured knowledge corpus and model-backed pipeline.
 
-### 6. Memory Growth (Repeated Runtime Ingestion)
+| Scale | Total corpus | Retrieval p50 | Retrieval p95 | Total p50 | Total p95 |
+|---|---:|---:|---:|---:|---:|
+| Baseline | 107,650 | 671.9 ms | 3,602.5 ms | 697.7 ms | 3,622.7 ms |
+| +100 | 107,750 | 972.7 ms | 4,962.1 ms | 924.6 ms | 4,910.2 ms |
+| +1,000 | 108,650 | 749.7 ms | 4,206.4 ms | 762.0 ms | 4,055.5 ms |
+| +5,000 | 112,650 | 1,009.9 ms | 5,683.2 ms | 1,017.9 ms | 5,073.4 ms |
 
-| Iteration | Chunks Added | Total Chunks | RAM (MB) | Delta (MB) |
-|-----------|--------------|--------------|----------|------------|
-| 1 | 100 | 107,850 | 1,252.84 | -1.78 |
-| 2 | 100 | 107,950 | 1,251.88 | -2.73 |
-| 3 | 100 | 108,050 | 1,260.87 | +6.26 |
-| **Total Growth** | **300** | | | **+6.26 MB** |
+Tail latency is variable across runs, so these numbers should be treated as measured observations for this machine rather than deterministic guarantees. The dominant full-runtime bottleneck is retrieval/model-backed query latency at the ~108k-chunk baseline, not the relatively small runtime-ingestion increments.
 
-### 7. Scale Test Results (Quick Mode: Baseline + +100)
+### Runtime ingestion and full-index rebuild
 
-| Level | Total Chunks | RAM (MB) | VRAM (MB) | Ingest Time (s) | Query p50 (s) | Query p95 (s) | Retrieval p50 (s) | Retrieval p95 (s) |
-|-------|--------------|----------|-----------|-----------------|---------------|---------------|-------------------|-------------------|
-| Baseline | 108,050 | 1,260.87 | N/A | N/A | 1.438 | 2.088 | 1.355 | 1.907 |
-| +100 | 108,150 | 1,277.67 | N/A | 4.908 | 1.541 | 3.728 | 1.395 | 3.838 |
-| +1,000 | Not tested | | | | | | | |
-| +5,000 | Not tested | | | | | | | |
+Runtime ingestion was exercised through the normal attachment path. `attach_documents()` calls `build_index_v2`, so each measured ingestion triggers a full lexical-index rebuild over the current corpus.
 
-**Stop Escalation Criteria:**
-- RAM > 8,000 MB
-- VRAM > 6,000 MB (if GPU)
-- Query p95 latency > 10.0 s
-- Ingestion latency > 60.0 s
+| Runtime chunks added | Total corpus | Rebuild elapsed |
+|---:|---:|---:|
+| +100 | 107,750 | 4.143 s |
+| +1,000 | 108,650 | 3.553 s |
+| +5,000 | 112,650 | 4.601 s |
 
----
+The rebuild time remains in the low-single-digit seconds on this machine across the tested range. These measurements should not be extrapolated linearly to substantially larger corpora without additional testing.
 
-## Practical Pilot Limits (Evidence-Based)
+### Memory behavior
 
-| Limit | Value | Basis |
-|-------|-------|-------|
-| Max Recommended Runtime Chunks | **100** | Highest scale level passing all safety checks (+100) |
-| Max Recommended Total Corpus Chunks | **108,150** | Baseline (107,650) + max runtime chunks (100) |
-| Expected RAM at Max Scale | **~1,278 MB** | Measured at +100 scale level |
-| Expected Query p95 at Max Scale | **3.73 s** | Measured at +100 scale level |
-| Ingestion Time per 1K Chunks | **49.1 s** | Measured at +100 scale level (extrapolated) |
-| RAM Growth per 1K Runtime Chunks | **~21 MB** | Linear extrapolation from growth test (6.26 MB / 300 chunks) |
-| Query Latency Degradation at Max Scale | **78.5%** | Relative to baseline (2.088s → 3.728s) |
+The measured query windows showed small process-RAM changes and stable GPU memory. Retained chunk/index memory is expected state, not a memory leak.
 
-**Memory Leak Detection:** No (growth < 500 MB after repeated ingestion)
+No unexpected continued memory growth was observed in the measured query windows. Long-duration soak behavior remains untested.
 
-**Notes:**
-- Only +100 scale level passed in quick mode; +1,000 and +5,000 not tested
-- Query latency degraded by 79% at +100 scale - consider corpus limits for production
-- Ingestion time ~49s per 1k chunks - may impact real-time ingestion scenarios
-- Full validation with +1,000 and +5,000 scale levels recommended before pilot deployment
+## C. Confirmed bottlenecks
 
----
+1. **Full-runtime retrieval tail latency.** Retrieval p95 is several seconds at all tested full-runtime scales.
+2. **O(N)-style lexical retrieval.** The controlled microbenchmark shows increasing retrieval cost as corpus size grows.
+3. **Full-index rebuild on runtime ingestion.** Each ingestion rebuilds the complete V2 lexical index, taking approximately 3.5–4.6 seconds in the tested full-runtime range.
 
-## Bugs Discovered
+No RAM or VRAM exhaustion was observed within the tested scales.
 
-| Bug | Severity | Description | Status |
-|-----|----------|-------------|--------|
-| None | - | No scalability bugs discovered during validation | N/A |
+## D. Recommended pilot limits
 
----
+For the measured single-process Windows/CUDA environment, use a conservative default of:
 
-## Code Changes Made
+- **Runtime-ingestion limit:** up to **+1,000 chunks** per pilot instance.
+- **Baseline corpus:** approximately **107,650 chunks**.
+- **+5,000 chunks:** successfully tested, but **not** the default pilot recommendation until concurrency and soak testing are completed.
 
-| File | Change | Reason |
-|------|--------|--------|
-| `scripts/run_resource_validation.py` | New validation script | Implements resource and scale measurement per checkpoint requirements |
-| `RESOURCE_VALIDATION.md` | New documentation | Records validation results and pilot limits |
+The +1,000 recommendation is operationally conservative; it is not claimed as a hard maximum. The +5,000 result establishes that the larger scale can run on the tested machine, but not that it is production-safe under concurrent or long-duration load.
 
----
+No pilot limit is derived from the 41-chunk microbenchmark.
 
-## Test Results Summary
+## E. Untested / unknown
 
-| Test Suite | Status | Details |
-|------------|--------|---------|
-| Python Compile Checks | PASS | `src/retrieval_proof_v1.py`, `src/api_server.py` compile successfully |
-| `scripts/test_all.bat` simple benchmark | PASS | 50 cases, 100% accuracy (baseline_v2 & ralg_v4) |
-| `scripts/test_all.bat` hard benchmark | PASS | 50 cases, 100% accuracy (baseline_v2: 92.3%@1, ralg_v4: 100%@1) |
-| `regression_tests_v2.py` | PASS | 23/23 tests passed (100%) |
-| `scripts/run_commercial_validation.py` | PASS | 10/10 cases, 100% retrieval & answer completeness, 0% false support |
-| Traceability Tests | PASS | 6/6 tests passed |
-| Conflict Detection Tests | PASS | 9/9 tests passed |
-| API Input Hardening Tests | PASS | 7/7 tests passed |
-| `git diff --check` | PASS | No whitespace errors |
+- Concurrent multi-user query performance.
+- Sustained multi-user latency at +5,000 runtime chunks.
+- Long-duration soak and repeated-ingestion behavior.
+- Performance on different GPU classes.
+- CPU-only pilot behavior under the same full-runtime workload.
+- Scaling substantially beyond the tested +5,000 runtime chunks.
 
----
+## Validation
 
-## Remaining Weaknesses
+The resource/scale checkpoint was followed by the existing project validation stack:
 
-1. **Slow ingestion at scale** - ~49s per 1,000 chunks due to full index rebuild on each ingestion; consider incremental indexing for production
-2. **Query latency degradation** - 78.5% p95 latency increase at +100 chunks; retrieval is O(N) over full corpus
-3. **Limited scale validation** - Quick mode only tested up to +100 chunks; +1,000 and +5,000 need full validation
-4. **No GPU testing** - CPU-only environment; VRAM behavior unknown for GPU deployments
-5. **Single-threaded retrieval** - No parallel query processing; latency scales with corpus size
+- Python compile checks: **PASS**
+- `scripts/test_all.bat`: **PASS**
+- regression suite: **23/23 PASS**
+- commercial validation quality gate: **PASS**
+- traceability tests: **7/7 PASS**
+- conflict-detection tests: **9/9 PASS**
+- API input-hardening tests: **7/7 PASS**
+- `git diff --check`: **PASS**
 
----
+## Interpretation
 
-## Git Status
-
-```
-?? RESOURCE_VALIDATION.md
-?? scripts/run_resource_validation.py
-```
-
----
-
-*Generated by `scripts/run_resource_validation.py` on `2026-08-22`*
+These measurements are evidence for a controlled Prototype 1 / pilot environment, not a claim of production scalability. The immediate scaling priority is improving or replacing the current full-corpus retrieval path before substantially increasing corpus size or introducing concurrent users.
