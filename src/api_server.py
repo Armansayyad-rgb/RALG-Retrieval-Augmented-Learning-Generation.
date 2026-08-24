@@ -33,7 +33,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -52,6 +52,7 @@ from webui.document_processor import (
     UploadedDocument,
     chunk_text,
     attach_documents,
+    remove_uploaded_document,
 )  # noqa: E402
 
 MAX_API_REQUEST_BYTES = 1 * 1024 * 1024
@@ -115,6 +116,12 @@ class IngestResponse(BaseModel):
     document_name: str
     added_chunks: int
     total_chunks: int
+
+
+class DocumentDeleteResponse(BaseModel):
+    document_id: str
+    deleted: bool
+    chunks_removed: int
 
 
 class StatsResponse(BaseModel):
@@ -228,6 +235,32 @@ def stats() -> StatsResponse:
         chunk_count=len(pipeline.get("chunks", [])),
         knowledge_files=knowledge_files,
         uptime_seconds=round(time.perf_counter() - _START_TIME, 2),
+    )
+
+
+@app.get("/documents", response_model=list[dict[str, Any]])
+def documents() -> list[dict[str, Any]]:
+    """List safe public metadata for runtime-uploaded documents."""
+    return [
+        {key: value for key, value in doc.items() if key != "path"}
+        for doc in get_pipeline().get("uploaded_docs", [])
+        if isinstance(doc, dict)
+    ]
+
+
+@app.delete("/documents/{document_id}", response_model=DocumentDeleteResponse)
+def delete_document(document_id: str) -> DocumentDeleteResponse:
+    """Delete one runtime document and its persisted content."""
+    pipeline = get_pipeline()
+    known = any(
+        isinstance(doc, dict) and doc.get("document_id") == document_id
+        for doc in pipeline.get("uploaded_docs", [])
+    )
+    removed = remove_uploaded_document(pipeline, document_id)
+    if not known:
+        raise HTTPException(status_code=404, detail="Document not found.")
+    return DocumentDeleteResponse(
+        document_id=document_id, deleted=True, chunks_removed=removed
     )
 
 

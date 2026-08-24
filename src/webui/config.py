@@ -50,6 +50,9 @@ from config import LOGS_DIR, PROJECT_ROOT  # noqa: E402
 SRC_DIR = PROJECT_ROOT / "src"
 DATA_DIR = PROJECT_ROOT / "data"
 UPLOADS_DIR = DATA_DIR / "uploads"
+RUNTIME_UPLOAD_DIR = Path(
+    os.getenv("RUNTIME_UPLOAD_DIR", str(DATA_DIR / "runtime_uploads"))
+).expanduser().resolve()
 
 
 # Generated artifacts

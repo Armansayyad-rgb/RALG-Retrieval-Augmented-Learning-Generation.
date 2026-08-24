@@ -2675,29 +2675,28 @@ def initialize_pipeline(
         len(chunks),
     )
 
+    pipeline = {
+        "device": device,
+        "tokenizer": tokenizer,
+        "model": model,
+        "chunks": chunks,
+        "retrieval_index": retrieval_index,
+        "document_frequency": document_frequency,
+        "uploaded_docs": [],
+        "runtime_persistence": True,
+        "runtime_upload_dir": _project_config.RUNTIME_UPLOAD_DIR,
+    }
+    from webui.document_processor import attach_documents, restore_persisted_documents
+    restored = restore_persisted_documents(pipeline)
+    if restored:
+        attach_documents(pipeline, restored, persist=False)
+        logger.info("Restored %d runtime documents", len(restored))
+
     logger.info(
         "Pipeline initialization complete"
     )
 
-    return {
-        "device":
-            device,
-
-        "tokenizer":
-            tokenizer,
-
-        "model":
-            model,
-
-        "chunks":
-            chunks,
-
-        "retrieval_index":
-            retrieval_index,
-
-        "document_frequency":
-            document_frequency,
-    }
+    return pipeline
 
 
 # ==================================================
