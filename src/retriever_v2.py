@@ -1,18 +1,15 @@
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 
 import torch
 
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
-KNOWLEDGE_FILES = [
-    Path(
-        r"C:\AI-Project\data\wikitext_v2.txt"
-    ),
-    Path(
-        r"C:\AI-Project\data\knowledge_extra_v1.txt"
-    ),
-]
+from config import KNOWLEDGE_FILES  # noqa: E402
 
 MAX_CONTEXT_CHARS = 900
 

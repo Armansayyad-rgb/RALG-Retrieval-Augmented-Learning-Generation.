@@ -1,5 +1,12 @@
 import re
+import sys
 from pathlib import Path
+
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+from config import KNOWLEDGE_FILES  # noqa: E402
 
 from retriever_v2 import (
     load_chunks,
@@ -8,9 +15,7 @@ from retriever_v2 import (
 )
 
 
-KNOWLEDGE_FILE = Path(
-    r"C:\AI-Project\data\wikitext_v2.txt"
-)
+KNOWLEDGE_FILE = KNOWLEDGE_FILES[0]
 
 FINAL_TOP_K = 8
 MAX_EVIDENCE_SENTENCES = 6

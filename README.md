@@ -101,18 +101,23 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Run the web UI from the project root:
+Run the web UI from the repository root:
 
 ```powershell
-$env:PYTHONPATH = "$PWD\src"
-python -m webui.app
+python src\webui_bootstrap.py
 ```
 
-Run the local API from the project root:
+Run the local API from the repository root:
 
 ```powershell
 uvicorn src.api_server:app --host 127.0.0.1 --port 8000
 ```
+
+The API can also be launched from another directory with
+`uvicorn src.api_server:app --app-dir <repository-root>`. `/health` reports
+that the process is alive; `/ready` reports whether model, tokenizer, corpus,
+and retrieval index are usable. A missing or corrupt required artifact keeps
+`/ready` at HTTP 503 with a safe error.
 
 ### Docker
 
@@ -145,6 +150,13 @@ deleted through `GET /documents`, `DELETE /documents/{document_id}`, or the
 Documents tab. Docker persists this directory through the `ralg_data` volume.
 Prototype 1 skips malformed or missing entries at startup and does not provide
 multi-process transactions or production-grade durability.
+
+The reasoning checkpoint is external to Git and must be supplied at
+`checkpoints/v2/reasoning_model_v1.pt`, or via `MODEL_FILE`. The tokenizer
+defaults to `data/tokenizer_v2.json` and can be overridden with
+`TOKENIZER_FILE`. Knowledge files default to the configured data directory and
+can be overridden with `KNOWLEDGE_FILES`, `KNOWLEDGE_FILE_1`, and
+`KNOWLEDGE_FILE_2`.
 
 ## Windows test runner
 

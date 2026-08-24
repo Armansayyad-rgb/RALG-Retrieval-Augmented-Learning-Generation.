@@ -16,6 +16,13 @@ This runs:
 - compile check for important files
 - simple 50-case benchmark
 - hard benchmark
+- regression, hardening, provenance, and unified-evidence tests
+- commercial validation
+
+The runner must be invoked from any clone's repository root, but runtime
+configuration itself is path-independent. Set `RUNTIME_UPLOAD_DIR`,
+`AI_PROJECT_DATA_DIR`, `MODEL_FILE`, or `TOKENIZER_FILE` to use external
+locations.
 
 ## API demo test
 

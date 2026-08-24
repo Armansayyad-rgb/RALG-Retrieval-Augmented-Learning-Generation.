@@ -10,14 +10,20 @@ Run from the project root:
 uvicorn src.api_server:app --host 127.0.0.1 --port 8000
 ```
 
-The server loads the pipeline on first request (model + ~107k chunks index).
+The server loads the pipeline on first request (model + corpus index).
+The default model checkpoint is `checkpoints/v2/reasoning_model_v1.pt`; the
+tokenizer is `data/tokenizer_v2.json`. Override them with `MODEL_FILE` and
+`TOKENIZER_FILE`.
 
 ## Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | Health check, returns `{"status": "ok"}` |
+| GET | `/ready` | Readiness status for model, tokenizer, corpus, and index |
 | GET | `/stats` | Pipeline stats (device, model_loaded, chunk_count, knowledge_files, uptime_seconds) |
+| GET | `/documents` | List persisted runtime document metadata |
+| DELETE | `/documents/{document_id}` | Delete one persisted runtime document |
 | POST | `/ingest` | Ingest plain text into the running pipeline |
 | POST | `/query` | Ask a question, get answer + sources |
 
@@ -33,6 +39,17 @@ Example response shape (answer content, scores, and latency vary with the knowle
 ```json
 {"status":"ok"}
 ```
+
+### /ready
+
+```bash
+curl http://127.0.0.1:8000/ready
+```
+
+`200` means the model, tokenizer, corpus, and retrieval index are usable.
+`503` means the process is alive but initialization is incomplete or failed.
+The response contains safe state flags and a concise error, never local paths
+or stack traces.
 
 ### /stats
 
