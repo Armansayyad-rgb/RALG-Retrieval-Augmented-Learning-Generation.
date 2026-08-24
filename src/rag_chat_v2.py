@@ -636,6 +636,7 @@ def _named_fact_anchors_match(question, candidate_sentence):
         for token in re.findall(
             r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
             question,
+            flags=re.IGNORECASE,
         )
     }
     if not identifiers:
@@ -644,7 +645,8 @@ def _named_fact_anchors_match(question, candidate_sentence):
     ignored = {
         "what", "which", "how", "long", "is", "are", "was", "were",
         "the", "a", "an", "for", "of", "to", "in", "on", "at", "and",
-        "be", "must", "should", "after", "before", "current",
+        "be", "must", "should", "after", "before", "current", "do", "does",
+        "did", "done", "require", "requires", "required", "need", "needs",
     }
     requested_terms = [
         token
@@ -886,12 +888,47 @@ def extract_factual_answer(question, context):
     # phone number or price from being treated as support.
     if q.startswith(("what ", "which ", "how long ")):
         sentences = _split_sentences(context)
+        candidates = []
         for index, sentence in enumerate(sentences):
             if sentence.isupper() and len(sentence.split()) <= 8:
                 continue
-            evidence_window = " ".join(sentences[max(0, index - 3): index + 1])
-            if _named_fact_anchors_match(question, evidence_window):
-                return sentence, True
+            evidence_window = " ".join(
+                sentences[max(0, index - 3): index + 4]
+            )
+            if not _named_fact_anchors_match(question, evidence_window):
+                continue
+            identifiers = {
+                token.lower()
+                for token in re.findall(
+                    r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
+                    question,
+                    flags=re.IGNORECASE,
+                )
+            }
+            ignored = {
+                "what", "which", "how", "long", "is", "are", "was", "were",
+                "the", "a", "an", "for", "of", "to", "in", "on", "at", "and",
+                "be", "must", "should", "after", "before", "current", "do",
+                "does", "did", "require", "requires", "required", "need",
+                "needs",
+            }
+            terms = [
+                token
+                for token in re.findall(
+                    r"[a-z0-9]+(?:-[a-z0-9]+)?", question.lower()
+                )
+                if token not in ignored
+                and token not in identifiers
+                and len(token) > 2
+            ]
+            low = sentence.lower()
+            score = 3 * sum(term in low for term in terms)
+            if any(identifier in low for identifier in identifiers):
+                score += 1
+            candidates.append((score, -index, sentence))
+        if candidates:
+            _, _, sentence = max(candidates)
+            return sentence, True
 
     return None, False
 
@@ -3268,8 +3305,16 @@ def _answer_question_impl(
 
                 return result
 
-            # Fall through to existing extractor if factual extraction failed
-            # or grounding check failed
+            # Factual answers must pass the dedicated grounding path. The
+            # generic extractor can otherwise turn an unrelated sentence
+            # with overlapping attribute words into a supported answer.
+            result = build_system_result(result)
+            if verbose:
+                print(
+                    "\nSystem:",
+                    result["answer"],
+                )
+            return result
 
         extracted = extract_answer(
             question,
@@ -3761,6 +3806,29 @@ def _answer_question_impl(
             question,
             reasoning_context,
         )
+
+        if (
+            factual_answer is not None
+            and supported
+        ):
+            named_question = _named_fact_anchors_match(question, question) is not None
+            evidence_text = "\n".join(
+                str(item.get("chunk", ""))
+                for item in evidence_results
+                if isinstance(item, dict)
+                and (
+                    not named_question
+                    or _named_fact_anchors_match(
+                        question,
+                        str(item.get("chunk", "")),
+                    )
+                )
+            )
+            if (
+                not evidence_text
+                or factual_answer.casefold() not in evidence_text.casefold()
+            ):
+                factual_answer, supported = None, False
 
         if (
             factual_answer is not None
