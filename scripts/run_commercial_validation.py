@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import argparse
 import statistics
 import sys
 import tempfile
@@ -66,7 +67,7 @@ def quality_gate_passes(metrics: dict) -> bool:
     )
 
 
-def main() -> int:
+def main(output_path: Path | None = None) -> int:
     dataset = json.loads(DATASET.read_text(encoding="utf-8"))
     with isolated_runtime() as runtime_dir:
         client = TestClient(api_server.app)
@@ -149,8 +150,9 @@ def main() -> int:
         }
         metrics["quality_gate_passed"] = quality_gate_passes(metrics)
         report = {"metrics": metrics, "results": results}
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    report_path = output_path or OUTPUT
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     print(json.dumps(metrics, indent=2))
     for item in results:
@@ -159,7 +161,7 @@ def main() -> int:
             f"retrieval={item['retrieval_correct']} complete={item['answer_complete']} "
             f"abstained={item['safely_abstained']} latency_ms={item['latency_ms']:.2f}"
         )
-    print(f"results={OUTPUT}")
+    print(f"results={report_path}")
     if not metrics["quality_gate_passed"]:
         print("COMMERCIAL VALIDATION QUALITY GATE FAILED", file=sys.stderr)
         return 1
@@ -167,4 +169,11 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Write the JSON report to this path instead of the default logs path.",
+    )
+    args = parser.parse_args()
+    raise SystemExit(main(args.output))

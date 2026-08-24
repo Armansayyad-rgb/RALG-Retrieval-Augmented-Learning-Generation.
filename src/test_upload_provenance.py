@@ -60,34 +60,50 @@ class UploadProvenanceTests(unittest.TestCase):
             }
 
         before = snapshot(runtime_dir)
-        command = [sys.executable, str(PROJECT_ROOT / "scripts" / "run_commercial_validation.py")]
-        first = subprocess.run(
-            command, cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180
-        )
-        first_report = json.loads(
-            (PROJECT_ROOT / "logs" / "heldout_commercial_v1_results.json").read_text(
-                encoding="utf-8"
+        with tempfile.TemporaryDirectory() as output_dir:
+            first_path = Path(output_dir) / "first.json"
+            second_path = Path(output_dir) / "second.json"
+            script = str(PROJECT_ROOT / "scripts" / "run_commercial_validation.py")
+            first = subprocess.run(
+                [sys.executable, script, "--output", str(first_path)],
+                cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180,
             )
-        )
-        second = subprocess.run(
-            command, cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180
-        )
-        second_report = json.loads(
-            (PROJECT_ROOT / "logs" / "heldout_commercial_v1_results.json").read_text(
-                encoding="utf-8"
+            self.assertEqual(
+                first.returncode, 0,
+                f"commercial validation failed:\nstdout:\n{first.stdout}\n"
+                f"stderr:\n{first.stderr}",
             )
-        )
-        self.assertEqual(first.returncode, 0, first.stderr)
-        self.assertEqual(second.returncode, 0, second.stderr)
+            second = subprocess.run(
+                [sys.executable, script, "--output", str(second_path)],
+                cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180,
+            )
+            self.assertEqual(
+                second.returncode, 0,
+                f"commercial validation failed:\nstdout:\n{second.stdout}\n"
+                f"stderr:\n{second.stderr}",
+            )
+            first_report = json.loads(first_path.read_text(encoding="utf-8"))
+            second_report = json.loads(second_path.read_text(encoding="utf-8"))
         self.assertTrue(first_report["metrics"]["quality_gate_passed"])
         self.assertTrue(second_report["metrics"]["quality_gate_passed"])
         self.assertEqual(
             first_report["metrics"]["cases"],
             second_report["metrics"]["cases"],
         )
+        deterministic_fields = (
+            "id", "expected_supported", "actual_supported", "answer",
+            "answer_type", "retrieval_correct", "answer_complete",
+            "safely_abstained", "source_count", "error",
+        )
         self.assertEqual(
-            [item["actual_supported"] for item in first_report["results"]],
-            [item["actual_supported"] for item in second_report["results"]],
+            [
+                {field: item[field] for field in deterministic_fields}
+                for item in first_report["results"]
+            ],
+            [
+                {field: item[field] for field in deterministic_fields}
+                for item in second_report["results"]
+            ],
         )
         self.assertEqual(snapshot(runtime_dir), before)
         self.assertNotIn("Lumen ARC-12", "\n".join(second.stdout.splitlines()))
