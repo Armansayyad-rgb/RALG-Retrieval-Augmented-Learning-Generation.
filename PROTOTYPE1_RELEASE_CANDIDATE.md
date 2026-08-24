@@ -3,7 +3,7 @@
 ## Release identity
 
 **Prototype 1 RC1 (`0.1.0-rc1`)**. This report tests merged commit
-`0dac5ebbf7ceac8eaed5ccba53c5b330e4c222bb` on branch `master`, dated
+`c210eb8ae168a740b65189fc9245034dfe58e40e` on branch `master`, dated
 2026-08-24.
 
 ## Inventory and architecture
