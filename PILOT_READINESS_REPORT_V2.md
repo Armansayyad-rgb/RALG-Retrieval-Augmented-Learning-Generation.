@@ -26,9 +26,14 @@ The held-out harness is retrieval-only and does not establish model-backed
 answer quality. Human review remains required for safety-critical use.
 
 Observed held-out run: 320 cases, 1.00 supported recall@5, 0.00 near-miss
-false-support rate, p50 1.270 ms, p95 1.799 ms. The 100k level was subsequently completed safely: RSS 395.32 MB to 639.37 MB,
-575.88 ms build, 1,455.817 ms query p50, and 1,523.975 ms query p95.
+false-support rate, p50 1.270 ms, p95 1.799 ms. The 100k level was subsequently completed safely. Profiling found the hot
+path was per-term scalar Torch tensor/log creation inside lexical scoring.
+Replacing it with the equivalent `math.log` calculation preserved retrieval
+tests and reduced query p50/p95 from 1,455.817/1,523.975 ms to
+156.186/215.893 ms. RSS was 395.78 MB to 636.94 MB.
 250k/500k remain not validated because the run was stopped after the first
-large level to avoid unsafe memory pressure.
+large level to avoid unsafe memory pressure. Adaptive soak completed
+250/500/1000 requests with 8 workers and zero errors; the 1000-request run
+took 35.59 seconds and RSS rose from 395.28 MB to 404.63 MB.
 The 1000-query/16-worker soak was bounded and did not complete within the
 available run window; treat concurrency evidence as unavailable, not as a pass.

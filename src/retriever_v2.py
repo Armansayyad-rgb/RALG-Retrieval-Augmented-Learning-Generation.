@@ -1,3 +1,4 @@
+import math
 import re
 import sys
 from collections import Counter
@@ -400,20 +401,8 @@ def lexical_score(
             0,
         )
 
-        idf = (
-            1.0
-            + torch.log(
-                torch.tensor(
-                    (
-                        total_documents
-                        + 1
-                    )
-                    / (
-                        df
-                        + 1
-                    )
-                )
-            ).item()
+        idf = 1.0 + math.log(
+            (total_documents + 1) / (df + 1)
         )
 
         score += (
