@@ -60,8 +60,7 @@ class UploadProvenanceTests(unittest.TestCase):
             }
 
         before = snapshot(runtime_dir)
-        command = [str(PROJECT_ROOT / ".venv" / "Scripts" / "python.exe"),
-                   str(PROJECT_ROOT / "scripts" / "run_commercial_validation.py")]
+        command = [sys.executable, str(PROJECT_ROOT / "scripts" / "run_commercial_validation.py")]
         first = subprocess.run(
             command, cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180
         )
@@ -205,16 +204,36 @@ class UploadProvenanceTests(unittest.TestCase):
                 attach_documents({"chunks": []}, [document], persist=False)
 
     def test_filename_and_path_safety(self):
-        document = UploadedDocument(
-            name=r"..\..\secret/\manual?.txt",
-            path=Path(r"C:\private\secret\manual?.txt"),
-            ext=".txt",
-            text="safe content",
+        cases = (
+            ("../../secret/manual.txt", "manual.txt"),
+            (r"..\..\secret\manual.txt", "manual.txt"),
+            (r"..\..\secret/\manual?.txt", "manual?.txt"),
+            (r"C:\private\secret\manual.txt", "manual.txt"),
+            ("/private/secret/manual.txt", "manual.txt"),
+            (r"mixed\folder/path\manual.txt", "manual.txt"),
         )
-        self.assertEqual(document.safe_display_name, "manual?.txt")
-        self.assertNotIn("..", document.safe_display_name)
-        self.assertNotIn("\\", document.safe_display_name)
-        self.assertNotIn("/", document.safe_display_name)
+        for raw_name, expected in cases:
+            with self.subTest(raw_name=raw_name):
+                document = UploadedDocument(
+                    name=raw_name,
+                    path=Path("manual.txt"),
+                    ext=".txt",
+                    text="safe content",
+                )
+                self.assertEqual(document.safe_display_name, expected)
+                self.assertNotIn("..", document.safe_display_name)
+                self.assertNotIn("\\", document.safe_display_name)
+                self.assertNotIn("/", document.safe_display_name)
+
+        for hostile_name in ("", "/", "..\\..\\"):
+            with self.subTest(hostile_name=hostile_name):
+                document = UploadedDocument(
+                    name=hostile_name,
+                    path=Path("manual.txt"),
+                    ext=".txt",
+                    text="safe content",
+                )
+                self.assertEqual(document.safe_display_name, "unnamed_document")
 
     def test_no_absolute_path_exposure(self):
         document = UploadedDocument(

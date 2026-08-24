@@ -192,11 +192,8 @@ def _sanitize_display_name(raw_name: str) -> str:
     - Truncates to a reasonable length.
     - Never returns an empty string.
     """
-    # Extract basename using both os.path and manual split for cross-platform
-    name = os.path.basename(raw_name)
-    # Also handle forward slashes on Windows
-    if "/" in name:
-        name = name.rsplit("/", 1)[-1]
+    # Treat both separators as path delimiters regardless of host OS.
+    name = re.split(r"[\\/]", str(raw_name))[-1]
 
     # Strip control characters (categories Cc, Cf)
     name = "".join(
