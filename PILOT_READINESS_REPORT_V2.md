@@ -35,5 +35,12 @@ tests and reduced query p50/p95 from 1,455.817/1,523.975 ms to
 large level to avoid unsafe memory pressure. Adaptive soak completed
 250/500/1000 requests with 8 workers and zero errors; the 1000-request run
 took 35.59 seconds and RSS rose from 395.28 MB to 404.63 MB.
+
+The isolated clean API lifecycle and live SDK integration subsequently passed
+using a disposable runtime directory. Deleted documents stayed deleted across
+restart, persisted documents recovered across restart, supported queries
+returned provenance, and unsupported queries returned `supported=false`.
+Lifecycle locking is process-local; the recommended pilot deployment is one
+application worker.
 The 1000-query/16-worker soak was bounded and did not complete within the
 available run window; treat concurrency evidence as unavailable, not as a pass.
