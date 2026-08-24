@@ -42,19 +42,11 @@ SRC_DIR = PROJECT_ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-# Load the root-level config.py explicitly. When this script is run as
-# python src/retrieval_proof_v1.py, Python puts src/ first on sys.path,
-# which would otherwise import src/config.py instead of <project>/config.py.
-import importlib.util as _importlib_util  # noqa: E402
-
-_ROOT_CONFIG_PATH = PROJECT_ROOT / "config.py"
-_spec = _importlib_util.spec_from_file_location("config", str(_ROOT_CONFIG_PATH))
-if _spec is None or _spec.loader is None:
-    raise ImportError(f"Could not load project config at {_ROOT_CONFIG_PATH}")
-_project_config = _importlib_util.module_from_spec(_spec)
-sys.modules["config"] = _project_config
-_spec.loader.exec_module(_project_config)
-KNOWLEDGE_FILES = _project_config.KNOWLEDGE_FILES
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(1, str(SRC_DIR))
+from config import KNOWLEDGE_FILES  # noqa: E402
 
 from retriever_v2 import build_index, load_chunks, retrieve as retrieve_v2  # noqa: E402
 from retriever_v4 import retrieve as retrieve_v4  # noqa: E402

@@ -11,6 +11,18 @@ import os
 import re
 from pathlib import Path
 
+# Architecture used by the legacy local language-model modules.  Keeping this
+# small config in the canonical project config avoids import-order-dependent
+# import-order shims.
+MODEL_CONFIG = {
+    "vocab_size": 7207,
+    "context_length": 512,
+    "d_model": 384,
+    "n_heads": 6,
+    "n_layers": 8,
+    "dropout": 0.1,
+}
+
 
 # ----------------------------------------------------------------------
 # Project root resolution
@@ -112,6 +124,44 @@ KNOWLEDGE_FILES: list[Path] = _resolve_knowledge_files()
 MAX_INPUT_TOKENS: int = int(os.environ.get("MAX_INPUT_TOKENS", "480"))
 MAX_NEW_TOKENS: int = int(os.environ.get("MAX_NEW_TOKENS", "50"))
 CONFIDENCE_THRESHOLD: float = float(os.environ.get("CONFIDENCE_THRESHOLD", "0.80"))
+
+
+# ----------------------------------------------------------------------
+# Runtime upload policy
+# ----------------------------------------------------------------------
+
+class UploadPolicy:
+    """Authoritative limits shared by upload validation and UI copy."""
+
+    def __init__(
+        self,
+        allowed_extensions: frozenset[str],
+        per_file_bytes: dict[str, int],
+        max_batch_bytes: int,
+        max_extracted_text_chars: int,
+        max_chunks_per_document: int,
+        max_total_chunks_per_batch: int,
+    ) -> None:
+        self.allowed_extensions = allowed_extensions
+        self.per_file_bytes = per_file_bytes
+        self.max_batch_bytes = max_batch_bytes
+        self.max_extracted_text_chars = max_extracted_text_chars
+        self.max_chunks_per_document = max_chunks_per_document
+        self.max_total_chunks_per_batch = max_total_chunks_per_batch
+
+
+UPLOAD_POLICY = UploadPolicy(
+    allowed_extensions=frozenset({".txt", ".pdf", ".docx"}),
+    per_file_bytes={
+        ".txt": 1 * 1024 * 1024,
+        ".pdf": 10 * 1024 * 1024,
+        ".docx": 10 * 1024 * 1024,
+    },
+    max_batch_bytes=50 * 1024 * 1024,
+    max_extracted_text_chars=5_000_000,
+    max_chunks_per_document=5000,
+    max_total_chunks_per_batch=5000,
+)
 
 
 def knowledge_files_str() -> str:

@@ -43,16 +43,6 @@ if str(SRC_DIR) not in sys.path:
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# Load root config.py explicitly (avoids src/config.py shadowing)
-import importlib.util as _importlib_util
-_ROOT_CONFIG_PATH = PROJECT_ROOT / "config.py"
-_spec = _importlib_util.spec_from_file_location("config", str(_ROOT_CONFIG_PATH))
-if _spec is None or _spec.loader is None:
-    raise ImportError(f"Could not load project config at {_ROOT_CONFIG_PATH}")
-_project_config = _importlib_util.module_from_spec(_spec)
-sys.modules["config"] = _project_config
-_spec.loader.exec_module(_project_config)
-
 from config import KNOWLEDGE_FILES  # noqa: E402
 
 try:

@@ -12,6 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src import api_server
+from src.retriever_v2 import build_index
 
 
 class ApiInputHardeningTests(unittest.TestCase):
@@ -65,18 +66,62 @@ class ApiInputHardeningTests(unittest.TestCase):
         self.assertEqual(response.json(), {"error": "Request body too large."})
 
     def test_internal_query_details_are_hidden(self):
-        secret = "private traceback detail"
+        private_detail = "private traceback detail"
 
         def fail(*args, **kwargs):
-            raise RuntimeError(secret)
+            raise RuntimeError(private_detail)
 
         with patch.object(api_server, "get_pipeline", return_value={}), patch.object(
             api_server, "answer_question", side_effect=fail
         ):
             response = self.client.post("/query", json={"question": "valid question"})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()["error"], "Request processing failed.")
-        self.assertNotIn(secret, response.text)
+        self.assertNotIn(private_detail, response.text)
+
+    def test_ingest_query_list_delete_lifecycle_uses_same_document_id(self):
+        pipeline = {
+            "chunks": [],
+            "retrieval_index": build_index([]),
+            "document_frequency": {},
+            "uploaded_docs": [],
+            "runtime_persistence": False,
+        }
+        with patch.object(api_server, "get_pipeline", return_value=pipeline), patch.object(
+            api_server,
+            "answer_question",
+            return_value={
+                "answer": "I cannot verify that.",
+                "supported": False,
+                "answer_type": "abstention",
+                "confidence": None,
+                "evidence": [],
+            },
+        ):
+            ingest = self.client.post(
+                "/ingest",
+                json={"document_name": "manual.txt", "text": "Pump pressure is 10 bar."},
+            )
+            self.assertEqual(ingest.status_code, 200)
+            document_id = ingest.json()["document_id"]
+
+            query = self.client.post("/query", json={"question": "What is this?"})
+            self.assertEqual(query.status_code, 200)
+
+            listed = self.client.get("/documents")
+            self.assertEqual(listed.status_code, 200)
+            self.assertIn(
+                document_id,
+                {item["document_id"] for item in listed.json()},
+            )
+
+            deleted = self.client.delete(f"/documents/{document_id}")
+            self.assertEqual(deleted.status_code, 200)
+            self.assertEqual(deleted.json()["document_id"], document_id)
+            self.assertNotIn(
+                document_id,
+                {item["document_id"] for item in self.client.get("/documents").json()},
+            )
 
 
 if __name__ == "__main__":

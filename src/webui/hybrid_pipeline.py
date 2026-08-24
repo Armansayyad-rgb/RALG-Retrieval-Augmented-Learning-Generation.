@@ -17,6 +17,7 @@ path because it is fast and accurate.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
 from typing import Optional
 
 from rag_chat_v2 import answer_question
@@ -32,6 +33,10 @@ from webui.polish_llm import (
     polish_lookup_answer,
     quick_intent_guess,
 )
+
+_LOGGER = logging.getLogger(__name__)
+_SAFE_PIPELINE_ERROR = "The answer service is temporarily unavailable."
+_SAFE_POLISH_ERROR = "Optional answer polishing failed; showing the core answer."
 
 
 # Intent labels from rag_chat_v2.runtime_plan that should be handled by
@@ -92,7 +97,8 @@ def route_through_hybrid(
     # ------------------------------------------------------------------
     try:
         result = answer_question(pipeline, question.strip(), verbose=False)
-    except Exception as exc:
+    except Exception:
+        _LOGGER.exception("Unhandled routing pipeline error")
         return HybridTurn(
             question=question,
             answer=(
@@ -105,7 +111,7 @@ def route_through_hybrid(
             confidence=None,
             supported=False,
             sources=[],
-            error=repr(exc),
+            error=_SAFE_PIPELINE_ERROR,
         )
 
     plan = result.get("runtime_plan") or {}
@@ -192,8 +198,9 @@ def route_through_hybrid(
                 make_polished_contract(polished),
                 "polish_generative",
             )
-        except Exception as exc:
-            return make_turn(contract, "rag_only", repr(exc))
+        except Exception:
+            _LOGGER.exception("Generative polish failed")
+            return make_turn(contract, "rag_only", _SAFE_POLISH_ERROR)
 
     # ------------------------------------------------------------------
     # 3b. Hybrid branch — RAG supplies facts, Qwen writes the answer.
@@ -210,8 +217,9 @@ def route_through_hybrid(
                 make_polished_contract(polished),
                 "polish_hybrid",
             )
-        except Exception as exc:
-            return make_turn(contract, "rag_only", repr(exc))
+        except Exception:
+            _LOGGER.exception("Hybrid polish failed")
+            return make_turn(contract, "rag_only", _SAFE_POLISH_ERROR)
 
     # ------------------------------------------------------------------
     # 3c. Lookup polish — Qwen rewrites the retrieved context cleanly.
@@ -229,8 +237,9 @@ def route_through_hybrid(
                 make_polished_contract(polished),
                 "polish_lookup",
             )
-        except Exception as exc:
-            return make_turn(contract, "rag_only", repr(exc))
+        except Exception:
+            _LOGGER.exception("Lookup polish failed")
+            return make_turn(contract, "rag_only", _SAFE_POLISH_ERROR)
 
     # ------------------------------------------------------------------
     # 4. Default: trust the small custom model.

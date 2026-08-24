@@ -17,7 +17,6 @@ Generates machine-readable (JSON) plus human-readable benchmark report.
 import os
 import sys
 import datetime
-import importlib.util
 from pathlib import Path
 
 # Resolve from this file by default, with an environment override.
@@ -35,19 +34,6 @@ if str(SRC_DIR) not in sys.path:
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# Import config using same method as rag_chat_v2.py
-_ROOT_CONFIG_PATH = PROJECT_ROOT / "config.py"
-_spec = importlib.util.spec_from_file_location("config", str(_ROOT_CONFIG_PATH))
-if _spec is None or _spec.loader is None:
-    raise ImportError(
-        f"Could not load project config at {_ROOT_CONFIG_PATH}. "
-        f"Expected an env-var-aware config.py at the project root."
-    )
-_PROJECT_CONFIG = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_PROJECT_CONFIG)
-sys.modules["config"] = _PROJECT_CONFIG
-
-# Import all config symbols from the root config
 from config import (  # noqa: E402
     LOGS_DIR,
     TOKENIZER_FILE,

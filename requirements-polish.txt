@@ -1,0 +1,5 @@
+# Optional Qwen2.5-1.5B-Instruct polish runtime.
+# Install this file only when enabling the optional polish model; the core
+# API and Gradio UI work without these packages.
+transformers==4.46.3
+accelerate==1.0.1

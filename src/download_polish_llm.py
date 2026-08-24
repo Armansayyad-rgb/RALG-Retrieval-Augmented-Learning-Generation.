@@ -27,11 +27,23 @@ Side effects:
 from __future__ import annotations
 
 import sys
+import os
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+from config import CHECKPOINTS_DIR  # noqa: E402
+
 REPO_ID = "Qwen/Qwen2.5-1.5B-Instruct"
+REVISION = "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
 FILENAME = "model.safetensors"
-TARGET_DIR = Path(r"C:\AI-Project\checkpoints\qwen2.5-1.5b-instruct")
+TARGET_DIR = Path(
+    os.environ.get(
+        "POLISH_LLM_DIR",
+        str(CHECKPOINTS_DIR / "qwen2.5-1.5b-instruct"),
+    )
+).expanduser().resolve()
 EXPECTED_BYTES = 3_090_000_000   # ~3.09 GB, allow some slack on the check
 
 
@@ -66,9 +78,8 @@ def main() -> int:
         downloaded_path = hf_hub_download(
             repo_id=REPO_ID,
             filename=FILENAME,
+            revision=REVISION,
             local_dir=str(TARGET_DIR),
-            local_dir_use_symlinks=False,   # write a real file, not a symlink
-            resume_download=True,
         )
     except Exception as exc:
         print(f"ERROR: download failed: {exc!r}", file=sys.stderr)

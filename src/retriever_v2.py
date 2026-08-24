@@ -619,9 +619,6 @@ def retrieve_candidates(
         candidate_indices = set()
         for term in query_terms:
             candidate_indices.update(postings.get(term, ()))
-        # Preserve the established fixed boost for runtime chunks that do
-        # not contain a query term.
-        candidate_indices.update(getattr(index, "runtime_indices", ()))
         candidates = ((i, index[i]) for i in sorted(candidate_indices))
     else:
         candidates = enumerate(index)

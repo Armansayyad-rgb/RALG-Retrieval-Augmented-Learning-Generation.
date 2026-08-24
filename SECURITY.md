@@ -20,7 +20,11 @@ The repository ignores common secret and private-business patterns through `.git
 
 ## Current security boundary
 
-The public FastAPI and Gradio components should be treated as **local-development interfaces** unless additional controls are added.
+The public FastAPI and Gradio components should be treated as
+**local-development interfaces** unless additional controls are added.
+Gradio binds to `127.0.0.1` by default, does not enable sharing, and suppresses
+exception details in the browser. Setting `WEBUI_HOST=0.0.0.0` is an explicit
+container/deployment boundary, not a security control.
 
 Before exposing RALG beyond localhost, add and verify:
 
@@ -46,6 +50,11 @@ Deployments handling real documents should:
 - define document and log retention rules
 - restrict filesystem permissions
 - isolate parsing/indexing from sensitive host resources where practical
+
+The UI enforces a 50 MiB batch limit plus per-format, extracted-text, and
+chunk-count limits. Upload/delete state mutations are protected by a
+process-local lock; this does not provide multi-process or multi-tenant
+isolation.
 
 ## Private-data handling
 
@@ -79,6 +88,10 @@ For safety-critical workflows:
 - keep benchmark/evaluation data separate from production tuning where possible
 
 RALG should not be used as the final authority for safety-critical, medical, legal, or financial decisions without appropriate human review.
+
+Prototype 1 RC1 (`0.1.0-rc1`) is immutable at the validated commit recorded in
+the release-candidate report. Validation is isolated and synthetic; it does
+not establish security, privacy, or production-network readiness.
 
 ## Reporting a vulnerability
 

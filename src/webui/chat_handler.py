@@ -9,12 +9,16 @@ backend file is left untouched.
 from __future__ import annotations
 
 import re
+import logging
 from dataclasses import dataclass
 from typing import Any
 
 from rag_chat_v2 import answer_question
 from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk
 from retriever_v4 import retrieve as retrieve_v4_fn
+
+_LOGGER = logging.getLogger(__name__)
+_SAFE_CHAT_ERROR = "The answer service is temporarily unavailable."
 
 
 _TRACEABILITY_STOPWORDS = {
@@ -464,7 +468,8 @@ def chat_turn(
 
     try:
         result = answer_question(pipeline, question.strip(), verbose=False)
-    except Exception as exc:  # defensive — surface to UI instead of crashing
+    except Exception:  # defensive — keep internal details out of the UI
+        _LOGGER.exception("Unhandled chat pipeline error")
         return {
             "question": question,
             "answer": (
@@ -476,7 +481,7 @@ def chat_turn(
             "answer_type": "error",
             "intent": "general",
             "sources": [],
-            "error": repr(exc),
+            "error": _SAFE_CHAT_ERROR,
         }
 
     plan = result.get("runtime_plan") or {}

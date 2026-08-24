@@ -30,9 +30,20 @@ import sys
 import time
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+from config import CHECKPOINTS_DIR  # noqa: E402
+
 REPO_ID = "Qwen/Qwen2.5-1.5B-Instruct"
+REVISION = "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
 FILENAME = "model.safetensors"
-TARGET_DIR = Path(r"C:\AI-Project\checkpoints\qwen2.5-1.5b-instruct")
+TARGET_DIR = Path(
+    os.environ.get(
+        "POLISH_LLM_DIR",
+        str(CHECKPOINTS_DIR / "qwen2.5-1.5b-instruct"),
+    )
+).expanduser().resolve()
 PARTIAL_PATH = TARGET_DIR / "model.safetensors.partial"
 FINAL_PATH = TARGET_DIR / FILENAME
 
@@ -63,7 +74,7 @@ def main() -> int:
 
     TARGET_DIR.mkdir(parents=True, exist_ok=True)
     url = (
-        f"https://huggingface.co/{REPO_ID}/resolve/main/{FILENAME}"
+        f"https://huggingface.co/{REPO_ID}/resolve/{REVISION}/{FILENAME}"
     )
 
     # Skip if a complete final file is already in place.
@@ -206,6 +217,13 @@ def main() -> int:
 
     # Promote the partial to the final path on success.
     final_size = PARTIAL_PATH.stat().st_size
+    if final_size < 3_000_000_000:
+        print(
+            f"\nERROR: downloaded artifact is suspiciously small "
+            f"({final_size} bytes). Partial file retained at {PARTIAL_PATH}.",
+            file=sys.stderr,
+        )
+        return 1
     PARTIAL_PATH.replace(FINAL_PATH)
     elapsed = time.time() - t0
     speed = final_size / elapsed if elapsed > 0 else 0

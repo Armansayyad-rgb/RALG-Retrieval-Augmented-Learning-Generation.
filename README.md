@@ -72,7 +72,12 @@ This makes the project relevant for:
 
 ## Current status
 
-RALG is in active development. The system includes a working local pipeline, web UI, document ingestion, API, Docker packaging, evaluation scripts, and a reproducible held-out commercial validation runner.
+RALG is in active development. Prototype 1 release candidate `0.1.0-rc1`
+is immutable and is validated at commit
+`c210eb8ae168a740b65189fc9245034dfe58e40e` (the corresponding release tag
+must continue to point at that commit). The system includes a working local
+pipeline, web UI, document ingestion, API, Docker packaging, evaluation
+scripts, and a reproducible held-out commercial validation runner.
 
 A recent small synthetic held-out checkpoint passed all 5 supported-answer cases for retrieval and completeness, rejected all 5 unsupported cases, produced a 0% false-support rate on that set, and preserved 23/23 regression passes. GitHub Actions CI has also been verified on `master`.
 
@@ -142,6 +147,11 @@ The optional polish LLM is not required for the core API or UI. If its model
 files or optional runtime dependencies are unavailable, startup logs a warning
 and the UI continues with the core retrieval answer path.
 
+To enable Qwen2.5-1.5B-Instruct polish, install the optional dependencies with
+`pip install -r requirements-polish.txt` and provide the model under
+`POLISH_LLM_DIR` (or the default checkpoint directory). This does not change
+the core dependency set or make network access necessary at runtime.
+
 Runtime-uploaded documents are persisted under `data/runtime_uploads/` by
 default (`RUNTIME_UPLOAD_DIR` overrides this). Each document has an application
 generated ID and content file plus an atomic `metadata.json` registry. The
@@ -149,7 +159,10 @@ registry is rehydrated during pipeline startup, and documents can be listed or
 deleted through `GET /documents`, `DELETE /documents/{document_id}`, or the
 Documents tab. Docker persists this directory through the `ralg_data` volume.
 Prototype 1 skips malformed or missing entries at startup and does not provide
-multi-process transactions or production-grade durability.
+multi-process transactions or production-grade durability. Upload and delete
+mutations use a process-local lock only; they are not safe coordination across
+multiple workers. The default UI upload policy is 50 MiB per batch, with
+per-format and extracted-text/chunk limits enforced by the parser.
 
 The reasoning checkpoint is external to Git and must be supplied at
 `checkpoints/v2/reasoning_model_v1.pt`, or via `MODEL_FILE`. The tokenizer
@@ -189,7 +202,9 @@ Published metrics should distinguish retrieval quality from answer reliability a
 - RAM/VRAM usage
 - failure examples
 
-Synthetic benchmark success is an engineering checkpoint, not proof of production performance.
+Synthetic benchmark success is an engineering checkpoint, not proof of
+production performance. Validation runs use isolated synthetic fixtures and
+must not be interpreted as customer-data or production-network validation.
 
 ## Limitations
 
