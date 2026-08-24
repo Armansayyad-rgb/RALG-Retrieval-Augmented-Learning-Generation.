@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
-"""Feature-isolated retrieval ablations.
-
-Only switches that have an explicit implementation seam are measured.  V4
-query expansion, conflict/factual/provenance gates are deliberately reported
-as not-applicable rather than simulated by monkey-patching production code.
-"""
+"""Safe, feature-isolated retrieval ablations with ranking metrics."""
 from __future__ import annotations
-import argparse, json, re, statistics, time, sys
+import argparse, json, re, statistics, sys, time
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-from src.retriever_v2 import build_index, retrieve, RuntimeChunk, INGESTED_CHUNK_BOOST
+sys.path[:0] = [str(ROOT), str(ROOT / "src")]
+from src.retriever_v2 import build_index, retrieve, RuntimeChunk
+from src import retriever_v4
 
-def terms(s): return set(re.findall(r"[a-z0-9']+", s.lower()))
+def metric(rows):
+    supported = [r for r in rows if r["supported"]]
+    unsupported = [r for r in rows if not r["supported"]]
+    def at(k): return sum(r["rank"] is not None and r["rank"] <= k for r in supported)/len(supported)
+    rr = [1/r["rank"] if r["rank"] else 0 for r in supported]
+    return {
+        "recall_at_1": at(1), "recall_at_3": at(3), "recall_at_5": at(5),
+        "mrr": statistics.fmean(rr), "unsupported_rejection_rate":
+            sum(r["rank"] is None for r in unsupported)/len(unsupported),
+        "false_support_rate": sum(r["rank"] is not None for r in unsupported)/len(unsupported),
+        "evidence_rate": sum(bool(r["results"]) for r in rows)/len(rows),
+        "p50_latency_ms": statistics.median(r["latency_ms"] for r in rows),
+        "p95_latency_ms": sorted(r["latency_ms"] for r in rows)[int(len(rows)*.95)-1],
+    }
 
 def main():
     p = argparse.ArgumentParser()
@@ -21,47 +30,60 @@ def main():
     chunks = [f"domain {i%8} policy control value {i%31} revision {i%5}" for i in range(240)]
     chunks += [RuntimeChunk("runtime domain 3 policy control value 7", {"id":"synthetic"})]
     index, df = build_index(chunks)
-    cases = [(f"what is policy control value {i%31}", i % 31) for i in range(80)]
+    cases = [(f"what is policy control value {i%31}", True, str(i%31)) for i in range(80)]
+    cases += [(f"unsupported near miss value {i+1000}", False, str(i+1000)) for i in range(16)]
 
-    def run(use_postings=True, runtime_boost=True, dedupe=True):
-        timings, hits = [], 0
-        for q, value in cases:
-            query = q if dedupe else q + " " + q
-            start = time.perf_counter()
-            if use_postings:
-                ranked = retrieve(query, chunks, index, df, final_top_k=5)
-            else:
-                # Safe isolation of the postings seam: an equivalent scan index.
-                class ScanIndex(list): pass
-                scan = ScanIndex(index)
-                ranked = retrieve(query, chunks, scan, df, final_top_k=5)
-            if not runtime_boost:
-                old = INGESTED_CHUNK_BOOST
-                # Runtime boost is only observable through RuntimeChunk; use plain
-                # string copies for this variant, without altering module state.
-                plain = [str(x) for x in chunks]
-                pi, pdf = build_index(plain)
-                ranked = retrieve(query, plain, pi, pdf, final_top_k=5)
-            timings.append((time.perf_counter()-start)*1000)
-            hits += int(any(str(value) in str(x) for x in ranked))
-        return {"recall_at_5": hits/len(cases), "mean_ms": statistics.fmean(timings)}
+    def rows_for(fn):
+        rows = []
+        for q, supported, expected in cases:
+            start = time.perf_counter(); results = fn(q)
+            texts = [str(x) for x in results]
+            rank = next((i+1 for i, text in enumerate(texts[:5]) if f"value {expected}" in text.lower()), None)
+            rows.append({"supported": supported, "rank": rank, "results": texts,
+                         "latency_ms": (time.perf_counter()-start)*1000})
+        return rows
+
+    def v2(use_postings=True, runtime_boost=True):
+        if use_postings and runtime_boost:
+            return lambda q: retrieve(q, chunks, index, df, final_top_k=5)
+        plain = [str(x) for x in chunks] if not runtime_boost else chunks
+        scan = list(index) if use_postings else type("ScanIndex", (list,), {})(index)
+        if not use_postings:
+            scan = type("ScanIndex", (list,), {})(index)
+        return lambda q: retrieve(q, plain, scan if runtime_boost else build_index(plain)[0], df, final_top_k=5)
 
     measured = {
-        "production": run(),
-        "no_postings_optimization": run(use_postings=False),
-        "no_runtime_boost": run(runtime_boost=False),
+        "production": metric(rows_for(v2())),
+        "no_postings_optimization": metric(rows_for(v2(use_postings=False))),
+        "no_runtime_boost": metric(rows_for(v2(runtime_boost=False))),
     }
-    unavailable = {}
-    for name in ("no_v4_expansion", "no_conflict_gate", "no_factual_grounding_gate",
-                 "no_provenance_handling", "no_duplicate_reuse"):
-        unavailable[name] = {"status":"not_applicable",
-            "reason":"No public feature switch; isolating it would require changing production semantics."}
-    payload = {"dataset":"synthetic_ablation_v2","cases":len(cases),
-               "switches":measured, "not_applicable":unavailable,
-               "note":"Measured switches execute distinct retrieval paths; no tuning or monkey-patching."}
+
+    def v4_variant(expanded=True, reuse=True):
+        def run(q):
+            plan = retriever_v4.build_queries(q)
+            queries = plan["queries"] if expanded else plan["queries"][:1]
+            all_results, seen = [], set()
+            for query in queries:
+                key = retriever_v4.normalize_text(query)
+                if reuse and key in seen:
+                    continue
+                seen.add(key)
+                all_results.extend(retriever_v4.retrieve_v2(query, chunks, index, df, final_top_k=5))
+            return [item[-1] if isinstance(item, tuple) else item for item in all_results[:5]]
+        return run
+    measured["v4_expansion"] = metric(rows_for(v4_variant(expanded=True)))
+    measured["no_v4_expansion"] = metric(rows_for(v4_variant(expanded=False)))
+    measured["no_duplicate_query_reuse"] = metric(rows_for(v4_variant(expanded=True, reuse=False)))
+    not_applicable = {
+        "no_conflict_gate": "No public safe switch; not isolated.",
+        "no_factual_grounding_gate": "No public safe switch; not isolated.",
+        "no_provenance_handling": "No public safe switch; not isolated.",
+    }
+    payload = {"dataset":"synthetic_ablation_v3", "cases":len(cases),
+               "switches":measured, "not_applicable":not_applicable,
+               "note":"Variants use explicit retrieval seams; production defaults and fixtures are unchanged."}
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(json.dumps(payload, indent=2))
-
 if __name__ == "__main__":
     main()
