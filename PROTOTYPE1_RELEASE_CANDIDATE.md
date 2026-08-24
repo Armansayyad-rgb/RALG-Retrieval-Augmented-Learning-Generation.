@@ -2,9 +2,9 @@
 
 ## Release identity
 
-**Prototype 1 RC1 (`0.1.0-rc1`)**. This report tests commit
-`b5f5858fdf762783bfb89610fab15c128d20630c` on branch
-`release/prototype1-rc`, dated 2026-08-24.
+**Prototype 1 RC1 (`0.1.0-rc1`)**. This report tests merged commit
+`0dac5ebbf7ceac8eaed5ccba53c5b330e4c222bb` on branch `master`, dated
+2026-08-24.
 
 ## Inventory and architecture
 
