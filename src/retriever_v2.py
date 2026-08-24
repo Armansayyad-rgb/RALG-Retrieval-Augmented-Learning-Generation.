@@ -1,6 +1,7 @@
 import re
 import sys
 from collections import Counter
+from functools import lru_cache
 from pathlib import Path
 
 import torch
@@ -19,6 +20,15 @@ FINAL_TOP_K = 5
 
 # Boost applied to runtime-ingested document chunks to prefer them over static KB
 INGESTED_CHUNK_BOOST = 5.0
+
+
+class LexicalIndex(list):
+    """Per-chunk term counts plus an exact term-to-chunk postings index."""
+
+    def __init__(self, entries=(), postings=None, runtime_indices=()):
+        super().__init__(entries)
+        self.postings = postings or {}
+        self.runtime_indices = list(runtime_indices)
 
 
 class RuntimeChunk(str):
@@ -225,10 +235,12 @@ def build_index(chunks):
         "Building lexical index..."
     )
 
-    index = []
+    index = LexicalIndex()
     document_frequency = Counter()
+    postings = {}
+    runtime_indices = []
 
-    for chunk in chunks:
+    for index_position, chunk in enumerate(chunks):
         counts = Counter(
             words(
                 chunk
@@ -243,11 +255,35 @@ def build_index(chunks):
             document_frequency[
                 word
             ] += 1
+            postings.setdefault(word, []).append(index_position)
+
+        if isinstance(chunk, RuntimeChunk):
+            runtime_indices.append(index_position)
+
+    index.postings = postings
+    index.runtime_indices = runtime_indices
 
     return (
         index,
         document_frequency,
     )
+
+
+def extend_index(index, document_frequency, chunks, start_index):
+    """Append new chunks to an existing exact lexical index in O(new chunks)."""
+    if not isinstance(index, LexicalIndex):
+        raise TypeError("index must be a LexicalIndex")
+    if start_index != len(index):
+        raise ValueError("start_index must match the current index length")
+
+    for index_position, chunk in enumerate(chunks, start=start_index):
+        counts = Counter(words(chunk))
+        index.append(counts)
+        for word in counts:
+            document_frequency[word] += 1
+            index.postings.setdefault(word, []).append(index_position)
+        if isinstance(chunk, RuntimeChunk):
+            index.runtime_indices.append(index_position)
 
 
 # --------------------------------------------------
@@ -332,24 +368,24 @@ def detect_factual_relation(
 # Stage 1: lexical scoring
 # --------------------------------------------------
 
+@lru_cache(maxsize=1024)
+def _cached_query_counts(question):
+    return tuple(Counter(useful_words(question)).items())
+
+
 def lexical_score(
     question,
     document_counts,
     document_frequency,
     total_documents,
+    query_counts=None,
 ):
-    query_counts = Counter(
-        useful_words(
-            question
-        )
-    )
+    if query_counts is None:
+        query_counts = _cached_query_counts(question)
 
     score = 0.0
 
-    for (
-        word,
-        query_count,
-    ) in query_counts.items():
+    for word, query_count in query_counts:
 
         tf = document_counts.get(
             word,
@@ -576,19 +612,29 @@ def retrieve_candidates(
         )
     )
 
+    query_counts = _cached_query_counts(question)
+    query_terms = {word for word, _ in query_counts}
+    postings = getattr(index, "postings", None)
+    if isinstance(postings, dict):
+        candidate_indices = set()
+        for term in query_terms:
+            candidate_indices.update(postings.get(term, ()))
+        # Preserve the established fixed boost for runtime chunks that do
+        # not contain a query term.
+        candidate_indices.update(getattr(index, "runtime_indices", ()))
+        candidates = ((i, index[i]) for i in sorted(candidate_indices))
+    else:
+        candidates = enumerate(index)
+
     scored = []
 
-    for (
-        i,
-        document_counts,
-    ) in enumerate(
-        index
-    ):
+    for i, document_counts in candidates:
         lexical = lexical_score(
             question,
             document_counts,
             document_frequency,
             total_documents,
+            query_counts=query_counts,
         )
 
         factual_bonus = 0.0

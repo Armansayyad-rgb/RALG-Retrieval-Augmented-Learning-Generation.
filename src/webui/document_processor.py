@@ -11,8 +11,9 @@ Design notes:
   basic chat UI working even if those packages are not installed.
 - Chunk sizes mirror ``retriever_v2.load_chunks`` so retrieval scoring
   behaves identically on uploaded and built-in content.
-- Index rebuild is O(N) over the full chunk list. For the demo corpus
-  (~107k chunks) this is ~1s; well within an acceptable UI delay.
+- New uploads extend the lexical postings index in O(new chunks). Deletion
+  still rebuilds the index because removing arbitrary chunk positions
+  requires compacting postings safely.
 
 Provenance limitations (this checkpoint):
 
@@ -38,7 +39,11 @@ from typing import Iterable
 import uuid
 
 
-from retriever_v2 import RuntimeChunk, build_index as build_index_v2
+from retriever_v2 import (
+    RuntimeChunk,
+    build_index as build_index_v2,
+    extend_index as extend_index_v2,
+)
 from config import RUNTIME_UPLOAD_DIR
 
 
@@ -411,10 +416,20 @@ def attach_documents(
         return 0
 
     # retriever_v2 expects a list of RuntimeChunk objects.
+    old_chunk_count = len(pipeline["chunks"])
     pipeline["chunks"].extend(new_chunks)
-    pipeline["retrieval_index"], pipeline["document_frequency"] = build_index_v2(
-        pipeline["chunks"]
-    )
+    index = pipeline.get("retrieval_index")
+    frequency = pipeline.get("document_frequency")
+    if (
+        index is not None
+        and frequency is not None
+        and len(index) == old_chunk_count
+    ):
+        extend_index_v2(index, frequency, new_chunks, old_chunk_count)
+    else:
+        pipeline["retrieval_index"], pipeline["document_frequency"] = build_index_v2(
+            pipeline["chunks"]
+        )
 
     # Track uploads in the pipeline so the UI can list them.
     pipeline.setdefault("uploaded_docs", []).extend(
