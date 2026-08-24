@@ -97,9 +97,10 @@ data/generated/
 data/training/
 data/*.pt
 
-# Claude Code project state
+# Local coding-agent state
 .claude/
 CLAUDE.md
+.opencode/
 
 # JavaScript dependencies
 node_modules/
