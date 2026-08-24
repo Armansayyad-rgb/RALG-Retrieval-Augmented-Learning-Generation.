@@ -21,6 +21,7 @@ from retriever_v2 import (  # noqa: E402
     retrieve_candidates,
 )
 from retriever_v4 import merge_results  # noqa: E402
+from rag_chat_v2 import answer_question, extract_factual_answer  # noqa: E402
 from webui.document_processor import (  # noqa: E402
     UploadedDocument,
     attach_documents,
@@ -76,6 +77,51 @@ class RetrievalPerformanceTests(unittest.TestCase):
         index, frequency = build_index(chunks)
         self.assertEqual(retrieve("zzzzzz unknown", chunks, index, frequency), [])
         self.assertEqual(len(retrieve("known evidence", chunks, index, frequency)), 1)
+
+    def test_named_fact_cannot_borrow_support_from_adjacent_sentence(self):
+        context = (
+            "RC-ONLY calibration marker requires 17 kPa before service. "
+            "Since 1994, Hurricane Ioke had a lower central pressure."
+        )
+        answer, supported = extract_factual_answer(
+            "What pressure does RC-ONLY calibration marker require?",
+            context,
+        )
+        self.assertEqual(answer, "RC-ONLY calibration marker requires 17 kPa before service")
+        self.assertTrue(supported)
+
+    def test_failed_factual_grounding_does_not_fall_through_to_generic_extractor(self):
+        pipeline = {
+            "device": "cpu",
+            "tokenizer": None,
+            "model": None,
+            "chunks": ["LUMEN ARC-12 uses Vireo-22 coolant."],
+            "retrieval_index": [],
+            "document_frequency": {},
+        }
+        retrieval = {
+            "kind": "v2",
+            "results": [
+                {
+                    "chunk": pipeline["chunks"][0],
+                    "chunk_index": 0,
+                    "final_score": 1.0,
+                }
+            ],
+            "context": pipeline["chunks"][0],
+        }
+        with patch("rag_chat_v2.runtime_plan", return_value={"intent": "general"}), \
+                patch("rag_chat_v2.retrieve_v4", return_value=retrieval), \
+                patch("rag_chat_v2.extract_factual_answer", return_value=(None, False)), \
+                patch("rag_chat_v2.extract_answer", return_value="unrelated answer") as generic:
+            result = answer_question(
+                pipeline,
+                "Which coolant is approved for the Lumen ARC-12?",
+                verbose=False,
+            )
+        self.assertFalse(result["supported"])
+        self.assertEqual(result["answer_type"], "system")
+        generic.assert_not_called()
 
     def test_v4_duplicate_queries_are_retrieved_once(self):
         chunks = ["alpha evidence sentence with enough content"]
