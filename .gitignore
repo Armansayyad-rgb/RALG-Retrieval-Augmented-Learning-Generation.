@@ -47,6 +47,9 @@ logs/
 webui_feedback.jsonl
 webui_sessions.jsonl
 
+# Runtime document storage (persistent local/user data)
+data/runtime_uploads/
+
 # Model checkpoints (large / potentially proprietary)
 checkpoints/
 *.pt
