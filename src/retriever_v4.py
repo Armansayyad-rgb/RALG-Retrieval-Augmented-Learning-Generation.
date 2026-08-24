@@ -2105,6 +2105,21 @@ def merge_results(
     retrieval_total = 0.0
 
     merge_total = 0.0
+    retrieval_cache = {}
+
+    def retrieve_once(query):
+        key = normalize_text(query)
+        if key in retrieval_cache:
+            return retrieval_cache[key], True
+        results = retrieve_v2(
+            query,
+            chunks,
+            index,
+            document_frequency,
+            final_top_k=PER_QUERY_TOP_K,
+        )
+        retrieval_cache[key] = results
+        return results, False
 
     # ------------------------------------------
     # Compatibility mode
@@ -2158,13 +2173,7 @@ def merge_results(
             time.perf_counter()
         )
 
-        results = retrieve_v2(
-            query,
-            chunks,
-            index,
-            document_frequency,
-            final_top_k=PER_QUERY_TOP_K,
-        )
+        results, cache_hit = retrieve_once(query)
 
         retrieval_elapsed = (
             time.perf_counter()
@@ -2221,6 +2230,8 @@ def merge_results(
 
                     "accepted":
                         accepted,
+                    "cache_hit":
+                        cache_hit,
                 }
             )
 
@@ -2267,13 +2278,7 @@ def merge_results(
                 time.perf_counter()
             )
 
-            results = retrieve_v2(
-                query,
-                chunks,
-                index,
-                document_frequency,
-                final_top_k=PER_QUERY_TOP_K,
-            )
+            results, cache_hit = retrieve_once(query)
 
             retrieval_elapsed = (
                 time.perf_counter()
@@ -2330,6 +2335,8 @@ def merge_results(
 
                         "accepted":
                             accepted,
+                        "cache_hit":
+                            cache_hit,
                     }
                 )
 
