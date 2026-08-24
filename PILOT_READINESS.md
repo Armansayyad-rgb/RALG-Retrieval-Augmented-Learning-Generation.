@@ -4,6 +4,11 @@ This checklist tracks the minimum technical evidence required before RALG should
 
 ## Current checkpoint
 
+Prototype 1 RC1 (`0.1.0-rc1`) is immutable at validated commit
+`c210eb8ae168a740b65189fc9245034dfe58e40e`. The default UI is local-only;
+network exposure requires an operator-controlled boundary. Validation is
+isolated and synthetic, not customer-data testing.
+
 The current `master` branch has demonstrated the following on the repository's synthetic held-out commercial validation set:
 
 - retrieval correctness: 5/5 supported cases
@@ -17,7 +22,9 @@ The current `master` branch has demonstrated the following on the repository's s
 - existing simple and hard retrieval benchmarks: passed
 - GitHub Actions sanity workflow: passed on `master`
 
-These results are engineering evidence only. The held-out set is small and synthetic, so they should not be presented as production performance.
+These results are engineering evidence only. The held-out set is small and
+synthetic, and validation is isolated; they should not be presented as
+production performance or network/security validation.
 
 ## Pilot gate
 
@@ -49,7 +56,8 @@ A limited customer pilot should not begin until every required item below is com
 - [ ] test malformed PDF, DOCX, and TXT upload handling end to end
 - [x] external API exception details are not returned to untrusted clients
 - [ ] define retention/deletion behavior for uploaded documents, indexes, logs, and feedback
-- [ ] add explicit UI upload-size limits matching the documented pilot policy
+- [x] add explicit UI upload-size limits matching the documented pilot policy
+- [x] document that upload/delete locking is process-local only
 
 ### Reproducibility and deployment
 
@@ -59,6 +67,7 @@ A limited customer pilot should not begin until every required item below is com
 - [x] installation from a fresh disposable Python 3.11 environment has been verified
 - [ ] verify Docker build and startup from a clean checkout
 - [x] validated direct dependency versions are pinned for the current checkpoint
+- [x] optional Qwen polish dependencies are isolated from core installation
 - [ ] tag a reproducible pilot candidate commit
 
 ### Performance

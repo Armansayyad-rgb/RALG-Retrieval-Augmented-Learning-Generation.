@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Iterable
 
 import uuid
+from threading import RLock
 
 
 from retriever_v2 import (
@@ -44,24 +45,22 @@ from retriever_v2 import (
     build_index as build_index_v2,
     extend_index as extend_index_v2,
 )
-from config import RUNTIME_UPLOAD_DIR
+from config import RUNTIME_UPLOAD_DIR, UPLOAD_POLICY
 
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORTED_EXTS = {".txt", ".pdf", ".docx"}
-
-# Upload size limits (bytes)
-MAX_TXT_SIZE = 1 * 1024 * 1024   # 1 MiB
-MAX_PDF_SIZE = 10 * 1024 * 1024  # 10 MiB
-MAX_DOCX_SIZE = 10 * 1024 * 1024  # 10 MiB
-# Maximum extracted text length (characters)
-MAX_EXTRACTED_TEXT_LEN = 5_000_000  # ~5 MiB of text
-MAX_UPLOADED_CHUNKS = 5000
+SUPPORTED_EXTS = UPLOAD_POLICY.allowed_extensions
+MAX_TXT_SIZE = UPLOAD_POLICY.per_file_bytes[".txt"]
+MAX_PDF_SIZE = UPLOAD_POLICY.per_file_bytes[".pdf"]
+MAX_DOCX_SIZE = UPLOAD_POLICY.per_file_bytes[".docx"]
+MAX_EXTRACTED_TEXT_LEN = UPLOAD_POLICY.max_extracted_text_chars
+MAX_UPLOADED_CHUNKS = UPLOAD_POLICY.max_chunks_per_document
 
 # Maximum length for a sanitized display filename
 _MAX_DISPLAY_NAME_LEN = 200
 _REGISTRY_NAME = "metadata.json"
+_LIFECYCLE_LOCK = RLock()
 
 
 def _persistence_dir(pipeline: dict) -> Path:
@@ -171,14 +170,17 @@ def restore_persisted_documents(pipeline: dict) -> list[UploadedDocument]:
 
 def _size_limit(path: Path) -> int:
     """Return the size limit for a given file based on its extension."""
-    ext = path.suffix.lower()
-    if ext == ".txt":
-        return MAX_TXT_SIZE
-    if ext == ".pdf":
-        return MAX_PDF_SIZE
-    if ext == ".docx":
-        return MAX_DOCX_SIZE
-    return 0
+    return UPLOAD_POLICY.per_file_bytes.get(path.suffix.lower(), 0)
+
+
+def _validate_batch_limits(paths: list[Path]) -> str | None:
+    total = sum(path.stat().st_size for path in paths)
+    if total > UPLOAD_POLICY.max_batch_bytes:
+        return (
+            f"Upload batch exceeds total size limit "
+            f"({UPLOAD_POLICY.max_batch_bytes} bytes)."
+        )
+    return None
 
 
 def _sanitize_display_name(raw_name: str) -> str:
@@ -387,7 +389,7 @@ def _is_supported(path: Path) -> bool:
     return path.suffix.lower() in SUPPORTED_EXTS
 
 
-def attach_documents(
+def _attach_documents_unlocked(
     pipeline: dict,
     uploaded: list[UploadedDocument],
     *,
@@ -398,7 +400,28 @@ def attach_documents(
     Returns the total number of new chunks added.
     """
     new_chunks: list[RuntimeChunk] = []
+    batch_bytes = 0
+    existing_ids = {
+        str(doc.get("document_id"))
+        for doc in pipeline.get("uploaded_docs", [])
+        if isinstance(doc, dict) and doc.get("document_id")
+    }
+    incoming_ids = [doc.doc_id for doc in uploaded]
+    if len(incoming_ids) != len(set(incoming_ids)):
+        raise ValueError("Duplicate document IDs are not allowed.")
+    if existing_ids.intersection(incoming_ids):
+        raise ValueError("Document ID already exists.")
     for doc in uploaded:
+        if doc.ext.lower() not in UPLOAD_POLICY.allowed_extensions:
+            raise ValueError(f"Unsupported file type: {doc.ext}")
+        if len(doc.text) > UPLOAD_POLICY.max_extracted_text_chars:
+            raise ValueError("Extracted text exceeds maximum allowed length.")
+        if doc.path.exists():
+            size_limit = _size_limit(doc.path)
+            size = doc.path.stat().st_size
+            if size_limit and size > size_limit:
+                raise ValueError(f"File exceeds size limit for {doc.ext}.")
+            batch_bytes += size
         if not doc.chunks:
             doc.chunks = chunk_text(
                 doc.text,
@@ -410,7 +433,14 @@ def attach_documents(
             )
         new_chunks.extend(doc.chunks)
         doc.chunk_count = len(doc.chunks)
-        if persist and pipeline.get("runtime_persistence", False):
+        if doc.chunk_count > UPLOAD_POLICY.max_chunks_per_document:
+            raise ValueError("Document exceeds maximum chunk limit.")
+    if batch_bytes > UPLOAD_POLICY.max_batch_bytes:
+        raise ValueError("Upload batch exceeds total size limit.")
+    if len(new_chunks) > UPLOAD_POLICY.max_total_chunks_per_batch:
+        raise ValueError("Upload batch exceeds maximum total chunk limit.")
+    if persist and pipeline.get("runtime_persistence", False):
+        for doc in uploaded:
             _persist_document(pipeline, doc)
     if not new_chunks:
         return 0
@@ -439,7 +469,28 @@ def attach_documents(
     return len(new_chunks)
 
 
-def remove_uploaded_document(pipeline: dict, document_id: str) -> int:
+def attach_documents(
+    pipeline: dict,
+    uploaded: list[UploadedDocument],
+    *,
+    persist: bool = True,
+) -> int:
+    """Attach documents while serializing pipeline and registry mutations."""
+    with _LIFECYCLE_LOCK:
+        return _attach_documents(pipeline, uploaded, persist=persist)
+
+
+def _attach_documents(
+    pipeline: dict,
+    uploaded: list[UploadedDocument],
+    *,
+    persist: bool = True,
+) -> int:
+    """Attach uploads after the public lifecycle lock is acquired."""
+    return _attach_documents_unlocked(pipeline, uploaded, persist=persist)
+
+
+def _remove_uploaded_document_unlocked(pipeline: dict, document_id: str) -> int:
     """Remove all RuntimeChunk objects belonging to the given document_id.
 
     - Removes only chunks whose ``metadata["document_id"]`` exactly matches.
@@ -499,6 +550,35 @@ def remove_uploaded_document(pipeline: dict, document_id: str) -> int:
     return removed_count
 
 
+def remove_uploaded_document(pipeline: dict, document_id: str) -> int:
+    """Remove a document while serializing lifecycle and registry mutations."""
+    with _LIFECYCLE_LOCK:
+        return _remove_uploaded_document(pipeline, document_id)
+
+
+def has_uploaded_document(pipeline: dict, document_id: str) -> bool:
+    """Return whether an ID exists in runtime metadata or persisted registry."""
+    with _LIFECYCLE_LOCK:
+        if any(
+            isinstance(doc, dict) and doc.get("document_id") == document_id
+            for doc in pipeline.get("uploaded_docs", [])
+        ):
+            return True
+        if pipeline.get("runtime_persistence", False):
+            return any(
+                entry.get("document_id") == document_id
+                for entry in _load_registry(pipeline)
+            )
+        return False
+
+
+def _remove_uploaded_document(
+    pipeline: dict, document_id: str
+) -> int:
+    """Remove an upload after the public lifecycle lock is acquired."""
+    return _remove_uploaded_document_unlocked(pipeline, document_id)
+
+
 def process_uploads(
     pipeline: dict,
     file_paths: Iterable[str],
@@ -510,6 +590,7 @@ def process_uploads(
     """
     parsed: list[UploadedDocument] = []
     errors: list[str] = []
+    candidate_paths: list[Path] = []
 
     for raw in file_paths:
         path = Path(raw)
@@ -519,6 +600,13 @@ def process_uploads(
         if not _is_supported(path):
             errors.append(f"Unsupported file type: {_sanitize_display_name(path.name)}")
             continue
+        candidate_paths.append(path)
+
+    batch_error = _validate_batch_limits(candidate_paths)
+    if batch_error:
+        return [], [batch_error]
+
+    for path in candidate_paths:
         # Size check
         size_limit = _size_limit(path)
         if size_limit and path.stat().st_size > size_limit:
@@ -540,7 +628,7 @@ def process_uploads(
         if not text.strip():
             errors.append(f"File {_sanitize_display_name(path.name)} contains no extractable text.")
             continue
-        if len(text) > MAX_EXTRACTED_TEXT_LEN:
+        if len(text) > UPLOAD_POLICY.max_extracted_text_chars:
             errors.append(
                 f"Extracted text from {_sanitize_display_name(path.name)} "
                 f"exceeds maximum allowed length."
@@ -558,11 +646,16 @@ def process_uploads(
             upload_timestamp=doc.upload_timestamp, revision=doc.revision,
         )
         doc.chunk_count = len(doc.chunks)
-        if doc.chunk_count > MAX_UPLOADED_CHUNKS:
+        if doc.chunk_count > UPLOAD_POLICY.max_chunks_per_document:
             errors.append(
                 f"File {_sanitize_display_name(path.name)} exceeds maximum chunk limit."
             )
             continue
         parsed.append(doc)
 
+    if sum(doc.chunk_count for doc in parsed) > UPLOAD_POLICY.max_total_chunks_per_batch:
+        return [], [
+            "Upload batch exceeds maximum total chunk limit "
+            f"({UPLOAD_POLICY.max_total_chunks_per_batch} chunks)."
+        ]
     return parsed, errors

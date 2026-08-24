@@ -8,7 +8,7 @@ Usage:
 """
 
 import sys
-import shutil
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -43,7 +43,7 @@ def section(title: str) -> None:
 def run() -> int:
     pipeline = initialize_pipeline()
 
-    tmp = ROOT / "test_upload_zarragon.txt"
+    tmp = ROOT / f".upload_smoke_{uuid.uuid4().hex}.txt"
     tmp.write_text(UPLOAD_CONTENT, encoding="utf-8")
 
     try:

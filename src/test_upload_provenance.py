@@ -3,6 +3,9 @@
 import tempfile
 import unittest
 import sys
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -29,9 +32,67 @@ from src.webui.document_processor import (
     process_uploads,
     remove_uploaded_document,
 )
+from config import UPLOAD_POLICY, UploadPolicy
+
+
+def make_pipeline(runtime_dir: Path) -> dict:
+    return {
+        "chunks": [],
+        "retrieval_index": build_index([]),
+        "document_frequency": {},
+        "uploaded_docs": [],
+        "runtime_persistence": True,
+        "runtime_upload_dir": runtime_dir,
+    }
 
 
 class UploadProvenanceTests(unittest.TestCase):
+    def test_commercial_validation_is_isolated_and_repeatable(self):
+        runtime_dir = PROJECT_ROOT / "data" / "runtime_uploads"
+
+        def snapshot(path: Path) -> dict[str, bytes]:
+            if not path.exists():
+                return {}
+            return {
+                str(item.relative_to(path)): item.read_bytes()
+                for item in path.rglob("*")
+                if item.is_file()
+            }
+
+        before = snapshot(runtime_dir)
+        command = [str(PROJECT_ROOT / ".venv" / "Scripts" / "python.exe"),
+                   str(PROJECT_ROOT / "scripts" / "run_commercial_validation.py")]
+        first = subprocess.run(
+            command, cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180
+        )
+        first_report = json.loads(
+            (PROJECT_ROOT / "logs" / "heldout_commercial_v1_results.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        second = subprocess.run(
+            command, cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180
+        )
+        second_report = json.loads(
+            (PROJECT_ROOT / "logs" / "heldout_commercial_v1_results.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(first.returncode, 0, first.stderr)
+        self.assertEqual(second.returncode, 0, second.stderr)
+        self.assertTrue(first_report["metrics"]["quality_gate_passed"])
+        self.assertTrue(second_report["metrics"]["quality_gate_passed"])
+        self.assertEqual(
+            first_report["metrics"]["cases"],
+            second_report["metrics"]["cases"],
+        )
+        self.assertEqual(
+            [item["actual_supported"] for item in first_report["results"]],
+            [item["actual_supported"] for item in second_report["results"]],
+        )
+        self.assertEqual(snapshot(runtime_dir), before)
+        self.assertNotIn("Lumen ARC-12", "\n".join(second.stdout.splitlines()))
+
     def test_upload_size_limits(self):
         with tempfile.TemporaryDirectory() as directory:
             for filename, limit in (
@@ -84,6 +145,64 @@ class UploadProvenanceTests(unittest.TestCase):
             parsed, errors = process_uploads({}, [str(pdf), str(docx)])
         self.assertEqual(parsed, [])
         self.assertEqual(errors, ["Unable to parse uploaded file."] * 2)
+
+    def test_batch_size_exact_boundary_and_one_byte_over(self):
+        policy = UploadPolicy(
+            UPLOAD_POLICY.allowed_extensions, UPLOAD_POLICY.per_file_bytes, 8,
+            UPLOAD_POLICY.max_extracted_text_chars,
+            UPLOAD_POLICY.max_chunks_per_document,
+            UPLOAD_POLICY.max_total_chunks_per_batch,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            first = Path(directory) / "one.txt"
+            second = Path(directory) / "two.txt"
+            first.write_bytes(b"1234")
+            second.write_bytes(b"1234")
+            with patch("src.webui.document_processor.UPLOAD_POLICY", policy), patch(
+                "src.webui.document_processor.parse_file", return_value="text"
+            ):
+                parsed, errors = process_uploads({}, [str(first), str(second)])
+                self.assertEqual(len(parsed), 2)
+                self.assertEqual(errors, [])
+                second.write_bytes(b"12345")
+                parsed, errors = process_uploads({}, [str(first), str(second)])
+        self.assertEqual(parsed, [])
+        self.assertIn("total size limit", errors[0])
+
+    def test_batch_chunk_overflow_is_rejected(self):
+        policy = UploadPolicy(
+            UPLOAD_POLICY.allowed_extensions, UPLOAD_POLICY.per_file_bytes,
+            UPLOAD_POLICY.max_batch_bytes, UPLOAD_POLICY.max_extracted_text_chars,
+            UPLOAD_POLICY.max_chunks_per_document, 1,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            first = Path(directory) / "one.txt"
+            second = Path(directory) / "two.txt"
+            first.write_text("one", encoding="utf-8")
+            second.write_text("two", encoding="utf-8")
+            chunks = [RuntimeChunk("chunk", metadata={})]
+            with patch("src.webui.document_processor.UPLOAD_POLICY", policy), patch(
+                "src.webui.document_processor.parse_file", return_value="text"
+            ), patch(
+                "src.webui.document_processor.chunk_text", return_value=chunks
+            ):
+                parsed, errors = process_uploads({}, [str(first), str(second)])
+        self.assertEqual(parsed, [])
+        self.assertIn("total chunk limit", errors[0])
+
+    def test_attach_documents_rejects_client_bypass(self):
+        policy = UploadPolicy(
+            UPLOAD_POLICY.allowed_extensions, UPLOAD_POLICY.per_file_bytes,
+            UPLOAD_POLICY.max_batch_bytes, UPLOAD_POLICY.max_extracted_text_chars,
+            1, UPLOAD_POLICY.max_total_chunks_per_batch,
+        )
+        document = UploadedDocument(
+            name="bypass.txt", path=Path("bypass.txt"), ext=".txt", text="text",
+            chunks=[RuntimeChunk("a", metadata={}), RuntimeChunk("b", metadata={})],
+        )
+        with patch("src.webui.document_processor.UPLOAD_POLICY", policy):
+            with self.assertRaisesRegex(ValueError, "maximum chunk"):
+                attach_documents({"chunks": []}, [document], persist=False)
 
     def test_filename_and_path_safety(self):
         document = UploadedDocument(
@@ -163,6 +282,92 @@ class UploadProvenanceTests(unittest.TestCase):
         ids = {chunk.metadata["document_id"] for chunk in pipeline["chunks"]}
         self.assertEqual(ids, {first.doc_id, second.doc_id})
         self.assertNotEqual(first.doc_id, second.doc_id)
+
+    def test_concurrent_uploads_preserve_registry_and_index_consistency(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = {
+                **make_pipeline(root),
+                "chunks": ["static corpus survives"],
+            }
+
+            def upload(index):
+                attach_documents(
+                    pipeline,
+                    [UploadedDocument(
+                        f"doc-{index}.txt",
+                        Path(f"doc-{index}.txt"),
+                        ".txt",
+                        f"unique content {index}",
+                    )],
+                )
+
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                list(executor.map(upload, range(8)))
+
+            ids = [
+                doc["document_id"]
+                for doc in pipeline["uploaded_docs"]
+            ]
+            registry = json.loads(
+                (root / "metadata.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(len(ids), 8)
+            self.assertEqual(len(ids), len(set(ids)))
+            self.assertEqual(
+                {doc["document_id"] for doc in registry},
+                set(ids),
+            )
+            self.assertEqual(
+                len(pipeline["chunks"]),
+                len(pipeline["retrieval_index"]),
+            )
+
+    def test_concurrent_upload_and_delete_keep_registry_valid(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = make_pipeline(root)
+            existing = UploadedDocument(
+                "existing.txt", Path("existing.txt"), ".txt", "existing content"
+            )
+            attach_documents(pipeline, [existing])
+
+            def upload():
+                attach_documents(
+                    pipeline,
+                    [UploadedDocument(
+                        "new.txt", Path("new.txt"), ".txt", "new content"
+                    )],
+                )
+
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                futures = [executor.submit(upload)]
+                futures.append(executor.submit(
+                    remove_uploaded_document, pipeline, existing.doc_id
+                ))
+                for future in futures:
+                    future.result()
+
+            registry_text = (root / "metadata.json").read_text(encoding="utf-8")
+            registry = json.loads(registry_text)
+            ids = [doc["document_id"] for doc in registry]
+            self.assertEqual(len(ids), len(set(ids)))
+            self.assertNotIn(existing.doc_id, ids)
+            self.assertEqual(len(pipeline["chunks"]), len(pipeline["retrieval_index"]))
+
+    def test_duplicate_document_ids_are_rejected(self):
+        pipeline = make_pipeline(Path(tempfile.mkdtemp()))
+        first = UploadedDocument("one.txt", Path("one.txt"), ".txt", "one")
+        duplicate = UploadedDocument(
+            "two.txt", Path("two.txt"), ".txt", "two", doc_id=first.doc_id
+        )
+        try:
+            attach_documents(pipeline, [first])
+            with self.assertRaisesRegex(ValueError, "Document ID"):
+                attach_documents(pipeline, [duplicate])
+        finally:
+            import shutil
+            shutil.rmtree(pipeline["runtime_upload_dir"], ignore_errors=True)
 
     def test_runtime_source_payload_includes_metadata(self):
         chunk = chunk_text("runtime evidence", "doc-1", doc_name="evidence.txt")[0]
@@ -256,6 +461,22 @@ class UploadProvenanceTests(unittest.TestCase):
             text, runtime, runtime_index, runtime_frequency, top_k=1
         )[0][0]
         self.assertAlmostEqual(runtime_score - static_score, INGESTED_CHUNK_BOOST)
+
+    def test_unrelated_runtime_chunk_is_not_candidate_from_boost(self):
+        chunks = [
+            "pump pressure limit is 10 PSI",
+            RuntimeChunk("unrelated electrical inspection procedure",
+                         metadata={"document_id": "doc-2"}),
+        ]
+        index, frequency = build_index(chunks)
+        results = retrieve_candidates(
+            "What is the pump pressure limit?", chunks, index, frequency, top_k=5
+        )
+        self.assertEqual(
+            [item[4].metadata["document_id"] for item in results
+             if isinstance(item[4], RuntimeChunk)],
+            [],
+        )
 
     def test_static_corpus_behavior_remains_unchanged(self):
         chunks = ["The Roman army was organized into legions."]

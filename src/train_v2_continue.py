@@ -1,19 +1,21 @@
 import time
+import os
 from pathlib import Path
 
 import torch
 from torch.optim import AdamW
 
 from model_v2 import SmallLMV2
+from config import CHECKPOINTS_DIR, DATA_DIR
 
 
-TOKEN_CACHE = Path(
-    r"C:\AI-Project\data\wikitext_v2_tokens.pt"
-)
+TOKEN_CACHE = Path(os.environ.get(
+    "TOKEN_CACHE", str(DATA_DIR / "wikitext_v2_tokens.pt")
+))
 
-CHECKPOINT_DIR = Path(
-    r"C:\AI-Project\checkpoints\v2"
-)
+CHECKPOINT_DIR = Path(os.environ.get(
+    "TRAIN_CHECKPOINT_DIR", str(CHECKPOINTS_DIR / "v2")
+))
 
 RESUME_FILE = CHECKPOINT_DIR / "step_500.pt"
 
@@ -144,12 +146,9 @@ def main():
             UserWarning,
         )
 
-    device = "cuda"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    print(
-        "GPU:",
-        torch.cuda.get_device_name(0),
-    )
+    print("Device:", device)
 
     print("Loading token cache...")
 
@@ -173,9 +172,8 @@ def main():
         weight_decay=WEIGHT_DECAY,
     )
 
-    scaler = torch.amp.GradScaler(
-        "cuda"
-    )
+    amp_enabled = device == "cuda"
+    scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled)
 
     print(
         "Loading checkpoint:",
@@ -230,10 +228,8 @@ def main():
                 device,
             )
 
-            with torch.autocast(
-                device_type="cuda",
-                dtype=torch.float16,
-            ):
+            with torch.autocast(device_type=device, dtype=torch.float16,
+                                enabled=amp_enabled):
                 _, loss = model(
                     x,
                     y,
@@ -302,15 +298,8 @@ def main():
                 / max(elapsed, 1e-6)
             )
 
-            allocated = (
-                torch.cuda.memory_allocated()
-                / 1024**3
-            )
-
-            reserved = (
-                torch.cuda.memory_reserved()
-                / 1024**3
-            )
+            allocated = torch.cuda.memory_allocated() / 1024**3 if amp_enabled else 0
+            reserved = torch.cuda.memory_reserved() / 1024**3 if amp_enabled else 0
 
             print(
                 f"Step {step}/{TARGET_STEP}"

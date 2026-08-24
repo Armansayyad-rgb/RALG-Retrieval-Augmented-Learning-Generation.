@@ -33,6 +33,7 @@ from webui.config import (  # noqa: E402
     WEBUI_HOST,
     WEBUI_PORT,
     WEBUI_TITLE,
+    upload_policy_text,
 )
 from webui.document_processor import (  # noqa: E402
     attach_documents,
@@ -262,8 +263,8 @@ def record_feedback(
             supported=bool(last_supported) if last_supported is not None else None,
             sources=sources,
         )
-    except Exception as exc:
-        return f"⚠️ Feedback failed to write: {exc!r}"
+    except Exception:
+        return "⚠️ Feedback could not be recorded. Please try again."
 
     label = "👍 up" if vote > 0 else "👎 down" if vote < 0 else "neutral"
     return f"Recorded {label} for \"{last_question[:60]}\" → `{path.name}`"
@@ -276,7 +277,8 @@ def handle_uploads(files, pipeline: dict):
     """
     if not files:
         return (
-            "No files uploaded yet. Pick one or more .pdf / .docx / .txt files.",
+            f"No files uploaded yet. Pick one or more supported files. "
+            f"{upload_policy_text()}",
             [],
             _build_header_html(_status_from_pipeline(pipeline)),
         )
@@ -286,10 +288,14 @@ def handle_uploads(files, pipeline: dict):
 
     msg_lines = []
     if parsed:
-        added = attach_documents(pipeline, parsed)
-        msg_lines.append(
-            f"Indexed {added} new chunks from {len(parsed)} file(s)."
-        )
+        try:
+            added = attach_documents(pipeline, parsed)
+        except ValueError as exc:
+            msg_lines.append(f"Upload rejected: {exc}")
+        else:
+            msg_lines.append(
+                f"Indexed {added} new chunks from {len(parsed)} file(s)."
+            )
     if errors:
         msg_lines.append("Errors:")
         msg_lines.extend(f"- {e}" for e in errors)
@@ -317,12 +323,12 @@ def export_conversation(history: list, fmt: str):
     if fmt == "json":
         content = to_json(history)
         path = save_to_disk(content, LOGS_DIR / "exports", "chat", "json")
-        return f"Saved JSON to `{path}`", str(path)
+        return f"Saved JSON export `{path.name}`.", str(path)
     if fmt == "markdown":
         content = to_markdown(history)
         path = save_to_disk(content, LOGS_DIR / "exports", "chat", "md")
-        return f"Saved Markdown to `{path}`", str(path)
-    return f"Unknown format: {fmt}", None
+        return f"Saved Markdown export `{path.name}`.", str(path)
+    return "Unknown export format.", None
 
 
 def build_demo(pipeline: dict, polish_llm=None):
@@ -466,10 +472,7 @@ def build_demo(pipeline: dict, polish_llm=None):
                     "Upload PDF, DOCX, or TXT files to extend the "
                     "knowledge base. Files are chunked and merged into "
                     "the live retrieval index without restarting.\n\n"
-                    "**Limits:** 50 MB total per upload, "
-                    f"max 5000 chunks. "
-                    f"Supported types: "
-                    f"{', '.join(sorted(ALLOWED_UPLOAD_EXTS))}."
+                    f"{upload_policy_text()}"
                 )
                 upload = gr.File(
                     label="Upload documents",
@@ -579,10 +582,10 @@ def main():
             f"({polish_llm.model_name}).",
             flush=True,
         )
-    except FileNotFoundError as exc:
-        print(f"[warn] Polish LLM not available: {exc}", flush=True)
-    except Exception as exc:
-        print(f"[warn] Polish LLM failed to load: {exc!r}", flush=True)
+    except FileNotFoundError:
+        print("[warn] Optional polish LLM not available; using core answers.", flush=True)
+    except Exception:
+        print("[warn] Optional polish LLM failed to load; using core answers.", flush=True)
 
     print("Pipeline ready. Launching Gradio UI ...", flush=True)
 
@@ -590,7 +593,7 @@ def main():
     demo.queue(default_concurrency_limit=4).launch(
         server_name=WEBUI_HOST,
         server_port=WEBUI_PORT,
-        show_error=True,
+        show_error=False,
         inbrowser=False,
         share=False,
     )

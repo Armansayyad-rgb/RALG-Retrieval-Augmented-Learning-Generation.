@@ -8,40 +8,9 @@ they are webui-only.
 """
 
 import os
-import sys
 from pathlib import Path
 
-# Resolve `from config import ...` to the env-var-aware config at
-# `<project>/config.py` unambiguously. `src/config.py` would shadow
-# this on a cwd==src/ run because it defines an unrelated
-# `MODEL_CONFIG` dict. We load the root config by absolute path into
-# `sys.modules['config']` BEFORE the import statement runs, so the
-# lookup skips the file-system resolver entirely. Same trick used by
-# `rag_chat_v2.py` so the two modules share the same config source.
-
-_THIS_DIR = Path(__file__).resolve().parent
-_PROJECT_ROOT = _THIS_DIR.parent.parent
-_ROOT_CONFIG_PATH = _PROJECT_ROOT / "config.py"
-
-import importlib.util as _importlib_util
-
-_spec = _importlib_util.spec_from_file_location(
-    "config", str(_ROOT_CONFIG_PATH)
-)
-
-if _spec is None or _spec.loader is None:
-    raise ImportError(
-        f"Could not load project config at {_ROOT_CONFIG_PATH}. "
-        f"Expected an env-var-aware config.py at the project root."
-    )
-
-_project_config = _importlib_util.module_from_spec(_spec)
-_project_config.__package__ = ""
-
-sys.modules["config"] = _project_config
-_spec.loader.exec_module(_project_config)
-
-from config import LOGS_DIR, PROJECT_ROOT  # noqa: E402
+from config import LOGS_DIR, PROJECT_ROOT, UPLOAD_POLICY  # noqa: E402
 
 
 # Project paths
@@ -94,14 +63,26 @@ DEFAULT_DISPLAY_THRESHOLD = 0.60
 
 # Upload limits
 
-MAX_UPLOAD_BYTES = 50 * 1024 * 1024
-MAX_UPLOADED_CHUNKS = 5000
+ALLOWED_UPLOAD_EXTS = UPLOAD_POLICY.allowed_extensions
+MAX_UPLOAD_BYTES = UPLOAD_POLICY.max_batch_bytes
+MAX_UPLOADED_CHUNKS = UPLOAD_POLICY.max_total_chunks_per_batch
 
-ALLOWED_UPLOAD_EXTS = {
-    ".pdf",
-    ".docx",
-    ".txt",
-}
+
+def upload_policy_text() -> str:
+    """Render user-facing upload limits from the authoritative policy."""
+    extensions = ", ".join(sorted(UPLOAD_POLICY.allowed_extensions))
+    per_file = ", ".join(
+        f"{ext} {limit // (1024 * 1024)} MB"
+        for ext, limit in sorted(UPLOAD_POLICY.per_file_bytes.items())
+    )
+    return (
+        f"Supported types: {extensions}. "
+        f"Per-file limits: {per_file}. "
+        f"Batch limit: {UPLOAD_POLICY.max_batch_bytes // (1024 * 1024)} MB total; "
+        f"extracted text: {UPLOAD_POLICY.max_extracted_text_chars:,} characters; "
+        f"chunks: {UPLOAD_POLICY.max_chunks_per_document:,} per document, "
+        f"{UPLOAD_POLICY.max_total_chunks_per_batch:,} per batch."
+    )
 
 
 # UI copy

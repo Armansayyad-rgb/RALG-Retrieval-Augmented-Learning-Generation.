@@ -1,5 +1,6 @@
 import os
 import math
+from pathlib import Path
 import torch
 
 from torch.utils.data import Dataset, DataLoader
@@ -7,12 +8,11 @@ from torch.optim import AdamW
 from tokenizers import Tokenizer
 
 from model import SmallLM
-from config import MODEL_CONFIG
+from config import CHECKPOINTS_DIR, DATA_DIR, MODEL_CONFIG, TOKENIZER_FILE
 
 
-DATA_FILE = r"C:\AI-Project\data\train.txt"
-TOKENIZER_FILE = r"C:\AI-Project\data\tokenizer.json"
-CHECKPOINT_DIR = r"C:\AI-Project\checkpoints"
+DATA_FILE = Path(os.environ.get("TRAIN_DATA_FILE", str(DATA_DIR / "train.txt")))
+CHECKPOINT_DIR = Path(os.environ.get("TRAIN_CHECKPOINT_DIR", str(CHECKPOINTS_DIR)))
 
 BATCH_SIZE = 4
 SEQ_LEN = 256
@@ -97,7 +97,8 @@ def main():
         weight_decay=WEIGHT_DECAY,
     )
 
-    scaler = torch.amp.GradScaler("cuda")
+    amp_enabled = device == "cuda"
+    scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled)
 
     model.train()
 
@@ -112,10 +113,8 @@ def main():
             x = x.to(device, non_blocking=True)
             y = y.to(device, non_blocking=True)
 
-            with torch.autocast(
-                device_type="cuda",
-                dtype=torch.float16,
-            ):
+            with torch.autocast(device_type=device, dtype=torch.float16,
+                                enabled=amp_enabled):
                 _, loss = model(x, y)
 
                 loss = loss / GRAD_ACCUM_STEPS

@@ -19,16 +19,15 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install lightweight runtime and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch==2.7.1"
+          python -m pip install -r requirements.txt pytest pyyaml
+
       - name: Compile active Python runtime sources
         run: |
-          python -m py_compile \
-            config.py \
-            src/api_server.py \
-            src/retriever_v4.py \
-            src/rag_chat_v2.py \
-            src/webui/app.py \
-            src/webui_bootstrap.py \
-            src/webui_launcher.py
+          python -m compileall -q config.py src
 
       - name: Validate benchmark JSONL
         run: |
@@ -81,10 +80,22 @@ jobs:
           test -f RELIABILITY_BENCHMARK.md
           test -f COMMERCIAL_READINESS.md
 
+      - name: Run pure retrieval and API hardening tests
+        run: |
+          pytest -q \
+            src/test_retrieval_performance.py \
+            src/test_api_input_hardening.py \
+            src/test_upload_provenance.py
+
+      - name: Validate Compose configuration
+        run: docker compose config --quiet
+
       - name: Reject accidentally committed secrets
         run: |
-          test ! -f .env
-          test ! -f credentials.json
-          test ! -f secrets.json
-          test ! -f secrets.yaml
-          test ! -f secrets.yml
+          test -z "$(find . -type f \( -name '.env' -o -name 'credentials.json' \
+            -o -name 'secrets.json' -o -name 'secrets.yaml' -o -name 'secrets.yml' \
+            -o -name '*.pem' -o -name '*.key' \) \
+            -not -path './.git/*' -not -path './.venv/*' -print -quit)"
+          ! grep -RInE --exclude-dir=.git --exclude-dir=.venv \
+            --exclude='*.md' --exclude='*.jsonl' \
+            '(api[_-]?key|secret|password|token)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' .

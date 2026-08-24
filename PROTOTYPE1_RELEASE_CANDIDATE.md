@@ -6,6 +6,9 @@
 `c210eb8ae168a740b65189fc9245034dfe58e40e` on branch `master`, dated
 2026-08-24.
 
+The `0.1.0-rc1` artifact is immutable: subsequent hardening work must not
+rewrite its history or move its validated tag.
+
 ## Inventory and architecture
 
 The active runtime is `src/api_server.py` (FastAPI) and
@@ -63,11 +66,22 @@ be exposed directly to an untrusted public network. Upload parsers, persisted
 documents, logs, and feedback require operator-controlled filesystem and
 network boundaries.
 
+The Gradio UI binds to localhost by default, disables sharing, and hides
+exception details. Uploads are limited to 50 MiB per batch plus parser,
+extracted-text, and chunk limits. Upload/delete mutations use a process-local
+lock only; multi-process coordination, authentication, authorization, TLS,
+tenant isolation, and rate limiting remain absent.
+
+Qwen2.5-1.5B-Instruct polish is optional and isolated in
+`requirements-polish.txt`; the core runtime does not require it or network
+access.
+
 ## Required artifacts and reproducibility
 
 See `RELEASE_ARTIFACTS.md` for required artifact classifications and hashes.
 The model checkpoint is external to Git. The configured corpus and tokenizer
-were present and hashed during validation.
+were present and hashed during validation. Validation used isolated synthetic
+fixtures and does not establish production performance or security readiness.
 
 ## Recommendation
 

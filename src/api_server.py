@@ -53,6 +53,7 @@ from webui.document_processor import (
     chunk_text,
     attach_documents,
     remove_uploaded_document,
+    has_uploaded_document,
 )  # noqa: E402
 
 MAX_API_REQUEST_BYTES = 1 * 1024 * 1024
@@ -113,6 +114,7 @@ class IngestRequest(StrictRequest):
 
 
 class IngestResponse(BaseModel):
+    document_id: str
     document_name: str
     added_chunks: int
     total_chunks: int
@@ -303,13 +305,10 @@ def documents() -> list[dict[str, Any]]:
 def delete_document(document_id: str) -> DocumentDeleteResponse:
     """Delete one runtime document and its persisted content."""
     pipeline = get_pipeline()
-    known = any(
-        isinstance(doc, dict) and doc.get("document_id") == document_id
-        for doc in pipeline.get("uploaded_docs", [])
-    )
-    removed = remove_uploaded_document(pipeline, document_id)
+    known = has_uploaded_document(pipeline, document_id)
     if not known:
         raise HTTPException(status_code=404, detail="Document not found.")
+    removed = remove_uploaded_document(pipeline, document_id)
     return DocumentDeleteResponse(
         document_id=document_id, deleted=True, chunks_removed=removed
     )
@@ -357,14 +356,9 @@ def query(request: QueryRequest) -> QueryResponse:
 
     except Exception:
         _LOGGER.exception("Query processing failed")
-        return QueryResponse(
-            answer="",
-            supported=False,
-            confidence=None,
-            answer_type="error",
-            sources=[],
-            latency_ms=round((time.perf_counter() - started) * 1000, 2),
-            error=_SAFE_INTERNAL_ERROR,
+        return JSONResponse(
+            status_code=500,
+            content={"error": _SAFE_INTERNAL_ERROR},
         )
 
 
@@ -398,6 +392,7 @@ def ingest(request: IngestRequest) -> IngestResponse:
     added = attach_documents(pipeline, [doc])
 
     return IngestResponse(
+        document_id=doc.doc_id,
         document_name=doc.safe_display_name,
         added_chunks=added,
         total_chunks=len(pipeline.get("chunks", [])),

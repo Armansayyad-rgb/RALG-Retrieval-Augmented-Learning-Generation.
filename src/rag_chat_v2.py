@@ -1,38 +1,10 @@
 import logging
 import re
-import sys
-from pathlib import Path
 
 import torch
 from tokenizers import Tokenizer
 
 from log_helper import setup_logging
-
-# Resolve ``from config import ...`` to the env-var-aware config at the
-# repository root unambiguously. ``src/config.py`` would shadow
-# this on a cwd==src/ run because it defines an unrelated
-# ``MODEL_CONFIG`` dict. We load the root config by absolute path into
-# ``sys.modules['config']`` BEFORE the import statement runs, so the
-# lookup skips the file-system resolver entirely.
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
-_ROOT_CONFIG_PATH = _PROJECT_ROOT / "config.py"
-
-import importlib.util as _importlib_util
-
-_spec = _importlib_util.spec_from_file_location(
-    "config", str(_ROOT_CONFIG_PATH)
-)
-if _spec is None or _spec.loader is None:
-    raise ImportError(
-        f"Could not load project config at {_ROOT_CONFIG_PATH}. "
-        f"Expected an env-var-aware config.py at the project root."
-    )
-_project_config = _importlib_util.module_from_spec(_spec)
-_project_config.__package__ = ""  # keep it as a top-level module
-sys.modules["config"] = _project_config
-_spec.loader.exec_module(_project_config)
 
 from config import (  # noqa: E402
     LOGS_DIR,
@@ -42,6 +14,7 @@ from config import (  # noqa: E402
     MAX_INPUT_TOKENS,
     MAX_NEW_TOKENS,
     CONFIDENCE_THRESHOLD,
+    RUNTIME_UPLOAD_DIR,
 )
 
 # Backwards-compatible alias: callers historically used ``LOG_DIR``.
@@ -2752,7 +2725,7 @@ def initialize_pipeline(
         "document_frequency": document_frequency,
         "uploaded_docs": [],
         "runtime_persistence": True,
-        "runtime_upload_dir": _project_config.RUNTIME_UPLOAD_DIR,
+        "runtime_upload_dir": RUNTIME_UPLOAD_DIR,
     }
     from webui.document_processor import attach_documents, restore_persisted_documents
     restored = restore_persisted_documents(pipeline)

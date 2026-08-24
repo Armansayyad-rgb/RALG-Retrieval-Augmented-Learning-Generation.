@@ -9,6 +9,7 @@ Run:
 
 import sys
 import json
+import atexit
 import httpx
 
 BASE_URL = "http://127.0.0.1:8000"
@@ -87,6 +88,16 @@ def main():
     print(f"Status: {r.status_code}")
     ingest_result = r.json()
     print_json(ingest_result)
+    assert ingest_result["document_id"]
+    # Keep the demo repeatable: remove its persisted runtime document on exit.
+    def cleanup_demo_document():
+        try:
+            httpx.delete(
+                f"{BASE_URL}/documents/{ingest_result['document_id']}", timeout=10
+            )
+        except httpx.HTTPError:
+            pass
+    atexit.register(cleanup_demo_document)
     assert ingest_result["added_chunks"] > 0
     assert ingest_result["total_chunks"] == (
         initial_stats["chunk_count"] + ingest_result["added_chunks"]

@@ -45,6 +45,8 @@ class RetrievalPerformanceTests(unittest.TestCase):
         expected = []
         for i, counts in enumerate(index):
             score = lexical_score(question, counts, frequency, len(chunks))
+            if score <= 0:
+                continue
             if isinstance(chunks[i], RuntimeChunk):
                 score += INGESTED_CHUNK_BOOST
             if score > 0:
