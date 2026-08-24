@@ -66,10 +66,10 @@ class ApiInputHardeningTests(unittest.TestCase):
         self.assertEqual(response.json(), {"error": "Request body too large."})
 
     def test_internal_query_details_are_hidden(self):
-        secret = "private traceback detail"
+        private_detail = "private traceback detail"
 
         def fail(*args, **kwargs):
-            raise RuntimeError(secret)
+            raise RuntimeError(private_detail)
 
         with patch.object(api_server, "get_pipeline", return_value={}), patch.object(
             api_server, "answer_question", side_effect=fail
@@ -77,7 +77,7 @@ class ApiInputHardeningTests(unittest.TestCase):
             response = self.client.post("/query", json={"question": "valid question"})
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()["error"], "Request processing failed.")
-        self.assertNotIn(secret, response.text)
+        self.assertNotIn(private_detail, response.text)
 
     def test_ingest_query_list_delete_lifecycle_uses_same_document_id(self):
         pipeline = {
