@@ -561,6 +561,28 @@ def _extract_predicate(question):
     return []
 
 
+def _extract_question_predicate_terms(question):
+    """Return meaningful attribute terms from a factual question."""
+    match = re.match(
+        r"^\s*(?:what|which)\s+(?:is|was|are|were)\s+(?:the\s+)?"
+        r"(.+?)\s+(?:for|of|in|on|at)\s+.+?[?.]?\s*$",
+        question,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return []
+
+    ignored = {
+        "what", "which", "is", "was", "are", "were", "the",
+        "a", "an", "for", "of", "in", "on", "at", "and", "to",
+    }
+    return [
+        token
+        for token in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)?", match.group(1).lower())
+        if token not in ignored and len(token) > 2
+    ]
+
+
 def _predicate_answers_question(
     question,
     candidate_sentence,
@@ -585,6 +607,12 @@ def _predicate_answers_question(
     predicate_vocab = _extract_predicate(question)
 
     if not predicate_vocab:
+        predicate_terms = _extract_question_predicate_terms(question)
+        if predicate_terms:
+            return all(
+                term in candidate_sentence.lower()
+                for term in predicate_terms
+            )
         # No recognizable predicate — nothing to gate.
         return True
 
@@ -736,13 +764,13 @@ def extract_factual_answer(question, context):
                     for r in q_relations
                 ):
                     if not _predicate_answers_question(
-                        question, s, context
+                        question, s, s
                     ):
                         continue
                     return match.group(0), True
             elif subject and subject in low:
                 if not _predicate_answers_question(
-                    question, s, context
+                    question, s, s
                 ):
                     continue
                 return match.group(0), True
@@ -817,7 +845,7 @@ def extract_factual_answer(question, context):
                     and len(name) > 3
                 ):
                     if not _predicate_answers_question(
-                        question, s, context
+                        question, s, s
                     ):
                         continue
                     return name, True
@@ -846,11 +874,12 @@ def extract_factual_answer(question, context):
                 "of", "and", "for", "with",
             }
         }
+        subject_anchor = subject.split()[-1] if subject.split() else ""
         sentences = _split_sentences(context)
         for s in sentences:
             if not subject_words:
                 if not _predicate_answers_question(
-                    question, s, context
+                    question, s, s
                 ):
                     continue
                 if _named_fact_anchors_match(question, s) is False:
@@ -860,9 +889,9 @@ def extract_factual_answer(question, context):
             if any(
                 w in low
                 for w in subject_words
-            ):
+            ) and subject_anchor in low:
                 if not _predicate_answers_question(
-                    question, s, context
+                    question, s, s
                 ):
                     continue
                 if _named_fact_anchors_match(question, s) is False:
