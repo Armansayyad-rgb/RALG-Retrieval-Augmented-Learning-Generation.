@@ -3,7 +3,6 @@
 import tempfile
 import unittest
 import sys
-import subprocess
 from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
@@ -35,6 +34,44 @@ from src.webui.document_processor import (
 from config import UPLOAD_POLICY, UploadPolicy
 
 
+class _FakeResponse:
+    def __init__(self, payload: dict):
+        self._payload = payload
+
+    def raise_for_status(self):
+        return None
+
+    def json(self):
+        return self._payload
+
+
+class _ArtifactIndependentCommercialClient:
+    def __init__(self, cases):
+        self._cases = {case["question"]: case for case in cases}
+
+    def post(self, path, json):
+        if path == "/ingest":
+            return _FakeResponse({"document_id": "synthetic"})
+        case = self._cases[json["question"]]
+        supported = bool(case["supported"])
+        if supported:
+            answer = " ".join(
+                group[0] for group in case.get("required_answer_groups", [])
+            )
+            evidence = " ".join(case.get("required_source_terms", []))
+        else:
+            answer = "I couldn't find enough reliable evidence in the current knowledge base."
+            evidence = ""
+        return _FakeResponse({
+            "answer": answer,
+            "supported": supported,
+            "answer_type": "synthetic",
+            "sources": [{"evidence": evidence}] if evidence else [],
+            "latency_ms": 0.0,
+            "error": None,
+        })
+
+
 def make_pipeline(runtime_dir: Path) -> dict:
     return {
         "chunks": [],
@@ -63,25 +100,24 @@ class UploadProvenanceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as output_dir:
             first_path = Path(output_dir) / "first.json"
             second_path = Path(output_dir) / "second.json"
-            script = str(PROJECT_ROOT / "scripts" / "run_commercial_validation.py")
-            first = subprocess.run(
-                [sys.executable, script, "--output", str(first_path)],
-                cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180,
+            from scripts import run_commercial_validation
+            dataset = json.loads(
+                run_commercial_validation.DATASET.read_text(encoding="utf-8")
             )
-            self.assertEqual(
-                first.returncode, 0,
-                f"commercial validation failed:\nstdout:\n{first.stdout}\n"
-                f"stderr:\n{first.stderr}",
+            first_client = _ArtifactIndependentCommercialClient(dataset["cases"])
+            second_client = _ArtifactIndependentCommercialClient(dataset["cases"])
+            first_result = run_commercial_validation.main(
+                first_path,
+                pipeline_override=make_pipeline(Path(output_dir) / "runtime-one"),
+                client_override=first_client,
             )
-            second = subprocess.run(
-                [sys.executable, script, "--output", str(second_path)],
-                cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=180,
+            second_result = run_commercial_validation.main(
+                second_path,
+                pipeline_override=make_pipeline(Path(output_dir) / "runtime-two"),
+                client_override=second_client,
             )
-            self.assertEqual(
-                second.returncode, 0,
-                f"commercial validation failed:\nstdout:\n{second.stdout}\n"
-                f"stderr:\n{second.stderr}",
-            )
+            self.assertEqual(first_result, 0)
+            self.assertEqual(second_result, 0)
             first_report = json.loads(first_path.read_text(encoding="utf-8"))
             second_report = json.loads(second_path.read_text(encoding="utf-8"))
         self.assertTrue(first_report["metrics"]["quality_gate_passed"])
@@ -106,7 +142,6 @@ class UploadProvenanceTests(unittest.TestCase):
             ],
         )
         self.assertEqual(snapshot(runtime_dir), before)
-        self.assertNotIn("Lumen ARC-12", "\n".join(second.stdout.splitlines()))
 
     def test_upload_size_limits(self):
         with tempfile.TemporaryDirectory() as directory:

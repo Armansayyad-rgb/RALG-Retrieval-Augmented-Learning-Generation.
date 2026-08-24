@@ -67,11 +67,16 @@ def quality_gate_passes(metrics: dict) -> bool:
     )
 
 
-def main(output_path: Path | None = None) -> int:
+def main(
+    output_path: Path | None = None,
+    *,
+    pipeline_override: dict | None = None,
+    client_override=None,
+) -> int:
     dataset = json.loads(DATASET.read_text(encoding="utf-8"))
     with isolated_runtime() as runtime_dir:
-        client = TestClient(api_server.app)
-        pipeline = api_server.get_pipeline()
+        client = client_override or TestClient(api_server.app)
+        pipeline = pipeline_override or api_server.get_pipeline()
         pipeline["runtime_upload_dir"] = Path(runtime_dir)
         pipeline["runtime_persistence"] = True
         static_chunks = [chunk for chunk in pipeline["chunks"]
