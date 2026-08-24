@@ -123,6 +123,30 @@ class RetrievalPerformanceTests(unittest.TestCase):
         self.assertEqual(result["answer_type"], "system")
         generic.assert_not_called()
 
+    def test_factual_subject_cannot_borrow_predicate_from_other_sentence(self):
+        context = (
+            "Newton described the Moon in his notebooks. "
+            "The equipment warranty period is twelve months."
+        )
+        answer, supported = extract_factual_answer(
+            "What is the warranty period for the moon?",
+            context,
+        )
+        self.assertIsNone(answer)
+        self.assertFalse(supported)
+
+    def test_factual_subject_cannot_borrow_population_predicate_from_other_sentence(self):
+        context = (
+            "Ceres is an asteroid in the asteroid belt. "
+            "Mars has a population of more than thirty million residents."
+        )
+        answer, supported = extract_factual_answer(
+            "What is the population of Ceres?",
+            context,
+        )
+        self.assertIsNone(answer)
+        self.assertFalse(supported)
+
     def test_v4_duplicate_queries_are_retrieved_once(self):
         chunks = ["alpha evidence sentence with enough content"]
         index, frequency = build_index(chunks)
