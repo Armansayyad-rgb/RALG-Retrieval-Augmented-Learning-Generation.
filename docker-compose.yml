@@ -8,7 +8,7 @@
 # After `up`, open http://localhost:7860.
 #
 # Persistent volumes:
-#   ralg_data        -> /app/data/uploads (the read-only corpus remains in the image)
+#   ralg_data        -> /app/data (runtime uploads are stored under /app/data/runtime_uploads)
 #   ralg_logs        -> /app/logs
 #   ralg_checkpoints -> /app/checkpoints
 #
@@ -36,7 +36,7 @@ services:
       - MAX_NEW_TOKENS=50
       - CONFIDENCE_THRESHOLD=0.80
     volumes:
-      - ralg_data:/app/data/uploads
+      - ralg_data:/app/data
       - ralg_logs:/app/logs
       - ralg_checkpoints:/app/checkpoints
       # To use an existing host checkpoint directory instead, replace the

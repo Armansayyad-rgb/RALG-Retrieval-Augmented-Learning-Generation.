@@ -25,8 +25,10 @@ Provenance limitations (this checkpoint):
 from __future__ import annotations
 
 import logging
+import json
 import os
 import re
+import tempfile
 import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -37,6 +39,7 @@ import uuid
 
 
 from retriever_v2 import RuntimeChunk, build_index as build_index_v2
+from config import RUNTIME_UPLOAD_DIR
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,9 +52,116 @@ MAX_PDF_SIZE = 10 * 1024 * 1024  # 10 MiB
 MAX_DOCX_SIZE = 10 * 1024 * 1024  # 10 MiB
 # Maximum extracted text length (characters)
 MAX_EXTRACTED_TEXT_LEN = 5_000_000  # ~5 MiB of text
+MAX_UPLOADED_CHUNKS = 5000
 
 # Maximum length for a sanitized display filename
 _MAX_DISPLAY_NAME_LEN = 200
+_REGISTRY_NAME = "metadata.json"
+
+
+def _persistence_dir(pipeline: dict) -> Path:
+    return Path(pipeline.get("runtime_upload_dir", RUNTIME_UPLOAD_DIR))
+
+
+def _atomic_write(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        "w", encoding="utf-8", dir=path.parent, delete=False
+    ) as handle:
+        handle.write(content)
+        temporary = Path(handle.name)
+    temporary.replace(path)
+
+
+def _registry_path(pipeline: dict) -> Path:
+    return _persistence_dir(pipeline) / _REGISTRY_NAME
+
+
+def _persist_registry(pipeline: dict, entries: list[dict]) -> None:
+    _atomic_write(_registry_path(pipeline), json.dumps(entries, indent=2))
+
+
+def _persist_document(pipeline: dict, doc: "UploadedDocument") -> None:
+    root = _persistence_dir(pipeline)
+    documents_dir = root / "documents"
+    documents_dir.mkdir(parents=True, exist_ok=True)
+    content_path = documents_dir / f"{doc.doc_id}.txt"
+    _atomic_write(content_path, doc.text)
+    entries = _load_registry(pipeline)
+    entries = [entry for entry in entries if entry.get("document_id") != doc.doc_id]
+    entries.append({
+        "document_id": doc.doc_id,
+        "document_name": doc.safe_display_name,
+        "extension": doc.ext,
+        "upload_timestamp": doc.upload_timestamp,
+        "source_type": doc.source_type,
+        "revision": doc.revision,
+        "chunk_count": doc.chunk_count,
+        "content_file": f"documents/{doc.doc_id}.txt",
+    })
+    _persist_registry(pipeline, entries)
+
+
+def _load_registry(pipeline: dict) -> list[dict]:
+    path = _registry_path(pipeline)
+    if not path.exists():
+        return []
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(value, list):
+            raise ValueError("registry is not a list")
+        return [entry for entry in value if isinstance(entry, dict)]
+    except Exception:
+        _LOGGER.exception("Failed to load runtime document registry")
+        return []
+
+
+def restore_persisted_documents(pipeline: dict) -> list[UploadedDocument]:
+    """Load valid persisted documents; skip bad entries without stopping startup."""
+    root = _persistence_dir(pipeline)
+    documents_dir = root / "documents"
+    restored: list[UploadedDocument] = []
+    seen: set[str] = set()
+    for entry in _load_registry(pipeline):
+        doc_id = entry.get("document_id")
+        ext = str(entry.get("extension", "")).lower()
+        if not isinstance(doc_id, str) or not doc_id or doc_id in seen:
+            _LOGGER.warning("Skipping invalid or duplicate persisted document entry")
+            continue
+        if ext not in SUPPORTED_EXTS:
+            _LOGGER.warning("Skipping persisted document with unsupported extension")
+            continue
+        relative = entry.get("content_file", f"documents/{doc_id}.txt")
+        content_path = (root / relative).resolve()
+        if content_path.parent != documents_dir.resolve():
+            _LOGGER.warning("Skipping persisted document with unsafe content reference")
+            continue
+        try:
+            text = content_path.read_text(encoding="utf-8")
+        except Exception:
+            _LOGGER.exception("Failed to restore persisted document %s", doc_id)
+            continue
+        if not text.strip() or len(text) > MAX_EXTRACTED_TEXT_LEN:
+            _LOGGER.warning("Skipping empty or oversized persisted document %s", doc_id)
+            continue
+        doc = UploadedDocument(
+            name=str(entry.get("document_name") or "unnamed_document"),
+            path=content_path,
+            ext=ext,
+            text=text,
+            doc_id=doc_id,
+            upload_timestamp=str(entry.get("upload_timestamp") or ""),
+            source_type=str(entry.get("source_type") or "runtime_upload"),
+            revision=entry.get("revision"),
+        )
+        doc.chunks = chunk_text(
+            text, doc.doc_id, doc_name=doc.name, extension=doc.ext,
+            upload_timestamp=doc.upload_timestamp, revision=doc.revision,
+        )
+        doc.chunk_count = len(doc.chunks)
+        restored.append(doc)
+        seen.add(doc_id)
+    return restored
 
 
 def _size_limit(path: Path) -> int:
@@ -275,6 +385,8 @@ def _is_supported(path: Path) -> bool:
 def attach_documents(
     pipeline: dict,
     uploaded: list[UploadedDocument],
+    *,
+    persist: bool = True,
 ) -> int:
     """Merge uploaded chunks into the pipeline's chunks list and rebuild the index.
 
@@ -293,6 +405,8 @@ def attach_documents(
             )
         new_chunks.extend(doc.chunks)
         doc.chunk_count = len(doc.chunks)
+        if persist and pipeline.get("runtime_persistence", False):
+            _persist_document(pipeline, doc)
     if not new_chunks:
         return 0
 
@@ -336,6 +450,15 @@ def remove_uploaded_document(pipeline: dict, document_id: str) -> int:
             to_keep.append(chunk)
 
     if removed_count == 0:
+        if pipeline.get("runtime_persistence", False):
+            entries = _load_registry(pipeline)
+            if any(d.get("document_id") == document_id for d in entries):
+                _persist_registry(
+                    pipeline, [d for d in entries if d.get("document_id") != document_id]
+                )
+                ( _persistence_dir(pipeline) / "documents" / f"{document_id}.txt").unlink(
+                    missing_ok=True
+                )
         return 0
 
     pipeline["chunks"] = to_keep
@@ -349,6 +472,14 @@ def remove_uploaded_document(pipeline: dict, document_id: str) -> int:
         d for d in uploaded_docs
         if d.get("document_id") != document_id
     ]
+    if pipeline.get("runtime_persistence", False):
+        entries = _load_registry(pipeline)
+        _persist_registry(
+            pipeline, [d for d in entries if d.get("document_id") != document_id]
+        )
+        (_persistence_dir(pipeline) / "documents" / f"{document_id}.txt").unlink(
+            missing_ok=True
+        )
 
     return removed_count
 
@@ -407,6 +538,16 @@ def process_uploads(
             ext=path.suffix.lower(),
             text=text,
         )
+        doc.chunks = chunk_text(
+            doc.text, doc.doc_id, doc_name=doc.name, extension=doc.ext,
+            upload_timestamp=doc.upload_timestamp, revision=doc.revision,
+        )
+        doc.chunk_count = len(doc.chunks)
+        if doc.chunk_count > MAX_UPLOADED_CHUNKS:
+            errors.append(
+                f"File {_sanitize_display_name(path.name)} exceeds maximum chunk limit."
+            )
+            continue
         parsed.append(doc)
 
     return parsed, errors

@@ -137,6 +137,15 @@ The optional polish LLM is not required for the core API or UI. If its model
 files or optional runtime dependencies are unavailable, startup logs a warning
 and the UI continues with the core retrieval answer path.
 
+Runtime-uploaded documents are persisted under `data/runtime_uploads/` by
+default (`RUNTIME_UPLOAD_DIR` overrides this). Each document has an application
+generated ID and content file plus an atomic `metadata.json` registry. The
+registry is rehydrated during pipeline startup, and documents can be listed or
+deleted through `GET /documents`, `DELETE /documents/{document_id}`, or the
+Documents tab. Docker persists this directory through the `ralg_data` volume.
+Prototype 1 skips malformed or missing entries at startup and does not provide
+multi-process transactions or production-grade durability.
+
 ## Windows test runner
 
 After setup, run:

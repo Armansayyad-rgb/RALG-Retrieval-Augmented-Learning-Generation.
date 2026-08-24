@@ -39,6 +39,7 @@ from webui.document_processor import (  # noqa: E402
     chunk_text,
     parse_file,
     process_uploads,
+    remove_uploaded_document,
 )
 from webui.export import to_json, to_markdown, save_to_disk  # noqa: E402
 from webui.config import LOGS_DIR  # noqa: E402
@@ -114,6 +115,14 @@ def _format_kb_table(uploaded_docs: list[dict]) -> list[list]:
             d.get("document_id", ""),
         ])
     return rows
+
+
+def _document_choices(uploaded_docs: list[dict]) -> list[str]:
+    return [
+        str(d.get("document_id"))
+        for d in uploaded_docs
+        if d.get("document_id")
+    ]
 
 
 def respond(
@@ -477,15 +486,54 @@ def build_demo(pipeline: dict, polish_llm=None):
                     label="Knowledge base (uploaded docs)",
                     interactive=False,
                 )
+                with gr.Row():
+                    document_selector = gr.Dropdown(
+                        choices=_document_choices(pipeline.get("uploaded_docs", [])),
+                        label="Document ID to delete",
+                        interactive=True,
+                    )
+                    delete_btn = gr.Button("Delete document", variant="stop")
+                delete_status = gr.Markdown("")
 
                 def _handle_uploads_server(files):
                     status_md, rows, _header_html = handle_uploads(files, pipeline)
-                    return status_md, rows
+                    return status_md, rows, gr.update(
+                        choices=_document_choices(pipeline.get("uploaded_docs", []))
+                    )
 
                 upload_btn.click(
                     _handle_uploads_server,
                     inputs=[upload],
-                    outputs=[upload_status, kb_table],
+                    outputs=[upload_status, kb_table, document_selector],
+                )
+
+                def _delete_document_server(document_id):
+                    if not document_id:
+                        return "Select a document ID first.", _format_kb_table(
+                            pipeline.get("uploaded_docs", [])
+                        ), gr.update(
+                            choices=_document_choices(pipeline.get("uploaded_docs", []))
+                        ), None
+                    removed = remove_uploaded_document(pipeline, str(document_id))
+                    if removed == 0:
+                        return "Document not found.", _format_kb_table(
+                            pipeline.get("uploaded_docs", [])
+                        ), gr.update(
+                            choices=_document_choices(pipeline.get("uploaded_docs", []))
+                        ), None
+                    return (
+                        f"Deleted document `{document_id}` ({removed} chunks removed).",
+                        _format_kb_table(pipeline.get("uploaded_docs", [])),
+                        gr.update(
+                            choices=_document_choices(pipeline.get("uploaded_docs", []))
+                        ),
+                        None,
+                    )
+
+                delete_btn.click(
+                    _delete_document_server,
+                    inputs=[document_selector],
+                    outputs=[delete_status, kb_table, document_selector, document_selector],
                 )
 
             # ============== Export tab ==============

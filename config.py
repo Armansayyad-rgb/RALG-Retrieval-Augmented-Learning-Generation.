@@ -42,6 +42,10 @@ LOGS_DIR: Path = Path(
     os.environ.get("AI_PROJECT_LOGS_DIR", str(PROJECT_ROOT / "logs"))
 ).expanduser().resolve()
 
+RUNTIME_UPLOAD_DIR: Path = Path(
+    os.environ.get("RUNTIME_UPLOAD_DIR", str(DATA_DIR / "runtime_uploads"))
+).expanduser().resolve()
+
 
 # ----------------------------------------------------------------------
 # Model / tokenizer artifacts
