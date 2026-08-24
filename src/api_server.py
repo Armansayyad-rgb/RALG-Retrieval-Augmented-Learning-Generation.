@@ -31,6 +31,7 @@ import sys
 import time
 import logging
 from pathlib import Path
+from threading import RLock
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
@@ -211,21 +212,23 @@ async def internal_error_handler(request: Request, exc: Exception) -> JSONRespon
 
 _PIPELINE: dict[str, Any] | None = None
 _INIT_ERROR: Exception | None = None
+_PIPELINE_LOCK = RLock()
 _START_TIME = time.perf_counter()
 
 
 def get_pipeline() -> dict[str, Any]:
     global _PIPELINE, _INIT_ERROR
-    if _PIPELINE is None:
-        if _INIT_ERROR is not None:
-            raise RuntimeError("Pipeline initialization previously failed.")
-        try:
-            _PIPELINE = initialize_pipeline()
-        except Exception as exc:
-            _INIT_ERROR = exc
-            _LOGGER.exception("Pipeline initialization failed")
-            raise
-    return _PIPELINE
+    with _PIPELINE_LOCK:
+        if _PIPELINE is None:
+            if _INIT_ERROR is not None:
+                raise RuntimeError("Pipeline initialization previously failed.")
+            try:
+                _PIPELINE = initialize_pipeline()
+            except Exception as exc:
+                _INIT_ERROR = exc
+                _LOGGER.exception("Pipeline initialization failed")
+                raise
+        return _PIPELINE
 
 
 @app.get("/health")

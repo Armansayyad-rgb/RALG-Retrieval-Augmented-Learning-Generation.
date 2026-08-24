@@ -5,6 +5,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event
 from pathlib import Path
 from unittest.mock import patch
 
@@ -69,6 +71,32 @@ class PortabilityReadinessTests(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertNotIn(b"secret path", response.body)
         self.assertNotIn(str(PROJECT_ROOT).encode(), response.body)
+
+    def test_pipeline_initialization_is_serialized(self):
+        api_server._PIPELINE = None
+        api_server._INIT_ERROR = None
+        entered = Event()
+        release = Event()
+        calls = 0
+        pipeline = {"ready": True}
+
+        def initialize():
+            nonlocal calls
+            calls += 1
+            entered.set()
+            self.assertTrue(release.wait(timeout=2))
+            return pipeline
+
+        with patch.object(api_server, "initialize_pipeline", side_effect=initialize):
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                first = executor.submit(api_server.get_pipeline)
+                self.assertTrue(entered.wait(timeout=2))
+                second = executor.submit(api_server.get_pipeline)
+                release.set()
+                self.assertIs(first.result(timeout=2), pipeline)
+                self.assertIs(second.result(timeout=2), pipeline)
+
+        self.assertEqual(calls, 1)
 
     def test_config_resolves_overrides_from_arbitrary_cwd(self):
         with tempfile.TemporaryDirectory() as directory:
