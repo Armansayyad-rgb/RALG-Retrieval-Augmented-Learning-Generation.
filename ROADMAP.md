@@ -1,94 +1,169 @@
 # Roadmap
 
-This roadmap is focused on making RALG credible as a technical proof and pilot-ready local document intelligence engine.
+RALG is now past its first release-candidate and core hardening phases. The roadmap is focused on turning a strong local technical proof into a reproducible controlled-pilot system with defensible external evidence.
 
 ## Completed foundations
 
-- local retrieval and answer pipeline
-- document ingestion and live indexing
-- Gradio web UI
-- FastAPI demo endpoint
-- Docker / Docker Compose packaging
-- repeatable simple and hard synthetic retrieval benchmarks
-- unsupported and false-premise evaluation coverage
-- public benchmark reporting and CI sanity checks
+- local retrieval and evidence-grounded answer pipeline
+- FastAPI service and Gradio web UI
+- TXT/PDF/DOCX ingestion
+- runtime document persistence and restart recovery
+- stable document IDs, provenance, listing, and deletion
+- safe abstention and unsupported-question rejection
+- conflict and factual-grounding protections
+- unified API/UI evidence semantics
+- portability and readiness checks
+- clean Python 3.11 installation validation
+- lightweight Python SDK/client
+- postings-based lexical indexing
+- V4 duplicate-query reuse and bounded query cache
+- incremental runtime indexing
+- process-local lifecycle locking
+- 100k-scale retrieval validation
+- 1000-request / 8-worker soak validation
+- CI sanity, benchmark integrity, secret scanning, and Compose validation
+- Prototype 1 RC1 preserved at `0.1.0-rc1`
 
-## Current priority: reliability
+## Completed validation milestones
 
-1. Improve runtime-ingested document ranking
-   - ensure newly ingested relevant chunks outrank unrelated static knowledge
-   - reduce false support from high-overlap but irrelevant chunks
-   - track exact failure cases instead of tuning only aggregate metrics
+### Stage 1 — pilot differentiation
 
-2. Reach a stable end-to-end reliability gate
-   - supported-answer correctness >= 90%
-   - unsupported rejection >= 95%
-   - false-support rate <= 5%
-   - false-rejection rate <= 5%
-   - zero API/runtime errors in the reliability suite
+- 180-case synthetic held-out benchmark
+- lexical vs RALG comparison
+- RALG Recall@5 100% vs lexical 93.75% in the recorded run
+- unsupported rejection 100% in that harness
 
-3. Remove benchmark-specific behavior
-   - generalize domain-specific retrieval rules
-   - avoid hardcoded benchmark entities or answer-specific heuristics
-   - rerun all retrieval and reliability tests after cleanup
+### Stage 2 — lifecycle, scale, and reproducibility
 
-## Validation priority
+- clean Python 3.11 environment
+- stable `tokenizers==0.23.1`
+- isolated live API ingest/query/list/delete/restart lifecycle
+- live SDK integration
+- 100k retrieval optimized to approximately 156 ms p50 / 216 ms p95 in the recorded environment
+- 250/500/1000-request soak progression with 0 errors at 8 workers
 
-4. Build a held-out benchmark
-   - do not tune production logic against the held-out set
-   - include realistic manuals, SOPs, maintenance instructions, and safety documents
-   - include distractors, paraphrases, multi-hop questions, unsupported questions, and false premises
+### Stage 3 — customer-style synthetic evaluation
 
-5. Compare against a fair baseline
-   - same corpus
-   - same hardware
-   - same query set
-   - same scoring rules
-   - report Recall@K, MRR, supported-answer accuracy, false-support rate, latency, and memory use
+- 360 unique evaluation questions
+- 96 synthetic customer-style documents across 8 domains
+- 240 supported / 120 unsupported cases
+- 0 duplicate questions after generator correction
+- lexical and RALG both reached Recall@5 100%, exposing a benchmark ceiling effect rather than proving further retrieval-quality superiority
 
-6. Verify evidence consistency
-   - displayed sources must correspond to evidence actually used for the answer
-   - document ingestion and API/UI paths should share the same retrieval semantics
+## Current priority — Stage 4 external-style evidence
 
-## Engineering hardening
+The highest-value next step is not another easy synthetic benchmark. Stage 4 should determine whether RALG has a reproducible technical advantage on genuinely difficult retrieval/evidence cases.
 
-7. Keep the repository reproducible
-   - CI compile and structure checks
-   - deterministic benchmark commands where practical
-   - clean configuration without machine-specific paths
-   - Docker startup test
+### 1. Harder untouched evaluation
 
-8. Separate runtime and research concerns
-   - identify production runtime modules
-   - classify training/data-build utilities
-   - move or archive genuinely obsolete scripts only after dependency review
+Build a new separated evaluation with substantial coverage of:
 
-9. Manage large artifacts deliberately
-   - document provenance for training/evaluation data
-   - avoid committing unnecessary generated indexes or large replaceable corpora
-   - keep proprietary checkpoints and private datasets outside the public repository
+- paraphrased queries
+- high-overlap distractor documents
+- similar entity names
+- conflicting revisions
+- near-miss unsupported questions
+- cross-document evidence
+- numerical predicate confusion
+- terminology variation
+- revision/version ambiguity
 
-## Pilot-readiness
+The benchmark must avoid ceiling effects and must not be tuned to make RALG win.
 
-10. Package a narrow technical-document demo
-    - sample manuals/SOPs
-    - simple ingestion flow
-    - API contract
-    - repeatable evaluation command
-    - limitations and security notes
+### 2. Fair baseline comparison
 
-11. Validate with realistic users and documents
-    - manufacturing / maintenance workflows
-    - measure answer usefulness and failure modes
-    - collect pilot evidence before making broad commercial claims
+Evaluate identical corpus/questions with at least:
+
+- simple lexical baseline
+- current production RALG
+
+Where practical, also compare postings-only and reduced V4 variants.
+
+Report:
+
+- Recall@1/3/5
+- MRR
+- unsupported rejection
+- false-support rate
+- provenance/evidence correctness
+- p50/p95 latency
+- per-category results
+
+### 3. Failure analysis
+
+For each meaningful failure category, classify whether the cause is:
+
+- retrieval/ranking
+- entity resolution
+- grounding
+- conflict resolution
+- provenance/source selection
+- unsupported rejection
+
+Preserve representative case IDs and do not hide failures behind aggregate scores.
+
+### 4. Semantic ablation evidence
+
+Conflict handling, factual grounding, and provenance-aware handling remain difficult to isolate safely. Add test-only seams only if they can be introduced without weakening production defaults or distorting the architecture.
+
+### 5. Real or permitted technical documents
+
+Synthetic/customer-style evaluation is useful engineering evidence but not customer validation. The next major credibility step is evaluation against permitted real technical documents or an independently sourced external-style corpus.
+
+## Deployment priorities
+
+### Docker runtime validation
+
+Compose configuration is validated, but the recorded development environment did not have a usable Docker daemon for complete lifecycle qualification.
+
+When a Docker-enabled environment is available, validate:
+
+- clean build
+- localhost-only host exposure
+- health/readiness
+- ingest/query/delete
+- persistence across restart
+- unsupported rejection
+- clean shutdown
+
+### Larger-scale validation
+
+100k scale is validated. 250k/500k remain intentionally deferred until a machine with confirmed safe memory headroom is available.
+
+Do not risk host instability merely to obtain larger benchmark numbers.
+
+## Operational boundary
+
+The currently validated pilot configuration is:
+
+- local/trusted environment
+- single Uvicorn/application worker
+- process-local mutation locking
+- no built-in production authentication
+- no TLS termination
+- no tenant isolation
+
+Do not describe RALG as production multi-tenant infrastructure until those boundaries are deliberately changed and validated.
+
+## Repository / engineering hygiene
+
+Continue to:
+
+- keep model checkpoints outside Git
+- keep runtime uploads and coding-agent state untracked
+- preserve deterministic benchmark generation
+- distinguish measured, previously measured, deferred, and not validated results
+- archive obsolete research utilities only after dependency review
+- avoid benchmark-specific production logic
 
 ## Not a priority yet
 
 - broad consumer chatbot features
+- cosmetic UI work without reliability/deployment value
 - unsupported superiority claims
-- expensive always-on model paths
-- cosmetic UI work that does not improve reliability or deployment
+- multi-tenant SaaS features before the technical evidence is mature
+- large-scale runs that exceed safe local hardware limits
 
-## Initial target market
+## Target use case
 
-Manufacturing and industrial technical-document intelligence, where privacy, grounded answers, and reliable retrieval are more important than open-ended chat.
+Private technical-document intelligence for manufacturing, maintenance, engineering, operations, and other environments where evidence, provenance, privacy, and conservative unsupported handling matter more than open-ended chat.
