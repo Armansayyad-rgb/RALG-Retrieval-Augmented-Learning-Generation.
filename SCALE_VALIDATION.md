@@ -10,6 +10,9 @@ incremental +100/+1000/+5000 updates, delete, and rebuild. 500,000 is opt-in
 ```
 
 See `logs\scale_validation.json`; unavailable levels are explicitly marked.
-On this host, both requested levels were recorded as `not_run` under the
-default 50,000-chunk safety budget; raise `--max-safe-chunks` only on a
-representative machine with sufficient RAM.
+On this host, 100,000 chunks completed safely with RSS rising from 395.32 MB
+to 639.37 MB, 575.88 ms index build time, 1,455.817 ms query p50, and
+1,523.975 ms query p95. Incremental indexing took 0.32/3.23/12.55 ms for
++100/+1000/+5000 chunks; deletion followed by rebuild took 700.94 ms.
+250,000 and 500,000 were not validated because the run was intentionally
+stopped after the first large level to avoid unsafe memory pressure.

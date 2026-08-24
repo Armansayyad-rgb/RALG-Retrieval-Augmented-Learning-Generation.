@@ -4,12 +4,11 @@
 tries `/health` plus the Python SDK against a running API. Clean installation
 is intentionally not performed in the active environment; use
 `pip install --requirement requirements.txt` in a disposable environment.
-Some mirrors do not publish the final `tokenizers==0.23.1`; the requirements
-pin `0.23.1rc0`, whose `cp310-abi3` wheel is compatible with Python 3.11 and
-the project's `Tokenizer` API.
+The stable `tokenizers==0.23.1` release is required for Python 3.11 and the
+project's `Tokenizer` API.
 Results are written to `logs/deployment_validation.json`. API and SDK status
 are **unavailable** when no server is listening.
 
 Validation on Python 3.11 completed successfully with the full
-`requirements.txt`; `tokenizers 0.23.1rc0` imported and the `Tokenizer` API
+`requirements.txt`; `tokenizers 0.23.1` imported and the `Tokenizer` API
 loaded. The disposable environment was removed after validation.

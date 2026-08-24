@@ -37,10 +37,13 @@ def main():
         for q in qs:
             s=time.perf_counter(); retrieve(q,chunks,idx,df); lat.append((time.perf_counter()-s)*1000)
         inc={}
-        for amount in (100,1000,5000):
+        for amount in (100, 1000, 5000):
             extra=[f"incremental domain {i%7} value {i}" for i in range(amount)]
-            s=time.perf_counter(); chunks.extend(extra); from src.retriever_v2 import extend_index
-            extend_index(idx,df,extra,n); inc[str(amount)]=round((time.perf_counter()-s)*1000,2)
+            from src.retriever_v2 import extend_index
+            start_index = len(chunks)
+            s=time.perf_counter(); chunks.extend(extra)
+            extend_index(idx,df,extra,start_index)
+            inc[str(amount)]=round((time.perf_counter()-s)*1000,2)
         delete_n=min(100, len(chunks)); del chunks[-delete_n:]
         s=time.perf_counter(); ridx,rdf=build_index(chunks); rebuild_ms=(time.perf_counter()-s)*1000
         rows.append({"chunks":n,"status":"measured","rss_before_mb":before,"rss_after_mb":rss_mb(),

@@ -26,7 +26,9 @@ The held-out harness is retrieval-only and does not establish model-backed
 answer quality. Human review remains required for safety-critical use.
 
 Observed held-out run: 320 cases, 1.00 supported recall@5, 0.00 near-miss
-false-support rate, p50 1.270 ms, p95 1.799 ms. The required 100k/250k scale
-levels were targeted but skipped by the 50k safety budget on this host.
+false-support rate, p50 1.270 ms, p95 1.799 ms. The 100k level was subsequently completed safely: RSS 395.32 MB to 639.37 MB,
+575.88 ms build, 1,455.817 ms query p50, and 1,523.975 ms query p95.
+250k/500k remain not validated because the run was stopped after the first
+large level to avoid unsafe memory pressure.
 The 1000-query/16-worker soak was bounded and did not complete within the
 available run window; treat concurrency evidence as unavailable, not as a pass.
