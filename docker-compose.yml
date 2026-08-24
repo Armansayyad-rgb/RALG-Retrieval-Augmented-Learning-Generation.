@@ -25,7 +25,7 @@ services:
     container_name: ralg-engine
     restart: unless-stopped
     ports:
-      - "7860:7860"
+      - "127.0.0.1:7860:7860"
     environment:
       - AI_PROJECT_ROOT=/app
       - WEBUI_HOST=0.0.0.0
