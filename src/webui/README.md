@@ -5,8 +5,8 @@ A Gradio web interface for the AI Project RAG chatbot. Lets non-technical users 
 ## Run it locally
 
 ```powershell
-cd C:\AI-Project
-.venv\Scripts\python.exe src\webui_bootstrap.py
+cd <repository-root>
+python src\webui_bootstrap.py
 ```
 
 Then open http://127.0.0.1:7860.
@@ -42,10 +42,12 @@ Then open http://127.0.0.1:7860.
 - True token-level streaming - Phase 3
 - HuggingFace Spaces deployment - Phase 4
 
-See `C:\AI-Project\WEB_UI_PLAN.md` for the full roadmap.
+See `WEB_UI_PLAN.md` at the repository root for the full roadmap.
 
 ## Backend integration
 
-The Gradio layer calls `rag_chat_v2.answer_question()` unchanged. Sources are reconstructed by re-running `retriever_v2.retrieve()` in `webui/chat_handler.py:collect_sources()` because the CLI driver does not currently return the chunk list. This adds one extra retrieval per turn (sub-100ms) and avoids editing the large pipeline file.
+The Gradio layer calls `rag_chat_v2.answer_question()` unchanged. Runtime
+documents are restored during the same canonical pipeline initialization used by
+the API.
 
 When the upstream pipeline is extended to expose `result["sources"]` natively, `collect_sources()` can be replaced with `result.get("sources", [])` for zero overhead.

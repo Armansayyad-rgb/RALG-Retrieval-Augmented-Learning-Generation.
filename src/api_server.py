@@ -208,19 +208,70 @@ async def internal_error_handler(request: Request, exc: Exception) -> JSONRespon
     return JSONResponse(status_code=500, content={"error": _SAFE_INTERNAL_ERROR})
 
 _PIPELINE: dict[str, Any] | None = None
+_INIT_ERROR: Exception | None = None
 _START_TIME = time.perf_counter()
 
 
 def get_pipeline() -> dict[str, Any]:
-    global _PIPELINE
+    global _PIPELINE, _INIT_ERROR
     if _PIPELINE is None:
-        _PIPELINE = initialize_pipeline()
+        if _INIT_ERROR is not None:
+            raise RuntimeError("Pipeline initialization previously failed.")
+        try:
+            _PIPELINE = initialize_pipeline()
+        except Exception as exc:
+            _INIT_ERROR = exc
+            _LOGGER.exception("Pipeline initialization failed")
+            raise
     return _PIPELINE
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def ready() -> JSONResponse:
+    """Report whether the initialized runtime can safely serve queries."""
+    try:
+        pipeline = get_pipeline()
+    except Exception:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "ready": False,
+                "model_loaded": False,
+                "tokenizer_loaded": False,
+                "index_loaded": False,
+                "chunk_count": 0,
+                "retrieval_ready": False,
+                "model_ready": False,
+                "error": "Pipeline initialization failed.",
+            },
+        )
+
+    model_loaded = pipeline.get("model") is not None
+    tokenizer_loaded = pipeline.get("tokenizer") is not None
+    index_loaded = (
+        pipeline.get("retrieval_index") is not None
+        and pipeline.get("document_frequency") is not None
+    )
+    chunk_count = len(pipeline.get("chunks", []) or [])
+    retrieval_ready = bool(index_loaded and chunk_count > 0)
+    model_ready = bool(model_loaded and tokenizer_loaded)
+    ready_state = bool(retrieval_ready and model_ready and not _INIT_ERROR)
+    payload = {
+        "ready": ready_state,
+        "model_loaded": model_loaded,
+        "tokenizer_loaded": tokenizer_loaded,
+        "index_loaded": index_loaded,
+        "chunk_count": chunk_count,
+        "retrieval_ready": retrieval_ready,
+        "model_ready": model_ready,
+        "error": None if ready_state else "Runtime is not ready.",
+    }
+    return JSONResponse(status_code=200 if ready_state else 503, content=payload)
 
 
 @app.get("/stats", response_model=StatsResponse)

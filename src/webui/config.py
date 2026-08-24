@@ -1,7 +1,7 @@
 """Configuration constants for the Gradio web UI.
 
 Project paths (PROJECT_ROOT, LOGS_DIR) are sourced from the env-var-aware
-root config (`C:\AI-Project\config.py`) so the webui follows the same
+root config repository-root `config.py` so the webui follows the same
 override contract as `rag_chat_v2`. UI-specific constants (server host
 and port, defaults, upload limits, example questions) live here because
 they are webui-only.

@@ -6,15 +6,17 @@ from pathlib import Path
 import torch
 from tokenizers import Tokenizer
 
-from src.log_helper import setup_logging
+from log_helper import setup_logging
 
-# Resolve ``from config import ...`` to the env-var-aware config at
-# ``<project>/config.py`` unambiguously. ``src/config.py`` would shadow
+# Resolve ``from config import ...`` to the env-var-aware config at the
+# repository root unambiguously. ``src/config.py`` would shadow
 # this on a cwd==src/ run because it defines an unrelated
 # ``MODEL_CONFIG`` dict. We load the root config by absolute path into
 # ``sys.modules['config']`` BEFORE the import statement runs, so the
 # lookup skips the file-system resolver entirely.
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 _ROOT_CONFIG_PATH = _PROJECT_ROOT / "config.py"
 
 import importlib.util as _importlib_util
@@ -953,7 +955,7 @@ from summary_synthesizer_v1 import (
 
 
 # All project paths and tunables are imported from the root config
-# module (C:\AI-Project\config.py) at the top of this file. See
+# module at the top of this file. See
 # ``from config import`` near the imports above.
 
 
