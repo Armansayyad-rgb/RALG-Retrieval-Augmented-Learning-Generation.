@@ -17,5 +17,5 @@ tokenizer, data, and upload locations through the documented environment
 variables.
 
 `requirements.txt` was installed to completion in a disposable Python 3.11
-environment. The pinned `tokenizers==0.23.1` is resolvable and compatible
+environment. The pinned `tokenizers==0.23.1rc0` is resolvable and compatible
 with the validated runtime; the earlier failed attempt used Python 3.9.

@@ -5,7 +5,9 @@
 torch==2.7.1
 
 # BPE tokenizer used by the local reasoning model.
-tokenizers==0.23.1
+# 0.23.1 is absent from some configured mirrors; rc0 is the available
+# cp310-abi3 build and exposes the same Tokenizer API used by this project.
+tokenizers==0.23.1rc0
 
 # Numerical utilities.
 numpy==2.4.4
