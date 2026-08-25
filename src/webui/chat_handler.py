@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from rag_chat_v2 import answer_question
+from runtime_architecture import execute_runtime
 from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk
 from retriever_v4 import retrieve as retrieve_v4_fn
 
@@ -467,7 +468,14 @@ def chat_turn(
         }
 
     try:
-        result = answer_question(pipeline, question.strip(), verbose=False)
+        execution = execute_runtime(
+            pipeline,
+            question.strip(),
+            top_k,
+            answer_fn=answer_question,
+            contract_fn=build_answer_contract,
+            sources_fn=collect_sources,
+        )
     except Exception:  # defensive — keep internal details out of the UI
         _LOGGER.exception("Unhandled chat pipeline error")
         return {
@@ -484,33 +492,19 @@ def chat_turn(
             "error": _SAFE_CHAT_ERROR,
         }
 
-    plan = result.get("runtime_plan") or {}
-    intent = plan.get("intent") or "general"
-    fallback_sources = None
-    if not result.get("evidence"):
-        fallback_sources = collect_sources(
-            pipeline, question, top_k, answer=result.get("answer", "")
-        )
-    contract = build_answer_contract(
-        pipeline,
-        question,
-        result,
-        top_k,
-        fallback_sources=fallback_sources,
-    )
-
     return {
         "question": question,
-        "answer": contract.answer,
-        "confidence": contract.confidence,
-        "supported": contract.supported,
-        "answer_type": contract.answer_type,
-        "intent": intent,
-        "sources": contract.sources,
-        "traceable": contract.traceable,
-        "conflict": contract.conflict,
-        "provenance": contract.provenance,
-        "error": contract.error,
+        "answer": execution.answer,
+        "confidence": execution.confidence,
+        "supported": execution.supported,
+        "answer_type": execution.answer_type,
+        "intent": execution.plan.intent,
+        "sources": execution.sources,
+        "traceable": execution.traceable,
+        "conflict": execution.conflict,
+        "provenance": execution.provenance,
+        "error": execution.error,
+        "observability": execution.observability,
     }
 
 

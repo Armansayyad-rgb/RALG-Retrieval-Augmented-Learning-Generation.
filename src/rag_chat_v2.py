@@ -2868,6 +2868,21 @@ def runtime_plan(
                 f"between {left} and {right}?"
             )
 
+    # The semantic plan owns routing. The legacy router is consulted only
+    # for otherwise-unclassified questions, preserving extractor behavior
+    # without allowing a second routing decision downstream.
+    intent = (plan.get("intent") or "general").strip()
+    if intent in PLANNED_REASONING_INTENTS:
+        plan["route"] = "model"
+    else:
+        try:
+            plan["route"] = route_question(question)
+        except Exception:
+            logger.exception("Legacy fallback routing failed")
+            plan["route"] = "model"
+        if plan["route"] not in {"extractor", "model"}:
+            plan["route"] = "model"
+
     return plan
 
 
@@ -2978,21 +2993,8 @@ def _answer_question_impl(
         plan.get("subject"),
     )
 
-    # ==================================================
-    # LEGACY ROUTER SECOND
-    # ==================================================
-
-    route = route_question(
-        question
-    )
-
-    # If the semantic planner has positively identified
-    # a reasoning intent, never allow the old router to
-    # divert it into the extractor path.
-    if should_force_reasoning(
-        plan
-    ):
-        route = "model"
+    # runtime_plan is the sole authoritative routing decision.
+    route = plan.get("route", "model")
 
     logger.debug(
         "Routing decision: router=%s planned_intent=%s "
