@@ -1,0 +1,30 @@
+{
+  "manifest": {
+    "manifest_documents": 50,
+    "domains": [
+      "application_protocols",
+      "cybersecurity",
+      "networking_standards",
+      "systems_operations"
+    ],
+    "duplicate_doc_ids": 0,
+    "duplicate_urls": 0,
+    "duplicate_hashes": 0,
+    "unmanifested_files": [],
+    "missing_manifest_files": [],
+    "issues": [],
+    "pass": true
+  },
+  "benchmark": {
+    "cases": 300,
+    "supported": 210,
+    "unsupported": 90,
+    "duplicate_question_pairs": 0,
+    "prior_benchmark_overlap": 0,
+    "unreviewed": 300,
+    "automatically_generated": 300,
+    "issues": [],
+    "pass": true
+  },
+  "pass": true
+}

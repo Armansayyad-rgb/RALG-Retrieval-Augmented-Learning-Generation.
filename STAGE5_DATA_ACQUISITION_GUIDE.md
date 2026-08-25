@@ -406,4 +406,4 @@ This is honest and actionable. Better than pretending internal synthetic data is
 ---
 
 **Last Updated:** 2026-08-25  
-**Status:** Ready for data acquisition
+**Status:** Acquisition completed on 2026-08-25; see `STAGE5_INDEPENDENT_EVIDENCE_REPORT.md`. Final evaluation remains blocked on independent case review.

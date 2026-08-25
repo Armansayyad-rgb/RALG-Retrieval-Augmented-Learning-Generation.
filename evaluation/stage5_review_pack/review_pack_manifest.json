@@ -1,0 +1,23 @@
+{
+  "audit": {
+    "cases_audited": 300,
+    "structurally_valid": 300,
+    "suspicious_cases": 0,
+    "suspicious_reasons": [],
+    "duplicate_case_ids": 0,
+    "duplicate_exact_questions": 0,
+    "issues": [],
+    "pass": true
+  },
+  "full_review_cases": 300,
+  "pilot_review_cases": 75,
+  "pilot_seed": 5202025,
+  "pilot_supported": 38,
+  "pilot_unsupported": 37,
+  "blinding": {
+    "files_checked": 3,
+    "prohibited_fields": [],
+    "pass": true
+  },
+  "pass": true
+}
