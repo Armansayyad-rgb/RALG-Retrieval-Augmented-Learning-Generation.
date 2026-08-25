@@ -1,6 +1,6 @@
 # Roadmap
 
-RALG is now past its first release-candidate and core hardening phases. The roadmap is focused on turning a strong local technical proof into a reproducible controlled-pilot system with defensible external evidence.
+RALG is past its first release-candidate and initial pilot-validation phases. The project now has enough evidence to distinguish engineering strengths from architectural gaps, so the roadmap is shifting from "add more benchmarks" to "complete the intended compound runtime, then revalidate externally."
 
 ## Completed foundations
 
@@ -11,7 +11,6 @@ RALG is now past its first release-candidate and core hardening phases. The road
 - stable document IDs, provenance, listing, and deletion
 - safe abstention and unsupported-question rejection
 - conflict and factual-grounding protections
-- unified API/UI evidence semantics
 - portability and readiness checks
 - clean Python 3.11 installation validation
 - lightweight Python SDK/client
@@ -48,73 +47,103 @@ RALG is now past its first release-candidate and core hardening phases. The road
 - 96 synthetic customer-style documents across 8 domains
 - 240 supported / 120 unsupported cases
 - 0 duplicate questions after generator correction
-- lexical and RALG both reached Recall@5 100%, exposing a benchmark ceiling effect rather than proving further retrieval-quality superiority
+- lexical and RALG both reached Recall@5 100%, exposing a benchmark ceiling effect
 
-## Current priority — Stage 4 external-style evidence
+### Stage 4 — external-style synthetic evaluation
 
-The highest-value next step is not another easy synthetic benchmark. Stage 4 should determine whether RALG has a reproducible technical advantage on genuinely difficult retrieval/evidence cases.
+- 600-case benchmark over 120 synthetic technical documents
+- 480 supported / 120 unsupported
+- RALG Recall@1 100% vs lexical 96.875%
+- both reached Recall@5 100%, so differentiation was primarily rank-1 rather than deeper retrieval
+- adversarial unsupported set retained 0 false support in the recorded harness
 
-### 1. Harder untouched evaluation
+### Stage 5 — independently sourced RFC evidence
 
-Build a new separated evaluation with substantial coverage of:
+- 50 independently sourced IETF RFC documents
+- provenance manifest and SHA-256 integrity validation
+- 300-case preliminary benchmark, 210 supported / 90 unsupported
+- blinded review pack and deterministic 75-case pilot-review sample
+- corpus-integrity controls added to CI
 
-- paraphrased queries
-- high-overlap distractor documents
-- similar entity names
-- conflicting revisions
-- near-miss unsupported questions
-- cross-document evidence
-- numerical predicate confusion
-- terminology variation
-- revision/version ambiguity
+Preliminary untouched Stage 5 retrieval results currently favor the lexical baseline:
 
-The benchmark must avoid ceiling effects and must not be tuned to make RALG win.
+- lexical Recall@1/3/5: 40.48% / 87.62% / 100.00%
+- RALG Recall@1/3/5: 37.14% / 77.62% / 92.86%
+- lexical MRR: 0.6485
+- RALG MRR: 0.5863
+- unsupported rejection: 100% for both
+- false-support rate: 0% for both
+- RALG retrieval latency was substantially lower in the recorded harness
 
-### 2. Fair baseline comparison
+The 300 cases remain automatically generated and unreviewed. Stage 5 therefore remains **BLOCKED ON INDEPENDENT REVIEW** and is not final external validation.
 
-Evaluate identical corpus/questions with at least:
+## Current priority — core architecture completion
 
-- simple lexical baseline
-- current production RALG
+The architecture audit estimates the original compound RALG design at approximately **70% integrated**. The next build should complete the runtime architecture before any benchmark-specific retrieval tuning.
 
-Where practical, also compare postings-only and reduced V4 variants.
+### 1. One authoritative execution plan
 
-Report:
+Replace duplicate routing responsibility between planning logic and `router_v1` with one execution plan that owns:
 
-- Recall@1/3/5
-- MRR
-- unsupported rejection
-- false-support rate
-- provenance/evidence correctness
-- p50/p95 latency
-- per-category results
+- query classification
+- factual/comparison/reasoning route
+- retrieval strategy
+- multi-hop decision
+- evidence selection
+- support adjudication
+- generation/extraction
+- abstention
+- provenance
 
-### 3. Failure analysis
+### 2. Unified answer-level support gate
 
-For each meaningful failure category, classify whether the cause is:
+Consolidate retrieval confidence, premise validation, evidence sufficiency, factual predicates, conflict detection, and traceability into one authoritative supported/unsupported decision.
 
-- retrieval/ranking
-- entity resolution
-- grounding
-- conflict resolution
-- provenance/source selection
-- unsupported rejection
+A `supported=true` answer must have identifiable supporting evidence.
 
-Preserve representative case IDs and do not hide failures behind aggregate scores.
+### 3. Explicit model registry
 
-### 4. Semantic ablation evidence
+Classify every trained artifact as active, compatible-but-unused, superseded, historical, or incompatible. Map serving configuration to the exact model/tokenizer artifacts used by runtime instead of leaving training outputs disconnected from production.
 
-Conflict handling, factual grounding, and provenance-aware handling remain difficult to isolate safely. Add test-only seams only if they can be introduced without weakening production defaults or distorting the architecture.
+### 4. Stronger multi-hop state
 
-### 5. Real or permitted technical documents
+Move beyond connector-pattern decomposition toward explicit:
 
-Synthetic/customer-style evaluation is useful engineering evidence but not customer validation. The next major credibility step is evaluation against permitted real technical documents or an independently sourced external-style corpus.
+```text
+question
+-> subquestions
+-> evidence per subquestion
+-> supported intermediate facts
+-> final evidence set
+-> answer/support decision
+```
+
+Every intermediate fact used by the final answer should remain traceable.
+
+### 5. API/UI parity
+
+Make API and Web UI use the same grounded core execution pipeline. Any unconstrained/pure-generative mode should be explicit and separate from normal grounded RALG behavior.
+
+See [Current Architecture Status](docs/CURRENT_ARCHITECTURE_STATUS.md).
+
+## Validation after architecture completion
+
+After the architecture consolidation is complete and existing gates pass:
+
+1. rerun regression and commercial validation
+2. rerun Stage 4 without modifying its fixtures
+3. rerun the untouched Stage 5 preliminary evaluation
+4. compare retrieval, support, false-support, provenance, and latency changes
+5. document whether improvements generalize rather than benefiting individual case IDs
+6. keep independent human review explicitly pending until a real reviewer exists
+
+Do not tune production logic directly to Stage 5 expected answers or failure IDs.
 
 ## Deployment priorities
 
 ### Docker runtime validation
 
-Compose configuration is validated, but the recorded development environment did not have a usable Docker daemon for complete lifecycle qualification.
+Compose configuration is validated, but full container lifecycle qualification remains outstanding in the recorded evidence.
 
 When a Docker-enabled environment is available, validate:
 
@@ -153,17 +182,23 @@ Continue to:
 - keep runtime uploads and coding-agent state untracked
 - preserve deterministic benchmark generation
 - distinguish measured, previously measured, deferred, and not validated results
-- archive obsolete research utilities only after dependency review
+- keep negative benchmark evidence visible
+- archive obsolete research utilities only after dependency/reproducibility review
 - avoid benchmark-specific production logic
+- keep acquisition/pilot claims tied to reproducible evidence
 
-## Not a priority yet
+## Commercial-readiness priorities
 
-- broad consumer chatbot features
-- cosmetic UI work without reliability/deployment value
-- unsupported superiority claims
-- multi-tenant SaaS features before the technical evidence is mature
-- large-scale runs that exceed safe local hardware limits
+For a fast strategic-sale or pilot path, the highest-value technical work is:
+
+1. architecture completion and runtime coherence
+2. independent-document retrieval-quality recovery without overfitting
+3. one-command reproducible deployment
+4. concise technical due-diligence package
+5. real external/pilot evidence when available
+
+Broad feature expansion and cosmetic UI work are lower priority than these items.
 
 ## Target use case
 
-Private technical-document intelligence for manufacturing, maintenance, engineering, operations, and other environments where evidence, provenance, privacy, and conservative unsupported handling matter more than open-ended chat.
+Private technical-document intelligence for manufacturing, maintenance, engineering, operations, cybersecurity, and other environments where evidence, provenance, privacy, and conservative unsupported handling matter more than open-ended chat.

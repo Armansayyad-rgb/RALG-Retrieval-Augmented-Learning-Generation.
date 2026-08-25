@@ -7,7 +7,7 @@ A local, evidence-grounded technical-document intelligence engine focused on ret
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-Source--Available-orange)
-![Status](https://img.shields.io/badge/Status-Controlled%20Pilot%20Evaluation-blue)
+![Status](https://img.shields.io/badge/Status-Core%20Architecture%20Hardening-blue)
 
 </div>
 
@@ -15,13 +15,13 @@ A local, evidence-grounded technical-document intelligence engine focused on ret
 
 ## Overview
 
-RALG is an experimental local-first AI system for answering questions over technical documents such as manuals, SOPs, maintenance notes, service bulletins, policies, and internal knowledge bases.
+RALG is an experimental local-first AI system for answering questions over technical documents such as manuals, SOPs, maintenance notes, service bulletins, policies, standards, and internal knowledge bases.
 
-The project emphasizes the parts of document AI that are easy to under-engineer: retrieval, evidence selection, provenance, unsupported-question rejection, document lifecycle integrity, and measurable evaluation. The goal is not broad general chat; it is reliable, inspectable answers over bounded document collections.
+The project emphasizes retrieval, evidence selection, provenance, unsupported-question rejection, document lifecycle integrity, and measurable evaluation. The target is not broad general chat; it is reliable, inspectable answers over bounded technical-document collections.
 
 ## Current state
 
-Prototype 1 RC1 is preserved at tag `0.1.0-rc1` (tag target `f5cb70505edf34c247d8dfadf56ac65c1bbbb57c`). Since RC1, the project has completed multiple hardening and pilot-evidence stages covering persistence, provenance, API lifecycle, concurrency, portability, retrieval performance, clean-install validation, SDK integration, and synthetic held-out evaluation.
+Prototype 1 RC1 is preserved at tag `0.1.0-rc1` (tag target `f5cb70505edf34c247d8dfadf56ac65c1bbbb57c`). Since RC1, the project has completed hardening and pilot-evidence work covering persistence, provenance, API lifecycle, concurrency, portability, retrieval performance, clean-install validation, SDK integration, synthetic held-out evaluation, and a first independently sourced external-document evaluation.
 
 Current validated engineering checkpoints include:
 
@@ -32,11 +32,59 @@ Current validated engineering checkpoints include:
 - isolated API ingest/query/list/delete/restart lifecycle: **PASS**
 - live lightweight SDK integration: **PASS**
 - 1000-request / 8-worker soak: **1000/1000 completed, 0 errors**
-- optimized 100k-chunk retrieval: approximately **156 ms p50 / 216 ms p95** in the validated Stage 2 environment
-- Stage 1 pilot benchmark: RALG Recall@5 **100%** vs lexical **93.75%** on a synthetic held-out set
-- Stage 3 customer-style synthetic benchmark: both lexical and RALG reached Recall@5 **100%**, so that benchmark is treated as a ceiling-effect result rather than evidence of retrieval-quality superiority
+- optimized 100k-chunk retrieval: approximately **156 ms p50 / 216 ms p95** in the recorded Stage 2 environment
+- Stage 4 synthetic external-style benchmark: RALG Recall@1 **100%** vs lexical **96.875%**, with both at Recall@5 **100%**
+- Stage 5 preliminary independent-RFC benchmark: lexical retrieval currently leads retrieval quality, while RALG is substantially faster in the recorded harness
 
 These are engineering checkpoints, not production guarantees or customer-data validation.
+
+## Stage 5 independent evidence
+
+Stage 5 adds a corpus of **50 independently sourced IETF RFC documents** and a **300-case preliminary benchmark** (210 supported / 90 unsupported). Provenance, canonical source references, document hashes, corpus-integrity checks, and blinded review tooling are included in the repository.
+
+The first untouched preliminary run did **not** show retrieval-quality superiority for RALG:
+
+| Metric | Lexical | RALG |
+| --- | ---: | ---: |
+| Recall@1 | 40.48% | 37.14% |
+| Recall@3 | 87.62% | 77.62% |
+| Recall@5 | 100.00% | 92.86% |
+| MRR | 0.6485 | 0.5863 |
+| Unsupported rejection | 100% | 100% |
+| False-support rate | 0% | 0% |
+| Retrieval p50 | ~187.08 ms | ~6.76 ms |
+| Retrieval p95 | ~252.90 ms | ~7.37 ms |
+
+All 300 cases are still automatically generated and unreviewed. Therefore the correct Stage 5 status is **BLOCKED ON INDEPENDENT REVIEW**. These results are preliminary and must not be presented as final external validation.
+
+## Core architecture
+
+The current production `/query` path implements most of the intended compound RALG design, but the architecture audit identifies meaningful integration gaps. Current architecture coverage is approximately **70%**.
+
+```text
+Question
+   ↓
+Planning / routing
+   ↓
+Factual | Comparison | Reasoning
+   ↓
+V2 / V4 retrieval
+   ↓
+Optional second multi-hop retrieval
+   ↓
+Evidence + support checks
+   ↓
+Extraction / deterministic synthesis / SmallLMV2
+   ↓
+Answer contract
+   ├─ traceability
+   ├─ conflict detection
+   └─ provenance
+   ↓
+Supported answer or abstention
+```
+
+The next core build focuses on one authoritative execution plan, one answer-level support gate, stronger multi-hop state, explicit model-registry integration, and API/UI parity. See [Current Architecture Status](docs/CURRENT_ARCHITECTURE_STATUS.md).
 
 ## Key capabilities
 
@@ -44,6 +92,8 @@ These are engineering checkpoints, not production guarantees or customer-data va
 - safe abstention when evidence is insufficient
 - V2/V4 retrieval paths with postings-based lexical indexing
 - bounded query caching and duplicate-query reuse
+- factual extraction, comparison, and reasoning paths
+- limited second-pass multi-hop retrieval
 - document ingestion for TXT, PDF, and DOCX
 - runtime document persistence and restart recovery
 - stable document IDs, provenance metadata, listing, and deletion
@@ -54,24 +104,6 @@ These are engineering checkpoints, not production guarantees or customer-data va
 - CPU and CUDA support
 - Docker and Docker Compose configuration
 - benchmark, regression, performance, portability, persistence, provenance, and hardening test suites
-
-## Architecture
-
-```text
-User / SDK / Web UI
-        ↓
-      API layer
-        ↓
-Query planning + retrieval
-        ↓
-Evidence selection / provenance
-        ↓
-Grounding + conflict checks
-        ↓
-Supported answer or safe abstention
-```
-
-The retrieval pipeline is intentionally explicit and testable. Expensive or additional work is only used when needed, while supported answers remain tied to retrieved evidence.
 
 ## Quick start
 
@@ -115,20 +147,13 @@ GET http://127.0.0.1:8000/ready
 
 Runtime documents are stored under `data/runtime_uploads/` by default and can be redirected with `RUNTIME_UPLOAD_DIR`.
 
-The runtime document lifecycle supports:
-
-- ingest
-- list
-- provenance-backed query
-- delete
-- restart recovery
-- corruption/missing-entry tolerance
+The runtime document lifecycle supports ingest, list, provenance-backed query, delete, restart recovery, and corruption/missing-entry tolerance.
 
 Lifecycle mutation locks are **process-local**. The validated pilot configuration uses a **single Uvicorn/application worker**; multi-process lifecycle safety is not claimed.
 
 ### Model and tokenizer configuration
 
-The reasoning checkpoint is external to Git and must be supplied at:
+The current API runtime uses the reasoning checkpoint supplied externally at:
 
 ```text
 checkpoints/v2/reasoning_model_v1.pt
@@ -145,6 +170,8 @@ data/tokenizer_v2.json
 and can be overridden with `TOKENIZER_FILE`.
 
 Knowledge sources can be configured with `KNOWLEDGE_FILES`, `KNOWLEDGE_FILE_1`, and `KNOWLEDGE_FILE_2`.
+
+Several historical training/model artifacts remain in the repository layout but are not all connected to the current API serving path. They are retained for reproducibility until the model-registry/runtime-integration work classifies them explicitly.
 
 ### Optional polish model
 
@@ -167,7 +194,7 @@ docker compose up --build
 
 The default Compose exposure is localhost-oriented and runtime uploads are persisted through the configured data volume.
 
-**Important:** full Docker runtime lifecycle validation has not yet been completed on the current development machine because its Docker daemon was unavailable during the recorded pilot-validation runs. Do not interpret Compose validation as a completed container-runtime qualification.
+**Important:** full Docker runtime lifecycle validation has not yet been completed on the recorded development environment. Compose validation is not container-runtime qualification.
 
 ## Testing
 
@@ -183,38 +210,29 @@ For API-oriented testing after starting the service:
 scripts\test_all.bat api
 ```
 
-The repository includes focused coverage for:
-
-- retrieval regression and performance
-- unsupported/false-support behavior
-- answer/evidence traceability
-- conflicting evidence
-- API input hardening
-- upload provenance
-- unified evidence semantics
-- persistence and restart recovery
-- portability/readiness
-- runtime lifecycle and concurrency
+The repository includes focused coverage for retrieval regression/performance, unsupported/false-support behavior, answer/evidence traceability, conflicting evidence, API input hardening, upload provenance, unified evidence semantics, persistence/restart recovery, portability/readiness, and runtime lifecycle/concurrency.
 
 See [Windows Test Runner](docs/windows_test_runner.md).
 
 ## Evaluation
 
-RALG keeps retrieval quality, answer support, rejection behavior, and runtime performance as separate metrics rather than collapsing them into a single score.
+RALG keeps retrieval quality, answer support, rejection behavior, provenance, and runtime performance as separate metrics rather than collapsing them into a single score.
 
-Current evidence includes:
+Evidence currently includes:
 
 - direct and hard synthetic technical-document retrieval benchmarks
 - held-out commercial validation
-- pilot/customer-style synthetic held-out evaluations
+- Stage 2 lifecycle/scale/reproducibility evidence
+- Stage 3/4 synthetic customer-style and external-style comparisons
+- Stage 5 independently sourced RFC corpus and preliminary evaluation
 - lexical-vs-RALG comparisons
 - retrieval latency and memory measurements
 - concurrency soak tests
 - clean-install and lifecycle validation
 
-Important caveat: the current public evaluation material is primarily **synthetic**. Stage 3 also exposed a ceiling effect where both lexical retrieval and RALG achieved Recall@5 of 100%. The next evidence stage therefore focuses on harder external-style evaluation rather than adding more easy synthetic cases.
+Stage 5 is the most important caution: the independent corpus currently favors lexical retrieval quality, the benchmark still lacks independent human review, and production code should not be tuned to individual Stage 5 case IDs.
 
-See [Validation & Evidence Index](docs/validation_evidence.md) for the current and historical reports.
+See [Validation & Evidence Index](docs/validation_evidence.md).
 
 ## Current limitations
 
@@ -222,10 +240,16 @@ RALG is suitable for controlled technical evaluation, not an untrusted public pr
 
 Known limitations include:
 
-- evaluation is still predominantly synthetic rather than permitted real customer data
-- Docker runtime lifecycle remains not validated on the current development machine
+- Stage 5 independent benchmark cases are not yet independently human-reviewed
+- preliminary Stage 5 retrieval quality currently trails the lexical baseline
+- current compound architecture is only partially consolidated (approximately 70% coverage)
+- routing responsibility is duplicated between planning and router logic
+- answer support is distributed across multiple heuristics rather than one authoritative semantic support gate
+- API and Web UI generation/retrieval behavior are not yet fully unified
+- multi-hop reasoning remains heuristic
+- several trained artifacts are disconnected from the current serving path
+- Docker runtime lifecycle remains not fully validated in the recorded environment
 - 250k/500k scale validation is deferred for hardware-safety reasons
-- conflict, factual-grounding, and provenance semantic ablations are not yet cleanly isolated
 - lifecycle locking is process-local; multi-worker mutation safety is not claimed
 - no production authentication
 - no TLS termination provided by the application
@@ -235,6 +259,7 @@ Known limitations include:
 
 ## Documentation
 
+- [Current architecture status](docs/CURRENT_ARCHITECTURE_STATUS.md)
 - [Architecture](docs/architecture.md)
 - [Repository layout](docs/repository_layout.md)
 - [Use cases](docs/use_cases.md)
@@ -243,8 +268,8 @@ Known limitations include:
 - [Roadmap](ROADMAP.md)
 - [Benchmarks](BENCHMARKS.md)
 - [Benchmark results](BENCHMARK_RESULTS.md)
-- [Pilot readiness](PILOT_READINESS.md)
-- [Stage 3 pilot readiness](STAGE3_PILOT_READINESS.md)
+- [Stage 5 independent evidence](STAGE5_INDEPENDENT_EVIDENCE_REPORT.md)
+- [Stage 5 review guide](docs/STAGE5_REVIEW_GUIDE.md)
 - [Validation & Evidence Index](docs/validation_evidence.md)
 
 ## Security boundary
