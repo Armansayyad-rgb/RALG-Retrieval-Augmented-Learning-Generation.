@@ -1,73 +1,100 @@
 # Current Architecture Status
 
-This document summarizes the production architecture on `master` before the next core-runtime consolidation build.
-
-## Coverage
-
-The original RALG compound architecture is approximately **70% implemented** across routing, retrieval, factual/reasoning paths, multi-hop retrieval, grounding, support adjudication, generation, abstention, provenance, and learning/runtime integration.
+This document summarizes the production architecture on current `master` after the hybrid-retrieval and core-runtime consolidation work merged in PRs #49 and #47.
 
 ## Current `/query` runtime
 
 ```text
 POST /query
   -> api_server.query()
-  -> get_pipeline() / initialize_pipeline()
-  -> rag_chat_v2.answer_question()
-     -> runtime_plan() / query_planner_v1.build_queries()
-     -> router_v1.route_question()
-     -> factual, comparison, or reasoning path
-     -> V2 and/or V4 retrieval
-     -> optional second retrieval pass for multi-hop
-     -> evidence/support checks
-     -> deterministic extraction/synthesis or SmallLMV2 generation
-     -> abstention when support is insufficient
-  -> build_answer_contract()
-     -> traceability
-     -> conflict detection
-     -> provenance
+  -> execute_runtime()
+     -> ExecutionPlan
+        -> semantic intent + one authoritative route decision
+     -> answer_question()
+        -> factual extractor OR grounded reasoning path
+        -> retriever_hybrid for grounded reasoning retrieval
+        -> bounded optional secondary queries
+        -> explicit evidence / multi-hop trace
+     -> build_answer_contract()
+     -> unified_support_gate()
+        -> evidence identity
+        -> traceability
+        -> conflict status
+        -> provenance
+     -> supported answer OR abstention
   -> QueryResponse
 ```
 
-## Implemented and active
+The FastAPI and WebUI surfaces now share the same `execute_runtime()` orchestration boundary for grounded RALG behavior.
 
-- V2/V4 retrieval paths
-- factual extraction path
-- reasoning path
-- comparison handling
-- unsupported-query abstention/refusal
-- provenance and answer-contract construction
-- runtime document ingestion and indexing
-- one additional multi-hop retrieval pass
+## Authoritative retrieval
 
-## Partial or architecturally split
+`src/retriever_hybrid.py` is the authoritative grounded reasoning retriever.
 
-- Routing has two authorities: `runtime_plan()` and `router_v1.route_question()`.
-- Multi-hop decomposition is heuristic rather than explicit subquestion/entity-state tracking.
-- Evidence sufficiency, factual predicates, premise validation, overlap checks, conflict detection, and support decisions are distributed rather than owned by one authoritative support gate.
-- API and Web UI can follow different retrieval/generation behavior.
-- The API uses the custom runtime path while optional Qwen generation is Web-UI-only.
-- Most trained artifacts are not connected to the current API runtime.
+It uses a full-question-first strategy:
 
-## Trained artifacts and legacy paths
+1. run the complete user question through the fast V2 lexical/index path;
+2. preserve strong full-question candidates;
+3. optionally run a bounded number of secondary/sub-query passes when useful;
+4. deduplicate by canonical candidate identity;
+5. fuse candidates deterministically using general full-question coverage/rank signals;
+6. preserve provenance through the final evidence path.
 
-The current API runtime loads the configured tokenizer and `checkpoints/v2/reasoning_model_v1.pt`. Older embedding, factual/instruction, and language-model artifacts exist but are not all loaded by production initialization.
+The factual extractor route still uses a cheaper single-pass V2 lookup. This is intentional route specialization, not a separate user-facing retrieval stack.
 
-Historical research/training implementations remain for reproducibility and should not be deleted until dependency and benchmark-history checks confirm they are unnecessary.
+## Current preliminary Stage 5 retrieval checkpoint
 
-## Highest-priority architecture gaps
+Stage 5 contains 50 independently sourced IETF RFC documents and 300 automatically generated, still-unreviewed benchmark cases.
 
-1. Replace duplicate routing authorities with one authoritative execution plan.
-2. Create one answer-level evidence/support adjudication gate.
-3. Establish a model registry that clearly maps training artifacts to serving behavior.
-4. Bring API and Web UI onto the same grounded core execution pipeline.
-5. Replace weak multi-hop heuristics with explicit subquestion/evidence/intermediate-fact state.
+After the hybrid-retrieval change, the untouched preliminary evaluator recorded:
 
-## Current evidence context
+| Metric | Lexical | RALG hybrid |
+| --- | ---: | ---: |
+| Recall@1 | 40.48% | **50.95%** |
+| Recall@3 | 87.62% | **90.95%** |
+| Recall@5 | 100.00% | **100.00%** |
+| MRR | 0.6485 | **0.7098** |
+| Unsupported rejection | 100% | **100%** |
+| False-support rate | 0% | **0%** |
 
-Stage 5 includes 50 independently sourced IETF RFC documents and a 300-case preliminary benchmark. The preliminary untouched retrieval result favored the lexical baseline on retrieval quality while RALG was substantially faster. The cases remain automatically generated and unreviewed, so Stage 5 is **blocked on independent review** rather than final external validation.
+The runtime-integration validation preserved those quality metrics. Retrieval latency in the integration run was approximately 6.9 ms p50 / 14.6 ms p95 in the recorded local environment.
 
-No production retrieval change should be justified by individual Stage 5 cases until the architecture and review gates are handled without benchmark-specific tuning.
+These numbers are **preliminary engineering evidence, not final independent validation** because the benchmark cases have not been independently human-reviewed.
 
-## Next build
+## Runtime architecture now implemented
 
-The next core build should introduce a single `ExecutionPlan` orchestration layer that owns routing, retrieval strategy, multi-hop state, evidence selection, support adjudication, generation/extraction, abstention, and provenance. It should also add an explicit model registry and preserve benchmark integrity while measuring whether the more coherent architecture improves generalization.
+- one shared `ExecutionPlan` / `execute_runtime()` orchestration boundary;
+- one authoritative route value produced by runtime planning;
+- shared API/WebUI grounded execution behavior;
+- hybrid full-question-first grounded reasoning retrieval;
+- unified answer-level support gate;
+- provenance/traceability requirements before `supported=true`;
+- conflict-aware abstention;
+- explicit `MultiHopTrace` state;
+- declarative model registry with runtime model-selection guardrails;
+- active/compatible/superseded/legacy artifact classification;
+- focused architecture and integration tests.
+
+## Model registry
+
+The current active grounded model role is mapped to `checkpoints/v2/reasoning_model_v1.pt` through configuration. Other known artifacts are explicitly classified rather than silently auto-loaded.
+
+The optional Qwen polish role remains non-grounded and opt-in. It must not establish evidence support.
+
+## Remaining architecture / production gaps
+
+The main remaining gaps are no longer duplicate routing or API/UI divergence. Current material gaps are:
+
+1. **Independent review:** Stage 5 cases remain automatically generated and unreviewed.
+2. **Public-production security:** no built-in authentication, TLS termination, tenant isolation, or production-grade rate limiting.
+3. **Multi-process lifecycle safety:** document mutation locking is process-local; controlled pilots should use one application worker.
+4. **Docker runtime qualification:** Compose is maintained, but a complete clean Docker lifecycle still needs current end-to-end evidence.
+5. **Large-scale validation:** 250k/500k corpus runs remain deferred pending suitable memory headroom.
+6. **Retrieval headroom:** some rank-1 ties remain among documents sharing the same terminology; phrase/proximity signals are a possible future general improvement, but should be validated independently before adoption.
+7. **Artifact/dependency diligence:** historical training utilities and model artifacts remain for reproducibility and should be inventoried rather than deleted blindly.
+
+## Interpretation
+
+RALG is appropriate for controlled technical evaluation in a trusted environment. It is not yet an untrusted multi-tenant public service.
+
+The highest-value next work is independent review, deployment/security diligence, reproducible Docker validation, and a clean technical-diligence package rather than another synthetic benchmark stage.
