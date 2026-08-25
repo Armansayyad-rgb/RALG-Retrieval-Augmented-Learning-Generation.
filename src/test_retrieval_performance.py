@@ -160,9 +160,9 @@ class RetrievalPerformanceTests(unittest.TestCase):
                 frequency,
                 collect_timings=True,
             )
-        self.assertLessEqual(mocked.call_count, 2)
+        self.assertEqual(mocked.call_count, 1)
         self.assertEqual(len(output["results"]), 1)
-        self.assertTrue(output["timings"]["queries"][-1]["cache_hit"])
+        self.assertTrue(output["timings"]["queries"][1]["cache_hit"])
 
     def test_upload_updates_postings_and_delete_removes_them(self):
         pipeline = {"chunks": ["static evidence"], "uploaded_docs": []}
