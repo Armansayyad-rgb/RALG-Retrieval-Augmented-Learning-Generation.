@@ -36,6 +36,8 @@ def validate(root: Path) -> dict:
     urls = [item.get("canonical_source_url") for item in manifest]
     hashes = [item.get("sha256") for item in manifest]
     issues: list[str] = []
+    corpus_dir = root / "evaluation" / "stage5_documents"
+    manifest_files: set[str] = set()
     for item in manifest:
         required = (
             "source_organization", "title", "canonical_source_url",
@@ -49,7 +51,14 @@ def validate(root: Path) -> dict:
             issues.append(f"{item.get('doc_id')}: synthetic flag is not false")
         if item.get("used_in_development") is not False:
             issues.append(f"{item.get('doc_id')}: development-use flag is not false")
-        path = root / "evaluation" / "stage5_documents" / f"rfc{int(item['revision_version'].split()[-1])}.txt"
+        if item.get("used_in_ralg_development") is not False:
+            issues.append(f"{item.get('doc_id')}: RALG development-use flag is not false")
+        if item.get("permission_status") != "confirmed":
+            issues.append(f"{item.get('doc_id')}: permission is not confirmed")
+        if item.get("redistribution_permitted") is not True:
+            issues.append(f"{item.get('doc_id')}: redistribution is not permitted")
+        path = corpus_dir / f"rfc{int(item['revision_version'].split()[-1])}.txt"
+        manifest_files.add(path.name)
         if not path.exists():
             issues.append(f"{item.get('doc_id')}: document file missing")
         else:
@@ -58,6 +67,11 @@ def validate(root: Path) -> dict:
                 issues.append(f"{item.get('doc_id')}: SHA-256 mismatch")
             if path.stat().st_size != item.get("content_length_bytes"):
                 issues.append(f"{item.get('doc_id')}: content length mismatch")
+    actual_files = {path.name for path in corpus_dir.iterdir() if path.is_file()} if corpus_dir.exists() else set()
+    for filename in sorted(actual_files - manifest_files):
+        issues.append(f"unmanifested corpus file: {filename}")
+    for filename in sorted(manifest_files - actual_files):
+        issues.append(f"manifested corpus file missing: {filename}")
     duplicate_ids = len(ids) - len(set(ids))
     duplicate_urls = len(urls) - len(set(urls))
     duplicate_hashes = len(hashes) - len(set(hashes))
@@ -67,6 +81,8 @@ def validate(root: Path) -> dict:
         "duplicate_doc_ids": duplicate_ids,
         "duplicate_urls": duplicate_urls,
         "duplicate_hashes": duplicate_hashes,
+        "unmanifested_files": sorted(actual_files - manifest_files),
+        "missing_manifest_files": sorted(manifest_files - actual_files),
         "issues": issues,
         "pass": not issues and not any((duplicate_ids, duplicate_urls, duplicate_hashes)),
     }

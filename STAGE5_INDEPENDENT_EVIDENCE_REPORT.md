@@ -4,9 +4,9 @@
 
 ## Corpus and provenance
 
-The Stage 5 corpus contains 50 verbatim RFC Editor text documents authored by the Internet Engineering Task Force across four domains: networking standards, application protocols, cybersecurity, and systems operations. Each manifest entry records the canonical URL, acquisition date (2026-08-25), IETF Trust Legal Provisions (BCP 78/79) basis, redistribution status, SHA-256, local identifier, and explicit independence declaration.
+The Stage 5 corpus contains 50 verbatim RFC Editor text documents authored by the Internet Engineering Task Force across four domains: networking standards, application protocols, cybersecurity, and systems operations. Each manifest entry records the canonical URL, acquisition date (2026-08-25), the publication-date IETF Trust Legal Provisions (BCP 78/79) basis, redistribution status, SHA-256, local identifier, and explicit independence declaration. This is not a public-domain claim: the RFC legal notices require retention of legends and notices, which the verbatim files retain.
 
-`evaluation/results/stage5_integrity_report.json` reports zero duplicate IDs, URLs, or hashes; zero detectable overlap with prior evaluation questions; and no provenance or integrity errors. No document is synthetic or marked as used in RALG development. No documents were excluded after acquisition.
+`evaluation/results/stage5_integrity_report.json` reports zero duplicate IDs, URLs, or hashes; zero unmanifested files; zero detectable overlap with prior evaluation questions; and no provenance or integrity errors. No document is synthetic or marked as used in RALG development. No documents were excluded after acquisition.
 
 ## Benchmark status
 

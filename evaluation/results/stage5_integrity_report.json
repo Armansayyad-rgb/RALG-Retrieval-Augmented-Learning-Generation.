@@ -10,6 +10,8 @@
     "duplicate_doc_ids": 0,
     "duplicate_urls": 0,
     "duplicate_hashes": 0,
+    "unmanifested_files": [],
+    "missing_manifest_files": [],
     "issues": [],
     "pass": true
   },
