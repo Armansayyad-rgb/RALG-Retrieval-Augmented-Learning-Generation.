@@ -1,9 +1,21 @@
 import json
+import os
 import re
 from pathlib import Path
 
-DATA_FILE = Path(r"C:\AI-Project\data\train.txt")
-OUTPUT_FILE = Path(r"C:\AI-Project\indexes\knowledge.json")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_FILE = Path(
+    os.environ.get(
+        "RALG_TRAIN_FILE",
+        PROJECT_ROOT / "data" / "train.txt",
+    )
+)
+OUTPUT_FILE = Path(
+    os.environ.get(
+        "RALG_KNOWLEDGE_INDEX_FILE",
+        PROJECT_ROOT / "indexes" / "knowledge.json",
+    )
+)
 
 CHUNK_WORDS = 120
 OVERLAP_WORDS = 25
@@ -77,9 +89,10 @@ def main():
     print("Chunks:", len(chunks))
     print("Saved:", OUTPUT_FILE)
 
-    print("\nExample chunk:")
-    print("-" * 60)
-    print(chunks[0]["text"])
+    if chunks:
+        print("\nExample chunk:")
+        print("-" * 60)
+        print(chunks[0]["text"])
 
 
 if __name__ == "__main__":

@@ -131,6 +131,17 @@ class PortabilityReadinessTests(unittest.TestCase):
         self.assertEqual(retriever_v2.KNOWLEDGE_FILES, KNOWLEDGE_FILES)
         self.assertEqual(retriever_v4.KNOWLEDGE_FILE, KNOWLEDGE_FILES[0])
 
+    def test_legacy_utilities_do_not_hardcode_checkout_path(self):
+        utility_files = (
+            PROJECT_ROOT / "src" / "generate_v2.py",
+            PROJECT_ROOT / "src" / "build_knowledge.py",
+            PROJECT_ROOT / "src" / "download_corpus.py",
+        )
+        for path in utility_files:
+            with self.subTest(path=path.name):
+                source = path.read_text(encoding="utf-8")
+                self.assertNotIn(r"C:\AI-Project", source)
+
 
 if __name__ == "__main__":
     unittest.main()
