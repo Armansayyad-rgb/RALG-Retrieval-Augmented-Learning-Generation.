@@ -1,0 +1,24 @@
+# Stage 5 Independent Evidence Source Manifest
+# Each line is a JSON object describing a single source document
+# Format:
+# {
+#   "doc_id": "unique identifier",
+#   "title": "document title",
+#   "source_type": "public|permitted|internal",
+#   "source_identifier": "URL, citation, or reference",
+#   "domain": "category",
+#   "revision_version": "version if known",
+#   "acquisition_date": "ISO 8601 date",
+#   "license_type": "license category",
+#   "permission_status": "confirmed|assumed|pending|denied",
+#   "redistribution_permitted": true|false,
+#   "synthetically_generated": false,
+#   "used_in_development": false,
+#   "sha256": "hash of content",
+#   "content_length_bytes": 0,
+#   "notes": "provenance notes"
+# }
+#
+# STATUS: Framework created. No independent documents loaded yet.
+# BLOCKER: Independent documents must be acquired from public/permitted sources.
+# See docs/STAGE5_REVIEW_GUIDE.md for source selection criteria.
