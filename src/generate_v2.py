@@ -1,11 +1,25 @@
+import os
+from pathlib import Path
+
 import torch
 from tokenizers import Tokenizer
 
 from model_v2 import SmallLMV2
 
 
-TOKENIZER_FILE = r"C:\AI-Project\data\tokenizer_v2.json"
-MODEL_FILE = r"C:\AI-Project\checkpoints\v2\final_model_v2_3000.pt"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+TOKENIZER_FILE = Path(
+    os.environ.get(
+        "TOKENIZER_FILE",
+        PROJECT_ROOT / "data" / "tokenizer_v2.json",
+    )
+)
+MODEL_FILE = Path(
+    os.environ.get(
+        "MODEL_FILE",
+        PROJECT_ROOT / "checkpoints" / "v2" / "final_model_v2_3000.pt",
+    )
+)
 
 MAX_NEW_TOKENS = 120
 TEMPERATURE = 0.8
@@ -103,7 +117,7 @@ def main():
     print("Device:", device)
 
     tokenizer = Tokenizer.from_file(
-        TOKENIZER_FILE
+        str(TOKENIZER_FILE)
     )
 
     model = SmallLMV2().to(device)
