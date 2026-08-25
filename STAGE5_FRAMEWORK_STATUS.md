@@ -1,15 +1,15 @@
 # STAGE 5 INDEPENDENT EVIDENCE FRAMEWORK STATUS REPORT
 
 **Date:** 2026-08-25  
-**Branch:** pilot/independent-evidence-v5  
+**Branch:** pilot/independent-evidence-v5-data
 **Commit:** b7f9de1  
-**Status:** FRAMEWORK COMPLETE | DATA ACQUISITION PENDING  
+**Status:** CORPUS ACQUIRED | FINAL EVALUATION BLOCKED ON INDEPENDENT REVIEW
 
 ## Executive Summary
 
-Stage 5 independent evidence evaluation framework has been created and committed to the pilot/independent-evidence-v5 branch. All framework components are in place for rigorous expert-reviewed evaluation on genuinely independent technical documents.
+Stage 5 independent evidence evaluation framework has been extended on the pilot/independent-evidence-v5-data branch with 50 independently acquired RFC documents, a provenance manifest, a 300-case preliminary queue, integrity validation, and an explicitly preliminary comparison.
 
-**CRITICAL DECISION POINT:** Stage 5 will proceed only if independent technical documents can be obtained from public/permitted sources. If such documents are unavailable, the stage will report: **BLOCKED ON INDEPENDENT DATA**
+**CRITICAL DECISION POINT:** The corpus is available and passes provenance checks. The final Stage 5 claim remains blocked until independent technical reviewers accept or reject the automatically generated cases.
 
 This is intentional. Better to honestly report that an independent validation milestone cannot be completed than to substitute internally generated synthetic material and falsely claim independence.
 
