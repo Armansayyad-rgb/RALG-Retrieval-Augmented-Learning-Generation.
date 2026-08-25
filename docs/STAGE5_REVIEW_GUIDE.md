@@ -410,3 +410,27 @@ Reason: No independent technical documents available that meet:
 
 Action: [describe specific data acquisition needed]
 ```
+
+## Blind Reviewer Packet
+
+The repository provides a blind packet under `evaluation/stage5_review_pack/`.
+Use `full_review.jsonl` for all cases or `pilot_review.jsonl` for the fixed
+75-case pilot sample. The packet contains the question, claimed support label,
+proposed answer, evidence excerpt, RFC attribution, and reviewer fields only.
+It deliberately contains no RALG output, lexical output, scores, latency,
+aggregate metrics, or model-derived failure labels.
+
+Reviewers should read the question and excerpt, consult the original RFC when
+needed, decide whether the support label is correct, check the proposed answer,
+evidence, attribution, clarity, and difficulty, then select `accept` or
+`reject` with substantive notes. Do not consider whether RALG or a lexical
+baseline answered correctly, project goals, or any desired benchmark outcome.
+
+Acceptance requires a clear question, correct support label, correct reference
+answer when applicable, supporting evidence, and correct provenance. Rejected
+cases remain in the audit trail. Use `evaluation/stage5_review_template.csv`;
+the ingestion tool rejects duplicate submissions and unknown case IDs, writes a
+new reviewed artifact, and leaves the original queue unchanged. Reviewer A and
+Reviewer B should work independently. Disagreements are adjudicated separately.
+A final benchmark is created only by the explicit freeze command after every
+case has an accept/reject decision.

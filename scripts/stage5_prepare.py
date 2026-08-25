@@ -97,7 +97,8 @@ def build_benchmark(root: Path, count: int = 300) -> int:
         path = root / "evaluation" / "stage5_documents" / f"rfc{number}.txt"
         text = path.read_text(encoding="utf-8-sig")
         for match in re.finditer(r"(?s)(?<!\S)(?!RFC\b|Table of Contents|References\b|Copyright\b).{90,420}?(?=\n\s*\n|\Z)", text):
-            quote = " ".join(match.group(0).split())
+            quote = match.group(0)
+            answer = " ".join(quote.split())
             words = [w for w in TOKEN.findall(quote.lower()) if w not in STOP and len(w) > 3]
             if len(words) < 4:
                 continue
@@ -110,8 +111,8 @@ def build_benchmark(root: Path, count: int = 300) -> int:
             cases.append({
                 "case_id": f"s5_case_{case_no:03d}",
                 "question": question,
-                "expected_answer": quote,
-                "acceptable_answers": [quote],
+                "expected_answer": answer,
+                "acceptable_answers": [answer],
                 "evidence_document_ids": [item["doc_id"]],
                 "evidence_spans": [{
                     "doc_id": item["doc_id"],
