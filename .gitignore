@@ -104,6 +104,7 @@ data/*.pt
 .claude/
 CLAUDE.md
 .opencode/
+.reticle/
 
 # JavaScript dependencies
 node_modules/

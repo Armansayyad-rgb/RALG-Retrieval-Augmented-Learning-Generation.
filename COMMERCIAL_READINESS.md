@@ -1,82 +1,118 @@
 # Commercial Readiness
 
-This document describes the public readiness criteria for RALG without exposing private strategy, customer information, or valuation targets.
+This document describes RALG's public technical/commercial readiness without exposing private strategy, prospect lists, negotiation notes, or valuation targets.
 
 ## Current stage
 
-RALG is an early technical proof with a working local pipeline, document ingestion, web UI, API, Docker support, evaluation tooling, and a reproducible held-out commercial validation runner.
+RALG is a controlled-pilot technical product, not a hardened public SaaS service.
 
-The latest validated checkpoint demonstrates correct retrieval and complete answers on 5 supported synthetic held-out cases, safe rejection on 5 unsupported cases, a 0% false-support rate on that small set, 23/23 regression passes, and a passing GitHub Actions sanity workflow on `master`.
+The current `master` includes:
 
-These are engineering checkpoints, not production claims. RALG is **not yet production-ready** and should not be presented as having proven superiority over conventional RAG systems.
+- shared `ExecutionPlan` / `execute_runtime()` orchestration for API and WebUI;
+- full-question-first hybrid grounded retrieval;
+- unified support/provenance/conflict gating;
+- document ingestion, persistence, listing, deletion, and restart recovery;
+- API and lightweight SDK flows;
+- deterministic benchmark/evaluation tooling;
+- synthetic and independently sourced evaluation corpora;
+- reproducibility, portability, soak, scale, and lifecycle evidence.
 
-See [Customer Pilot Readiness](PILOT_READINESS.md) for the explicit release gates before an external pilot.
+These are engineering checkpoints, not customer adoption, revenue, production-SLA, or safety-certification claims.
 
-## What is already demonstrated
+## Current validated engineering checkpoints
 
-- local document ingestion and question answering
-- evidence-oriented retrieval and answer generation
-- unsupported / false-premise rejection paths
-- repeatable synthetic retrieval benchmarks
-- a hard benchmark with distractors and multi-evidence cases
-- a small held-out commercial validation set with supported and unsupported cases
-- runtime-ingested evidence tracking without hard-coded corpus-size assumptions
-- end-to-end API reliability testing
-- local web UI and Docker packaging
-- GitHub Actions CI with manual dispatch support
+- regression suite: **23/23 PASS** in the current integration validation;
+- commercial validation: **quality gate PASS**;
+- Stage 5 preliminary unsupported rejection: **100%**;
+- Stage 5 preliminary false-support rate: **0%**;
+- clean Python 3.11 install: previously validated;
+- isolated API ingest/query/list/delete/restart lifecycle: previously validated;
+- live lightweight SDK integration: previously validated;
+- 1000-request / 8-worker soak: previously validated with 0 errors;
+- 100k retrieval scale: previously measured; larger 250k/500k runs remain deferred;
+- current CI on the core-runtime integration: **PASS**.
 
-## Required before customer pilots
+## Current preliminary independent-source retrieval result
 
-The following should be treated as release gates rather than marketing goals:
+Stage 5 uses 50 independently sourced IETF RFC documents and 300 automatically generated cases (210 supported / 90 unsupported).
 
-- stable supported-answer accuracy in the chosen domain
-- low false-support rate for unsupported questions
-- runtime-ingested documents ranking correctly against the static knowledge base
-- evidence returned to the user matching the evidence actually used for the answer
-- repeatable installation on a clean machine
-- passing CI and Docker startup checks
-- latency and memory measurements on representative hardware
-- clear handling of malformed or oversized document uploads
-- documented security boundaries for local deployment
-- a fixed held-out evaluation set that is not tuned after failures are observed
-- a larger and more realistic evaluation set than the current small synthetic checkpoint
+The current untouched preliminary retrieval run records:
 
-## Required before strong technical or investor claims
+| Metric | Lexical | RALG hybrid |
+| --- | ---: | ---: |
+| Recall@1 | 40.48% | **50.95%** |
+| Recall@3 | 87.62% | **90.95%** |
+| Recall@5 | 100.00% | **100.00%** |
+| MRR | 0.6485 | **0.7098** |
+| Unsupported rejection | 100% | **100%** |
+| False-support rate | 0% | **0%** |
 
-- larger, less hand-designed benchmark data
-- realistic or independently sourced manuals/SOPs with clear usage rights
-- baseline comparison performed under identical data and hardware conditions
-- reproducible benchmark versions tied to commits
-- evidence that any measured retrieval advantage survives subsequent code changes
-- documented failure examples, not only aggregate scores
-- provenance and licensing records for public training/evaluation data
+This is meaningful engineering evidence, but the 300 benchmark cases are still **not independently human-reviewed**. Therefore Stage 5 remains **BLOCKED ON INDEPENDENT REVIEW** and must not be represented as final external validation.
+
+## What is demonstrated today
+
+- local/private technical-document ingestion and question answering;
+- evidence-oriented answers with source/provenance handling;
+- conservative unsupported/false-premise behavior in validated sets;
+- one shared grounded runtime boundary across API and WebUI;
+- deterministic full-question-first hybrid retrieval;
+- factual extraction, comparison, reasoning, and bounded multi-hop state;
+- persistent runtime documents and restart recovery;
+- reproducible test and benchmark harnesses;
+- local API, WebUI, SDK, and Docker/Compose packaging;
+- explicit security and deployment limitations.
+
+## Material gaps before a stronger commercial pilot
+
+1. **Independent benchmark review** — Stage 5 cases need reviewer acceptance/correction and a frozen reviewed benchmark.
+2. **Docker lifecycle qualification** — current Compose is maintained, but a current clean end-to-end Docker run is still required.
+3. **Security boundary** — no built-in auth, TLS, tenant isolation, or production-grade rate limiting.
+4. **Multi-process lifecycle safety** — process-local mutation locking means the validated pilot deployment is single-worker.
+5. **Large-corpus qualification** — 250k/500k measurements are still deferred pending suitable hardware.
+6. **Dependency/IP diligence** — maintain an inventory of dependency licenses, third-party data rights, model rights, and historical source-license grants.
+7. **Customer evidence** — no customer revenue, reference deployment, or production workload is claimed by this repository.
+
+## Technical diligence priorities
+
+Before any serious strategic, licensing, or buyer diligence process, be able to provide:
+
+- a clean commit/tag representing the evaluation build;
+- architecture and runtime-path documentation;
+- benchmark methodology and machine-readable results;
+- independent-source provenance and hashes;
+- explicit negative/failure evidence;
+- dependency and third-party license inventory;
+- model/checkpoint ownership and redistribution status;
+- clean-install and Docker reproduction steps;
+- security boundary and known limitations;
+- an asset inventory distinguishing production, evaluation, training, and legacy code.
+
+See [Technical Diligence Status](docs/TECHNICAL_DILIGENCE_STATUS.md).
 
 ## Safe positioning
 
-> RALG Engine is a local, evidence-grounded AI system for private technical-document question answering with efficient retrieval and compact reasoning.
+> RALG Engine is a local, evidence-grounded technical-document intelligence engine with provenance-backed answers, conservative abstention, a unified grounded runtime, and reproducible retrieval evaluation.
 
 ## Suggested target users
 
-- manufacturing teams
-- maintenance teams
-- industrial documentation teams
-- internal technical support teams
-- organizations that prefer not to send private documents to hosted AI services
+- manufacturing and maintenance teams;
+- industrial documentation groups;
+- internal technical-support teams;
+- engineering/operations teams with manuals, SOPs, standards, and policies;
+- organizations evaluating local/private document intelligence.
 
 ## Keep private
 
-The following should not be stored in the public repository:
+Do not store in the public repository:
 
-- valuation targets
-- acquisition strategy
-- investor negotiation notes
-- private customer or prospect lists
-- customer documents
-- non-public benchmark data
-- proprietary deployment code
-- private model weights
-- credentials, API keys, or access tokens
+- valuation or minimum-price targets;
+- acquisition strategy or buyer lists;
+- negotiation notes;
+- private customer/prospect data;
+- proprietary customer documents;
+- credentials/tokens;
+- private model weights or licensed assets that cannot be redistributed.
 
 ## Public-reporting rule
 
-Benchmark reports should clearly distinguish **historical results**, **current verified results**, and **targets**. A synthetic or historical result should never be presented as current production performance without a fresh reproducible run.
+Always distinguish **historical**, **current measured**, **preliminary/unreviewed**, and **target** results. Never present synthetic, unreviewed, or historical results as customer-validated production performance.
