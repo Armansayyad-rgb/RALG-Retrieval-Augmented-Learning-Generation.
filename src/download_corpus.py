@@ -1,8 +1,14 @@
-from datasets import load_dataset
+import os
 from pathlib import Path
 
+from datasets import load_dataset
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_FILE = Path(
-    r"C:\AI-Project\data\wikitext_v2.txt"
+    os.environ.get(
+        "RALG_WIKITEXT_OUTPUT",
+        PROJECT_ROOT / "data" / "wikitext_v2.txt",
+    )
 )
 
 TARGET_CHARS = 60_000_000  # roughly enough for a first serious run
