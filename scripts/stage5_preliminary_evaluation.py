@@ -17,7 +17,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from src.retriever_v2 import build_index, retrieve
+sys.path.insert(0, str(ROOT / "src"))
+from retriever_v2 import build_index
+from retriever_hybrid import retrieve
 
 
 def words(text: str) -> set[str]:
@@ -90,7 +92,7 @@ def main() -> int:
                 )[:5]
                 results = [{"chunk": documents[i]} for i in ranked]
             else:
-                results = retrieve(case["question"], documents, index, df, final_top_k=5)
+                results = retrieve(case["question"], documents, index, df)
             latency = (time.perf_counter() - start) * 1000
             expected = case["evidence_document_ids"][0] if case["evidence_document_ids"] else None
             expected_text = documents[doc_ids.index(expected)] if expected else ""
