@@ -1,0 +1,9 @@
+# Stage 5 Expert Review Queue
+# Each line is a JSON object representing one benchmark case for human expert review
+# Format defined in docs/STAGE5_REVIEW_GUIDE.md
+#
+# STATUS: Framework created. Awaiting independent document acquisition.
+# When independent sources are available, benchmark cases will be constructed and queued here.
+#
+# Template:
+# {"case_id": "s5_case_NNN", "question": "...", "expected_answer": "...", "evidence_document_ids": [...], "evidence_spans": [...], "category": "...", "difficulty": "...", "reviewer_status": "unreviewed", "reviewer_id": null, "reviewer_notes": "", "disagreement_status": "none", "confidence": null}
