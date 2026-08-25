@@ -14,8 +14,9 @@ from dataclasses import dataclass
 from typing import Any
 
 from rag_chat_v2 import answer_question
+from runtime_architecture import execute_runtime
 from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk
-from retriever_v4 import retrieve as retrieve_v4_fn
+from retriever_hybrid import retrieve as retrieve_hybrid_fn
 
 _LOGGER = logging.getLogger(__name__)
 _SAFE_CHAT_ERROR = "The answer service is temporarily unavailable."
@@ -274,18 +275,20 @@ def _format_v2_sources(results: list[dict], limit: int) -> list[dict]:
     return sources
 
 
-def _format_v4_sources(retrieval: dict, limit: int) -> list[dict]:
-    """Normalize retriever_v4 results into a UI-friendly shape."""
-    chunks = (retrieval or {}).get("results") or []
+def _format_hybrid_sources(results: list[dict], limit: int) -> list[dict]:
+    """Normalize retriever_hybrid results into a UI-friendly shape."""
     sources = []
-    for rank, c in enumerate(chunks[:limit], start=1):
-        chunk = c.get("chunk", "")
+    for rank, r in enumerate(results[:limit], start=1):
+        chunk = r.get("chunk", "")
+        score = r.get("lexical_score")
+        if not isinstance(score, (int, float)):
+            score = r.get("full_question_coverage", 0.0)
         entry = {
             "rank": rank,
-            "id": c.get("chunk_index"),
+            "id": r.get("chunk_index"),
             "preview": (chunk or "")[:240],
             "evidence": chunk or "",
-            "score": round(float(c.get("final_score", 0.0)), 3),
+            "score": round(float(score), 3),
         }
         if isinstance(chunk, RuntimeChunk) and getattr(chunk, "metadata", None):
             meta = chunk.metadata
@@ -316,10 +319,8 @@ def format_evidence_sources(evidence: Any, limit: int) -> list[dict]:
         for side in ("left", "right"):
             combined.extend((evidence.get(side) or {}).get("results", []))
         return _format_v2_sources(combined, limit)
-    if evidence.get("kind") == "v4":
-        return _format_v4_sources(evidence, limit)
-    if isinstance(evidence.get("results"), list):
-        return _format_v4_sources(evidence, limit)
+    if evidence.get("kind") == "hybrid":
+        return _format_hybrid_sources(evidence.get("results", []), limit)
     return []
 
 
@@ -334,7 +335,7 @@ def collect_sources(
     The extractor path is the cheapest retrieval that produces
     ``chunk_index``/``final_score`` pairs and matches the chunks that
     surface as citations in the answer. If nothing matches, falls
-    back to the V4 reasoning retriever.
+    back to the authoritative hybrid reasoning retriever.
     """
     chunks = pipeline["chunks"]
     idx = pipeline["retrieval_index"]
@@ -355,14 +356,13 @@ def collect_sources(
         v2_sources = []
 
     try:
-        v4 = retrieve_v4_fn(
-            question, chunks, idx, df,
-            final_top_k=top_k,
+        hybrid = retrieve_hybrid_fn(
+            question, chunks, idx, df, final_top_k=top_k,
         )
-        if v4 and v4.get("results"):
-            v4_sources = _format_v4_sources(v4, top_k)
-            if answer is None or is_traceable_support(answer, True, v4_sources):
-                return v4_sources
+        if hybrid:
+            hybrid_sources = _format_hybrid_sources(hybrid, top_k)
+            if answer is None or is_traceable_support(answer, True, hybrid_sources):
+                return hybrid_sources
     except Exception:
         pass
 
@@ -467,7 +467,14 @@ def chat_turn(
         }
 
     try:
-        result = answer_question(pipeline, question.strip(), verbose=False)
+        execution = execute_runtime(
+            pipeline,
+            question.strip(),
+            top_k,
+            answer_fn=answer_question,
+            contract_fn=build_answer_contract,
+            sources_fn=collect_sources,
+        )
     except Exception:  # defensive — keep internal details out of the UI
         _LOGGER.exception("Unhandled chat pipeline error")
         return {
@@ -484,33 +491,19 @@ def chat_turn(
             "error": _SAFE_CHAT_ERROR,
         }
 
-    plan = result.get("runtime_plan") or {}
-    intent = plan.get("intent") or "general"
-    fallback_sources = None
-    if not result.get("evidence"):
-        fallback_sources = collect_sources(
-            pipeline, question, top_k, answer=result.get("answer", "")
-        )
-    contract = build_answer_contract(
-        pipeline,
-        question,
-        result,
-        top_k,
-        fallback_sources=fallback_sources,
-    )
-
     return {
         "question": question,
-        "answer": contract.answer,
-        "confidence": contract.confidence,
-        "supported": contract.supported,
-        "answer_type": contract.answer_type,
-        "intent": intent,
-        "sources": contract.sources,
-        "traceable": contract.traceable,
-        "conflict": contract.conflict,
-        "provenance": contract.provenance,
-        "error": contract.error,
+        "answer": execution.answer,
+        "confidence": execution.confidence,
+        "supported": execution.supported,
+        "answer_type": execution.answer_type,
+        "intent": execution.plan.intent,
+        "sources": execution.sources,
+        "traceable": execution.traceable,
+        "conflict": execution.conflict,
+        "provenance": execution.provenance,
+        "error": execution.error,
+        "observability": execution.observability,
     }
 
 

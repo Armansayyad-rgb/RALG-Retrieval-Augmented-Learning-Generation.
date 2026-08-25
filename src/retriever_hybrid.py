@@ -35,6 +35,11 @@ SECONDARY_TRIGGER_COVERAGE = 0.5
 MAX_SECONDARY_QUERIES = 2
 SECONDARY_DEPTH = 15
 
+# Bound on caller-supplied secondary queries (production integration).
+# These are fused under exactly the same full-question protection rule as
+# decomposed sub-queries; the default evaluation path supplies none.
+MAX_PROVIDED_SECONDARY_QUERIES = 3
+
 # Minimum useful words for a decomposed clause to qualify as a sub-query.
 MIN_SUBQUERY_WORDS = 3
 
@@ -186,6 +191,7 @@ def retrieve(
     index,
     document_frequency,
     final_top_k=10,
+    secondary_queries=None,
 ):
     """Full-question-first hybrid retrieval.
 
@@ -193,6 +199,11 @@ def retrieve(
     Pass 2 (only if needed): at most ``MAX_SECONDARY_QUERIES`` bounded
     sub-query passes, appended to the union without displacing strong
     full-question candidates.
+
+    ``secondary_queries`` lets a production caller supply additional
+    bounded sub-queries (e.g. intent-planner queries). They are fused
+    under the identical full-question protection rule and never run in
+    the default evaluation path.
     """
     if not chunks:
         return []
@@ -248,6 +259,33 @@ def retrieve(
                 secondary_rows.append(row)
             if executed_secondary >= MAX_SECONDARY_QUERIES:
                 break
+
+    provided = []
+    if secondary_queries:
+        question_key = tuple(_words(question))
+        seen_provided = set()
+        for supplied in secondary_queries:
+            supplied_key = tuple(_words(supplied))
+            if not supplied_key or supplied_key == question_key:
+                continue
+            if supplied_key in seen_provided:
+                continue
+            seen_provided.add(supplied_key)
+            provided.append(str(supplied).strip())
+            if len(provided) >= MAX_PROVIDED_SECONDARY_QUERIES:
+                break
+    for sub_query in provided:
+        rows = retrieve_v2(
+            sub_query,
+            chunks,
+            index,
+            document_frequency,
+            final_top_k=min(SECONDARY_DEPTH, total_documents),
+        )
+        executed_secondary += 1
+        for row in rows:
+            row["_subquery"] = sub_query
+            secondary_rows.append(row)
 
     ranked = fuse_candidates(
         primary_rows,

@@ -21,6 +21,7 @@ import logging
 from typing import Optional
 
 from rag_chat_v2 import answer_question
+from runtime_architecture import execute_runtime
 
 from webui.chat_handler import (
     build_answer_contract,
@@ -96,7 +97,15 @@ def route_through_hybrid(
     # 1. Let rag_chat_v2 do the routing + retrieval + (small LM) generation.
     # ------------------------------------------------------------------
     try:
-        result = answer_question(pipeline, question.strip(), verbose=False)
+        execution = execute_runtime(
+            pipeline,
+            question.strip(),
+            top_k,
+            answer_fn=answer_question,
+            contract_fn=build_answer_contract,
+            sources_fn=collect_sources,
+        )
+        result = execution.raw
     except Exception:
         _LOGGER.exception("Unhandled routing pipeline error")
         return HybridTurn(
@@ -115,17 +124,9 @@ def route_through_hybrid(
         )
 
     plan = result.get("runtime_plan") or {}
-    intent = plan.get("intent") or "general"
+    intent = execution.plan.intent
     fallback_sources = None
-    if not result.get("evidence"):
-        fallback_sources = collect_sources(pipeline, question, top_k)
-    contract = build_answer_contract(
-        pipeline,
-        question,
-        result,
-        top_k,
-        fallback_sources=fallback_sources,
-    )
+    contract = execution
     source_texts = [s["evidence"] for s in contract.sources if s.get("evidence")]
     base_answer = contract.answer
 

@@ -49,6 +49,7 @@ from webui.chat_handler import (  # noqa: E402
     build_answer_contract,
     collect_sources,
 )
+from runtime_architecture import execute_runtime  # noqa: E402
 from webui.document_processor import (
     UploadedDocument,
     chunk_text,
@@ -323,38 +324,26 @@ def query(request: QueryRequest) -> QueryResponse:
     pipeline = get_pipeline()
 
     try:
-        result = answer_question(
+        execution = execute_runtime(
             pipeline,
             request.question.strip(),
-            verbose=False,
-        )
-        fallback_sources = None
-        if not result.get("evidence"):
-            fallback_sources = collect_sources(
-                pipeline,
-                request.question.strip(),
-                request.top_k,
-                answer=str(result.get("answer", "")),
-            )
-        contract = build_answer_contract(
-            pipeline,
-            request.question.strip(),
-            result,
             request.top_k,
-            fallback_sources=fallback_sources,
+            answer_fn=answer_question,
+            contract_fn=build_answer_contract,
+            sources_fn=collect_sources,
         )
 
         return QueryResponse(
-            answer=contract.answer,
-            supported=contract.supported,
-            confidence=contract.confidence,
-            answer_type=contract.answer_type,
-            sources=contract.sources if request.include_sources else [],
-            latency_ms=round((time.perf_counter() - started) * 1000, 2),
-            traceable=contract.traceable,
-            conflict=contract.conflict,
-            provenance=contract.provenance,
-            error=contract.error,
+            answer=execution.answer,
+            supported=execution.supported,
+            confidence=execution.confidence,
+            answer_type=execution.answer_type,
+            sources=execution.sources if request.include_sources else [],
+            latency_ms=execution.observability["latency_ms"],
+            traceable=execution.traceable,
+            conflict=execution.conflict,
+            provenance=execution.provenance,
+            error=execution.error,
         )
 
     except Exception:

@@ -21,7 +21,7 @@ from retriever_v2 import (
     retrieve,
     retrieve_candidates,
 )
-from src.webui.chat_handler import _format_v2_sources, _format_v4_sources
+from src.webui.chat_handler import _format_v2_sources, _format_hybrid_sources
 from src.webui.app import _format_kb_table
 from src.webui.document_processor import (
     MAX_TXT_SIZE,
@@ -451,15 +451,15 @@ class UploadProvenanceTests(unittest.TestCase):
         ):
             self.assertIn(field, payload)
 
-    def test_v4_fallback_source_payload_includes_metadata(self):
+    def test_hybrid_fallback_source_payload_includes_metadata(self):
         chunk = chunk_text(
             "runtime evidence",
             "doc-1",
             doc_name="evidence.pdf",
             extension=".pdf",
         )[0]
-        payload = _format_v4_sources(
-            {"results": [{"chunk": chunk, "chunk_index": 0, "final_score": 1.0}]},
+        payload = _format_hybrid_sources(
+            [{"chunk": chunk, "chunk_index": 0, "lexical_score": 1.0}],
             1,
         )[0]
         self.assertEqual(payload["document_id"], "doc-1")

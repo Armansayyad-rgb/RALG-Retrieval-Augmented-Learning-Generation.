@@ -120,10 +120,10 @@ class UnifiedEvidenceTests(unittest.TestCase):
         left = runtime_chunk("The pump pressure limit is 10 PSI.", "doc-a", "a.txt")
         right = runtime_chunk("The pump pressure limit is 20 PSI.", "doc-b", "b.txt")
         evidence = {
-            "kind": "v4",
+            "kind": "hybrid",
             "results": [
-                {"chunk": left, "chunk_index": 0, "final_score": 10.0},
-                {"chunk": right, "chunk_index": 1, "final_score": 9.0},
+                {"chunk": left, "chunk_index": 0, "lexical_score": 10.0},
+                {"chunk": right, "chunk_index": 1, "lexical_score": 9.0},
             ],
             "context": f"{left}\n{right}",
         }
@@ -222,11 +222,11 @@ class UnifiedEvidenceTests(unittest.TestCase):
         self.assertEqual(contract.provenance[0]["document_id"], "doc-1")
         self.assertEqual(contract.provenance[0]["document_name"], "manual.txt")
 
-    def test_v4_fallback_evidence_remains_attached(self):
+    def test_hybrid_fallback_evidence_remains_attached(self):
         chunk = runtime_chunk("The pump pressure limit is 10 PSI.", name="manual.pdf")
         evidence = {
-            "kind": "v4",
-            "results": [{"chunk": chunk, "chunk_index": 0, "final_score": 4.0}],
+            "kind": "hybrid",
+            "results": [{"chunk": chunk, "chunk_index": 0, "lexical_score": 4.0}],
             "context": str(chunk),
         }
         sources = format_evidence_sources(evidence, 1)
