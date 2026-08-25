@@ -13,8 +13,8 @@
         "unsupported_rejection": 1.0,
         "false_support_rate": 0.0,
         "evidence_correctness": 1.0,
-        "latency_p50_ms": 187.07655000025625,
-        "latency_p95_ms": 252.89670000074693
+        "latency_p50_ms": 136.41589999861026,
+        "latency_p95_ms": 151.75259999887203
       },
       "rows": [
         {
@@ -22,2114 +22,2114 @@
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 132.752999999866
+          "latency_ms": 133.636700000352
         },
         {
           "case_id": "s5_case_002",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 134.03389999984938
+          "latency_ms": 132.99800000095274
         },
         {
           "case_id": "s5_case_003",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 135.63129999965895
+          "latency_ms": 132.98289999875124
         },
         {
           "case_id": "s5_case_004",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 135.50149999991845
+          "latency_ms": 132.07949999923585
         },
         {
           "case_id": "s5_case_005",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 153.95429999989574
+          "latency_ms": 132.14549999975134
         },
         {
           "case_id": "s5_case_006",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 154.29620000031719
+          "latency_ms": 132.90779999806546
         },
         {
           "case_id": "s5_case_007",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 142.04509999945003
+          "latency_ms": 132.5695999985328
         },
         {
           "case_id": "s5_case_008",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 135.24760000018432
+          "latency_ms": 132.8347999988182
         },
         {
           "case_id": "s5_case_009",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 158.81809999973484
+          "latency_ms": 135.09870000052615
         },
         {
           "case_id": "s5_case_010",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 209.58140000038838
+          "latency_ms": 132.8371999989031
         },
         {
           "case_id": "s5_case_011",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 232.96119999940856
+          "latency_ms": 134.55660000181524
         },
         {
           "case_id": "s5_case_012",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 230.70860000007087
+          "latency_ms": 133.7474000029033
         },
         {
           "case_id": "s5_case_013",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 182.27699999988545
+          "latency_ms": 133.81940000181203
         },
         {
           "case_id": "s5_case_014",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 245.96540000038658
+          "latency_ms": 134.16829999914626
         },
         {
           "case_id": "s5_case_015",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 206.38469999994413
+          "latency_ms": 156.5630000004603
         },
         {
           "case_id": "s5_case_016",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 264.4282999999632
+          "latency_ms": 139.10349999787286
         },
         {
           "case_id": "s5_case_017",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 288.1835999996838
+          "latency_ms": 133.5456000015256
         },
         {
           "case_id": "s5_case_018",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 292.7153000000544
+          "latency_ms": 136.74130000072182
         },
         {
           "case_id": "s5_case_019",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 240.7720999999583
+          "latency_ms": 143.5464000023785
         },
         {
           "case_id": "s5_case_020",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 249.49000000015076
+          "latency_ms": 135.30209999953513
         },
         {
           "case_id": "s5_case_021",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 251.3144000004104
+          "latency_ms": 136.91149999795016
         },
         {
           "case_id": "s5_case_022",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 232.95499999949243
+          "latency_ms": 138.39519999964978
         },
         {
           "case_id": "s5_case_023",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 207.0741999996244
+          "latency_ms": 138.1056999998691
         },
         {
           "case_id": "s5_case_024",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 199.27180000013323
+          "latency_ms": 134.58059999902616
         },
         {
           "case_id": "s5_case_025",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 192.7257000006648
+          "latency_ms": 136.72930000029737
         },
         {
           "case_id": "s5_case_026",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 213.51490000051854
+          "latency_ms": 135.1366999988386
         },
         {
           "case_id": "s5_case_027",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 187.975899999401
+          "latency_ms": 134.1123999991396
         },
         {
           "case_id": "s5_case_028",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 192.6485000003595
+          "latency_ms": 135.86320000104024
         },
         {
           "case_id": "s5_case_029",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 235.18950000016048
+          "latency_ms": 152.52239999972517
         },
         {
           "case_id": "s5_case_030",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 198.85270000031596
+          "latency_ms": 138.62650000010035
         },
         {
           "case_id": "s5_case_031",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 228.21839999960503
+          "latency_ms": 133.31710000056773
         },
         {
           "case_id": "s5_case_032",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 186.95469999966008
+          "latency_ms": 137.51659999979893
         },
         {
           "case_id": "s5_case_033",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 206.01340000030177
+          "latency_ms": 139.4784999974945
         },
         {
           "case_id": "s5_case_034",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 172.12329999983922
+          "latency_ms": 133.76620000053663
         },
         {
           "case_id": "s5_case_035",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 196.54939999963972
+          "latency_ms": 135.31850000072154
         },
         {
           "case_id": "s5_case_036",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 203.93700000022363
+          "latency_ms": 138.04119999986142
         },
         {
           "case_id": "s5_case_037",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 255.17909999962285
+          "latency_ms": 137.82820000051288
         },
         {
           "case_id": "s5_case_038",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 261.6760000000795
+          "latency_ms": 137.60850000107894
         },
         {
           "case_id": "s5_case_039",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 252.89670000074693
+          "latency_ms": 141.78119999996852
         },
         {
           "case_id": "s5_case_040",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 269.03089999996155
+          "latency_ms": 141.1487000004854
         },
         {
           "case_id": "s5_case_041",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 237.762599999769
+          "latency_ms": 143.86609999928623
         },
         {
           "case_id": "s5_case_042",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 255.81160000001546
+          "latency_ms": 137.77499999923748
         },
         {
           "case_id": "s5_case_043",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 234.44199999994453
+          "latency_ms": 139.37740000255872
         },
         {
           "case_id": "s5_case_044",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 214.3501999998989
+          "latency_ms": 138.2443999973475
         },
         {
           "case_id": "s5_case_045",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 219.74599999975908
+          "latency_ms": 146.3266000027943
         },
         {
           "case_id": "s5_case_046",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 200.44740000048478
+          "latency_ms": 137.43450000038138
         },
         {
           "case_id": "s5_case_047",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 227.9076000004352
+          "latency_ms": 136.96709999931045
         },
         {
           "case_id": "s5_case_048",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 225.0685999997586
+          "latency_ms": 135.36720000047353
         },
         {
           "case_id": "s5_case_049",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 231.09550000026502
+          "latency_ms": 134.9012999999104
         },
         {
           "case_id": "s5_case_050",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 201.20479999968666
+          "latency_ms": 135.3488999993715
         },
         {
           "case_id": "s5_case_051",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 236.36869999972987
+          "latency_ms": 135.48269999955664
         },
         {
           "case_id": "s5_case_052",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 201.27099999990605
+          "latency_ms": 135.2298999991035
         },
         {
           "case_id": "s5_case_053",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 205.76230000006035
+          "latency_ms": 133.02629999816418
         },
         {
           "case_id": "s5_case_054",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 187.16000000040367
+          "latency_ms": 137.36470000003465
         },
         {
           "case_id": "s5_case_055",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 243.18859999948472
+          "latency_ms": 131.4794999998412
         },
         {
           "case_id": "s5_case_056",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 210.44460000030085
+          "latency_ms": 144.483100000798
         },
         {
           "case_id": "s5_case_057",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 253.91140000010637
+          "latency_ms": 135.8470999985002
         },
         {
           "case_id": "s5_case_058",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 257.2737999998935
+          "latency_ms": 136.04209999903105
         },
         {
           "case_id": "s5_case_059",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 204.1652999996586
+          "latency_ms": 139.21280000067782
         },
         {
           "case_id": "s5_case_060",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 234.87769999974262
+          "latency_ms": 135.2904999985185
         },
         {
           "case_id": "s5_case_061",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 200.97940000050585
+          "latency_ms": 140.18610000130138
         },
         {
           "case_id": "s5_case_062",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 200.5265000007057
+          "latency_ms": 153.89019999929587
         },
         {
           "case_id": "s5_case_063",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 209.27889999984473
+          "latency_ms": 140.90629999918747
         },
         {
           "case_id": "s5_case_064",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 196.0929999995642
+          "latency_ms": 134.71320000098785
         },
         {
           "case_id": "s5_case_065",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 248.56010000075912
+          "latency_ms": 133.63770000069053
         },
         {
           "case_id": "s5_case_066",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 176.3211000006777
+          "latency_ms": 138.2536999990407
         },
         {
           "case_id": "s5_case_067",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 223.50340000048163
+          "latency_ms": 137.26870000027702
         },
         {
           "case_id": "s5_case_068",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 177.48950000077457
+          "latency_ms": 158.00449999733246
         },
         {
           "case_id": "s5_case_069",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 222.38070000003063
+          "latency_ms": 136.53730000078212
         },
         {
           "case_id": "s5_case_070",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 178.91660000077536
+          "latency_ms": 136.87559999743826
         },
         {
           "case_id": "s5_case_071",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 163.15669999949023
+          "latency_ms": 137.2932000012952
         },
         {
           "case_id": "s5_case_072",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 220.41230000013456
+          "latency_ms": 171.05479999736417
         },
         {
           "case_id": "s5_case_073",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 200.5516000008356
+          "latency_ms": 145.90180000232067
         },
         {
           "case_id": "s5_case_074",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 199.2913000003682
+          "latency_ms": 144.65819999895757
         },
         {
           "case_id": "s5_case_075",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 220.35299999970448
+          "latency_ms": 135.04590000229655
         },
         {
           "case_id": "s5_case_076",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 207.7036999999109
+          "latency_ms": 132.8021000008448
         },
         {
           "case_id": "s5_case_077",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 178.3875999999509
+          "latency_ms": 135.11069999731262
         },
         {
           "case_id": "s5_case_078",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 222.79669999988982
+          "latency_ms": 133.61040000017965
         },
         {
           "case_id": "s5_case_079",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 177.0665000003646
+          "latency_ms": 139.08319999973173
         },
         {
           "case_id": "s5_case_080",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 202.41690000057133
+          "latency_ms": 136.75739999962389
         },
         {
           "case_id": "s5_case_081",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 192.72510000064358
+          "latency_ms": 146.9972000013513
         },
         {
           "case_id": "s5_case_082",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 189.76500000007945
+          "latency_ms": 135.29559999733465
         },
         {
           "case_id": "s5_case_083",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 199.7685000005731
+          "latency_ms": 135.48379999701865
         },
         {
           "case_id": "s5_case_084",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 202.54340000064985
+          "latency_ms": 138.4665000005043
         },
         {
           "case_id": "s5_case_085",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 237.7226000007795
+          "latency_ms": 137.80950000000303
         },
         {
           "case_id": "s5_case_086",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 168.07079999944108
+          "latency_ms": 138.44809999864083
         },
         {
           "case_id": "s5_case_087",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 228.7032000003819
+          "latency_ms": 134.74760000099195
         },
         {
           "case_id": "s5_case_088",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 164.4402000001719
+          "latency_ms": 134.94469999932335
         },
         {
           "case_id": "s5_case_089",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 196.1338999999498
+          "latency_ms": 133.752400000958
         },
         {
           "case_id": "s5_case_090",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 201.47710000037478
+          "latency_ms": 135.07949999984703
         },
         {
           "case_id": "s5_case_091",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 211.01909999924828
+          "latency_ms": 138.77449999927194
         },
         {
           "case_id": "s5_case_092",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 192.22780000018247
+          "latency_ms": 151.16929999931017
         },
         {
           "case_id": "s5_case_093",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 206.32769999974698
+          "latency_ms": 151.70040000157314
         },
         {
           "case_id": "s5_case_094",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 173.60759999974107
+          "latency_ms": 135.26630000342266
         },
         {
           "case_id": "s5_case_095",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 218.86260000064794
+          "latency_ms": 135.02320000043255
         },
         {
           "case_id": "s5_case_096",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 184.3218000003617
+          "latency_ms": 135.38540000081412
         },
         {
           "case_id": "s5_case_097",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 184.65480000031675
+          "latency_ms": 132.06870000067283
         },
         {
           "case_id": "s5_case_098",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 213.67209999971237
+          "latency_ms": 136.674999997922
         },
         {
           "case_id": "s5_case_099",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 188.2411000005959
+          "latency_ms": 134.89839999965625
         },
         {
           "case_id": "s5_case_100",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 192.25119999919116
+          "latency_ms": 133.55679999949643
         },
         {
           "case_id": "s5_case_101",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 187.0281999999861
+          "latency_ms": 132.50199999674805
         },
         {
           "case_id": "s5_case_102",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 211.0028000006423
+          "latency_ms": 134.72769999862066
         },
         {
           "case_id": "s5_case_103",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 260.4687000002741
+          "latency_ms": 136.18230000065523
         },
         {
           "case_id": "s5_case_104",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 270.5284000003303
+          "latency_ms": 134.2679000008502
         },
         {
           "case_id": "s5_case_105",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 240.48409999977594
+          "latency_ms": 134.153700000752
         },
         {
           "case_id": "s5_case_106",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 253.40150000010908
+          "latency_ms": 136.68160000088392
         },
         {
           "case_id": "s5_case_107",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 230.0965999993423
+          "latency_ms": 133.8647000011406
         },
         {
           "case_id": "s5_case_108",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 213.20680000007997
+          "latency_ms": 133.1430000027467
         },
         {
           "case_id": "s5_case_109",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 234.39329999928304
+          "latency_ms": 137.65309999871533
         },
         {
           "case_id": "s5_case_110",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 236.752400000114
+          "latency_ms": 136.3192999997409
         },
         {
           "case_id": "s5_case_111",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 215.39579999989655
+          "latency_ms": 138.08910000079777
         },
         {
           "case_id": "s5_case_112",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 240.92429999927845
+          "latency_ms": 144.8562999976275
         },
         {
           "case_id": "s5_case_113",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 187.05210000007355
+          "latency_ms": 135.9879000010551
         },
         {
           "case_id": "s5_case_114",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 247.96429999969405
+          "latency_ms": 136.46479999806616
         },
         {
           "case_id": "s5_case_115",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 212.68719999989116
+          "latency_ms": 138.827399998263
         },
         {
           "case_id": "s5_case_116",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 218.1203000000096
+          "latency_ms": 133.63889999891398
         },
         {
           "case_id": "s5_case_117",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 206.29279999957362
+          "latency_ms": 173.92610000024433
         },
         {
           "case_id": "s5_case_118",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 239.53679999976885
+          "latency_ms": 150.65020000110962
         },
         {
           "case_id": "s5_case_119",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 215.30600000005506
+          "latency_ms": 135.18829999884474
         },
         {
           "case_id": "s5_case_120",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 242.6298999998835
+          "latency_ms": 137.7345000000787
         },
         {
           "case_id": "s5_case_121",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 232.52920000049926
+          "latency_ms": 133.5480000016105
         },
         {
           "case_id": "s5_case_122",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 237.65089999960765
+          "latency_ms": 139.2608999994991
         },
         {
           "case_id": "s5_case_123",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 267.5252000008186
+          "latency_ms": 139.94699999966542
         },
         {
           "case_id": "s5_case_124",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 250.54850000014994
+          "latency_ms": 139.11340000049677
         },
         {
           "case_id": "s5_case_125",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 189.1602999994575
+          "latency_ms": 134.85510000100476
         },
         {
           "case_id": "s5_case_126",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 225.99559999980556
+          "latency_ms": 137.4424000023282
         },
         {
           "case_id": "s5_case_127",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 196.11480000003212
+          "latency_ms": 142.15640000111307
         },
         {
           "case_id": "s5_case_128",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 174.42100000062055
+          "latency_ms": 133.23920000038925
         },
         {
           "case_id": "s5_case_129",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 211.620000000039
+          "latency_ms": 136.74900000114576
         },
         {
           "case_id": "s5_case_130",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 200.65299999987474
+          "latency_ms": 156.32150000237743
         },
         {
           "case_id": "s5_case_131",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 192.8938000000926
+          "latency_ms": 136.5616000002774
         },
         {
           "case_id": "s5_case_132",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 200.02300000032847
+          "latency_ms": 133.47559999965597
         },
         {
           "case_id": "s5_case_133",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 214.11200000056851
+          "latency_ms": 138.1586999996216
         },
         {
           "case_id": "s5_case_134",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 246.45929999951477
+          "latency_ms": 135.79620000018622
         },
         {
           "case_id": "s5_case_135",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 205.71490000020276
+          "latency_ms": 134.92750000295928
         },
         {
           "case_id": "s5_case_136",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 232.78579999987414
+          "latency_ms": 131.66160000037053
         },
         {
           "case_id": "s5_case_137",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 205.43780000025436
+          "latency_ms": 134.1054999975313
         },
         {
           "case_id": "s5_case_138",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 176.28120000063063
+          "latency_ms": 137.08369999949355
         },
         {
           "case_id": "s5_case_139",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 187.10100000043894
+          "latency_ms": 133.2972999989579
         },
         {
           "case_id": "s5_case_140",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 192.8682999996454
+          "latency_ms": 133.9987999999721
         },
         {
           "case_id": "s5_case_141",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 185.95189999996364
+          "latency_ms": 131.75150000097346
         },
         {
           "case_id": "s5_case_142",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 174.03700000068056
+          "latency_ms": 132.62849999955506
         },
         {
           "case_id": "s5_case_143",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 175.50800000026356
+          "latency_ms": 134.59019999936572
         },
         {
           "case_id": "s5_case_144",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 196.79319999977452
+          "latency_ms": 134.08280000294326
         },
         {
           "case_id": "s5_case_145",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 202.0304000006945
+          "latency_ms": 137.3262999986764
         },
         {
           "case_id": "s5_case_146",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 212.65969999967638
+          "latency_ms": 135.48059999811812
         },
         {
           "case_id": "s5_case_147",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 197.9190000001836
+          "latency_ms": 139.21029999983148
         },
         {
           "case_id": "s5_case_148",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 225.54069999932835
+          "latency_ms": 133.31400000242866
         },
         {
           "case_id": "s5_case_149",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 222.70540000045003
+          "latency_ms": 139.78749999660067
         },
         {
           "case_id": "s5_case_150",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 216.25829999993584
+          "latency_ms": 134.53540000045905
         },
         {
           "case_id": "s5_case_151",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 186.78149999959714
+          "latency_ms": 135.1408000009542
         },
         {
           "case_id": "s5_case_152",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 203.27280000037717
+          "latency_ms": 137.37860000037472
         },
         {
           "case_id": "s5_case_153",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 200.45099999970262
+          "latency_ms": 136.307199998555
         },
         {
           "case_id": "s5_case_154",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 216.0407999999734
+          "latency_ms": 137.15880000017933
         },
         {
           "case_id": "s5_case_155",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 210.1810000003752
+          "latency_ms": 135.8607000001939
         },
         {
           "case_id": "s5_case_156",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 228.2935000002908
+          "latency_ms": 138.67959999697632
         },
         {
           "case_id": "s5_case_157",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 202.9485000002751
+          "latency_ms": 135.53759999922477
         },
         {
           "case_id": "s5_case_158",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 170.00329999973474
+          "latency_ms": 135.54519999888726
         },
         {
           "case_id": "s5_case_159",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 236.21389999971143
+          "latency_ms": 136.1507999972673
         },
         {
           "case_id": "s5_case_160",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 247.17659999987518
+          "latency_ms": 138.8444999975036
         },
         {
           "case_id": "s5_case_161",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 210.07140000074287
+          "latency_ms": 138.58430000254884
         },
         {
           "case_id": "s5_case_162",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 248.24189999981172
+          "latency_ms": 135.3281000010611
         },
         {
           "case_id": "s5_case_163",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 233.7721000003512
+          "latency_ms": 136.21000000057393
         },
         {
           "case_id": "s5_case_164",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 210.6775000002017
+          "latency_ms": 135.09779999731109
         },
         {
           "case_id": "s5_case_165",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 180.2449999995588
+          "latency_ms": 140.36049999776878
         },
         {
           "case_id": "s5_case_166",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 179.39010000009148
+          "latency_ms": 133.21640000140178
         },
         {
           "case_id": "s5_case_167",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 207.1256999997786
+          "latency_ms": 136.69859999936307
         },
         {
           "case_id": "s5_case_168",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 203.73250000011467
+          "latency_ms": 140.73890000145184
         },
         {
           "case_id": "s5_case_169",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 233.57189999933325
+          "latency_ms": 133.93189999987953
         },
         {
           "case_id": "s5_case_170",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 215.16040000005887
+          "latency_ms": 134.62640000216197
         },
         {
           "case_id": "s5_case_171",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 195.69219999993948
+          "latency_ms": 165.65669999909005
         },
         {
           "case_id": "s5_case_172",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 218.45639999992272
+          "latency_ms": 140.4928000010841
         },
         {
           "case_id": "s5_case_173",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 212.7717000003031
+          "latency_ms": 136.25899999897229
         },
         {
           "case_id": "s5_case_174",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 188.21079999997892
+          "latency_ms": 138.92590000250493
         },
         {
           "case_id": "s5_case_175",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 216.03500000037457
+          "latency_ms": 132.94690000111586
         },
         {
           "case_id": "s5_case_176",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 220.7248000004256
+          "latency_ms": 135.72740000017802
         },
         {
           "case_id": "s5_case_177",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 183.97099999947386
+          "latency_ms": 141.6944999982661
         },
         {
           "case_id": "s5_case_178",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 207.43260000017472
+          "latency_ms": 137.12160000068252
         },
         {
           "case_id": "s5_case_179",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 232.7925999998115
+          "latency_ms": 135.75159999891184
         },
         {
           "case_id": "s5_case_180",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 232.88330000013957
+          "latency_ms": 136.69479999953182
         },
         {
           "case_id": "s5_case_181",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 180.20639999940613
+          "latency_ms": 137.012400002277
         },
         {
           "case_id": "s5_case_182",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 261.0740000000078
+          "latency_ms": 151.75259999887203
         },
         {
           "case_id": "s5_case_183",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 292.96960000010586
+          "latency_ms": 145.51240000218968
         },
         {
           "case_id": "s5_case_184",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 229.9934000002395
+          "latency_ms": 138.15720000275178
         },
         {
           "case_id": "s5_case_185",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 207.98790000026202
+          "latency_ms": 137.1923999977298
         },
         {
           "case_id": "s5_case_186",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 217.77299999939714
+          "latency_ms": 142.02560000194353
         },
         {
           "case_id": "s5_case_187",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 168.94559999946068
+          "latency_ms": 177.65759999747388
         },
         {
           "case_id": "s5_case_188",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 144.2561999992904
+          "latency_ms": 150.87449999919045
         },
         {
           "case_id": "s5_case_189",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 141.65940000020782
+          "latency_ms": 132.9489999989164
         },
         {
           "case_id": "s5_case_190",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 139.24869999937073
+          "latency_ms": 133.69239999883575
         },
         {
           "case_id": "s5_case_191",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 134.4731999997748
+          "latency_ms": 133.04839999909746
         },
         {
           "case_id": "s5_case_192",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 141.5671000004295
+          "latency_ms": 134.97279999864986
         },
         {
           "case_id": "s5_case_193",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 146.4789000001474
+          "latency_ms": 133.6916999971436
         },
         {
           "case_id": "s5_case_194",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 139.76039999943168
+          "latency_ms": 133.4119000021019
         },
         {
           "case_id": "s5_case_195",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 138.88700000006793
+          "latency_ms": 132.3936999979196
         },
         {
           "case_id": "s5_case_196",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 134.13409999975556
+          "latency_ms": 138.07180000003427
         },
         {
           "case_id": "s5_case_197",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 135.70350000009057
+          "latency_ms": 135.43290000234265
         },
         {
           "case_id": "s5_case_198",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 137.11609999973007
+          "latency_ms": 141.89189999888185
         },
         {
           "case_id": "s5_case_199",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 136.86200000029203
+          "latency_ms": 136.296399999992
         },
         {
           "case_id": "s5_case_200",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 138.86960000036197
+          "latency_ms": 134.1885000001639
         },
         {
           "case_id": "s5_case_201",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 137.36840000001393
+          "latency_ms": 137.68309999795747
         },
         {
           "case_id": "s5_case_202",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 133.14940000054776
+          "latency_ms": 134.0870999993058
         },
         {
           "case_id": "s5_case_203",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 131.07200000013108
+          "latency_ms": 136.22179999947548
         },
         {
           "case_id": "s5_case_204",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 135.85820000025706
+          "latency_ms": 138.98899999912828
         },
         {
           "case_id": "s5_case_205",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 142.3187999998845
+          "latency_ms": 143.6926999995194
         },
         {
           "case_id": "s5_case_206",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 140.3043999998772
+          "latency_ms": 136.3019999989774
         },
         {
           "case_id": "s5_case_207",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 144.27899999918736
+          "latency_ms": 136.07910000064294
         },
         {
           "case_id": "s5_case_208",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 136.14469999993162
+          "latency_ms": 140.58559999830322
         },
         {
           "case_id": "s5_case_209",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 133.53389999974752
+          "latency_ms": 133.53830000050948
         },
         {
           "case_id": "s5_case_210",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 136.95970000026136
+          "latency_ms": 136.77860000098008
         },
         {
           "case_id": "s5_case_211",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 137.14799999979732
+          "latency_ms": 136.29740000033053
         },
         {
           "case_id": "s5_case_212",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.97279999955936
+          "latency_ms": 136.64740000240272
         },
         {
           "case_id": "s5_case_213",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 131.25320000017382
+          "latency_ms": 138.07720000113477
         },
         {
           "case_id": "s5_case_214",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.67839999996067
+          "latency_ms": 134.6082000018214
         },
         {
           "case_id": "s5_case_215",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 140.6459999998333
+          "latency_ms": 144.1188000026159
         },
         {
           "case_id": "s5_case_216",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 137.5873999995747
+          "latency_ms": 137.1419999995851
         },
         {
           "case_id": "s5_case_217",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 145.15790000041306
+          "latency_ms": 136.36699999915436
         },
         {
           "case_id": "s5_case_218",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 138.93170000028476
+          "latency_ms": 131.82769999912125
         },
         {
           "case_id": "s5_case_219",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 141.7461999999432
+          "latency_ms": 137.4751000003016
         },
         {
           "case_id": "s5_case_220",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.31909999983327
+          "latency_ms": 156.58499999699416
         },
         {
           "case_id": "s5_case_221",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 138.96659999954863
+          "latency_ms": 144.4286000005377
         },
         {
           "case_id": "s5_case_222",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.38070000070002
+          "latency_ms": 141.23680000193417
         },
         {
           "case_id": "s5_case_223",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 138.68699999966339
+          "latency_ms": 135.65359999847715
         },
         {
           "case_id": "s5_case_224",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 131.7165999998906
+          "latency_ms": 137.694900000497
         },
         {
           "case_id": "s5_case_225",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 139.19529999930091
+          "latency_ms": 139.26310000169906
         },
         {
           "case_id": "s5_case_226",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.0613000002122
+          "latency_ms": 134.50970000121742
         },
         {
           "case_id": "s5_case_227",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.0775000005815
+          "latency_ms": 139.44850000189035
         },
         {
           "case_id": "s5_case_228",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.58419999985927
+          "latency_ms": 138.5164999992412
         },
         {
           "case_id": "s5_case_229",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 142.24909999938973
+          "latency_ms": 137.76909999796771
         },
         {
           "case_id": "s5_case_230",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.57569999941188
+          "latency_ms": 136.04239999767742
         },
         {
           "case_id": "s5_case_231",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.371099999953
+          "latency_ms": 134.06290000057197
         },
         {
           "case_id": "s5_case_232",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.4975000003833
+          "latency_ms": 135.07129999925382
         },
         {
           "case_id": "s5_case_233",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.17210000009072
+          "latency_ms": 134.18410000303993
         },
         {
           "case_id": "s5_case_234",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 137.43760000033944
+          "latency_ms": 142.97280000027968
         },
         {
           "case_id": "s5_case_235",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 130.04749999981868
+          "latency_ms": 134.74219999989145
         },
         {
           "case_id": "s5_case_236",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.46750000023167
+          "latency_ms": 138.6575999968045
         },
         {
           "case_id": "s5_case_237",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 145.48269999977492
+          "latency_ms": 136.35119999889866
         },
         {
           "case_id": "s5_case_238",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.91649999964284
+          "latency_ms": 135.29130000097211
         },
         {
           "case_id": "s5_case_239",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 132.20689999980095
+          "latency_ms": 140.82880000205478
         },
         {
           "case_id": "s5_case_240",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.13659999919037
+          "latency_ms": 137.99719999951776
         },
         {
           "case_id": "s5_case_241",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.49300000027142
+          "latency_ms": 145.14469999994617
         },
         {
           "case_id": "s5_case_242",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 130.81229999988864
+          "latency_ms": 157.3409000011452
         },
         {
           "case_id": "s5_case_243",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.48279999961233
+          "latency_ms": 136.26419999854988
         },
         {
           "case_id": "s5_case_244",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 139.95259999956033
+          "latency_ms": 136.32290000168723
         },
         {
           "case_id": "s5_case_245",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.67079999989073
+          "latency_ms": 133.307899999636
         },
         {
           "case_id": "s5_case_246",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.36549999985436
+          "latency_ms": 134.45689999934984
         },
         {
           "case_id": "s5_case_247",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.76619999962713
+          "latency_ms": 137.92990000001737
         },
         {
           "case_id": "s5_case_248",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 137.84859999941546
+          "latency_ms": 134.03479999760748
         },
         {
           "case_id": "s5_case_249",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.02899999982765
+          "latency_ms": 135.13390000298386
         },
         {
           "case_id": "s5_case_250",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 138.58930000060354
+          "latency_ms": 137.49789999928907
         },
         {
           "case_id": "s5_case_251",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 139.34669999980542
+          "latency_ms": 138.56870000017807
         },
         {
           "case_id": "s5_case_252",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 139.84110000001237
+          "latency_ms": 133.84339999902295
         },
         {
           "case_id": "s5_case_253",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 137.50739999977668
+          "latency_ms": 132.09039999856031
         },
         {
           "case_id": "s5_case_254",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.6549000008963
+          "latency_ms": 134.53060000028927
         },
         {
           "case_id": "s5_case_255",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.98829999955342
+          "latency_ms": 140.18379999833996
         },
         {
           "case_id": "s5_case_256",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.48790000024746
+          "latency_ms": 137.27799999833223
         },
         {
           "case_id": "s5_case_257",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.20370000019466
+          "latency_ms": 138.79330000054324
         },
         {
           "case_id": "s5_case_258",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.88919999983773
+          "latency_ms": 137.92580000153976
         },
         {
           "case_id": "s5_case_259",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 143.63090000006196
+          "latency_ms": 135.0196000021242
         },
         {
           "case_id": "s5_case_260",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 132.49249999989843
+          "latency_ms": 135.3610000005574
         },
         {
           "case_id": "s5_case_261",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.61859999986336
+          "latency_ms": 135.81519999934244
         },
         {
           "case_id": "s5_case_262",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 131.9978000001356
+          "latency_ms": 139.65489999827696
         },
         {
           "case_id": "s5_case_263",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 139.01970000006258
+          "latency_ms": 133.8579999974172
         },
         {
           "case_id": "s5_case_264",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 132.36270000015793
+          "latency_ms": 138.57780000034836
         },
         {
           "case_id": "s5_case_265",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.08609999917098
+          "latency_ms": 141.43279999916558
         },
         {
           "case_id": "s5_case_266",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 138.4187000003294
+          "latency_ms": 135.90160000239848
         },
         {
           "case_id": "s5_case_267",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.2106000001877
+          "latency_ms": 140.02290000280482
         },
         {
           "case_id": "s5_case_268",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 137.74740000008023
+          "latency_ms": 137.1002000014414
         },
         {
           "case_id": "s5_case_269",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 138.1803000003856
+          "latency_ms": 170.7563999989361
         },
         {
           "case_id": "s5_case_270",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 140.39369999954943
+          "latency_ms": 161.9094000016048
         },
         {
           "case_id": "s5_case_271",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.15000000006694
+          "latency_ms": 135.43070000014268
         },
         {
           "case_id": "s5_case_272",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.43549999919924
+          "latency_ms": 145.62609999848064
         },
         {
           "case_id": "s5_case_273",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 130.6280999997398
+          "latency_ms": 135.47289999769419
         },
         {
           "case_id": "s5_case_274",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.56139999946026
+          "latency_ms": 141.63669999834383
         },
         {
           "case_id": "s5_case_275",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 137.29069999953936
+          "latency_ms": 135.624700000335
         },
         {
           "case_id": "s5_case_276",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.93389999985084
+          "latency_ms": 135.12509999782196
         },
         {
           "case_id": "s5_case_277",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.29920000019047
+          "latency_ms": 138.44370000151685
         },
         {
           "case_id": "s5_case_278",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 139.39430000027642
+          "latency_ms": 137.36580000113463
         },
         {
           "case_id": "s5_case_279",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 130.23400000020047
+          "latency_ms": 167.77980000188109
         },
         {
           "case_id": "s5_case_280",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.9655999993047
+          "latency_ms": 186.25760000213631
         },
         {
           "case_id": "s5_case_281",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 140.78730000073847
+          "latency_ms": 139.31719999891357
         },
         {
           "case_id": "s5_case_282",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 131.66849999925034
+          "latency_ms": 146.78380000259494
         },
         {
           "case_id": "s5_case_283",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.09069999963685
+          "latency_ms": 136.27009999981965
         },
         {
           "case_id": "s5_case_284",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.4072000001688
+          "latency_ms": 139.57079999818234
         },
         {
           "case_id": "s5_case_285",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 138.04760000039096
+          "latency_ms": 136.0359000027529
         },
         {
           "case_id": "s5_case_286",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.91299999966577
+          "latency_ms": 134.09369999862975
         },
         {
           "case_id": "s5_case_287",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 132.84519999979238
+          "latency_ms": 135.1582999996026
         },
         {
           "case_id": "s5_case_288",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.9537999999011
+          "latency_ms": 134.58619999801158
         },
         {
           "case_id": "s5_case_289",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.33319999967352
+          "latency_ms": 137.16239999848767
         },
         {
           "case_id": "s5_case_290",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 135.219099999631
+          "latency_ms": 142.9446000001917
         },
         {
           "case_id": "s5_case_291",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.63040000078763
+          "latency_ms": 136.7487000024994
         },
         {
           "case_id": "s5_case_292",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 139.99719999992521
+          "latency_ms": 133.99249999929452
         },
         {
           "case_id": "s5_case_293",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.90239999959886
+          "latency_ms": 134.85350000337348
         },
         {
           "case_id": "s5_case_294",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.53129999995872
+          "latency_ms": 137.92889999967883
         },
         {
           "case_id": "s5_case_295",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.1718999992736
+          "latency_ms": 137.94879999841214
         },
         {
           "case_id": "s5_case_296",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 134.32669999929203
+          "latency_ms": 138.4976999979699
         },
         {
           "case_id": "s5_case_297",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.07059999958437
+          "latency_ms": 137.03210000312538
         },
         {
           "case_id": "s5_case_298",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 142.02879999993456
+          "latency_ms": 133.0186999985017
         },
         {
           "case_id": "s5_case_299",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 136.11560000026657
+          "latency_ms": 135.83849999849917
         },
         {
           "case_id": "s5_case_300",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 133.90849999996135
+          "latency_ms": 138.61369999722228
         }
       ]
     },
     "ralg": {
       "metrics": {
-        "recall_at_1": 0.37142857142857144,
-        "recall_at_3": 0.7761904761904762,
+        "recall_at_1": 0.38095238095238093,
+        "recall_at_3": 0.780952380952381,
         "recall_at_5": 0.9285714285714286,
-        "mrr": 0.5862698412698413,
+        "mrr": 0.5934126984126984,
         "unsupported_rejection": 1.0,
         "false_support_rate": 0.0,
         "evidence_correctness": 0.9285714285714286,
-        "latency_p50_ms": 6.762850000541221,
-        "latency_p95_ms": 7.372900000518712
+        "latency_p50_ms": 863.8109999992594,
+        "latency_p95_ms": 1029.4524999990244
       },
       "rows": [
         {
@@ -2137,2100 +2137,2100 @@
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.075399999848742
+          "latency_ms": 888.9285000004747
         },
         {
           "case_id": "s5_case_002",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.5380000005461625
+          "latency_ms": 898.2412000004842
         },
         {
           "case_id": "s5_case_003",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.417399999918416
+          "latency_ms": 682.8433999980916
         },
         {
           "case_id": "s5_case_004",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.496599999991304
+          "latency_ms": 721.3589999992109
         },
         {
           "case_id": "s5_case_005",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.429600000046776
+          "latency_ms": 910.9705000009853
         },
         {
           "case_id": "s5_case_006",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.535900000017136
+          "latency_ms": 832.7476000013121
         },
         {
           "case_id": "s5_case_007",
           "category": "supported",
           "supported": true,
-          "rank": 5,
-          "latency_ms": 6.404100000509061
+          "rank": 4,
+          "latency_ms": 642.8235000021232
         },
         {
           "case_id": "s5_case_008",
           "category": "supported",
           "supported": true,
-          "rank": 5,
-          "latency_ms": 6.768999999621883
+          "rank": 4,
+          "latency_ms": 508.34629999735625
         },
         {
           "case_id": "s5_case_009",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.782600000406092
+          "latency_ms": 791.9891999990796
         },
         {
           "case_id": "s5_case_010",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.365199999891047
+          "latency_ms": 993.1338999995205
         },
         {
           "case_id": "s5_case_011",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.558500000210188
+          "latency_ms": 861.1110000019835
         },
         {
           "case_id": "s5_case_012",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.982300000345276
+          "latency_ms": 753.1577000008838
         },
         {
           "case_id": "s5_case_013",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 7.075000000440923
+          "latency_ms": 783.8983999972697
         },
         {
           "case_id": "s5_case_014",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.76480000038282
+          "latency_ms": 855.1475999993272
         },
         {
           "case_id": "s5_case_015",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.569300000592193
+          "latency_ms": 838.2447000003594
         },
         {
           "case_id": "s5_case_016",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.5217000001212
+          "latency_ms": 621.4887999994971
         },
         {
           "case_id": "s5_case_017",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.430000000364089
+          "latency_ms": 775.2141999990272
         },
         {
           "case_id": "s5_case_018",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.477900000390946
+          "latency_ms": 712.1970000007423
         },
         {
           "case_id": "s5_case_019",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.839099999524478
+          "latency_ms": 909.8437000029662
         },
         {
           "case_id": "s5_case_020",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.796399999984715
+          "latency_ms": 777.8010000001814
         },
         {
           "case_id": "s5_case_021",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.813900000452122
+          "latency_ms": 562.5897999998415
         },
         {
           "case_id": "s5_case_022",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.848799999715993
+          "latency_ms": 1024.6084999998857
         },
         {
           "case_id": "s5_case_023",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.907899999532674
+          "latency_ms": 882.7816999983042
         },
         {
           "case_id": "s5_case_024",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.913199999871722
+          "latency_ms": 998.0139999970561
         },
         {
           "case_id": "s5_case_025",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.454000000303495
+          "latency_ms": 997.6642000001448
         },
         {
           "case_id": "s5_case_026",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 5.104699999719742
+          "latency_ms": 653.3304000004136
         },
         {
           "case_id": "s5_case_027",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 5.06279999990511
+          "latency_ms": 757.634000001417
         },
         {
           "case_id": "s5_case_028",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.617099999857601
+          "latency_ms": 1092.617499998596
         },
         {
           "case_id": "s5_case_029",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.5595999994911836
+          "latency_ms": 815.2231999993091
         },
         {
           "case_id": "s5_case_030",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.734900000083144
+          "latency_ms": 1051.5909000023385
         },
         {
           "case_id": "s5_case_031",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.770799999685551
+          "latency_ms": 680.2284999976109
         },
         {
           "case_id": "s5_case_032",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.539299999531067
+          "latency_ms": 840.5595000003814
         },
         {
           "case_id": "s5_case_033",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.590199999664037
+          "latency_ms": 726.3673999987077
         },
         {
           "case_id": "s5_case_034",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.972600000153761
+          "latency_ms": 997.9500000008557
         },
         {
           "case_id": "s5_case_035",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.520799999634619
+          "latency_ms": 787.1071999979904
         },
         {
           "case_id": "s5_case_036",
           "category": "supported",
           "supported": true,
-          "rank": 2,
-          "latency_ms": 6.881999999677646
+          "rank": 1,
+          "latency_ms": 792.0836999983294
         },
         {
           "case_id": "s5_case_037",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.369599999743514
+          "latency_ms": 719.5737999973062
         },
         {
           "case_id": "s5_case_038",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.857299999865063
+          "latency_ms": 1029.4524999990244
         },
         {
           "case_id": "s5_case_039",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.679400000393798
+          "latency_ms": 871.7286999999487
         },
         {
           "case_id": "s5_case_040",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.49879999946279
+          "latency_ms": 732.4184000026435
         },
         {
           "case_id": "s5_case_041",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.462899999860383
+          "latency_ms": 768.5531999995874
         },
         {
           "case_id": "s5_case_042",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.524099999296595
+          "latency_ms": 823.113900001772
         },
         {
           "case_id": "s5_case_043",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.459400000494497
+          "latency_ms": 863.9868999998725
         },
         {
           "case_id": "s5_case_044",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.54099999974278
+          "latency_ms": 608.2791999979236
         },
         {
           "case_id": "s5_case_045",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.542199999785225
+          "latency_ms": 624.2252999982156
         },
         {
           "case_id": "s5_case_046",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.555699999807985
+          "latency_ms": 716.7149999986577
         },
         {
           "case_id": "s5_case_047",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.948099999135593
+          "latency_ms": 1004.3573000002652
         },
         {
           "case_id": "s5_case_048",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.599700000151643
+          "latency_ms": 568.108100000245
         },
         {
           "case_id": "s5_case_049",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.543499999679625
+          "latency_ms": 1079.1489999974146
         },
         {
           "case_id": "s5_case_050",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.563199999618519
+          "latency_ms": 712.1086000006471
         },
         {
           "case_id": "s5_case_051",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.4006000002336805
+          "latency_ms": 724.9771000024339
         },
         {
           "case_id": "s5_case_052",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.636600000092585
+          "latency_ms": 738.100000002305
         },
         {
           "case_id": "s5_case_053",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.491799999821524
+          "latency_ms": 711.7311000001791
         },
         {
           "case_id": "s5_case_054",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 5.341000000044005
+          "latency_ms": 644.4873000000371
         },
         {
           "case_id": "s5_case_055",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.746299999576877
+          "latency_ms": 885.3396000013163
         },
         {
           "case_id": "s5_case_056",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.378099999892584
+          "latency_ms": 581.4752999976918
         },
         {
           "case_id": "s5_case_057",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.428400000004331
+          "latency_ms": 1030.9755999987829
         },
         {
           "case_id": "s5_case_058",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 8.156700000654382
+          "latency_ms": 687.0959999978368
         },
         {
           "case_id": "s5_case_059",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.745199999590113
+          "latency_ms": 888.8497000007192
         },
         {
           "case_id": "s5_case_060",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.732700000611658
+          "latency_ms": 590.109400000074
         },
         {
           "case_id": "s5_case_061",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.989599999542406
+          "latency_ms": 840.8560999996553
         },
         {
           "case_id": "s5_case_062",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.945600000108243
+          "latency_ms": 936.145799998485
         },
         {
           "case_id": "s5_case_063",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.540299999869603
+          "latency_ms": 714.7889000007126
         },
         {
           "case_id": "s5_case_064",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.293599999480648
+          "latency_ms": 754.7608999993827
         },
         {
           "case_id": "s5_case_065",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.487900000138325
+          "latency_ms": 1071.1282000011124
         },
         {
           "case_id": "s5_case_066",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.623599999329599
+          "latency_ms": 713.1002999994962
         },
         {
           "case_id": "s5_case_067",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 5.99549999969895
+          "latency_ms": 865.8482999999251
         },
         {
           "case_id": "s5_case_068",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.575200000042969
+          "latency_ms": 912.9166999991867
         },
         {
           "case_id": "s5_case_069",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.4407999998365995
+          "latency_ms": 803.934699997626
         },
         {
           "case_id": "s5_case_070",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.4081000000442145
+          "latency_ms": 771.7936000008194
         },
         {
           "case_id": "s5_case_071",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.432499999391439
+          "latency_ms": 723.0466000000888
         },
         {
           "case_id": "s5_case_072",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.073499999933119
+          "latency_ms": 996.9401999987895
         },
         {
           "case_id": "s5_case_073",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.543200000123761
+          "latency_ms": 848.5431000008248
         },
         {
           "case_id": "s5_case_074",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.38009999966016
+          "latency_ms": 945.9777000010945
         },
         {
           "case_id": "s5_case_075",
           "category": "supported",
           "supported": true,
-          "rank": 5,
-          "latency_ms": 6.337100000564533
+          "rank": 4,
+          "latency_ms": 816.5306000009878
         },
         {
           "case_id": "s5_case_076",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.725100000039674
+          "latency_ms": 786.8717999990622
         },
         {
           "case_id": "s5_case_077",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 7.034000000203378
+          "latency_ms": 726.8069999990985
         },
         {
           "case_id": "s5_case_078",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.927700000233017
+          "latency_ms": 907.3956000029284
         },
         {
           "case_id": "s5_case_079",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.54709999980696
+          "latency_ms": 765.3434999992896
         },
         {
           "case_id": "s5_case_080",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.488199999694189
+          "latency_ms": 775.8414000018092
         },
         {
           "case_id": "s5_case_081",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.760900000699621
+          "latency_ms": 709.4833000010112
         },
         {
           "case_id": "s5_case_082",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.857500000478467
+          "latency_ms": 796.3718999999401
         },
         {
           "case_id": "s5_case_083",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.9328999998106156
+          "latency_ms": 729.1212000018277
         },
         {
           "case_id": "s5_case_084",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.951999999728287
+          "latency_ms": 785.2652000001399
         },
         {
           "case_id": "s5_case_085",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.937800000741845
+          "latency_ms": 531.5537000024051
         },
         {
           "case_id": "s5_case_086",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.75039999987348
+          "latency_ms": 530.4858999988937
         },
         {
           "case_id": "s5_case_087",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.620600000132981
+          "latency_ms": 1038.2701000016823
         },
         {
           "case_id": "s5_case_088",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.592300000193063
+          "latency_ms": 722.4624000009499
         },
         {
           "case_id": "s5_case_089",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.474900000284833
+          "latency_ms": 563.6419000002206
         },
         {
           "case_id": "s5_case_090",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.5443000003142515
+          "latency_ms": 709.4862999983889
         },
         {
           "case_id": "s5_case_091",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.372900000518712
+          "latency_ms": 727.2411999983888
         },
         {
           "case_id": "s5_case_092",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.728800000018964
+          "latency_ms": 755.895899997995
         },
         {
           "case_id": "s5_case_093",
           "category": "supported",
           "supported": true,
-          "rank": 5,
-          "latency_ms": 7.0357000004150905
+          "rank": 4,
+          "latency_ms": 564.7453000019595
         },
         {
           "case_id": "s5_case_094",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 6.918600000062725
+          "latency_ms": 727.68840000208
         },
         {
           "case_id": "s5_case_095",
           "category": "supported",
           "supported": true,
-          "rank": 2,
-          "latency_ms": 6.637199999204313
+          "rank": 1,
+          "latency_ms": 750.8928999995987
         },
         {
           "case_id": "s5_case_096",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.677399999716727
+          "latency_ms": 634.7491999986232
         },
         {
           "case_id": "s5_case_097",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.54469999972207
+          "latency_ms": 892.5328000004811
         },
         {
           "case_id": "s5_case_098",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.401600000572216
+          "latency_ms": 666.2961999973049
         },
         {
           "case_id": "s5_case_099",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.362500000250293
+          "latency_ms": 766.9767999977921
         },
         {
           "case_id": "s5_case_100",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.649400000242167
+          "latency_ms": 740.7299000005878
         },
         {
           "case_id": "s5_case_101",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.228499999451742
+          "latency_ms": 783.824199999799
         },
         {
           "case_id": "s5_case_102",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.89310000052501
+          "latency_ms": 960.1772999994864
         },
         {
           "case_id": "s5_case_103",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.676899999547459
+          "latency_ms": 994.8530999972718
         },
         {
           "case_id": "s5_case_104",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.420200000320619
+          "latency_ms": 706.2495999998646
         },
         {
           "case_id": "s5_case_105",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 6.243799999538169
+          "latency_ms": 828.6041999999725
         },
         {
           "case_id": "s5_case_106",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.681400000161375
+          "latency_ms": 664.2154000001028
         },
         {
           "case_id": "s5_case_107",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.4369000001534005
+          "latency_ms": 747.052700000495
         },
         {
           "case_id": "s5_case_108",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.68370000039431
+          "latency_ms": 865.1233999989927
         },
         {
           "case_id": "s5_case_109",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.4289000001735985
+          "latency_ms": 783.1977999994706
         },
         {
           "case_id": "s5_case_110",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.3952999998946325
+          "latency_ms": 732.0896000019275
         },
         {
           "case_id": "s5_case_111",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.310200000370969
+          "latency_ms": 762.7876000005926
         },
         {
           "case_id": "s5_case_112",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.380700000590878
+          "latency_ms": 848.2408999989275
         },
         {
           "case_id": "s5_case_113",
           "category": "supported",
           "supported": true,
-          "rank": 5,
-          "latency_ms": 6.675700000414508
+          "rank": 4,
+          "latency_ms": 559.0609999999288
         },
         {
           "case_id": "s5_case_114",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.568599999809521
+          "latency_ms": 638.9081000015722
         },
         {
           "case_id": "s5_case_115",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.619099999625178
+          "latency_ms": 714.810800000123
         },
         {
           "case_id": "s5_case_116",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.282600000304228
+          "latency_ms": 807.7984999981709
         },
         {
           "case_id": "s5_case_117",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.429300000490912
+          "latency_ms": 926.0494999980438
         },
         {
           "case_id": "s5_case_118",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.076199999573873
+          "latency_ms": 954.4929999974556
         },
         {
           "case_id": "s5_case_119",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.505500000457687
+          "latency_ms": 733.1154999992577
         },
         {
           "case_id": "s5_case_120",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.619800000407849
+          "latency_ms": 785.2963999976055
         },
         {
           "case_id": "s5_case_121",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.872099999782222
+          "latency_ms": 921.3668000011239
         },
         {
           "case_id": "s5_case_122",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.8264999999883
+          "latency_ms": 850.4999999968277
         },
         {
           "case_id": "s5_case_123",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.965200000195182
+          "latency_ms": 939.12349999664
         },
         {
           "case_id": "s5_case_124",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.409399999938614
+          "latency_ms": 723.0233000009321
         },
         {
           "case_id": "s5_case_125",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.455800000367162
+          "latency_ms": 751.8010000021604
         },
         {
           "case_id": "s5_case_126",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.313199999567587
+          "latency_ms": 804.8509000000195
         },
         {
           "case_id": "s5_case_127",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.453199999668868
+          "latency_ms": 618.0099000011978
         },
         {
           "case_id": "s5_case_128",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.464300000516232
+          "latency_ms": 692.012600000453
         },
         {
           "case_id": "s5_case_129",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.2631999999211985
+          "latency_ms": 694.4543999998132
         },
         {
           "case_id": "s5_case_130",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.481200000052922
+          "latency_ms": 852.9613999999128
         },
         {
           "case_id": "s5_case_131",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.473699999332894
+          "latency_ms": 720.112799997878
         },
         {
           "case_id": "s5_case_132",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.642300000748946
+          "latency_ms": 1035.6090999994194
         },
         {
           "case_id": "s5_case_133",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 8.130800000799354
+          "latency_ms": 916.5561000008893
         },
         {
           "case_id": "s5_case_134",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.6976999998805695
+          "latency_ms": 733.4891999998945
         },
         {
           "case_id": "s5_case_135",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.639199999881384
+          "latency_ms": 790.759600000456
         },
         {
           "case_id": "s5_case_136",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 6.554999999934807
+          "latency_ms": 576.9906000023184
         },
         {
           "case_id": "s5_case_137",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.243200000426441
+          "latency_ms": 779.6489000029396
         },
         {
           "case_id": "s5_case_138",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.4434000005348935
+          "latency_ms": 744.7306000030949
         },
         {
           "case_id": "s5_case_139",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.547900000441587
+          "latency_ms": 735.768200000166
         },
         {
           "case_id": "s5_case_140",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 5.152700000508048
+          "latency_ms": 769.0647999988869
         },
         {
           "case_id": "s5_case_141",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.691399999908754
+          "latency_ms": 744.9072000017622
         },
         {
           "case_id": "s5_case_142",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 5.156600000191247
+          "latency_ms": 704.9745000003895
         },
         {
           "case_id": "s5_case_143",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.135699999504141
+          "latency_ms": 730.2300000010291
         },
         {
           "case_id": "s5_case_144",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.4015999996627215
+          "latency_ms": 689.705299999332
         },
         {
           "case_id": "s5_case_145",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.316499999229563
+          "latency_ms": 989.9311000008311
         },
         {
           "case_id": "s5_case_146",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 5.356300000130432
+          "latency_ms": 780.8852000016486
         },
         {
           "case_id": "s5_case_147",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.611699999666598
+          "latency_ms": 1052.1420000004582
         },
         {
           "case_id": "s5_case_148",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.417399999918416
+          "latency_ms": 733.2958000006329
         },
         {
           "case_id": "s5_case_149",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.617099999857601
+          "latency_ms": 1072.6291999999376
         },
         {
           "case_id": "s5_case_150",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.16119999995135
+          "latency_ms": 639.5744000001287
         },
         {
           "case_id": "s5_case_151",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.229699999494187
+          "latency_ms": 708.608799999638
         },
         {
           "case_id": "s5_case_152",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.738000000041211
+          "latency_ms": 669.797300000937
         },
         {
           "case_id": "s5_case_153",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.282000000283006
+          "latency_ms": 652.3143000013079
         },
         {
           "case_id": "s5_case_154",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.526300000587071
+          "latency_ms": 836.898099998507
         },
         {
           "case_id": "s5_case_155",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.295799999861629
+          "latency_ms": 809.3282000008912
         },
         {
           "case_id": "s5_case_156",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.302099999629718
+          "latency_ms": 920.4534000018612
         },
         {
           "case_id": "s5_case_157",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.162700000459154
+          "latency_ms": 1007.0606000008411
         },
         {
           "case_id": "s5_case_158",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.381199999850651
+          "latency_ms": 645.6948999984888
         },
         {
           "case_id": "s5_case_159",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.872899999507354
+          "latency_ms": 773.4891000000061
         },
         {
           "case_id": "s5_case_160",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.251400000110152
+          "latency_ms": 695.1065999965067
         },
         {
           "case_id": "s5_case_161",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.64150000011432
+          "latency_ms": 570.5918999992718
         },
         {
           "case_id": "s5_case_162",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.281199999648379
+          "latency_ms": 846.1559000024863
         },
         {
           "case_id": "s5_case_163",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.465299999945273
+          "latency_ms": 648.658099999011
         },
         {
           "case_id": "s5_case_164",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 6.759900000361085
+          "latency_ms": 734.7701999970013
         },
         {
           "case_id": "s5_case_165",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.373899999744026
+          "latency_ms": 656.6267999987758
         },
         {
           "case_id": "s5_case_166",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.570800000190502
+          "latency_ms": 752.7848999998241
         },
         {
           "case_id": "s5_case_167",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.736899999850721
+          "latency_ms": 1087.871499999892
         },
         {
           "case_id": "s5_case_168",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.380600000033155
+          "latency_ms": 636.1490999988746
         },
         {
           "case_id": "s5_case_169",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.927499999619613
+          "latency_ms": 864.3620999973791
         },
         {
           "case_id": "s5_case_170",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.958699999813689
+          "latency_ms": 719.0716000004613
         },
         {
           "case_id": "s5_case_171",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 7.223599999633734
+          "latency_ms": 721.1454999996931
         },
         {
           "case_id": "s5_case_172",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 7.277800000338175
+          "latency_ms": 759.4812000024831
         },
         {
           "case_id": "s5_case_173",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.437500000174623
+          "latency_ms": 792.2027000022354
         },
         {
           "case_id": "s5_case_174",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.529100000079779
+          "latency_ms": 899.2893999966327
         },
         {
           "case_id": "s5_case_175",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 7.110999999895284
+          "latency_ms": 769.1095000009227
         },
         {
           "case_id": "s5_case_176",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.786100000681472
+          "latency_ms": 839.149899999029
         },
         {
           "case_id": "s5_case_177",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.399300000339281
+          "latency_ms": 640.505999999732
         },
         {
           "case_id": "s5_case_178",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.450100000620296
+          "latency_ms": 718.2586000017182
         },
         {
           "case_id": "s5_case_179",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 7.073699999637029
+          "latency_ms": 709.8111000013887
         },
         {
           "case_id": "s5_case_180",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.955500000003667
+          "latency_ms": 1031.7189999987022
         },
         {
           "case_id": "s5_case_181",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 8.220699999583303
+          "latency_ms": 762.2073999991699
         },
         {
           "case_id": "s5_case_182",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.453899999542045
+          "latency_ms": 635.0451999969664
         },
         {
           "case_id": "s5_case_183",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 5.8151999992333
+          "latency_ms": 601.8665999981749
         },
         {
           "case_id": "s5_case_184",
           "category": "supported",
           "supported": true,
           "rank": 5,
-          "latency_ms": 7.103899999492569
+          "latency_ms": 967.0121999988623
         },
         {
           "case_id": "s5_case_185",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.560300000273855
+          "latency_ms": 563.542799998686
         },
         {
           "case_id": "s5_case_186",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.548499999553314
+          "latency_ms": 989.5284999984142
         },
         {
           "case_id": "s5_case_187",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.677200000012817
+          "latency_ms": 796.1324000025343
         },
         {
           "case_id": "s5_case_188",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.779399999686575
+          "latency_ms": 1056.874699999753
         },
         {
           "case_id": "s5_case_189",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.585500000255706
+          "latency_ms": 996.4412000008451
         },
         {
           "case_id": "s5_case_190",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.532200000037847
+          "latency_ms": 990.4236000002129
         },
         {
           "case_id": "s5_case_191",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.596299999728217
+          "latency_ms": 677.8153999985079
         },
         {
           "case_id": "s5_case_192",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.298700000115787
+          "latency_ms": 973.50699999879
         },
         {
           "case_id": "s5_case_193",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.522900000163645
+          "latency_ms": 881.56760000129
         },
         {
           "case_id": "s5_case_194",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.30529999943974
+          "latency_ms": 973.6473999982991
         },
         {
           "case_id": "s5_case_195",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.328800000119372
+          "latency_ms": 971.1618000001181
         },
         {
           "case_id": "s5_case_196",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.512699999802862
+          "latency_ms": 448.2811000016227
         },
         {
           "case_id": "s5_case_197",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.618299999900046
+          "latency_ms": 556.1726999985694
         },
         {
           "case_id": "s5_case_198",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.891999999425025
+          "latency_ms": 896.3232999994943
         },
         {
           "case_id": "s5_case_199",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.856799999695795
+          "latency_ms": 865.7213000005868
         },
         {
           "case_id": "s5_case_200",
           "category": "supported",
           "supported": true,
-          "rank": 3,
-          "latency_ms": 6.739600000400969
+          "rank": 2,
+          "latency_ms": 929.524200000742
         },
         {
           "case_id": "s5_case_201",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.811000000197964
+          "latency_ms": 709.9172000016551
         },
         {
           "case_id": "s5_case_202",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.481300000814372
+          "latency_ms": 527.9976000019815
         },
         {
           "case_id": "s5_case_203",
           "category": "supported",
           "supported": true,
           "rank": null,
-          "latency_ms": 6.895799999256269
+          "latency_ms": 944.6530000022904
         },
         {
           "case_id": "s5_case_204",
           "category": "supported",
           "supported": true,
           "rank": 3,
-          "latency_ms": 6.781099999898288
+          "latency_ms": 863.6350999986462
         },
         {
           "case_id": "s5_case_205",
           "category": "supported",
           "supported": true,
           "rank": 4,
-          "latency_ms": 6.917599999724189
+          "latency_ms": 695.1735999973607
         },
         {
           "case_id": "s5_case_206",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.358800000271003
+          "latency_ms": 1020.0463000001037
         },
         {
           "case_id": "s5_case_207",
           "category": "supported",
           "supported": true,
-          "rank": 4,
-          "latency_ms": 6.957799999327108
+          "rank": 3,
+          "latency_ms": 727.9409000002488
         },
         {
           "case_id": "s5_case_208",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.909100000484614
+          "latency_ms": 860.5262999990373
         },
         {
           "case_id": "s5_case_209",
           "category": "supported",
           "supported": true,
           "rank": 1,
-          "latency_ms": 6.709899999805202
+          "latency_ms": 693.9845999986574
         },
         {
           "case_id": "s5_case_210",
           "category": "supported",
           "supported": true,
           "rank": 2,
-          "latency_ms": 6.999299999733921
+          "latency_ms": 847.4668000017118
         },
         {
           "case_id": "s5_case_211",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.396599999992759
+          "latency_ms": 911.4636000012979
         },
         {
           "case_id": "s5_case_212",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.30550000025687
+          "latency_ms": 915.3912000001583
         },
         {
           "case_id": "s5_case_213",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.3154000001522945
+          "latency_ms": 1025.0106999992568
         },
         {
           "case_id": "s5_case_214",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.601799999974901
+          "latency_ms": 908.5916000003635
         },
         {
           "case_id": "s5_case_215",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.20750000073167
+          "latency_ms": 917.1715000011318
         },
         {
           "case_id": "s5_case_216",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.179299999734212
+          "latency_ms": 903.931000000739
         },
         {
           "case_id": "s5_case_217",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.0988999996188795
+          "latency_ms": 1053.664300001401
         },
         {
           "case_id": "s5_case_218",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.966300000385672
+          "latency_ms": 896.1642000031134
         },
         {
           "case_id": "s5_case_219",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.999100000030012
+          "latency_ms": 994.8256999996374
         },
         {
           "case_id": "s5_case_220",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.021700000223063
+          "latency_ms": 902.9332999998587
         },
         {
           "case_id": "s5_case_221",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.0313999995050835
+          "latency_ms": 890.2683000014804
         },
         {
           "case_id": "s5_case_222",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.974900000386697
+          "latency_ms": 900.4865999995673
         },
         {
           "case_id": "s5_case_223",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.255000000441214
+          "latency_ms": 900.2122999991116
         },
         {
           "case_id": "s5_case_224",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.243099999868718
+          "latency_ms": 1020.512899998721
         },
         {
           "case_id": "s5_case_225",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.399899999654735
+          "latency_ms": 908.3165000010922
         },
         {
           "case_id": "s5_case_226",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.131100000151491
+          "latency_ms": 994.8913999978686
         },
         {
           "case_id": "s5_case_227",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.402600000204984
+          "latency_ms": 897.1352000007755
         },
         {
           "case_id": "s5_case_228",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.352399999945192
+          "latency_ms": 937.3204999974405
         },
         {
           "case_id": "s5_case_229",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.526200000029348
+          "latency_ms": 909.98799999943
         },
         {
           "case_id": "s5_case_230",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.22330000007787
+          "latency_ms": 903.4630999994988
         },
         {
           "case_id": "s5_case_231",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.350199999564211
+          "latency_ms": 1027.0039999995788
         },
         {
           "case_id": "s5_case_232",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.0863000000827014
+          "latency_ms": 965.2744999984861
         },
         {
           "case_id": "s5_case_233",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.216400000288559
+          "latency_ms": 935.0709999998799
         },
         {
           "case_id": "s5_case_234",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.009899999502522
+          "latency_ms": 912.789400001202
         },
         {
           "case_id": "s5_case_235",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.983299999774317
+          "latency_ms": 902.4441000001389
         },
         {
           "case_id": "s5_case_236",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.949900000108755
+          "latency_ms": 1027.8266000022995
         },
         {
           "case_id": "s5_case_237",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.986899999901652
+          "latency_ms": 942.129399998521
         },
         {
           "case_id": "s5_case_238",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.089400000040769
+          "latency_ms": 911.4115000011225
         },
         {
           "case_id": "s5_case_239",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.051900000078604
+          "latency_ms": 949.5268000027863
         },
         {
           "case_id": "s5_case_240",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.029299999885552
+          "latency_ms": 897.7171999977145
         },
         {
           "case_id": "s5_case_241",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.07460000012361
+          "latency_ms": 899.6479999987059
         },
         {
           "case_id": "s5_case_242",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.199600000603823
+          "latency_ms": 895.5156000010902
         },
         {
           "case_id": "s5_case_243",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 11.761200000364624
+          "latency_ms": 909.1280000029656
         },
         {
           "case_id": "s5_case_244",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 8.827199999359436
+          "latency_ms": 937.837599998602
         },
         {
           "case_id": "s5_case_245",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.1547999996255385
+          "latency_ms": 976.6159999999218
         },
         {
           "case_id": "s5_case_246",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.12539999949513
+          "latency_ms": 905.1720999996178
         },
         {
           "case_id": "s5_case_247",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.017699999778415
+          "latency_ms": 953.0760000016016
         },
         {
           "case_id": "s5_case_248",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.984000000556989
+          "latency_ms": 901.1883000021044
         },
         {
           "case_id": "s5_case_249",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.97889999992185
+          "latency_ms": 889.1034000007494
         },
         {
           "case_id": "s5_case_250",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.975100000090606
+          "latency_ms": 941.7457999988983
         },
         {
           "case_id": "s5_case_251",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.9268000006559305
+          "latency_ms": 948.0260999989696
         },
         {
           "case_id": "s5_case_252",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.961199999750534
+          "latency_ms": 907.1690000018862
         },
         {
           "case_id": "s5_case_253",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.006100000580773
+          "latency_ms": 974.1120000035153
         },
         {
           "case_id": "s5_case_254",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.997299999966344
+          "latency_ms": 948.9904000001843
         },
         {
           "case_id": "s5_case_255",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.2053000003506895
+          "latency_ms": 1012.1793999969668
         },
         {
           "case_id": "s5_case_256",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.9432999998753075
+          "latency_ms": 890.1504000023124
         },
         {
           "case_id": "s5_case_257",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.05649999963498
+          "latency_ms": 900.3563999976905
         },
         {
           "case_id": "s5_case_258",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.088899999871501
+          "latency_ms": 901.7008999981044
         },
         {
           "case_id": "s5_case_259",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.040200000119512
+          "latency_ms": 920.5662999993365
         },
         {
           "case_id": "s5_case_260",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.026400000540889
+          "latency_ms": 917.9965000002994
         },
         {
           "case_id": "s5_case_261",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.012099999883503
+          "latency_ms": 894.4658000000345
         },
         {
           "case_id": "s5_case_262",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.923500000084459
+          "latency_ms": 840.627300000051
         },
         {
           "case_id": "s5_case_263",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.005600000411505
+          "latency_ms": 917.8092000001925
         },
         {
           "case_id": "s5_case_264",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.937800000741845
+          "latency_ms": 910.3909999976167
         },
         {
           "case_id": "s5_case_265",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.89909999982774
+          "latency_ms": 893.6702999999397
         },
         {
           "case_id": "s5_case_266",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.919399999787856
+          "latency_ms": 891.6503000000375
         },
         {
           "case_id": "s5_case_267",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.899300000441144
+          "latency_ms": 893.1516999982705
         },
         {
           "case_id": "s5_case_268",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.188999999925727
+          "latency_ms": 903.8524000025063
         },
         {
           "case_id": "s5_case_269",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.9759999996676925
+          "latency_ms": 901.8882999989728
         },
         {
           "case_id": "s5_case_270",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.179399999586167
+          "latency_ms": 969.573099999252
         },
         {
           "case_id": "s5_case_271",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.200400000328955
+          "latency_ms": 899.4977000002109
         },
         {
           "case_id": "s5_case_272",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.217899999886868
+          "latency_ms": 904.809399999067
         },
         {
           "case_id": "s5_case_273",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.8840000003547175
+          "latency_ms": 930.1936000010755
         },
         {
           "case_id": "s5_case_274",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.977399999414047
+          "latency_ms": 898.7773000008019
         },
         {
           "case_id": "s5_case_275",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.1143999994092155
+          "latency_ms": 908.7428000020736
         },
         {
           "case_id": "s5_case_276",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.00319999941712
+          "latency_ms": 932.5810000009369
         },
         {
           "case_id": "s5_case_277",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.006200000432727
+          "latency_ms": 903.5153000004357
         },
         {
           "case_id": "s5_case_278",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.936900000255264
+          "latency_ms": 929.5926999984658
         },
         {
           "case_id": "s5_case_279",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.9524999998975545
+          "latency_ms": 922.7107999977306
         },
         {
           "case_id": "s5_case_280",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.992999999965832
+          "latency_ms": 903.5594999986643
         },
         {
           "case_id": "s5_case_281",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.980299999668205
+          "latency_ms": 912.4705000031099
         },
         {
           "case_id": "s5_case_282",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.968000000597385
+          "latency_ms": 908.5038000011991
         },
         {
           "case_id": "s5_case_283",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.954399999813177
+          "latency_ms": 893.9226999973471
         },
         {
           "case_id": "s5_case_284",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.938800000170886
+          "latency_ms": 902.0076000015251
         },
         {
           "case_id": "s5_case_285",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.934400000318419
+          "latency_ms": 904.435000000376
         },
         {
           "case_id": "s5_case_286",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.9941000001563225
+          "latency_ms": 1097.727299998951
         },
         {
           "case_id": "s5_case_287",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.998900000326103
+          "latency_ms": 1144.1797000006773
         },
         {
           "case_id": "s5_case_288",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.97409999975207
+          "latency_ms": 921.2354000010237
         },
         {
           "case_id": "s5_case_289",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.903500000589702
+          "latency_ms": 912.6408999982232
         },
         {
           "case_id": "s5_case_290",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.258900000124413
+          "latency_ms": 898.6721000001126
         },
         {
           "case_id": "s5_case_291",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.478300000002491
+          "latency_ms": 905.555600002117
         },
         {
           "case_id": "s5_case_292",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.965399999899091
+          "latency_ms": 942.3233000015898
         },
         {
           "case_id": "s5_case_293",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 6.978699999308446
+          "latency_ms": 904.2765000012878
         },
         {
           "case_id": "s5_case_294",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.007799999882991
+          "latency_ms": 1020.4898000010871
         },
         {
           "case_id": "s5_case_295",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.492700000511832
+          "latency_ms": 908.5111000022152
         },
         {
           "case_id": "s5_case_296",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.1571999997104285
+          "latency_ms": 1015.1297999982489
         },
         {
           "case_id": "s5_case_297",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.107800000085263
+          "latency_ms": 1013.8318999997864
         },
         {
           "case_id": "s5_case_298",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.128200000806828
+          "latency_ms": 933.1979000016872
         },
         {
           "case_id": "s5_case_299",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.05759999982547
+          "latency_ms": 908.2052000012482
         },
         {
           "case_id": "s5_case_300",
           "category": "unsupported",
           "supported": false,
           "rank": null,
-          "latency_ms": 7.075100000292878
+          "latency_ms": 965.5886000000464
         }
       ]
     }
@@ -4239,9 +4239,9 @@
     "seed": 5202025,
     "samples": 1000,
     "recall_at_1_difference_ci": [
-      -0.08666666666666667,
-      0.04
+      -0.08,
+      0.05
     ]
   },
-  "ties": 189
+  "ties": 193
 }

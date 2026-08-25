@@ -932,6 +932,7 @@ def add_query_results(
     query,
     query_rank,
     results,
+    full_question_floors=None,
 ):
     accepted = 0
 
@@ -1049,6 +1050,41 @@ def add_query_results(
                 item[
                     "base_score"
                 ] = base_score
+
+        # ------------------------------------------
+        # Full-question floor
+        #
+        # If the original full-question pass
+        # already scored this chunk, ensure that
+        # sub-query decomposition cannot demote it
+        # below the full-question floor.
+        # ------------------------------------------
+
+        if (
+            full_question_floors
+            and key in full_question_floors
+        ):
+            fq_floor = (
+                full_question_floors[key]
+            )
+
+            item = merged[key]
+
+            if (
+                fq_floor
+                > item["best_score"]
+            ):
+                item[
+                    "best_score"
+                ] = fq_floor
+
+            if (
+                fq_floor
+                > item["base_score"]
+            ):
+                item[
+                    "base_score"
+                ] = fq_floor
 
     return accepted
 
@@ -2086,7 +2122,6 @@ def evidence_sufficient(
 # --------------------------------------------------
 # Adaptive merge retrieval
 # --------------------------------------------------
-
 def merge_results(
     planned_queries,
     chunks,
@@ -2105,7 +2140,10 @@ def merge_results(
     retrieval_total = 0.0
 
     merge_total = 0.0
+
     retrieval_cache = {}
+
+    full_question_floors = {}
 
     def retrieve_once(query):
         key = normalize_text(query)
@@ -2162,7 +2200,111 @@ def merge_results(
     query_rank = 0
 
     # ==========================================
-    # Primary retrieval stage
+    # Full-question pass (hybrid floor)
+    #
+    # Run the original question through V2
+    # retrieval first.  Store per-chunk floors
+    # so that sub-query decomposition can never
+    # demote a strong full-question match.
+    # ==========================================
+
+    full_question_rank = 0
+
+    fq_retrieval_elapsed = 0.0
+    fq_merge_elapsed = 0.0
+    fq_accepted = 0
+    fq_cache_hit = False
+    fq_results = []
+
+    if question is not None:
+
+        fq_retrieval_start = (
+            time.perf_counter()
+        )
+
+        fq_results, fq_cache_hit = (
+            retrieve_once(question)
+        )
+
+        fq_retrieval_elapsed = (
+            time.perf_counter()
+            - fq_retrieval_start
+        )
+
+        retrieval_total += fq_retrieval_elapsed
+
+        fq_merge_start = (
+            time.perf_counter()
+        )
+
+        fq_accepted = add_query_results(
+            merged,
+            question,
+            full_question_rank,
+            fq_results,
+        )
+
+        fq_merge_elapsed = (
+            time.perf_counter()
+            - fq_merge_start
+        )
+
+        merge_total += fq_merge_elapsed
+
+        for fq_result in fq_results:
+            fq_chunk = fq_result.get(
+                "chunk",
+                "",
+            )
+
+            fq_key = normalize_text(
+                fq_chunk
+            )
+
+            if fq_key and fq_key not in full_question_floors:
+                fq_base = fq_result.get(
+                    "final_score",
+                    0.0,
+                )
+
+                full_question_floors[
+                    fq_key
+                ] = fq_base
+
+        executed_queries.append(
+            question
+        )
+
+        if collect_timings:
+            query_timings.append(
+                {
+                    "query":
+                        question,
+
+                    "stage":
+                        "full_question",
+
+                    "retrieval":
+                        fq_retrieval_elapsed,
+
+                    "merge":
+                        fq_merge_elapsed,
+
+                    "returned":
+                        len(
+                            fq_results
+                        ),
+
+                    "accepted":
+                        fq_accepted,
+
+                    "cache_hit":
+                        fq_cache_hit,
+                }
+            )
+
+    # ==========================================
+    # Primary retrieval stage (sub-queries)
     # ==========================================
 
     for query in primary_queries:
@@ -2193,6 +2335,7 @@ def merge_results(
             query,
             query_rank,
             results,
+            full_question_floors=full_question_floors,
         )
 
         merge_elapsed = (
@@ -2298,6 +2441,7 @@ def merge_results(
                 query,
                 query_rank,
                 results,
+                full_question_floors=full_question_floors,
             )
 
             merge_elapsed = (
