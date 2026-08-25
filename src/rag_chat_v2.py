@@ -945,7 +945,12 @@ from retriever_v2 import (
 )
 
 from retriever_v4 import (
-    retrieve as retrieve_v4,
+    aggregate_results,
+    build_adaptive_query_plan,
+)
+
+from retriever_hybrid import (
+    retrieve as retrieve_hybrid,
 )
 
 from query_planner_v1 import (
@@ -2587,22 +2592,54 @@ def retrieve_for_reasoning(
     retrieval_index,
     document_frequency,
 ):
-    retrieval = retrieve_v4(
+    """Authoritative grounded retrieval for the reasoning route.
+
+    Delegates candidate ranking to the validated full-question-first
+    hybrid retriever (``retriever_hybrid``), then reuses the V4
+    intent-aware evidence aggregation so downstream synthesizers and the
+    unified support gate keep working unchanged. There is exactly one
+    production retrieval architecture: Stage 5 evaluation, API and WebUI
+    all flow through this hybrid path.
+    """
+    plan = build_queries(question)
+
+    # Specialized synthesizers depend on intent-marker evidence. Supply
+    # the existing generic planner queries as bounded secondary candidates;
+    # the hybrid fusion still protects strong full-question candidates, so
+    # ranking remains authoritative and deterministic.
+    intent = str(plan.get("intent") or "general")
+    secondary_queries = []
+    if intent not in {"general", "comparison"}:
+        adaptive_plan = build_adaptive_query_plan(plan)
+        secondary_queries = [
+            query for query in adaptive_plan.get("primary", []) if query
+        ][:3]
+
+    # One authoritative hybrid call per pass. The candidate POOL for
+    # sentence-level evidence aggregation is deliberately deeper than the
+    # displayed top-10 so marker-bearing chunks remain reachable; the fused
+    # ordering itself (and therefore sources/Stage 5 parity) is unchanged.
+    ranked = retrieve_hybrid(
         question,
         chunks,
         retrieval_index,
         document_frequency,
+        final_top_k=40,
+        secondary_queries=secondary_queries,
     )
 
-    if not retrieval:
+    if not ranked:
         return None
 
-    if not retrieval.get(
-        "results"
-    ):
-        return None
+    context = aggregate_results(question, plan, ranked)
 
-    return retrieval
+    return {
+        "plan": plan,
+        "results": ranked,
+        "best": ranked[0],
+        "context": context,
+        "retriever": "hybrid",
+    }
 
 
 # --------------------------------------------------
@@ -3155,7 +3192,7 @@ def _answer_question_impl(
         result[
             "evidence"
         ] = {
-            "kind": "v4",
+            "kind": "hybrid",
             "results": premise_retrieval.get("results", []),
             "context": premise_context,
         }
@@ -3638,7 +3675,7 @@ def _answer_question_impl(
 
     result[
         "retriever"
-    ] = "V4"
+    ] = "HYBRID"
 
     retrieval_chunk_count = 0
     retrieval_passes = 1
@@ -3658,17 +3695,18 @@ def _answer_question_impl(
     )
 
     logger.debug(
-        "Reasoning retrieval (V4): chunks=%d",
+        "Reasoning retrieval (hybrid): chunks=%d",
         retrieval_chunk_count,
     )
 
     # Extract best result before multi-hop detection
     best_result = retrieval.get("best")
 
-    # CRITICAL: prefer the AGGREGATED context produced by Retriever V4.
-    # best_result is a ranked chunk item from ``rank_merged_results``
-    # and does NOT carry a ``context`` key — ``best_result.get("context")``
-    # returns "" and would zero out the entire reasoning pipeline.
+    # CRITICAL: prefer the AGGREGATED context produced by the hybrid
+    # retriever's evidence aggregation.
+    # best_result is a ranked chunk item and does NOT carry a ``context``
+    # key — ``best_result.get("context")`` returns "" and would zero out
+    # the entire reasoning pipeline.
     # The aggregated evidence (joined top evidence sentences) lives at
     # ``retrieval["context"]``. Fall back to ``best_result["chunk"]`` if
     # for some reason the aggregated context is unavailable.
@@ -3750,7 +3788,7 @@ def _answer_question_impl(
                     result[
                         "evidence"
                     ] = {
-                        "kind": "v4",
+                        "kind": "hybrid",
                         "results": evidence_results,
                         "context": reasoning_context,
                     }
@@ -3771,7 +3809,7 @@ def _answer_question_impl(
     result[
         "evidence"
     ] = {
-        "kind": "v4",
+        "kind": "hybrid",
         "results": evidence_results,
         "context": reasoning_context,
     }

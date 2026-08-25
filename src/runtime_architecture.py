@@ -95,9 +95,31 @@ class ExecutionPlan:
     subject: str
     multi_hop: bool
     retrieval_passes: int = 1
-    retrieval_strategy: str = "v4"
+    retrieval_strategy: str = "hybrid"
     generator: str = "small-lm-v2"
     model: str = "small-lm-v2"
+
+
+# Only ACTIVE registry entries may be selected automatically by runtime
+# planning. Everything else is opt-in/explicit only.
+AUTO_SELECTABLE_STATUS = "ACTIVE"
+DEFAULT_GROUNDED_MODEL = "small-lm-v2"
+DEFAULT_EXTRACTOR = "extractor"
+
+
+def resolve_runtime_model(requested: str | None = None) -> ModelSpec:
+    """Resolve a model for automatic runtime planning.
+
+    Inactive artifacts (SUPERSEDED, LEGACY/INCOMPATIBLE, COMPATIBLE BUT
+    UNUSED) can never be auto-selected; requests for them fall back to
+    the ACTIVE grounded checkpoint. Non-grounded polish models stay
+    separate from grounded factual answering by construction.
+    """
+    if requested:
+        spec = MODEL_REGISTRY.get(str(requested))
+        if spec is not None and spec.status == AUTO_SELECTABLE_STATUS and spec.grounded:
+            return spec
+    return MODEL_REGISTRY[DEFAULT_GROUNDED_MODEL]
 
 
 @dataclass
@@ -128,6 +150,9 @@ def _plan(question: str, raw: dict[str, Any]) -> ExecutionPlan:
         route = "model"
     elif route not in {"extractor", "model"}:
         route = "model"
+    resolved = resolve_runtime_model(
+        raw.get("model") or raw.get("generator_model")
+    )
     return ExecutionPlan(
         intent=intent,
         route=route,
@@ -135,12 +160,18 @@ def _plan(question: str, raw: dict[str, Any]) -> ExecutionPlan:
         subject=str(runtime.get("subject") or ""),
         multi_hop=multi_hop,
         retrieval_passes=int(raw.get("retrieval_passes") or (2 if multi_hop else 1)),
-        retrieval_strategy=str(raw.get("retriever") or ("v4" if route == "model" else "v2")),
-        generator=(
-            "extractor"
-            if route == "extractor"
-            else "small-lm-v2"
+        # One authoritative production retrieval architecture: the
+        # validated full-question-first hybrid retriever backs every
+        # grounded reasoning route.
+        retrieval_strategy=(
+            "hybrid" if route == "model" else "v2-extractor"
         ),
+        generator=(
+            DEFAULT_EXTRACTOR
+            if route == "extractor"
+            else resolved.name
+        ),
+        model=resolved.name,
     )
 
 
@@ -268,16 +299,20 @@ def execute_runtime(
         contract = contract_fn(
             pipeline, normalized, raw, top_k, fallback_sources=fallback
         )
+    # The unified support gate is authoritative: nothing is reported as
+    # supported unless the gate passed, even if an upstream contract
+    # object claims support.
+    final_supported = bool(gate_passed)
     plan = _plan(normalized, raw)
     elapsed_ms = round((time.perf_counter() - started) * 1000, 2)
     multi_hop_trace = build_multi_hop_trace(
-        normalized, plan, raw, contract.sources, bool(contract.supported)
+        normalized, plan, raw, contract.sources, final_supported
     )
     return ExecutionResult(
         question=normalized,
         answer=contract.answer,
-        supported=contract.supported,
-        confidence=contract.confidence,
+        supported=final_supported,
+        confidence=contract.confidence if gate_passed else None,
         answer_type=contract.answer_type,
         sources=contract.sources,
         provenance=contract.provenance,
@@ -315,8 +350,9 @@ def execute_runtime(
 
 
 __all__ = [
-    "ExecutionPlan", "ExecutionResult", "MODEL_REGISTRY", "ModelSpec",
+    "AUTO_SELECTABLE_STATUS", "DEFAULT_GROUNDED_MODEL", "ExecutionPlan",
+    "ExecutionResult", "MODEL_REGISTRY", "ModelSpec",
     "MultiHopTrace", "build_multi_hop_trace",
-    "execute_runtime",
+    "execute_runtime", "resolve_runtime_model",
     "unified_support_gate",
 ]

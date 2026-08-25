@@ -102,18 +102,24 @@ class RetrievalPerformanceTests(unittest.TestCase):
             "document_frequency": {},
         }
         retrieval = {
-            "kind": "v2",
+            "plan": {"intent": "general", "subject": ""},
+            "retriever": "hybrid",
             "results": [
                 {
                     "chunk": pipeline["chunks"][0],
                     "chunk_index": 0,
-                    "final_score": 1.0,
+                    "lexical_score": 1.0,
                 }
             ],
+            "best": {
+                "chunk": pipeline["chunks"][0],
+                "chunk_index": 0,
+                "lexical_score": 1.0,
+            },
             "context": pipeline["chunks"][0],
         }
         with patch("rag_chat_v2.runtime_plan", return_value={"intent": "general"}), \
-                patch("rag_chat_v2.retrieve_v4", return_value=retrieval), \
+                patch("rag_chat_v2.retrieve_for_reasoning", return_value=retrieval), \
                 patch("rag_chat_v2.extract_factual_answer", return_value=(None, False)), \
                 patch("rag_chat_v2.extract_answer", return_value="unrelated answer") as generic:
             result = answer_question(

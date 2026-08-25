@@ -11,6 +11,7 @@ from runtime_architecture import (
     MultiHopTrace,
     _plan,
     execute_runtime,
+    resolve_runtime_model,
 )
 
 
@@ -143,6 +144,37 @@ class RuntimeArchitectureTests(unittest.TestCase):
     def test_non_grounded_mode_cannot_be_silent(self):
         for name in ("qwen-polish", "instruction-model-v1", "instruction-model-v3-v4"):
             self.assertFalse(MODEL_REGISTRY[name].grounded)
+
+    def test_inactive_models_cannot_be_auto_selected(self):
+        for name in (
+            "qwen-polish",                      # COMPATIBLE BUT UNUSED
+            "final-model-v2",                   # COMPATIBLE BUT UNUSED
+            "instruction-model-v3-v4",          # SUPERSEDED
+            "instruction-model-v1",             # LEGACY/INCOMPATIBLE
+            "epoch-and-step-checkpoints",       # LEGACY/INCOMPATIBLE
+        ):
+            resolved = resolve_runtime_model(name)
+            self.assertEqual(resolved.name, "small-lm-v2")
+            self.assertEqual(resolved.status, "ACTIVE")
+        plan = _plan("why did rome fall?", {
+            "model": "instruction-model-v3-v4",
+            "runtime_plan": {"intent": "cause", "subject": "rome"},
+        })
+        self.assertEqual(plan.model, "small-lm-v2")
+
+    def test_active_model_resolves_and_polish_stays_separate(self):
+        resolved = resolve_runtime_model("small-lm-v2")
+        self.assertTrue(resolved.grounded)
+        qwen = MODEL_REGISTRY["qwen-polish"]
+        self.assertFalse(qwen.grounded)
+        self.assertNotEqual(qwen.role, resolved.role)
+
+    def test_reasoning_route_declares_hybrid_strategy(self):
+        result = run({
+            "answer": "a", "supported": True, "traceable": True,
+            "runtime_plan": {"intent": "cause", "subject": "x"},
+        })
+        self.assertEqual(result.plan.retrieval_strategy, "hybrid")
 
 
 if __name__ == "__main__":
