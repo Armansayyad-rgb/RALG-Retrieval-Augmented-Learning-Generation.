@@ -1,0 +1,19 @@
+{
+  "benchmark_version": "holdout_v1.0.0",
+  "status": "FROZEN / DO NOT TUNE",
+  "generated_from": "authored case specs verified against committed sources",
+  "case_count": 111,
+  "category_counts": {
+    "supported": 44,
+    "paraphrase": 11,
+    "multi_document": 10,
+    "unsupported": 30,
+    "false_premise": 16
+  },
+  "supported_cases": 65,
+  "unsupported_cases": 46,
+  "source_count": 11,
+  "benchmark_sha256": "cebdb4bf4925ddab855d343edfb46873c58432a608617498e3df5432a565d16a",
+  "sources_manifest_sha256": "efcccc6e718996d16547a0869205fba791b1ca8533479a719da878261eadf0e0",
+  "independence_statement": "No Stage 5 RFC documents, case IDs, or questions are reused. This benchmark has never been used for development or tuning."
+}
