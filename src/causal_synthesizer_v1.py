@@ -52,6 +52,61 @@ def capitalize_sentence(text):
     )
 
 
+_STOPWORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "been", "being",
+    "by", "did", "do", "does", "for", "from", "had", "has",
+    "have", "how", "in", "into", "is", "it", "of", "on", "or",
+    "the", "to", "was", "were", "what", "when", "where",
+    "which", "who", "why", "with",
+}
+
+
+def content_terms(text):
+    """Content terms (lowercase, non-stopword, length >= 3)."""
+    return {
+        word
+        for word in re.findall(
+            r"[a-z0-9']+",
+            text.lower(),
+        )
+        if (
+            word not in _STOPWORDS
+            and len(word) >= 3
+        )
+    }
+
+
+def sentence_shares_subject_terms(
+    sentence,
+    subject,
+):
+    """Generic subject-relatedness check.
+
+    A causal answer may only be built from sentences that share at
+    least one content term with the question subject. Causal marker
+    vocabulary ("because", "declined", ...) alone is NOT relatedness —
+    without this anchor, an unrelated sentence carrying a causal
+    marker gets templated into an answer for a completely different
+    subject.
+    """
+    subject_terms = content_terms(
+        subject
+    )
+
+    if not subject_terms:
+        # No extractable subject terms — nothing to require.
+        return True
+
+    sentence_terms = content_terms(
+        sentence
+    )
+
+    return bool(
+        subject_terms
+        & sentence_terms
+    )
+
+
 # --------------------------------------------------
 # Question parsing
 # --------------------------------------------------
@@ -640,6 +695,29 @@ def synthesize_causal_answer(
         context,
         max_sentences=3,
     )
+
+    if not evidence:
+        return None
+
+    # ------------------------------------------
+    # Subject-relatedness filter
+    #
+    # Every piece of causal evidence must share
+    # at least one content term with the question
+    # subject. A sentence that merely carries a
+    # causal marker ("because", "declined") but
+    # never mentions the subject cannot explain
+    # the subject.
+    # ------------------------------------------
+
+    evidence = [
+        sentence
+        for sentence in evidence
+        if sentence_shares_subject_terms(
+            sentence,
+            subject,
+        )
+    ]
 
     if not evidence:
         return None
