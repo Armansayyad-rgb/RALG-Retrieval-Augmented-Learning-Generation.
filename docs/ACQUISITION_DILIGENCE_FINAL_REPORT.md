@@ -205,7 +205,7 @@
 - Suitable for single-tenant deployment
 
 ### 31. Restart Recovery: PASS
-- Container restart via `docker compose restart`
+- Container restart via `docker restart <container_name>`
 - Health recovered in ~3 seconds
 - All volumes persisted across restart
 
@@ -286,11 +286,13 @@ API / WebUI
 
 ### 38. Active Runtime Inventory
 - 10 active production modules
-- 13 active support modules
-- 10 synthesizer modules
-- 2 superseded (retained for history/utility)
-- 5 training/offline modules
-- 14 evaluation/benchmark modules
+- 12 active support modules
+- 10 synthesizer modules (active production)
+- 5 superseded modules (retained for history/utility)
+- 7 legacy/historical modules
+- 23 training/offline modules
+- 16 evaluation/benchmark modules
+- 19 test modules
 - Full inventory: `docs/ACTIVE_RUNTIME_INVENTORY.md`
 
 ### 39. Retrieval Dependency Graph
@@ -324,7 +326,7 @@ api_server  |  webui/hybrid_pipeline → webui/app
 - Dependency/IP audit: COMPLETE (15 dependencies, all OSI-approved)
 - Data rights inventory: COMPLETE (all categories documented)
 - Active runtime inventory: COMPLETE (production/support/legacy classified)
-- Regression suite: 118/118 ALL PASS
+- Full test suite: 118/118 ALL PASS (core suites; 137/137 total including Docker lifecycle 19/19)
 
 **Still outstanding (not blocking for controlled pilot):**
 1. Stage 5 benchmark cases are auto-generated and unreviewed
