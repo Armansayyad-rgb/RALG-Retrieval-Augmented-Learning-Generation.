@@ -34,6 +34,10 @@ from retriever_hybrid import retrieve  # noqa: E402
 from stage5_preliminary_evaluation import words, rank_for  # noqa: E402
 
 DEFAULT_OUTPUT = ROOT / "evaluation" / "results" / "stage6_human_review_results.json"
+BASELINE_REFERENCE = (
+    "evaluation/results/stage5_preliminary_results.json "
+    "(authoritative frozen Stage 5 baseline artifact; never mutated by this tool)"
+)
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -183,7 +187,7 @@ def main() -> int:
             "unless the underlying human review files were produced by qualified "
             "independent reviewers."
         ),
-        "baseline_reference": "evaluation/results/stage5_preliminary_results.json (unmodified)",
+        "baseline_reference": BASELINE_REFERENCE,
         "review_summary": review_summary,
         "counts": {
             "reviewed": review_summary["cases_covered_by_all_reviewers"],
