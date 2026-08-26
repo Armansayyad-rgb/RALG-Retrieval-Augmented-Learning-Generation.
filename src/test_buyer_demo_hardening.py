@@ -4,6 +4,12 @@ Covers: module-path resolution without externally-set PYTHONPATH, bounded
 port fallback selection, preflight port reporting, checkpoint requirement
 accuracy, non-overlapping review-summary categories, and Stage 5 artifact
 immutability guarantees for the Stage 6 evaluator.
+
+These tests never spawn a WebUI/Gradio server. Port checks bind short-lived
+listener sockets that are always closed in finally blocks; the one test that
+invokes the evaluator writes to a temp output path only. Any manual launcher
+test must clean up the FULL process tree (PowerShell parent AND its child
+python/Gradio listener), not just the parent PID.
 """
 
 import csv

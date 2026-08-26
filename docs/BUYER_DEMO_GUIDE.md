@@ -133,6 +133,7 @@ Same behavior; useful when the buyer wants to script the walkthrough.
 
 | Symptom | Fix |
 |---|---|
+| Launcher stopped but port still listening | The Gradio server is a child Python process of the PowerShell launcher. Stop it with `Get-Process python \| Where-Object Path -like '*<repo>*' \| Stop-Process` (targets only this repo's Python; never kill Docker/Desktop processes) |
 | Preflight fails on missing checkpoint | Place the external model bundle under `checkpoints\` as documented; nothing is auto-downloaded |
 | WebUI port busy | The launcher auto-falls-back to 7861-7870 and prints the actual URL; no action needed unless the whole range is busy |
 | Pipeline init error | Verify `data\tokenizer_v2.json` exists; check `logs\` for details |
