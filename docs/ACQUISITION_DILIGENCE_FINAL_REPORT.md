@@ -152,6 +152,8 @@
 | Unsupported rejection | 100% | **100%** |
 | False-support rate | 0% | **0%** |
 
+Provenance note (Stage 6 reconciliation): these hybrid figures were regenerated from frozen code into `evaluation/results/stage5_preliminary_results.json`; the earlier committed artifact (pre-hybrid RALG arm: R@1 37.14% / MRR 0.5863) is preserved as `evaluation/results/stage5_preliminary_results_legacy.json`. See `docs/STAGE5_EVIDENCE_HISTORY.md`.
+
 ### 22. Evidence Correctness
 - 100% for both systems on independent corpus
 - All supported answers backed by retrieved evidence

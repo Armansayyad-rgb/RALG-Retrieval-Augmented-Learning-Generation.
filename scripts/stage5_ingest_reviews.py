@@ -23,6 +23,9 @@ REQUIRED_DECISIONS = {
     "reference_answer_correct", "evidence_supports_answer",
     "source_attribution_correct", "question_clear", "accept_reject",
 }
+# Explicit reviewer outcome labels. "ambiguous" and "invalid_case" are
+# recorded but never count as approved cases in downstream evaluation.
+VALID_OUTCOMES = {"accept", "reject", "ambiguous", "invalid_case"}
 
 
 def load_cases(path: Path) -> list[dict]:
@@ -51,26 +54,37 @@ def read_reviews(path: Path, reviewer_label: str) -> list[dict]:
             raise ValueError(f"{case_id}: reviewer_id does not match --reviewer-label")
         if not all(row[field].strip() for field in REQUIRED_DECISIONS):
             raise ValueError(f"{case_id}: incomplete review decision")
+        outcome = row["accept_reject"].strip().casefold()
+        if outcome not in VALID_OUTCOMES:
+            allowed = ", ".join(sorted(VALID_OUTCOMES))
+            raise ValueError(f"{case_id}: invalid accept_reject label '{row['accept_reject'].strip()}'; allowed: {allowed}")
     if not rows:
         raise ValueError("review submission is empty; no reviewer decisions were provided")
     return rows
 
 
-def ingest(root: Path, review_file: Path, reviewer_label: str, output: Path) -> dict:
+def ingest(root: Path, review_file: Path, reviewer_label: str, output: Path, allow_partial: bool = False) -> dict:
     cases = load_cases(root / "evaluation" / "stage5_review_queue.jsonl")
     by_id = {case["case_id"]: case for case in cases}
     reviews = read_reviews(review_file, reviewer_label)
     unknown = sorted(set(row["case_id"] for row in reviews) - set(by_id))
     if unknown:
         raise ValueError(f"unknown case IDs: {', '.join(unknown)}")
+    if len(reviews) < len(cases) and not allow_partial:
+        raise ValueError(
+            f"partial submission: {len(reviews)} of {len(cases)} cases reviewed; "
+            "pass --allow-partial to record an explicitly partial review round"
+        )
     output.parent.mkdir(parents=True, exist_ok=True)
     reviewed = []
     for case in cases:
         item = dict(case)
         row = next((row for row in reviews if row["case_id"] == case["case_id"]), None)
         if row:
+            outcome = row["accept_reject"].strip().casefold()
             item["review"] = {field: row[field].strip() for field in FIELDS if field != "case_id"}
-            item["reviewer_status"] = "accepted" if row["accept_reject"].strip().casefold() == "accept" else "rejected"
+            item["reviewer_status"] = "accepted" if outcome == "accept" else "rejected"
+            item["review_outcome"] = outcome
             item["reviewer_id"] = reviewer_label
             if row["corrected_answer"].strip():
                 item["reviewed_corrected_answer"] = row["corrected_answer"].strip()
@@ -78,12 +92,16 @@ def ingest(root: Path, review_file: Path, reviewer_label: str, output: Path) -> 
                 item["reviewed_corrected_evidence"] = row["corrected_evidence"].strip()
         reviewed.append(item)
     output.write_text("\n".join(json.dumps(item, sort_keys=True) for item in reviewed) + "\n", encoding="utf-8")
+    outcomes = [item.get("review_outcome") for item in reviewed if item.get("review_outcome")]
     return {
         "input_reviewer": reviewer_label,
         "submitted": len(reviews),
         "accepted": sum(item.get("reviewer_status") == "accepted" for item in reviewed),
         "rejected": sum(item.get("reviewer_status") == "rejected" for item in reviewed),
+        "ambiguous": outcomes.count("ambiguous"),
+        "invalid_case": outcomes.count("invalid_case"),
         "remaining_unreviewed": sum(item.get("reviewer_status") == "unreviewed" for item in reviewed),
+        "partial": len(reviews) < len(cases),
         "output": str(output),
     }
 
@@ -163,6 +181,8 @@ def main() -> int:
     ingest_parser.add_argument("--input", type=Path, required=True)
     ingest_parser.add_argument("--reviewer-label", required=True)
     ingest_parser.add_argument("--output", type=Path, required=True)
+    ingest_parser.add_argument("--allow-partial", action="store_true",
+                               help="record an explicitly partial review round instead of failing")
     freeze_parser = sub.add_parser("freeze")
     freeze_parser.add_argument("--reviewed-benchmark", type=Path, required=True)
     merge_parser = sub.add_parser("merge")
@@ -173,7 +193,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.command == "ingest":
-            result = ingest(ROOT, args.input, args.reviewer_label, args.output)
+            result = ingest(ROOT, args.input, args.reviewer_label, args.output, allow_partial=args.allow_partial)
         elif args.command == "freeze":
             result = freeze(ROOT, args.reviewed_benchmark)
         else:

@@ -49,6 +49,8 @@ The current untouched preliminary retrieval run records:
 
 This is meaningful engineering evidence, but the 300 benchmark cases are still **not independently human-reviewed**. Therefore Stage 5 remains **BLOCKED ON INDEPENDENT REVIEW** and must not be represented as final external validation.
 
+Authoritative artifact: `evaluation/results/stage5_preliminary_results.json` (hybrid run, reproduced from frozen code). Historical pre-hybrid result and provenance: `docs/STAGE5_EVIDENCE_HISTORY.md`.
+
 ## What is demonstrated today
 
 - local/private technical-document ingestion and question answering;
