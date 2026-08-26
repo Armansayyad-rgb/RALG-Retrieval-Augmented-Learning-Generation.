@@ -49,18 +49,14 @@ API (FastAPI) / WebUI (Gradio)
 
 | Metric | Lexical | RALG hybrid |
 |---|---|---|
-| Recall@1 | 40.48% | 37.14%* |
-| Recall@3 | 87.62% | 77.62%* |
-| Recall@5 | 100% | 92.86%* |
-| MRR | 0.6485 | 0.5863* |
+| Recall@1 | 40.48% | 50.95% |
+| Recall@3 | 87.62% | 90.95% |
+| Recall@5 | 100% | 100% |
+| MRR | 0.6485 | 0.7098 |
 | Unsupported rejection | 100% | 100% |
 | False-support rate | 0% | 0% |
 
-\* The committed results artifact is authoritative; some narrative docs carry
-older hybrid figures (50.95/90.95/100/0.7098) from an earlier run. The
-discrepancy is recorded in `docs/STAGE6_VALIDATION_FREEZE.md` §5 and is queued
-for resolution by human review. Both systems share 100% rejection / 0%
-false-support. Latency: lexical p50 ≈ 187 ms on the reference workstation.
+The authoritative artifact (`evaluation/results/stage5_preliminary_results.json`) was regenerated from frozen code and reproduces exactly these values; the earlier pre-hybrid run is preserved as `..._legacy.json`. Provenance and both metric sets: `docs/STAGE5_EVIDENCE_HISTORY.md`. Latency: lexical p50 ≈ 187–206 ms on reference workstations (machine-specific, not a claim).
 
 A deterministic 75-case pilot review pack is prepared for independent human
 reviewers; full-review pack covers all 300 cases
@@ -98,7 +94,8 @@ reviewers; full-review pack covers all 300 cases
 3. Single-worker scale; 250k/500k-chunk tests deferred.
 4. Optional polish LLM may fail to load (non-blocking fallback).
 5. PyPDF2 deprecation (migration to pypdf recommended).
-6. Hybrid-vs-lexical metric discrepancy noted above, pending adjudication.
+6. Stage 5 was used during architecture development; it is not a pristine
+   final holdout set (see `docs/STAGE5_EVIDENCE_HISTORY.md`).
 
 ## What we do not claim
 

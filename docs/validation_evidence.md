@@ -47,6 +47,8 @@ Authoritative preliminary retrieval evaluator. It explicitly labels its output u
 
 The runtime-integration validation preserved these quality metrics. These results are **preliminary/unreviewed**, not final independent validation.
 
+Authoritative artifact: `evaluation/results/stage5_preliminary_results.json` (hybrid run, reproduced from frozen code). Historical pre-hybrid result and provenance: `docs/STAGE5_EVIDENCE_HISTORY.md`.
+
 ### `STAGE5_FAILURE_ANALYSIS.md`
 Historical preliminary failure analysis. Do not use individual case IDs to create production rules.
 

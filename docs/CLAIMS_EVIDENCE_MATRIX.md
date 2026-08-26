@@ -1,4 +1,4 @@
-# Claims / Evidence Matrix
+﻿# Claims / Evidence Matrix
 
 Buyer-facing mapping of each meaningful claim to its evidence, source, and
 current status. Statuses:
@@ -13,10 +13,11 @@ current status. Statuses:
 
 | Claim | Evidence | Source file/test | Status |
 |---|---|---|---|
-| Unsupported rejection = 100% on Stage 5 (both systems) | Committed metrics artifact | `evaluation/results/stage5_preliminary_results.json` | PRELIMINARY (auto-generated cases; human review pending) |
-| False-support rate = 0% on Stage 5 | Committed metrics artifact | same as above | PRELIMINARY |
+| Unsupported rejection = 100% on Stage 5 (both systems) | Committed metrics artifact (reproduced from frozen code) | `evaluation/results/stage5_preliminary_results.json` | PRELIMINARY (auto-generated cases; human review pending) |
+| False-support rate = 0% on Stage 5 | Committed metrics artifact (reproduced from frozen code) | same as above | PRELIMINARY |
 | Stage 5 corpus is independent, permission-cleared IETF RFC content | 50-doc manifest, all confirmed/permitted/non-synthetic | `evaluation/stage5_source_manifest.jsonl`, `evaluation/results/stage5_integrity_report.json` | VERIFIED (provenance); PRELIMINARY (case quality) |
-| "RALG improves Recall@1 vs lexical" (50.95% vs 40.48%) | Narrative docs vs committed artifact disagree (artifact: 37.14%) | `README.md` / `COMMERCIAL_READINESS.md` vs `stage5_preliminary_results.json`; freeze record §5 | NOT YET VALIDATED — discrepancy recorded in `docs/STAGE6_VALIDATION_FREEZE.md`, adjudication required |
+| Legacy pre-hybrid result (RALG arm = V2 retriever): R@1 37.14% / R@3 77.62% / R@5 92.86% / MRR 0.5863 | Preserved historical artifact | `evaluation/results/stage5_preliminary_results_legacy.json`; `docs/STAGE5_EVIDENCE_HISTORY.md` | HISTORICAL — superseded implementation; do not cite as current |
+| RALG hybrid improves Recall@1 vs lexical: 50.95% vs 40.48% (R@3 90.95%, R@5 100%, MRR 0.7098) | Reproduced exactly from frozen current code by the exact evaluator command | `evaluation/results/stage5_preliminary_results.json`; `docs/STAGE5_EVIDENCE_HISTORY.md` §4 | PRELIMINARY (auto-generated cases; benchmark used during development, so not a pristine holdout; human review pending) |
 | Answer provenance/evidence trace works end-to-end | Traceability + conflict test suites | `src/test_traceability.py` (7), `src/test_conflict_detection.py` (9), `src/test_unified_evidence.py` (10) | VERIFIED (in-repo tests) |
 | Grounded abstention behavior | Regression unsupported-premise suite | `src/regression_tests_v2.py` (6 unsupported cases) | VERIFIED (in-repo tests) |
 
@@ -50,7 +51,7 @@ current status. Statuses:
 | "Production-ready" | NOT YET VALIDATED / DO NOT CLAIM |
 | "Multi-tenant secure" / internet-safe without gateway | NOT YET VALIDATED / DO NOT CLAIM (no auth/TLS by design) |
 | "Independently validated" | DO NOT CLAIM until genuine human review artifacts are ingested and frozen |
-| "Beats all baselines" | PRELIMINARY at best; current artifact shows lexical ahead on ranked-recall metrics |
+| "Beats all baselines" | PRELIMINARY at best; current artifact shows hybrid ahead of lexical on ranked-recall metrics, but cases are auto-generated and unreviewed |
 | Any customer, revenue, pricing, or timeline claims | Not made anywhere in this repository |
 
 **Final standing status: REVIEW INFRASTRUCTURE READY — HUMAN REVIEW PENDING.**

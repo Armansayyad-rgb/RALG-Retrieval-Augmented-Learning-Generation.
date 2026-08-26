@@ -56,6 +56,8 @@ Current untouched preliminary retrieval results:
 
 The runtime-integration validation preserved these quality metrics; recorded retrieval latency in that local integration run was approximately **6.9 ms p50 / 14.6 ms p95**.
 
+Authoritative artifact: `evaluation/results/stage5_preliminary_results.json` (hybrid run, reproduced from frozen code). Historical pre-hybrid result and provenance: `docs/STAGE5_EVIDENCE_HISTORY.md`.
+
 All 300 benchmark cases are still automatically generated and unreviewed. Therefore the correct Stage 5 status remains **BLOCKED ON INDEPENDENT REVIEW**. These numbers are preliminary engineering evidence and must not be presented as final independent validation.
 
 ## Core architecture

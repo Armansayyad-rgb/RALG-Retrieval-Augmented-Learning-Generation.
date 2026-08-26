@@ -38,7 +38,8 @@ round and requires a re-freeze.
 | Benchmark cases (`evaluation/stage5_review_queue.jsonl`, 300 cases) | `9eee7e1ae634ba26cdd418b910e7334566bd60d7753d8538365effe9c9ca113d` |
 | Source manifest (`evaluation/stage5_source_manifest.jsonl`, 50 RFCs) | `6c66d569c26bcb823250f785ead62bde249324d3f82201d2cc845c98a9baff0b` |
 | RFC corpus (`evaluation/stage5_documents/`, 50 files, combined digest) | `2fc45bc32bc689fb7fb43b1953deb3275f5bcd1c2676a60ad628bcfc680ad023` |
-| Preliminary results artifact (`evaluation/results/stage5_preliminary_results.json`) | `74acdd43eea7f7c7c9d2832f4a236d6aac402f7cffb7bf6d580211d70d6981b1` |
+| **Authoritative preliminary results** (`evaluation/results/stage5_preliminary_results.json`, hybrid run reproduced from frozen code) | `46c777158f062b9b16bde005bbc1ba84d7176d509dfe38b294e3cff8544f63e4` |
+| Legacy pre-hybrid results, preserved (`evaluation/results/stage5_preliminary_results_legacy.json`) | `74acdd43eea7f7c7c9d2832f4a236d6aac402f7cffb7bf6d580211d70d6981b1` |
 
 Dataset composition (from the Stage 5 integrity report): 300 cases
 (210 supported / 90 unsupported), 50 independent IETF RFC documents, all
@@ -57,33 +58,31 @@ Dataset composition (from the Stage 5 integrity report): 300 cases
 | `scripts/stage6_evaluator.py` (new) | `774f704912eb171267ba10f7a2efd5c325a4141146f862780e7cc80577c539a6` |
 | `scripts/buyer_demo_preflight.py` (new) | `8ff2b8f20bed4ad1bcd0979eba94f186bf68b500b708238203c759d24e1a237d` |
 
-## 5. Frozen Stage 5 Metrics (from the committed preliminary artifact)
+## 5. Frozen Stage 5 Metrics (authoritative artifact)
 
 Source: `evaluation/results/stage5_preliminary_results.json`
 (`status: "preliminary_unreviewed"`, 300 auto-generated, NOT independently
-human-reviewed cases).
+human-reviewed cases). Regenerated from frozen current code by the exact
+evaluator command — the committed pre-hybrid artifact did NOT contain these
+hybrid numbers (full provenance: `docs/STAGE5_EVIDENCE_HISTORY.md`).
 
 | Metric | Lexical | RALG hybrid |
 |---|---|---|
-| Recall@1 | 40.48% | 37.14% |
-| Recall@3 | 87.62% | 77.62% |
-| Recall@5 | 100.00% | 92.86% |
-| MRR | 0.6485 | 0.5863 |
+| Recall@1 | 40.48% | 50.95% |
+| Recall@3 | 87.62% | 90.95% |
+| Recall@5 | 100.00% | 100.00% |
+| MRR | 0.6485 | 0.7098 |
 | Unsupported rejection | 100% | 100% |
 | False-support rate | 0% | 0% |
 
-**Discrepancy notice (recorded at freeze, unresolved):** several narrative
-documents on master (`README.md`, `COMMERCIAL_READINESS.md`,
-`docs/validation_evidence.md`, `docs/ACQUISITION_DILIGENCE_FINAL_REPORT.md`)
-report RALG hybrid figures of R@1 50.95% / R@3 90.95% / R@5 100% / MRR 0.7098.
-Those figures do not match the committed preliminary-results artifact above,
-whose provenance is the authoritative frozen record. The discrepancy predates
-this branch and must be adjudicated by the human review round; it does not
-affect either system's 100% unsupported rejection and 0% false-support rate.
-No metric was altered to reconcile them.
+The legacy pre-hybrid artifact (`..._legacy.json`, RALG arm = V2 retriever:
+R@1 37.14% / R@3 77.62% / R@5 92.86% / MRR 0.5863) is retained as HISTORICAL
+evidence and pinned above. Both artifacts share 100% unsupported rejection
+and 0% false-support.
 
-Latency values in the artifact (lexical p50 ≈ 187 ms) are machine-specific and
-not part of the frozen claim set.
+Latency values in either artifact are machine-specific and not part of the
+frozen claim set. Stage 5 was used during architecture development and is not
+a pristine holdout; neither result is independent validation.
 
 ## 6. Docker Qualification State
 
