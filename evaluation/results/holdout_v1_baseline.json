@@ -1,0 +1,574 @@
+{
+  "benchmark": "holdout_v1.0.0 (FROZEN / DO NOT TUNE)",
+  "status": "single_shot_baseline_no_tuning_afterwards",
+  "cases": 111,
+  "documents": 11,
+  "systems": {
+    "lexical": {
+      "overall_ranked": {
+        "n": 65,
+        "recall_at_1": 0.49230769230769234,
+        "recall_at_3": 0.8153846153846154,
+        "recall_at_5": 0.8615384615384616,
+        "mrr": 0.6423076923076924,
+        "recall_at_1_ci95": [
+          0.37463636042469284,
+          0.6108375390779336
+        ],
+        "recall_at_5_ci95": [
+          0.7573167852534054,
+          0.9254099381231576
+        ]
+      },
+      "by_category": {
+        "supported": {
+          "n": 44,
+          "recall_at_1": 0.5681818181818182,
+          "recall_at_3": 0.7954545454545454,
+          "recall_at_5": 0.8409090909090909,
+          "mrr": 0.6742424242424243,
+          "recall_at_1_ci95": [
+            0.42223890740554393,
+            0.7031749583514542
+          ],
+          "recall_at_5_ci95": [
+            0.7063350943621745,
+            0.920734234422816
+          ]
+        },
+        "paraphrase": {
+          "n": 11,
+          "recall_at_1": 0.2727272727272727,
+          "recall_at_3": 0.8181818181818182,
+          "recall_at_5": 0.9090909090909091,
+          "mrr": 0.553030303030303,
+          "recall_at_1_ci95": [
+            0.09745880573921467,
+            0.5656502930102463
+          ],
+          "recall_at_5_ci95": [
+            0.6226353745137962,
+            0.9837682477371741
+          ]
+        },
+        "multi_document": {
+          "n": 10,
+          "recall_at_1": 0.4,
+          "recall_at_3": 0.9,
+          "recall_at_5": 0.9,
+          "mrr": 0.6,
+          "recall_at_1_ci95": [
+            0.16817758120350967,
+            0.6873304525498135
+          ],
+          "recall_at_5_ci95": [
+            0.5958436145024278,
+            0.9821242504842788
+          ]
+        }
+      },
+      "unsupported_rejection": null,
+      "false_support_rate": null,
+      "unsupported_rejection_ci95": null,
+      "note": "lexical baseline has no support gate; rejection metrics undefined"
+    },
+    "ralg": {
+      "overall_ranked": {
+        "n": 65,
+        "recall_at_1": 0.5692307692307692,
+        "recall_at_3": 0.8,
+        "recall_at_5": 0.8923076923076924,
+        "mrr": 0.7093956043956045,
+        "recall_at_1_ci95": [
+          0.44832757984982086,
+          0.6824073246265422
+        ],
+        "recall_at_5_ci95": [
+          0.7939846696853139,
+          0.9468464556807439
+        ]
+      },
+      "by_category": {
+        "supported": {
+          "n": 44,
+          "recall_at_1": 0.5909090909090909,
+          "recall_at_3": 0.7954545454545454,
+          "recall_at_5": 0.8863636363636364,
+          "mrr": 0.7201028138528138,
+          "recall_at_1_ci95": [
+            0.44409492646606574,
+            0.7231235612099317
+          ],
+          "recall_at_5_ci95": [
+            0.7602056485186641,
+            0.950472924104325
+          ]
+        },
+        "paraphrase": {
+          "n": 11,
+          "recall_at_1": 0.5454545454545454,
+          "recall_at_3": 0.8181818181818182,
+          "recall_at_5": 1.0,
+          "mrr": 0.7075757575757575,
+          "recall_at_1_ci95": [
+            0.28008775568998817,
+            0.7872904245601196
+          ],
+          "recall_at_5_ci95": [
+            0.7411599827511859,
+            1.0
+          ]
+        },
+        "multi_document": {
+          "n": 10,
+          "recall_at_1": 0.5,
+          "recall_at_3": 0.8,
+          "recall_at_5": 0.8,
+          "mrr": 0.6642857142857144,
+          "recall_at_1_ci95": [
+            0.23658959361548731,
+            0.7634104063845126
+          ],
+          "recall_at_5_ci95": [
+            0.49015684672072335,
+            0.9433190520193067
+          ]
+        }
+      },
+      "unsupported_rejection": 0.6086956521739131,
+      "false_support_rate": 0.391304347826087,
+      "unsupported_rejection_ci95": [
+        0.4645658371764493,
+        0.7360697764475116
+      ],
+      "note": ""
+    }
+  },
+  "delta_ralg_minus_lexical": {
+    "recall_at_1": 0.0769,
+    "recall_at_3": -0.0154,
+    "recall_at_5": 0.0308,
+    "mrr": 0.0671
+  },
+  "case_level_failures": [
+    {
+      "system": "lexical",
+      "case_id": "holdout_003",
+      "category": "supported",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_004",
+      "category": "supported",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_005",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_006",
+      "category": "supported",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_007",
+      "category": "supported",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_008",
+      "category": "supported",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_013",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_017",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_023",
+      "category": "supported",
+      "rank": 3
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_025",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_027",
+      "category": "supported",
+      "rank": 3
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_035",
+      "category": "supported",
+      "rank": 3
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_036",
+      "category": "supported",
+      "rank": 4
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_037",
+      "category": "supported",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_038",
+      "category": "supported",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_039",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_040",
+      "category": "supported",
+      "rank": 3
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_042",
+      "category": "supported",
+      "rank": 4
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_043",
+      "category": "supported",
+      "rank": 3
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_045",
+      "category": "paraphrase",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_046",
+      "category": "paraphrase",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_047",
+      "category": "paraphrase",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_049",
+      "category": "paraphrase",
+      "rank": null
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_050",
+      "category": "paraphrase",
+      "rank": 3
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_052",
+      "category": "paraphrase",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_054",
+      "category": "paraphrase",
+      "rank": 4
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_055",
+      "category": "paraphrase",
+      "rank": 2
+    },
+    {
+      "system": "lexical",
+      "case_id": "holdout_063",
+      "category": "multi_document",
+      "rank": null
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_003",
+      "category": "supported",
+      "rank": 8
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_004",
+      "category": "supported",
+      "rank": 7
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_005",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_006",
+      "category": "supported",
+      "rank": 8
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_007",
+      "category": "supported",
+      "rank": 5
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_008",
+      "category": "supported",
+      "rank": 5
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_013",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_017",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_023",
+      "category": "supported",
+      "rank": 3
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_024",
+      "category": "supported",
+      "rank": 3
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_025",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_027",
+      "category": "supported",
+      "rank": 4
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_035",
+      "category": "supported",
+      "rank": 8
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_036",
+      "category": "supported",
+      "rank": 4
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_037",
+      "category": "supported",
+      "rank": 10
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_038",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_040",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_042",
+      "category": "supported",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_045",
+      "category": "paraphrase",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_049",
+      "category": "paraphrase",
+      "rank": 4
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_050",
+      "category": "paraphrase",
+      "rank": 2
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_054",
+      "category": "paraphrase",
+      "rank": 5
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_055",
+      "category": "paraphrase",
+      "rank": 3
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_068",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_072",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_078",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_080",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_081",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_086",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_087",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_088",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_090",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_091",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_092",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_096",
+      "category": "false_premise",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_098",
+      "category": "false_premise",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_102",
+      "category": "false_premise",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_104",
+      "category": "false_premise",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_106",
+      "category": "false_premise",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_108",
+      "category": "false_premise",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_110",
+      "category": "false_premise",
+      "issue": "false_support"
+    }
+  ],
+  "failure_count": {
+    "lexical": 28,
+    "ralg": 41
+  },
+  "gate_cases_run": 46
+}

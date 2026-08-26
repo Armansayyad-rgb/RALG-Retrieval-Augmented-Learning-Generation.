@@ -9,6 +9,15 @@ current status. Statuses:
 
 ---
 
+## Benchmark evidence lineage
+
+| Benchmark | Nature | Human review | Tuning exposure |
+|---|---|---|---|
+| Stage 1–4 suites | synthetic / held-out internal sets | none (internal QA) | used during development |
+| Stage 5 preliminary | auto-generated, 50 RFCs, 300 cases | **PENDING** — infrastructure ready, no completed reviewer file (`HUMAN REVIEW PENDING`) | development-exposed; not a pristine holdout |
+| Stage 6 review tooling | blind packs, ingestion guards, agreement/kappa | n/a (tooling) | — |
+| **holdout_v1.0.0** | authored, 11 public-domain PEPs, 111 cases, frozen with SHA-256 manifest | none yet | **zero exposure** — generated and evaluated once; never used for tuning |
+
 ## Retrieval & answering quality
 
 | Claim | Evidence | Source file/test | Status |
@@ -43,6 +52,9 @@ current status. Statuses:
 | Inter-reviewer agreement (raw % + Cohen's kappa) computable | Agreement tool + tests | `scripts/stage6_review_agreement.py`; tests | VERIFIED (tooling; kappa reported as undefined when degenerate) |
 | Human reviewers have validated case quality | — | none exists yet | NOT YET VALIDATED — no reviewer artifact ingested |
 | Post-review metrics on approved subset available | Evaluator writes `evaluation/results/stage6_human_review_results.json` only after real review files | `scripts/stage6_evaluator.py` | VERIFIED (tooling); output PENDING |
+| Holdout_v1 contamination guard passes (no Stage 5 doc/ID/question overlap; freeze intact) | Automated guard | `scripts/check_holdout_contamination.py`; `src/test_holdout_integrity.py` | VERIFIED |
+| "RALG leads lexical on untouched holdout ranked metrics" (R@1 56.9% vs 49.2%, MRR 0.709 vs 0.642) | One-shot baseline on frozen holdout_v1.0.0 | `evaluation/results/holdout_v1_baseline.json` | PRELIMINARY (single run, small-n CIs; no human labels on holdout) |
+| "Unsupported rejection = 100%" | NOT reproduced on holdout: measured 60.9% via the production support gate (46 gated cases) | same artifact | PRELIMINARY — truthfully reported regression vs Stage 5; do not cite 100% outside Stage-5-preliminary context |
 
 ## Explicit non-claims
 
