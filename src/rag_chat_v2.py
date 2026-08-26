@@ -327,6 +327,31 @@ def _clean_second_concept(text, concept_a=None):
     return text
 
 
+_INFLECTION_SUFFIX = re.compile(r"(?:s|es|ed|ing|'s)?\b")
+_TERM_PATTERN_CACHE: dict[str, re.Pattern] = {}
+
+
+def _contains_term(haystack_lower, term):
+    """Word-boundary-aware term containment with light inflection tolerance.
+
+    Matches regular plural/verb inflections ("pumps", "founded",
+    "presses") but NOT unrelated derivations or accidental substrings:
+    "rate" no longer matches "accurate", "age" no longer matches
+    "pages", and "press" no longer matches "pressure". Establishing
+    predicate or subject support requires the term to appear as a
+    real token in the evidence, not merely as a character run inside
+    an unrelated word.
+    """
+    key = str(term)
+    pattern = _TERM_PATTERN_CACHE.get(key)
+    if pattern is None:
+        pattern = re.compile(
+            r"\b" + re.escape(key) + _INFLECTION_SUFFIX.pattern
+        )
+        _TERM_PATTERN_CACHE[key] = pattern
+    return pattern.search(haystack_lower) is not None
+
+
 def cheap_grounding_check(answer, context):
     """
     Check if important entities/dates/numbers in the answer appear in the retrieved context.
@@ -354,7 +379,7 @@ def cheap_grounding_check(answer, context):
     # 2. Check if any word in the answer (longer than 3 chars) appears in context
     answer_words = [w for w in a.split() if len(w) > 3]
     for word in answer_words:
-        if word in c:
+        if _contains_term(c, word):
             return True
 
     # 3. Last resort: normalized substring check
@@ -583,7 +608,7 @@ def _predicate_answers_question(
         predicate_terms = _extract_question_predicate_terms(question)
         if predicate_terms:
             return all(
-                term in candidate_sentence.lower()
+                _contains_term(candidate_sentence.lower(), term)
                 for term in predicate_terms
             )
         # No recognizable predicate — nothing to gate.
@@ -599,7 +624,8 @@ def _predicate_answers_question(
     # question because "capital city" appears in a neighboring
     # sentence).
     if any(
-        vocab in candidate_low
+        (_contains_term(candidate_low, vocab) if " " not in vocab
+         else vocab in candidate_low)
         for vocab in predicate_vocab
     ):
         return True
@@ -623,6 +649,64 @@ def _predicate_answers_question(
             return True
 
     return False
+
+
+_PROPER_NOUN_PHRASE = re.compile(
+    r"\b[A-Z][A-Za-z0-9'-]*"
+    r"(?:\s+(?:of|the|de)?\s*[A-Z][A-Za-z0-9'-]*)*"
+)
+
+
+def _anchor_entity_present(sentence, anchor, question):
+    """Generic compound-entity guard for subject anchoring.
+
+    Returns False only when the anchor word occurs exclusively inside a
+    longer capitalized proper-noun compound that the question does not
+    itself name — e.g. the question asks about "Australia" but the
+    sentence only mentions "Western Australia". The anchor then refers
+    to a different (more specific) entity than the one asked about.
+
+    Standalone occurrences of the anchor, occurrences inside compounds
+    the question also names, and lowercase (non-proper) uses all count
+    as present.
+    """
+    anchor_low = str(anchor).strip().lower()
+    if not anchor_low:
+        return True
+
+    sentence_low = sentence.lower()
+
+    total_occurrences = len(
+        re.findall(
+            r"\b" + re.escape(anchor_low) + r"\b",
+            sentence_low,
+        )
+    )
+    if total_occurrences == 0:
+        return False
+
+    in_matching_compound = 0
+    in_compound = 0
+
+    for match in _PROPER_NOUN_PHRASE.finditer(sentence):
+        tokens = [
+            token.lower()
+            for token in match.group(0).split()
+        ]
+        core = [
+            token
+            for token in tokens
+            if token not in {"of", "the", "de"}
+        ]
+        if anchor_low not in core:
+            continue
+        in_compound += 1
+        if len(core) == 1 or " ".join(core) in question.lower():
+            in_matching_compound += 1
+
+    standalone = total_occurrences - in_compound
+
+    return standalone > 0 or in_matching_compound > 0
 
 
 def _named_fact_anchors_match(question, candidate_sentence):
@@ -659,8 +743,8 @@ def _named_fact_anchors_match(question, candidate_sentence):
 
     low = candidate_sentence.lower()
     return (
-        any(term in low for term in requested_terms[:2])
-        and any(identifier in low for identifier in identifiers)
+        any(_contains_term(low, term) for term in requested_terms[:2])
+        and any(_contains_term(low, identifier) for identifier in identifiers)
     )
 
 
@@ -732,6 +816,29 @@ def extract_factual_answer(question, context):
                 continue
             low = s.lower()
             if q_relations:
+                # A relation word alone ("invented", "founded") is not
+                # enough: the year must also be anchored to the question
+                # SUBJECT, otherwise any sentence mentioning the verb
+                # donates its year to an unrelated question.
+                subject_core_words = [
+                    w
+                    for w in subject.split()
+                    if (
+                        w not in relation_words
+                        and len(w) > 2
+                        and w
+                        not in {
+                            "the", "a", "an", "and", "of", "in",
+                            "on", "for", "to", "was", "were",
+                            "is", "are", "did", "does", "do",
+                        }
+                    )
+                ]
+                if subject_core_words and not any(
+                    _contains_term(low, w)
+                    for w in subject_core_words
+                ):
+                    continue
                 if any(
                     r in low
                     for r in q_relations
@@ -799,7 +906,7 @@ def extract_factual_answer(question, context):
                 continue
             if (
                 action is not None
-                and action not in low
+                and not _contains_term(low, action)
             ):
                 continue
             for name in _re.findall(
@@ -859,10 +966,17 @@ def extract_factual_answer(question, context):
                     continue
                 return s, True
             low = s.lower()
-            if any(
-                w in low
-                for w in subject_words
-            ) and subject_anchor in low:
+            if (
+                any(
+                    _contains_term(low, w)
+                    for w in subject_words
+                )
+                and _anchor_entity_present(
+                    s,
+                    subject_anchor,
+                    question,
+                )
+            ):
                 if not _predicate_answers_question(
                     question, s, s
                 ):
@@ -924,8 +1038,13 @@ def extract_factual_answer(question, context):
                 and len(token) > 2
             ]
             low = sentence.lower()
-            score = 3 * sum(term in low for term in terms)
-            if any(identifier in low for identifier in identifiers):
+            score = 3 * sum(
+                1 for term in terms if _contains_term(low, term)
+            )
+            if any(
+                _contains_term(low, identifier)
+                for identifier in identifiers
+            ):
                 score += 1
             candidates.append((score, -index, sentence))
         if candidates:

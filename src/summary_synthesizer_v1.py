@@ -646,34 +646,56 @@ def starts_with_weak_reference(sentence):
     )
 
 
+def _normalize_term(word):
+    """Fold common possessive forms so "republic's" matches "republic"."""
+    if word.endswith("'s"):
+        return word[:-2]
+    if word.endswith("'"):
+        return word[:-1]
+    return word
+
+
 def sentence_mentions_subject(
     sentence,
     subject,
 ):
+    """Whether the sentence actually engages the question subject.
+
+    Uses content terms only (stopwords and sub-3-char tokens excluded)
+    and requires at least half of the subject's content terms to be
+    present (minimum one). A single trivial shared token such as
+    "the" must not count as mentioning the subject.
+    """
     subject_words = {
-        word
-        for word in tokenize(
+        _normalize_term(word)
+        for word in content_terms(
             subject
         )
-        if len(word) >= 3
     }
-
-    sentence_words = set(
-        tokenize(
-            sentence
-        )
-    )
 
     if not subject_words:
         return False
+
+    sentence_words = {
+        _normalize_term(word)
+        for word in content_terms(
+            sentence
+        )
+    }
 
     overlap = (
         subject_words
         & sentence_words
     )
 
-    return bool(
-        overlap
+    required = max(
+        1,
+        (len(subject_words) + 1) // 2,
+    )
+
+    return (
+        len(overlap)
+        >= required
     )
 
 
@@ -862,6 +884,7 @@ def select_summary_evidence(
     question,
     context,
     max_sentences=3,
+    subject=None,
 ):
     sentences = split_sentences(
         context
@@ -878,6 +901,27 @@ def select_summary_evidence(
         )
 
         if score <= 0:
+            continue
+
+        # ------------------------------------------
+        # Subject-relatedness requirement
+        #
+        # Word overlap with the question alone plus
+        # generic markers ("includes", "uses") and a
+        # word-count bonus can push an unrelated
+        # sentence above zero without it ever
+        # mentioning what the question is about.
+        # Evidence that never mentions the question
+        # subject cannot describe it.
+        # ------------------------------------------
+
+        if (
+            subject
+            and not sentence_mentions_subject(
+                sentence,
+                subject,
+            )
+        ):
             continue
 
         scored.append(
@@ -1341,6 +1385,7 @@ def synthesize_summary_answer(
         question,
         context,
         max_sentences=max_sentences,
+        subject=subject,
     )
 
     if not evidence:
