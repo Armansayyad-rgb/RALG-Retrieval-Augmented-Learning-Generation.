@@ -252,7 +252,7 @@
 
 ### 35. Dependency License Inventory
 - 15 total dependencies audited
-- All OSI-approved (MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause)
+- All OSI-approved (MIT, Apache-2.0, BSD-3-Clause)
 - Zero copyleft (GPL/AGPL) in runtime path
 - Risk: LOW for all runtime dependencies
 - Note: PyPDF2 should migrate to pypdf for continued security support

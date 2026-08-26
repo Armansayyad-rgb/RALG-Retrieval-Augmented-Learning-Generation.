@@ -113,8 +113,10 @@ def main() -> int:
             _record("mem_pct", True, parts[2])
 
     # --- Phase 6: Restart Recovery ---
+    # Use `docker restart` (not `docker compose restart`) so this works with
+    # containers created by `docker compose run` as well as `docker compose up`.
     print("\n[Phase 6] Restart Recovery")
-    _run(["docker", "compose", "restart"], check=False)
+    _run(["docker", "restart", CN], check=False)
     start = time.time()
     recovered = False
     while time.time() - start < HEALTH_TIMEOUT:

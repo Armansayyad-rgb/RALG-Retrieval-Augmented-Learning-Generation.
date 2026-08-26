@@ -101,7 +101,7 @@ A machine-readable inventory is at `docs/dependency_inventory.json`.
 - **Risk:** LOW
 
 ### PyPDF2 3.0.1
-- **License:** BSD-2-Clause (verified: METADATA classifier)
+- **License:** BSD-3-Clause (verified: LICENSE file contains 3 clauses including non-endorsement)
 - **Purpose:** PDF document parsing for runtime upload pipeline
 - **Redistribution:** Permitted with notice
 - **Commercial use:** PERMITTED
@@ -190,7 +190,7 @@ The Dockerfile pins exact versions via `requirements.txt`. PyTorch is installed 
 
 ## 9. Redistribution Implications
 
-All 15 dependencies use OSI-approved licenses (MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause). All permit commercial redistribution with notice. No copyleft (GPL/AGPL) dependencies exist in the runtime path.
+All 15 dependencies use OSI-approved licenses (MIT, Apache-2.0, BSD-3-Clause). All permit commercial redistribution with notice. No copyleft (GPL/AGPL) dependencies exist in the runtime path.
 
 The RALG source code itself is under a **Source-Available Non-Commercial License** — the dependencies do not impose any additional restrictions beyond what the RALG license already states.
 
