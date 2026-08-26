@@ -28,20 +28,30 @@ GPU is an NVIDIA 6 GiB card; system RAM ≈ 23.6 GiB.
 Required checkpoint total = the one REQUIRED artifact: **219 MiB**
 (reasoning model + 1.06 MiB tokenizer).
 
-## 2. CPU-only support — important finding
+## 2. CPU-only support
 
-- The production code selects device via `torch.cuda.is_available()` and
-  passes `map_location=device`. On a GPU machine this works.
-- With CUDA masked, **this torch build reports `is_available()==True` while
-  `device_count()==0`**, so the unmodified path picks "cuda" and then fails:
-  `RuntimeError: Attempting to deserialize object on CUDA device 0 but
-  torch.cuda.device_count() is 0`.
-- With a truthful CPU predicate applied by the qualification harness only
-  (no repo code changed), the full pipeline runs on CPU end-to-end.
-- **Verdict: CPU-only execution WORKS functionally, but out-of-the-box
-  CPU-only startup on GPU-equipped machines currently fails** because the
-  runtime trusts the misleading `is_available()` result. Fix would be a
-  one-line runtime change (out of scope for this no-tuning milestone).
+- **Fixed during this milestone:** production device selection
+  (`rag_chat_v2._select_execution_device`) now selects CUDA only when
+  `is_available()` is True AND `device_count() > 0` AND device 0 can actually
+  be inspected; any inspection failure falls back to CPU. Regression tests:
+  `src/test_device_selection.py` (6 cases, no GPU required).
+- Before this fix, this machine exhibited
+  `is_available()==True` with `device_count()==0`, and the runtime selected
+  "cuda" and failed loading the checkpoint on a masked-GPU start.
+- **Verified result:** CPU-only startup now works through the UNMODIFIED
+  production runtime (environment-masked CUDA; no monkeypatching): checkpoint
+  loads on CPU, pipeline initializes, all queries succeed.
+- Measured CPU-only profile (post-fix, production code path):
+
+| Metric | CPU-only |
+|---|---|
+| Pipeline init total | 9.5 s |
+| Knowledge load (component) | 2.69 s |
+| Index build (component) | 4.70 s |
+| Idle RSS after init | 2.02 GiB |
+| Peak working set | 2.30 GiB |
+| Query p50 / p95 | 10.7 ms / 36.3 ms |
+| Avg CPU utilization during queries | 20.2% |
 
 ## 3. Current-corpus baseline (~107,650 chunks + restored runtime docs)
 
@@ -61,11 +71,12 @@ All timings from `runtime-profile`; queries = 8 fixed questions × 2 rounds.
 \* peak-working-set probe returned 0 in the first CPU run (API issue),
 corrected afterward; treat CPU peak ≈ idle RSS + index build transient.
 
-**GPU benefit on the active core: none measured.** p50/p95 are statistically
-identical because the dominant query path is hybrid retrieval + extractive
-answering, which is CPU-bound by design; generation of long free-form answers
-is where the GPU helps. GPU is therefore OPTIONAL for the core system.
-The optional Qwen polish LLM is excluded from all core claims.
+**GPU benefit on the active core: none measured.** Query latency is
+statistically identical between devices because the dominant query path is
+hybrid retrieval + extractive answering, which is CPU-bound by design;
+generation of long free-form answers is where the GPU helps. GPU is therefore
+OPTIONAL for the core system. The optional Qwen polish LLM is excluded from
+all core claims.
 
 ## 4. Scaling (synthetic corpora, production retriever unmodified)
 
@@ -99,31 +110,39 @@ Measured (this checkout):
 | Stage 5 RFC source documents | 6.39 MiB |
 | Derived runtime data (logs/) | 6.52 MiB |
 
-**ESTIMATES ONLY (not measurements)** — derived from the measured ~7.2 KiB
-index/RAM per chunk and typical text-to-chunk ratios:
+**ESTIMATES ONLY (not measurements).** Derived storage overhead depends on
+source format, OCR/scan content, extracted-text ratio, chunking density,
+vocabulary/postings size, metadata, document copies, audit/log data, backups,
+and redundancy. No precise derived-storage figure is claimed for large corpora.
 
-| Corpus | Estimate basis | Estimated storage overhead |
+| Corpus | Status | Sizing guidance |
 |---|---|---|
-| 100 GB documents | ~1 GB raw text ≈ ~150–200k chunks → index+derived ≈ 1.5–2 GB | **~2 GB** derived data (plus document storage itself) |
-| 1 TB documents | ~10x above → ~15–20 GB derived/index data | **~20 GB** derived data; retrieval p95 extrapolates to ~0.4–0.5 s (untested) |
-| 5 TB documents | Linear extrapolation continues to hold but single-process RAM (~90–100 GiB) exceeds tested envelope | **~100 GB derived data**; requires sharded/partitioned indexes across workers — architecture estimate only |
+| 100 GB documents | architecture estimate only; not tested at this scale | Provision source-document storage **plus substantial index/metadata/headroom** (measured per-chunk cost ≈ 7.2 KiB RAM for retrieval index suggests index data scales with chunk count); final sizing must be measured on the customer corpus |
+| 1 TB documents | NOT TESTED | Persistent/sharded retrieval recommended before deployment at this scale; single-process index not validated beyond 1M chunks |
+| 5 TB documents | NOT TESTED — **storage requirement NOT YET ESTABLISHED** | Expect the source corpus itself plus derived indexes/metadata, operational headroom, and separate backup capacity. Final sizing requires corpus-specific ingestion/index measurement |
+
+NON-VALIDATED planning range only: measured retrieval-index cost was
+~7.2 KiB of RAM per chunk at up to 1M chunks; IF that linear behavior held
+for derived on-disk index data, a text-dense corpus would imply roughly
+1–5% of source size in derived index data — explicitly NON-VALIDATED and
+excluding documents themselves, copies, logs, and backups.
 
 ## 6. Hardware tiers (evidence-based)
 
 - **MINIMUM TESTED:** 4-core CPU, 8 GiB RAM, ~1 GiB free disk beyond
-  documents. Evidence: whole system runs CPU-only in <2.2 GiB RSS; index build
-  for 107k chunks < 5 s; queries fully served at p95 ≤ 34 ms. No GPU needed.
-- **RECOMMENDED:** 8-core CPU, 16 GiB RAM, optional 4–6 GiB GPU (only if
-  free-form generative answers are used heavily), NVMe disk. Evidence: 500k
-  chunks fit in 3.6 GiB with p95 44 ms; GPU adds nothing to core retrieval.
+  documents. Evidence: whole system runs CPU-only through production code in
+  ~2.2–2.3 GiB RSS after the device-selection fix; index build for 107k
+  chunks < 5 s; queries fully served at p95 ≤ 36 ms. No GPU needed.
+- **RECOMMENDED:** 8-core CPU, 16 GiB RAM, NVMe disk. GPU optional — add one
+  only if free-form generative answers are used heavily. Evidence: 500k
+  chunks fit in 3.6 GiB with p95 44 ms; GPU added nothing to core retrieval.
 - **ACCELERATED:** 16+ cores, 32 GiB RAM (multi-worker sharded indexes),
   GPU reserved for the optional polish LLM. Evidence-based up to 1M chunks
-  single-process (6.7 GiB, p95 91 ms); beyond that this is a sizing estimate,
-  not a measurement.
+  single-process (6.72 GiB steady RSS, p50 53.5 ms / p95 90.9 ms); beyond
+  that this is a sizing estimate, not a measurement.
 
-**5 TB claim status:** NOT TESTED. Do not represent 5 TB as validated. The
-figure above is an architecture/sizing estimate assuming linear scaling, which
-was verified only to 1M chunks.
+No hardware tier is defined for 100 GB+ / 1 TB / 5 TB corpora: those are
+untested, and their requirements are not established (see Section 5).
 
 ## 7. Limitations
 

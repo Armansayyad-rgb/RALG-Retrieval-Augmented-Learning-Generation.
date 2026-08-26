@@ -2646,6 +2646,36 @@ def retrieve_for_reasoning(
 # Pipeline initialization
 # --------------------------------------------------
 
+def _select_execution_device(
+):
+    """Select CUDA only when it is genuinely usable, else fall back to CPU.
+
+    ``torch.cuda.is_available()`` can report True while no device is actually
+    usable (observed in the field: ``is_available() == True`` while
+    ``device_count() == 0``), which previously made pipeline initialization
+    fail while loading the checkpoint onto "cuda". Require a real,
+    inspectable device with nonzero memory before choosing CUDA.
+    """
+    try:
+        if (
+            torch.cuda.is_available()
+            and torch.cuda.device_count() > 0
+        ):
+            properties = torch.cuda.get_device_properties(0)
+            if properties is not None and getattr(
+                properties,
+                "total_memory",
+                0,
+            ) > 0:
+                return "cuda"
+    except Exception:
+        logger.warning(
+            "CUDA device inspection failed; falling back to CPU",
+            exc_info=True,
+        )
+    return "cpu"
+
+
 def initialize_pipeline(
     verbose=True,
 ):
@@ -2653,11 +2683,7 @@ def initialize_pipeline(
         "Initializing rag_chat pipeline"
     )
 
-    device = (
-        "cuda"
-        if torch.cuda.is_available()
-        else "cpu"
-    )
+    device = _select_execution_device()
 
     logger.info(
         "Pipeline device selected: %s",

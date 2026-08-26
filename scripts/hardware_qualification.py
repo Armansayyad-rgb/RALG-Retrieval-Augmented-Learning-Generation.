@@ -281,32 +281,18 @@ def runtime_profile(device_mode: str, queries_per_question: int) -> dict:
     cpu_path_finding = None
 
     if device_mode == "cpu":
-        # Qualification probe: does the UNMODIFIED production path start
-        # without a GPU? Production code selects device via
-        # ``torch.cuda.is_available()`` and passes ``map_location=device``
-        # to torch.load itself, so forcing a truthful CPU answer lets the
-        # unmodified path run end-to-end. NOTE: this torch build reports
-        # ``is_available()==True`` even with an empty CUDA_VISIBLE_DEVICES,
-        # so env masking alone is insufficient; we also patch the predicate.
-        original_is_available = torch.cuda.is_available
-        if not original_is_available():
-            cpu_path_finding = {"unmodified_cpu_startup": "PASS", "note": "no GPU present"}
-        else:
-            try:
-                t0 = time.perf_counter()
-                pipeline_probe = initialize_pipeline(verbose=False)
-                t_init = time.perf_counter() - t0
-                cpu_path_finding = {
-                    "unmodified_gpu_visible_startup_seconds": round(t_init, 2),
-                    "note": "probe ran with GPU visible; real CPU path follows",
-                }
-            except RuntimeError as exc:
-                cpu_path_finding = {"gpu_visible_probe_error": str(exc)[:200]}
-            torch.cuda.is_available = lambda: False
-            cpu_path_finding["harness_shim_applied"] = (
-                "torch.cuda.is_available patched to False by THIS TOOL ONLY "
-                "(production code then selects cpu and map_location=cpu itself)"
-            )
+        # CPU evidence must come through the SAME production device-selection
+        # logic as normal operation. Production selects CUDA only when a real,
+        # inspectable device exists (rag_chat_v2._select_execution_device);
+        # masking CUDA via the environment makes device_count() report zero,
+        # so the production rule itself falls back to CPU. No torch
+        # monkeypatching is used for this measurement.
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        cpu_path_finding = {
+            "mechanism": "CUDA_VISIBLE_DEVICES masked; production "
+                         "_select_execution_device() falls back to CPU",
+            "monkeypatch_used": False,
+        }
     else:
         cpu_path_finding = {"unmodified_gpu_startup": "expected PASS"}
 
