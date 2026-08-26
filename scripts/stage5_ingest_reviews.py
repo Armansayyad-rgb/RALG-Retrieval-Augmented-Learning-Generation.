@@ -93,14 +93,18 @@ def ingest(root: Path, review_file: Path, reviewer_label: str, output: Path, all
         reviewed.append(item)
     output.write_text("\n".join(json.dumps(item, sort_keys=True) for item in reviewed) + "\n", encoding="utf-8")
     outcomes = [item.get("review_outcome") for item in reviewed if item.get("review_outcome")]
+    # Summary categories are mutually exclusive: accepted / rejected
+    # (explicit reject only) / ambiguous / invalid_case / remaining_unreviewed.
+    # Historical artifacts stored ambiguous/invalid_case with
+    # reviewer_status "rejected"; this report separates them explicitly.
     return {
         "input_reviewer": reviewer_label,
         "submitted": len(reviews),
-        "accepted": sum(item.get("reviewer_status") == "accepted" for item in reviewed),
-        "rejected": sum(item.get("reviewer_status") == "rejected" for item in reviewed),
+        "accepted": outcomes.count("accept"),
+        "rejected": outcomes.count("reject"),
         "ambiguous": outcomes.count("ambiguous"),
         "invalid_case": outcomes.count("invalid_case"),
-        "remaining_unreviewed": sum(item.get("reviewer_status") == "unreviewed" for item in reviewed),
+        "remaining_unreviewed": len(cases) - len(reviews),
         "partial": len(reviews) < len(cases),
         "output": str(output),
     }

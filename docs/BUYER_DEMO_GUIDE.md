@@ -29,7 +29,10 @@ powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
 
 The script runs preflight checks (Python version, required files, checkpoint
 paths, optional Docker availability), prints actionable failures, then starts
-the Gradio WebUI at **http://127.0.0.1:7860**.
+the Gradio WebUI. It uses port **7860** when free; if that port is occupied,
+it automatically selects the first free port in the allowed range
+7861-7870 and prints the **actual URL** to use. It never terminates other
+processes, and fails clearly if the whole allowed range is busy.
 
 Run only the checks:
 
@@ -55,9 +58,14 @@ Watch: upload succeeds; the document is parsed, chunked, indexed.
 
 ### Step 2 — Ask a supported question
 
-Ask something the ingested document answers. Example for an RFC text:
+Ask something the ingested document answers unambiguously. For example, if
+you upload an RFC that defines a protocol's transport ports (e.g. RFC 2131,
+DHCP), ask:
 
-> "What port does SMTP over STARTTLS use?"
+> "Which UDP port does a DHCP server listen on for client requests?"
+
+The answer is stated verbatim in the document ("UDP port 67"), so there is a
+single defensible reference answer — no version or interpretation ambiguity.
 
 Watch: a direct answer appears **with cited sources**, including the document
 you just uploaded.
@@ -126,6 +134,6 @@ Same behavior; useful when the buyer wants to script the walkthrough.
 | Symptom | Fix |
 |---|---|
 | Preflight fails on missing checkpoint | Place the external model bundle under `checkpoints\` as documented; nothing is auto-downloaded |
-| WebUI port busy | Stop the other process on 7860 or set the port env override per `config.py` |
+| WebUI port busy | The launcher auto-falls-back to 7861-7870 and prints the actual URL; no action needed unless the whole range is busy |
 | Pipeline init error | Verify `data\tokenizer_v2.json` exists; check `logs\` for details |
 | Docker restart leaves container unhealthy | Wait up to 90 s (health timeout), then check `docker logs <container>` |

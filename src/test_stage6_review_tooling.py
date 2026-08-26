@@ -138,9 +138,16 @@ class IngestionGuardTests(unittest.TestCase):
         result = ingest_mod.ingest(self.root, self.review_csv, "reviewer_a", output)
         self.assertTrue(result["pass"] if "pass" in result else True)
         self.assertEqual(result["accepted"], 1)
-        self.assertEqual(result["rejected"], 2)
+        self.assertEqual(result["rejected"], 0)  # no explicit-reject row in this fixture
         self.assertEqual(result["ambiguous"], 1)
         self.assertEqual(result["invalid_case"], 1)
+        self.assertEqual(result["remaining_unreviewed"], 0)
+        # Categories are disjoint and cover the submission exactly.
+        self.assertEqual(
+            result["accepted"] + result["rejected"]
+            + result["ambiguous"] + result["invalid_case"],
+            result["submitted"],
+        )
         rows = {
             json.loads(line)["case_id"]: json.loads(line)
             for line in output.read_text(encoding="utf-8").splitlines()
