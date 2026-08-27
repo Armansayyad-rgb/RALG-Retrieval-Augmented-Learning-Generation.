@@ -1,0 +1,19 @@
+Title: Kubernetes Probe and Rollout Readiness
+Domain: cluster workload operations
+Source: Authored independent validation note derived from public Kubernetes documentation.
+
+Kubernetes uses probes to decide how to manage container lifecycle and traffic.
+A startup probe gives slow-starting containers time to initialize before liveness
+or readiness checks are enforced. A liveness probe indicates whether the
+container should be restarted. A readiness probe indicates whether the Pod is
+ready to receive Service traffic. During a Deployment rollout, unavailable Pods
+and surge Pods are constrained by maxUnavailable and maxSurge.
+
+Procedural guidance:
+1. Use a startup probe when initialization can legitimately take a long time.
+2. Use a readiness probe to remove a Pod from Service endpoints before it can
+   safely serve traffic.
+3. Use a liveness probe to recover from a deadlocked or unhealthy process.
+4. Set maxUnavailable and maxSurge to control rollout availability and capacity.
+
+Evidence note: Readiness affects Service traffic; liveness affects restarts.

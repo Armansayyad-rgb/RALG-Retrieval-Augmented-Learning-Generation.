@@ -1,0 +1,24 @@
+Title: CMake Presets for Continuous Integration
+Domain: build-system configuration
+Source: Authored independent validation note derived from public CMake documentation.
+
+CMakePresets.json records configure, build, test, package, and workflow presets
+in a machine-readable file. Configure presets select a generator, binary
+directory, cache variables, environment values, and optional inheritance.
+Build presets refer to a configure preset and add build-specific arguments such
+as targets, configuration names, and parallel job counts. Test presets likewise
+refer to a configure preset and can provide output, filter, and execution
+settings for CTest.
+
+Procedural guidance:
+1. Add or update a configure preset before adding build or test presets that
+   depend on it.
+2. Keep CI presets checked into the repository so runners and developers use
+   the same names.
+3. Place user-specific overrides in CMakeUserPresets.json rather than changing
+   shared CI presets.
+4. Use workflow presets when a single named operation must run configure, build,
+   and test steps in order.
+
+Evidence note: A build preset depends on a configure preset; it does not replace
+the configure step.
