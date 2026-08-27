@@ -1,0 +1,19 @@
+Title: OCI Image Layout Artifact Structure
+Domain: container artifact packaging
+Source: Authored independent validation note derived from the OCI Image Layout specification.
+
+An OCI image layout directory contains an oci-layout file, an index.json file,
+and a blobs directory. The oci-layout file identifies the layout version. The
+index.json file points to one or more manifests through descriptors. Each
+descriptor includes a media type, digest, and size. Blob content is stored under
+the blobs directory by algorithm and encoded digest, for example
+blobs/sha256/<hex>.
+
+Operational guidance:
+1. Verify descriptor digest and size before trusting a blob.
+2. Read index.json to discover the manifests available in the layout.
+3. Resolve the manifest descriptor to find config and layer descriptors.
+4. Preserve digest-addressed blob paths when copying an image layout.
+
+Evidence note: index.json is the entry point for discovering manifests; blobs
+are addressed by digest.

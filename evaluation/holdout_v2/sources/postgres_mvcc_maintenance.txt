@@ -1,0 +1,19 @@
+Title: PostgreSQL MVCC Vacuum Maintenance
+Domain: relational database maintenance
+Source: Authored independent validation note derived from public PostgreSQL documentation.
+
+PostgreSQL uses multi-version concurrency control so updates create new row
+versions while older versions remain visible to transactions that still need
+them. VACUUM removes dead row versions that are no longer visible to any active
+transaction. VACUUM also updates planner statistics when ANALYZE is requested
+or when autovacuum performs analyze work. VACUUM FULL rewrites the table into a
+new physical file and requires an exclusive lock on the table.
+
+Procedural guidance:
+1. Keep autovacuum enabled for ordinary maintenance.
+2. Investigate long-running transactions before blaming VACUUM for table bloat.
+3. Reserve VACUUM FULL for cases where disk reclamation outweighs lock impact.
+4. Run ANALYZE after large data changes when query plans need fresh statistics.
+
+Evidence note: Ordinary VACUUM reclaims dead tuples for reuse; VACUUM FULL
+rewrites the table and can return disk space to the operating system.

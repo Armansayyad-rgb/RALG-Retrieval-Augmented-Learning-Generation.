@@ -1,0 +1,20 @@
+Title: systemd Unit Ordering and Requirement Semantics
+Domain: Linux service management
+Source: Authored independent validation note derived from public systemd documentation.
+
+systemd separates requirement relationships from ordering relationships.
+Requires= expresses that one unit depends on another unit being started, but it
+does not by itself define startup order. After= and Before= define ordering
+only; they do not create a requirement. Wants= is a weaker requirement than
+Requires= and is commonly used when the dependent unit should be started but
+failure should not necessarily stop the requiring unit.
+
+Procedural guidance:
+1. Use Wants= for optional cooperating services.
+2. Use Requires= when the dependent unit is mandatory.
+3. Add After= or Before= when startup order matters.
+4. Combine a requirement with an ordering directive when both dependency and
+   order are required.
+
+Evidence note: Requires= is not an ordering directive; After= is not a
+requirement directive.

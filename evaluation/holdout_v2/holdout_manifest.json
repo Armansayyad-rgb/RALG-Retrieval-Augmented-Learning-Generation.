@@ -1,0 +1,21 @@
+{
+  "benchmark_version": "holdout_v2.0.0",
+  "status": "FROZEN / DO NOT TUNE / DO NOT RUN UNTIL FINAL BLIND EVALUATION",
+  "generated_from": "authored blind case specs verified against committed source notes",
+  "case_count": 70,
+  "category_counts": {
+    "supported": 10,
+    "paraphrased": 10,
+    "unsupported": 10,
+    "false_premise": 10,
+    "misleading_overlap": 10,
+    "procedural": 10,
+    "cross_document": 10
+  },
+  "retrieval_supported_cases": 40,
+  "rejection_cases": 30,
+  "source_count": 7,
+  "benchmark_sha256": "2cb44e5dee8b2074036985928db9a98688046e81e0088ba92c1838d72017c1b5",
+  "sources_manifest_sha256": "8f2edcc23c6e4e446858b4340242e9c7c1386138b40208c78e02e34df922d8cb",
+  "independence_statement": "No holdout_v1 PEP sources, Stage 5 RFC documents, case IDs, or questions are reused. Production code must not be tuned against Holdout V2."
+}

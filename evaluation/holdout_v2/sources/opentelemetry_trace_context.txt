@@ -1,0 +1,21 @@
+Title: OpenTelemetry Trace Context Propagation
+Domain: observability instrumentation
+Source: Authored independent validation note derived from OpenTelemetry and W3C trace-context documentation.
+
+Distributed tracing links telemetry across services by propagating context with
+each request. The traceparent header carries a version, trace identifier, parent
+span identifier, and trace flags. The tracestate header carries vendor-specific
+state in an ordered list. A service that receives an incoming request should
+extract the context, start a child span, and inject the updated context into
+outgoing requests.
+
+Operational guidance:
+1. Extract incoming context before starting server-side spans.
+2. Start child spans for work caused by the inbound request.
+3. Inject the current context into outbound calls so downstream services join
+   the same trace.
+4. Avoid placing secrets or personal data in trace identifiers or tracestate
+   values.
+
+Evidence note: The traceparent header carries identifiers and flags; tracestate
+is for vendor-specific state.

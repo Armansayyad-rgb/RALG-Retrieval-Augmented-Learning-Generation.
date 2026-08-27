@@ -1,0 +1,22 @@
+Title: SQLite WAL Checkpoint Operations
+Domain: embedded database operations
+Source: Authored independent validation note derived from public SQLite documentation.
+
+SQLite write-ahead logging stores committed transactions in a separate WAL file
+before checkpointing merges pages back into the main database. A passive
+checkpoint copies eligible frames without blocking active readers or writers. A
+full checkpoint waits for readers that are using older snapshots before it
+finishes. A truncate checkpoint performs the checkpoint and then truncates the
+WAL file to zero bytes when it can do so safely.
+
+Operational guidance:
+1. Use passive checkpoints for low-interference background maintenance.
+2. Use full checkpoints during planned maintenance windows when completion is
+   more important than avoiding waits.
+3. Use truncate checkpoints when reclaiming disk space from the WAL file is an
+   explicit objective.
+4. Do not treat checkpointing as a backup substitute; copy or backup the
+   database using a backup-safe mechanism.
+
+Evidence note: The file that may shrink to zero bytes is the WAL file, not the
+main database file.
