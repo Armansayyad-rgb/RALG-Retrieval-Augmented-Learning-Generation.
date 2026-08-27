@@ -687,6 +687,7 @@ def execute_side_query(
     index,
     document_frequency,
     merged,
+    document_ids=None,
 ):
     retrieval_start = (
         time.perf_counter()
@@ -698,6 +699,7 @@ def execute_side_query(
         index,
         document_frequency,
         final_top_k=PER_QUERY_TOP_K,
+        document_ids=document_ids,
     )
 
     retrieval_elapsed = (
@@ -754,6 +756,7 @@ def retrieve_side(
     index,
     document_frequency,
     collect_timings=False,
+    document_ids=None,
 ):
     side_start = (
         time.perf_counter()
@@ -817,6 +820,7 @@ def retrieve_side(
             index,
             document_frequency,
             merged,
+            document_ids=document_ids,
         )
 
         executed_queries.append(
@@ -877,6 +881,7 @@ def retrieve_side(
                 index,
                 document_frequency,
                 merged,
+                document_ids=document_ids,
             )
 
             executed_queries.append(
@@ -1204,6 +1209,7 @@ def retrieve_comparison(
     index,
     document_frequency,
     collect_timings=False,
+    document_ids=None,
 ):
     total_start = (
         time.perf_counter()
@@ -1247,6 +1253,7 @@ def retrieve_comparison(
         index,
         document_frequency,
         collect_timings=collect_timings,
+        document_ids=document_ids,
     )
 
     # ------------------------------------------
@@ -1259,6 +1266,7 @@ def retrieve_comparison(
         index,
         document_frequency,
         collect_timings=collect_timings,
+        document_ids=document_ids,
     )
 
     if (

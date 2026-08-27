@@ -329,6 +329,8 @@ def collect_sources(
     question: str,
     top_k: int,
     answer: str | None = None,
+    *,
+    document_ids: list[str] | None = None,
 ) -> list[dict]:
     """Run the V2 extractor retriever to grab source chunks.
 
@@ -343,7 +345,12 @@ def collect_sources(
 
     try:
         v2_hits = retrieve_v2_fn(
-            question, chunks, idx, df, final_top_k=top_k
+            question,
+            chunks,
+            idx,
+            df,
+            final_top_k=top_k,
+            document_ids=document_ids,
         )
         if v2_hits:
             v2_sources = _format_v2_sources(v2_hits, top_k)
@@ -357,7 +364,12 @@ def collect_sources(
 
     try:
         hybrid = retrieve_hybrid_fn(
-            question, chunks, idx, df, final_top_k=top_k,
+            question,
+            chunks,
+            idx,
+            df,
+            final_top_k=top_k,
+            document_ids=document_ids,
         )
         if hybrid:
             hybrid_sources = _format_hybrid_sources(hybrid, top_k)
@@ -394,7 +406,27 @@ def build_answer_contract(
         sources,
     )
     supported = bool(result.get("supported", False)) and traceable
-    conflict = supported and detect_evidence_conflict(question, sources)
+    # Deterministic synthesizers (causal, structure, change,
+    # effect, entity_list) do their own evidence filtering
+    # internally and only emit answers grounded in specific
+    # evidence sentences.  Running detect_evidence_conflict on
+    # the full source list can trigger on irrelevant sources
+    # that the synthesizer already excluded, producing false
+    # rejections.
+    _synth_type = str(result.get("answer_type", ""))
+    _deterministic_types = {
+        "causal", "structure", "change",
+        "effect", "entity_list",
+    }
+    _synth_is_deterministic = any(
+        _synth_type.startswith(t)
+        for t in _deterministic_types
+    )
+    conflict = (
+        supported
+        and not _synth_is_deterministic
+        and detect_evidence_conflict(question, sources)
+    )
     confidence = result.get("confidence")
     if not isinstance(confidence, (int, float)):
         confidence = None
@@ -440,6 +472,8 @@ def chat_turn(
     pipeline: dict,
     question: str,
     top_k: int,
+    *,
+    document_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     """Run one Q&A turn and return UI-ready fields.
 
@@ -474,6 +508,7 @@ def chat_turn(
             answer_fn=answer_question,
             contract_fn=build_answer_contract,
             sources_fn=collect_sources,
+            document_ids=document_ids,
         )
     except Exception:  # defensive — keep internal details out of the UI
         _LOGGER.exception("Unhandled chat pipeline error")

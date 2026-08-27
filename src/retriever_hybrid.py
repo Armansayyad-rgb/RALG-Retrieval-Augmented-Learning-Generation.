@@ -192,6 +192,8 @@ def retrieve(
     document_frequency,
     final_top_k=10,
     secondary_queries=None,
+    *,
+    document_ids=None,
 ):
     """Full-question-first hybrid retrieval.
 
@@ -216,6 +218,7 @@ def retrieve(
         index,
         document_frequency,
         final_top_k=min(FULL_QUESTION_DEPTH, total_documents),
+        document_ids=document_ids,
     )
     for rank, row in enumerate(primary_rows, 1):
         row["_fq_rank"] = rank
@@ -252,6 +255,7 @@ def retrieve(
                 index,
                 document_frequency,
                 final_top_k=min(SECONDARY_DEPTH, total_documents),
+                document_ids=document_ids,
             )
             executed_secondary += 1
             for row in rows:
@@ -281,6 +285,7 @@ def retrieve(
             index,
             document_frequency,
             final_top_k=min(SECONDARY_DEPTH, total_documents),
+            document_ids=document_ids,
         )
         executed_secondary += 1
         for row in rows:

@@ -331,6 +331,27 @@ _INFLECTION_SUFFIX = re.compile(r"(?:s|es|ed|ing|'s)?\b")
 _TERM_PATTERN_CACHE: dict[str, re.Pattern] = {}
 
 
+def _term_variants(term):
+    """Light morphological variants of a question term.
+
+    Questions inflect differently from evidence prose ("verified" vs
+    "verify", "draining" vs "drain"). Variants only WIDEN boundary-safe
+    matching to regular inflections; derived-but-different words
+    ("press"/"pressure") still never match.
+    """
+    variants = {term}
+    if len(term) > 4 and term.endswith("ied"):
+        variants.add(term[:-3] + "y")
+    if len(term) > 4 and term.endswith("ed"):
+        variants.add(term[:-2])
+    if len(term) > 5 and term.endswith("ing"):
+        variants.add(term[:-3])
+        variants.add(term[:-3] + "e")
+    if len(term) > 3 and term.endswith("s") and not term.endswith("ss"):
+        variants.add(term[:-1])
+    return variants
+
+
 def _contains_term(haystack_lower, term):
     """Word-boundary-aware term containment with light inflection tolerance.
 
@@ -345,8 +366,11 @@ def _contains_term(haystack_lower, term):
     key = str(term)
     pattern = _TERM_PATTERN_CACHE.get(key)
     if pattern is None:
+        alternatives = "|".join(
+            re.escape(variant) for variant in sorted(_term_variants(key))
+        )
         pattern = re.compile(
-            r"\b" + re.escape(key) + _INFLECTION_SUFFIX.pattern
+            r"\b(?:" + alternatives + r")" + _INFLECTION_SUFFIX.pattern
         )
         _TERM_PATTERN_CACHE[key] = pattern
     return pattern.search(haystack_lower) is not None
@@ -404,6 +428,197 @@ def _split_sentences(context):
         for s in _re.split(r"\.\s+|\n+", context)
         if s.strip()
     ]
+
+
+# ==================================================
+# Post-answer question-addressed check
+#
+# After an answer is generated, verify that the answer
+# actually engages with the question's key content
+# terms. This catches false-support cases where the
+# evidence contains keyword overlap but the answer
+# doesn't address the full question (e.g. cross-domain
+# mashups like "compressor lockout steps for DNA
+# replication" where the answer mentions lockout but
+# ignores DNA entirely).
+# ==================================================
+
+_GENERIC_ANSWER_TERMS = frozenset({
+    "what", "which", "how", "when", "where", "who",
+    "why", "does", "did", "do", "is", "are", "was",
+    "were", "the", "a", "an", "and", "or", "but",
+    "for", "of", "to", "in", "on", "with", "at",
+    "by", "from", "as", "be", "been", "being",
+    "have", "has", "had", "must", "should", "can",
+    "could", "would", "will", "may", "might",
+    "require", "requires", "required", "need",
+    "needs", "step", "steps", "procedure",
+    "procedures", "process", "system", "method",
+    "check", "checks", "checking", "done",
+    "before", "after", "during", "while",
+    "safety", "maintenance", "operation",
+    "describe", "explain", "list", "name",
+    "identify", "compare", "contrast", "define",
+    "give", "tell", "show", "provide", "state",
+})
+
+
+_NAMED_PHRASE_IN_QUESTION = re.compile(
+    r"\b(?:[A-Z0-9][A-Za-z0-9'-]*\s+){1,}"
+    r"[A-Z0-9][A-Za-z0-9'-]*\b"
+)
+
+
+def _question_named_phrases(question):
+    """Named multi-token entities explicitly present in the question."""
+    phrases = []
+    for match in _NAMED_PHRASE_IN_QUESTION.finditer(question or ""):
+        # Product/model identifiers often appear as scoped context for
+        # concise attribute questions ("Which coolant is approved for
+        # the Lumen ARC-12?"). The answer may correctly be just the
+        # attribute value, so do not require those identifier phrases to
+        # be restated here. The separate "for X" gate below still
+        # handles full-subject questions where X is the asked-about
+        # subject.
+        if re.search(r"\d|-", match.group(0)):
+            continue
+        terms = [
+            t.lower()
+            for t in re.findall(r"[A-Za-z0-9]{3,}", match.group(0))
+            if t.lower() not in _GENERIC_ANSWER_TERMS
+        ]
+        if len(terms) >= 2:
+            phrases.append(terms)
+    return phrases
+
+
+def _answer_addresses_question(question, answer):
+    """Check whether the answer engages with the question's main subject.
+
+    Extracts the question's primary subject (the core noun phrase) and
+    verifies it appears in the answer.  For cross-domain mashups where
+    the question combines unrelated concepts (e.g. "compressor lockout
+    steps for DNA replication"), the subject ("DNA replication") will
+    not appear in an answer that only discusses compressor lockout.
+
+    Returns False only when the answer completely misses the question's
+    subject matter.
+    """
+    if not answer or not question:
+        return True
+
+    q_lower = question.lower()
+    a_lower = answer.lower()
+
+    # Extract content terms from the question.
+    q_terms = [
+        t for t in re.findall(r"[a-z0-9]{3,}", q_lower)
+        if t not in _GENERIC_ANSWER_TERMS
+    ]
+
+    if not q_terms:
+        return True
+
+    # Named entities in the question must not disappear from the
+    # answer. This catches cross-concept mashups such as "Magna Carta
+    # compressor maintenance" where the answer only discusses the
+    # maintenance half and never addresses Magna Carta.
+    for phrase_terms in _question_named_phrases(question):
+        if not all(
+            _contains_term(a_lower, term)
+            for term in phrase_terms
+        ):
+            return False
+
+    # --- "for X" subject gate ---
+    # Extract the subject after "for" — the entity being asked about.
+    # E.g. "compressor lockout steps for DNA replication" → subject
+    # is "dna replication".  The answer must mention it.
+    for_match = re.search(
+        r"\bfor\s+([a-z0-9\s]+)", q_lower,
+    )
+    if for_match:
+        pre_for = q_lower[:for_match.start()]
+        subject_for_markers = (
+            "step",
+            "steps",
+            "procedure",
+            "procedures",
+            "process",
+            "system",
+            "systems",
+            "configuration",
+            "stages",
+        )
+        enforce_for_subject = any(
+            _contains_term(pre_for, marker)
+            for marker in subject_for_markers
+        )
+        for_subject = for_match.group(1).strip()
+        for_terms = [
+            t for t in re.findall(r"[a-z0-9]{3,}", for_subject)
+            if t not in _GENERIC_ANSWER_TERMS
+        ]
+        if enforce_for_subject and for_terms and not all(
+            _contains_term(a_lower, t) for t in for_terms
+        ):
+            return False
+
+    # --- Restatement gate ---
+    # If the answer's first sentence is just restating the question
+    # (all question content terms present but the sentence ends with
+    # a restatement pattern like "can be described as follows"), the
+    # answer provides no real information and should be rejected.
+    first_sentence = re.split(r"[.;]", a_lower)[0].strip()
+    if first_sentence:
+        q_in_first = sum(
+            1 for t in q_terms
+            if _contains_term(first_sentence, t)
+        )
+        restatement_patterns = (
+            "can be described as follows",
+            "is as follows",
+            "are as follows",
+            "is described as follows",
+            "are described as follows",
+        )
+        if (
+            q_in_first == len(q_terms)
+            and len(q_terms) >= 3
+            and any(
+                p in first_sentence
+                for p in restatement_patterns
+            )
+        ):
+            return False
+
+    # --- Adjacent bigram gate (weakened) ---
+    # Only allow a bigram match if the answer also covers at
+    # least one term from outside that bigram.  This prevents
+    # "compressor lockout" matching while "DNA replication" is
+    # completely absent.
+    if len(q_terms) >= 2:
+        for i in range(len(q_terms) - 1):
+            bigram = {q_terms[i], q_terms[i + 1]}
+            if all(_contains_term(a_lower, t) for t in bigram):
+                # Require at least one additional term outside
+                # the bigram to also appear.
+                other_terms = [
+                    t for j, t in enumerate(q_terms)
+                    if j != i and j != i + 1
+                ]
+                if not other_terms or any(
+                    _contains_term(a_lower, t)
+                    for t in other_terms
+                ):
+                    return True
+
+    # Fallback: at least one content term from the question must
+    # appear in the answer.  Cross-domain mashups are already
+    # caught by the "for X" subject gate above; this only needs
+    # to reject answers with zero topical overlap.
+    matched = sum(1 for t in q_terms if _contains_term(a_lower, t))
+    return matched >= 1
 
 
 # ==================================================
@@ -748,6 +963,174 @@ def _named_fact_anchors_match(question, candidate_sentence):
     )
 
 
+# --------------------------------------------------
+# SOP section extraction
+# --------------------------------------------------
+
+# Section headers recognized in the compressor SOP and similar
+# procedural documents.
+_SOP_SECTIONS = {
+    "before starting": [
+        "before starting",
+        "before beginning",
+        "prior to starting",
+        "prior to beginning",
+        "pre-start",
+        "lockout",
+        "tagout",
+        "loto",
+        "safety step",
+        "electrical panel",
+        "de-energize",
+    ],
+    "inspection": [
+        "inspection",
+        "inspect",
+        "checking",
+        "check",
+    ],
+    "lubrication": [
+        "lubrication",
+        "lubricate",
+        "oil",
+    ],
+    "restart": [
+        "restart",
+        "restarting",
+        "start-up",
+        "startup",
+    ],
+}
+
+_SOP_SECTION_HEADERS = {
+    "before starting": (
+        "before starting",
+        "before beginning",
+        "prior to starting",
+        "prior to beginning",
+        "pre-start",
+    ),
+    "inspection": (
+        "inspection",
+    ),
+    "lubrication": (
+        "lubrication",
+    ),
+    "restart": (
+        "restart",
+        "restarting",
+        "start-up",
+        "startup",
+    ),
+}
+
+# False-premise safety keywords: if the question asserts a
+# dangerous action is REQUIRED, it has a false premise.
+_FALSE_PREMISE_SAFETY = [
+    "bypassing lockout",
+    "bypass lockout",
+    "skip lockout",
+    "bypassing tagout",
+    "bypass tagout",
+    "skip tagout",
+    "without lockout",
+    "without tagout",
+    "no lockout",
+    "no tagout",
+]
+
+
+_FALSE_PREMISE_ACTION_VERBS = (
+    "require",
+    "requires",
+    "required",
+    "must",
+    "should",
+    "need",
+    "needs",
+    "needed",
+)
+
+
+def _has_false_required_safety_action(question):
+    """Detect questions asserting a required bypass of safety controls."""
+    q_low = str(question or "").lower()
+    if not q_low:
+        return False
+    if not any(verb in q_low for verb in _FALSE_PREMISE_ACTION_VERBS):
+        return False
+    return any(_fp in q_low for _fp in _FALSE_PREMISE_SAFETY)
+
+
+def _extract_sop_section(question, chunk):
+    """Extract the relevant section from an SOP document.
+
+    Identifies which section the question targets by matching
+    section keywords, then collects all bullet items under that
+    section header.  Returns the concatenated section text or
+    None if no section matches.
+    """
+    q_low = question.lower()
+
+    # False-premise safety gate: questions that assert a dangerous
+    # action is required have a false premise.
+    if _has_false_required_safety_action(question):
+        return None
+
+    # Identify the target section.
+    _target_section = None
+    for _section, _keywords in _SOP_SECTIONS.items():
+        for _kw in _keywords:
+            if _contains_term(q_low, _kw):
+                _target_section = _section
+                break
+        if _target_section:
+            break
+
+    if _target_section is None:
+        return None
+
+    # Parse the chunk into sections.  Sections may be separated
+    # by newlines or by numbered markers ("1.", "2.", etc.) on
+    # a single line.
+    import re as _re_sop
+
+    # Normalize: split on section-number boundaries.
+    parts = _re_sop.split(
+        r"(?=\b\d+\.?\s+[A-Z])", chunk,
+    )
+
+    _section_text = None
+    for _part in parts:
+        _part_stripped = _part.strip()
+        _header_low = _part_stripped[:120].lower()
+        for _kw in _SOP_SECTION_HEADERS.get(
+            _target_section, (_target_section,)
+        ):
+            if _contains_term(_header_low, _kw):
+                _section_text = _part_stripped
+                break
+        if _section_text:
+            break
+
+    if not _section_text:
+        return None
+
+    # Extract bullet items (lines starting with "-" or after
+    # section header text).
+    _items = []
+    _lines = _re_sop.split(r"(?:^|\s)-\s+", _section_text)
+    for _line in _lines[1:]:
+        _l = _line.strip().rstrip(".")
+        if _l and not _l.upper() == _l:
+            _items.append(_l)
+
+    if not _items:
+        return None
+
+    return "; ".join(_items)
+
+
 def extract_factual_answer(question, context):
     """
     Extract a factual answer from context for who/when/where/what/which questions.
@@ -758,6 +1141,9 @@ def extract_factual_answer(question, context):
         return None, False
 
     q = question.strip().lower()
+
+    if _has_false_required_safety_action(question):
+        return None, False
 
     # Try the existing extractor first
     extracted = extract_answer(question, context)
@@ -984,7 +1370,10 @@ def extract_factual_answer(question, context):
                 if _named_fact_anchors_match(question, s) is False:
                     continue
                 return s, True
-        return None, False
+        # No sentence survived the compound-entity/subject anchor checks.
+        # Fall through to the generic operational branch below, which can
+        # still ground identifier-less attribute questions on windowed
+        # term evidence instead of hard-abstaining here.
 
     if q.startswith("where "):
         locations = ["italy", "england", "france", "london", "rome", "paris"]
@@ -996,14 +1385,43 @@ def extract_factual_answer(question, context):
                     continue
                 return loc, True
 
-    # General operational facts often use forms such as "What purge
-    # pressure..." or "Which coolant..." rather than "What is...".
-    # Accept a complete evidence sentence only when it contains both a
-    # requested attribute and the question's explicit identifier.  The
-    # two anchors prevent an unrelated sentence about (for example) a
-    # phone number or price from being treated as support.
-    if q.startswith(("what ", "which ", "how long ")):
+    # General operational and procedural facts often use forms such as
+    # "What purge pressure...", "Which coolant...", "What must be done
+    # before starting X?", or "How should Y be verified?" rather than
+    # "What is...". Accept a complete evidence sentence only when it is
+    # grounded in the question: either an explicit identifier plus
+    # requested attribute (legacy path), or — for identifier-less
+    # questions — at least TWO distinct question terms matching the
+    # sentence's topical window, with the returned sentence itself
+    # carrying at least one matched term. The two-tier anchor prevents
+    # an unrelated sentence about a phone number or price from being
+    # treated as support.
+    if q.startswith(("what ", "which ", "how ")):
         sentences = _split_sentences(context)
+        identifiers = {
+            token.lower()
+            for token in re.findall(
+                r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
+                question,
+                flags=re.IGNORECASE,
+            )
+        }
+        ignored = {
+            "what", "which", "how", "long", "is", "are", "was", "were",
+            "the", "a", "an", "for", "of", "to", "in", "on", "at", "and",
+            "be", "must", "should", "after", "before", "current", "do",
+            "does", "did", "require", "requires", "required", "need",
+            "needs",
+        }
+        terms = [
+            token
+            for token in re.findall(
+                r"[a-z0-9]+(?:-[a-z0-9]+)?", question.lower()
+            )
+            if token not in ignored
+            and token not in identifiers
+            and len(token) > 2
+        ]
         candidates = []
         for index, sentence in enumerate(sentences):
             if sentence.isupper() and len(sentence.split()) <= 8:
@@ -1011,44 +1429,78 @@ def extract_factual_answer(question, context):
             evidence_window = " ".join(
                 sentences[max(0, index - 3): index + 4]
             )
-            if not _named_fact_anchors_match(question, evidence_window):
+            anchors = _named_fact_anchors_match(question, evidence_window)
+            if anchors is False:
                 continue
-            identifiers = {
-                token.lower()
-                for token in re.findall(
-                    r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
-                    question,
-                    flags=re.IGNORECASE,
-                )
-            }
-            ignored = {
-                "what", "which", "how", "long", "is", "are", "was", "were",
-                "the", "a", "an", "for", "of", "to", "in", "on", "at", "and",
-                "be", "must", "should", "after", "before", "current", "do",
-                "does", "did", "require", "requires", "required", "need",
-                "needs",
-            }
-            terms = [
-                token
-                for token in re.findall(
-                    r"[a-z0-9]+(?:-[a-z0-9]+)?", question.lower()
-                )
-                if token not in ignored
-                and token not in identifiers
-                and len(token) > 2
-            ]
             low = sentence.lower()
-            score = 3 * sum(
+            matched_terms = sum(
                 1 for term in terms if _contains_term(low, term)
             )
+            score = 3 * matched_terms
             if any(
                 _contains_term(low, identifier)
                 for identifier in identifiers
             ):
                 score += 1
-            candidates.append((score, -index, sentence))
-        if candidates:
-            _, _, sentence = max(candidates)
+            if identifiers:
+                # Legacy identifier-anchored behavior.
+                if anchors is None:
+                    continue
+                candidates.append((score, -index, sentence))
+            else:
+                # Identifier-less procedural/attribute questions: the
+                # WINDOW must confirm the topic (>= 2 distinct matched
+                # terms) and the SENTENCE itself must carry >= 1 term,
+                # otherwise an incidental word would donate support.
+                window_matched = sum(
+                    1
+                    for term in terms
+                    if _contains_term(evidence_window.lower(), term)
+                )
+                if window_matched < 2 or matched_terms < 1:
+                    continue
+                # Entity-anchored counting: a question term that occurs
+                # ONLY inside a longer proper-noun compound the question
+                # does not name ("Guinea" via "Papua New Guinea") does
+                # not count as a match.
+                valid_matches = sum(
+                    1
+                    for term in terms
+                    if _contains_term(low, term)
+                    and _anchor_entity_present(sentence, term, question)
+                )
+                if valid_matches < 1:
+                    continue
+                # Compound-entity guard: for entity-asking question forms
+                # ("what is/was X", "which X"), the question's primary
+                # entity (last content word) must be properly anchored
+                # in the sentence — not absent or buried inside a larger
+                # compound the question doesn't name (e.g. "moon"
+                # missing entirely, or "Australia" inside "Western
+                # Australia").  Procedural forms ("how") skip this
+                # guard because the last content word is typically a
+                # verb ("checked", "verified") that legitimately may
+                # not appear in the evidence.
+                entity_anchor = terms[-1] if terms else ""
+                if entity_anchor and q.startswith(
+                    ("what is ", "what was ", "which ")
+                ):
+                    if not _anchor_entity_present(
+                        sentence, entity_anchor, question
+                    ):
+                        continue
+                if not _predicate_answers_question(
+                    question, sentence, evidence_window
+                ):
+                    continue
+                candidates.append((score, -index, sentence))
+        eligible = [
+            candidate
+            for candidate in candidates
+            if identifiers or candidate[0] >= 6
+        ]
+        if eligible:
+            _, _, sentence = max(eligible)
             return sentence, True
 
     return None, False
@@ -2608,9 +3060,6 @@ def canonical_question_for_intent(
         or ""
     ).strip()
 
-    if canonical_question:
-        return canonical_question
-
     intent = (
         plan.get(
             "intent",
@@ -2632,6 +3081,59 @@ def canonical_question_for_intent(
         or intent == "general"
     ):
         return question
+
+    # Guard: when extract_subject falls through with no real
+    # match, it returns clean_subject(q) — the entire question.
+    # Building a synthetic canonical from that creates garbage
+    # (e.g. "Why did Why did the Roman Empire fall in 2020
+    # decline?") which parse_causal_question happily matches.
+    # Detect this and fall through to the original question.
+    _q_stripped = (
+        question.strip().rstrip(".?!")
+        .lower()
+    )
+    _s_stripped = (
+        subject.strip().rstrip(".?!")
+        .lower()
+    )
+    if _s_stripped == _q_stripped or (
+        _q_stripped.startswith(_s_stripped)
+        and len(_s_stripped) > len(_q_stripped) * 0.8
+    ):
+        return question
+
+    # Guard: subjects that still contain infinitive phrases
+    # ("to be discovered", "to happen") or agent phrases
+    # ("signed by Napoleon") indicate extract_subject fell
+    # through with the question frame intact.  A real entity
+    # name like "the Roman Empire" never contains " to " or
+    # " by " in this position.
+    if (
+        " to " in _s_stripped
+        or " by " in _s_stripped
+    ):
+        return question
+
+    # Guard: subjects starting with question words indicate
+    # extract_subject fell through (e.g. "why the Roman
+    # Republic had a President" from "Explain why ...").
+    if _s_stripped.split()[0] in (
+        "why", "what", "how", "when",
+        "where", "who", "which",
+    ):
+        return question
+
+    # Use the plan's canonical if it looks valid; otherwise
+    # construct from the (now-guarded) subject.
+    if canonical_question:
+        _cq_low = canonical_question.lower()
+        _dup = _cq_low.count("why did ") > 1 or (
+            _cq_low.count("what caused ") > 1
+        ) or (
+            _cq_low.count("how did ") > 1
+        )
+        if not _dup:
+            return canonical_question
 
     if intent == "cause":
         return (
@@ -2710,6 +3212,8 @@ def retrieve_for_reasoning(
     chunks,
     retrieval_index,
     document_frequency,
+    *,
+    document_ids=None,
 ):
     """Authoritative grounded retrieval for the reasoning route.
 
@@ -2745,6 +3249,7 @@ def retrieve_for_reasoning(
         document_frequency,
         final_top_k=40,
         secondary_queries=secondary_queries,
+        document_ids=document_ids,
     )
 
     if not ranked:
@@ -3096,6 +3601,8 @@ def answer_question(
     pipeline,
     question,
     verbose=True,
+    *,
+    document_ids=None,
 ):
     logger.info(
         "Question received: %s",
@@ -3107,6 +3614,7 @@ def answer_question(
             pipeline,
             question,
             verbose,
+            document_ids=document_ids,
         )
     except Exception as exc:
         logger.error(
@@ -3121,6 +3629,8 @@ def _answer_question_impl(
     pipeline,
     question,
     verbose=True,
+    *,
+    document_ids=None,
 ):
     device = pipeline[
         "device"
@@ -3271,6 +3781,7 @@ def _answer_question_impl(
                 chunks,
                 retrieval_index,
                 document_frequency,
+                document_ids=document_ids,
             )
         )
 
@@ -3489,6 +4000,14 @@ def _answer_question_impl(
                         "\nSupported by evidence grounding check",
                     )
 
+                if not _answer_addresses_question(
+                    question, factual_answer,
+                ):
+                    result = build_system_result(
+                        result,
+                    )
+                    return result
+
                 return result
 
             # Factual answers must pass the dedicated grounding path. The
@@ -3647,6 +4166,7 @@ def _answer_question_impl(
                 chunks,
                 retrieval_index,
                 document_frequency,
+                document_ids=document_ids,
             )
         )
 
@@ -3816,7 +4336,23 @@ def _answer_question_impl(
         chunks,
         retrieval_index,
         document_frequency,
+        document_ids=document_ids,
     )
+
+    # A scoped query with no eligible matching document is unsupported. Keep
+    # an explicit empty evidence envelope so the runtime contract cannot ask
+    # the unscoped fallback source collector to search the global corpus.
+    if retrieval is None:
+        result["retriever"] = "HYBRID"
+        result["evidence"] = {
+            "kind": "hybrid",
+            "results": [],
+            "context": "",
+        }
+        result = build_system_result(result)
+        if verbose:
+            print("\nSystem:", result["answer"])
+        return result
 
     result[
         "retriever"
@@ -3844,8 +4380,10 @@ def _answer_question_impl(
         retrieval_chunk_count,
     )
 
-    # Extract best result before multi-hop detection
-    best_result = retrieval.get("best")
+    # Extract best result before multi-hop detection. A scoped query with
+    # no matching runtime document returns no retrieval object; treat that
+    # as unsupported rather than falling through to global/static evidence.
+    best_result = (retrieval or {}).get("best")
 
     # CRITICAL: prefer the AGGREGATED context produced by the hybrid
     # retriever's evidence aggregation.
@@ -3855,7 +4393,7 @@ def _answer_question_impl(
     # The aggregated evidence (joined top evidence sentences) lives at
     # ``retrieval["context"]``. Fall back to ``best_result["chunk"]`` if
     # for some reason the aggregated context is unavailable.
-    aggregated_context = retrieval.get("context") or ""
+    aggregated_context = (retrieval or {}).get("context") or ""
 
     # --- Multi-hop detection and conditional 2-pass ---
     # Only for genuine multi-hop questions (two explicit information
@@ -3916,6 +4454,7 @@ def _answer_question_impl(
                     chunks,
                     retrieval_index,
                     document_frequency,
+                    document_ids=document_ids,
                 )
                 retrieval_passes = 2
                 if extra_retrieval is not None and extra_retrieval.get("results"):
@@ -3975,6 +4514,68 @@ def _answer_question_impl(
                 "\n".join(grounded_chunks) + "\n" + reasoning_context
             ).strip()
 
+    # --- SOP section-first extraction ---
+    # When the question targets a specific section of a procedural
+    # document, extract from the correct section of the FULL chunk
+    # *before* the generic factual path.  The generic path operates
+    # on the aggregated reasoning_context (a sentence summary) and
+    # routinely picks sentences from the wrong SOP section.
+    if (
+        planned_intent == "general"
+        and is_factual_question(question)
+    ):
+        for _ev_item in evidence_results:
+            if not isinstance(_ev_item, dict):
+                continue
+            _ev_chunk = _ev_item.get("chunk", "")
+            if not _ev_chunk or len(_ev_chunk) < 100:
+                continue
+            _ev_low = _ev_chunk.lower()
+            if not (
+                "sop" in _ev_low
+                or "standard operating procedure" in _ev_low
+                or "lockout/tagout" in _ev_low
+                or "before starting" in _ev_low
+            ):
+                continue
+            _sec_ans = _extract_sop_section(
+                question, _ev_chunk,
+            )
+            if _sec_ans:
+                _sec_parts = [
+                    p.strip().casefold()
+                    for p in _sec_ans.split(";")
+                    if p.strip()
+                ]
+                _chunk_low = _ev_chunk.casefold()
+                if _sec_parts and all(
+                    _p in _chunk_low for _p in _sec_parts
+                ):
+                    result["answer"] = _sec_ans
+                    result["answer_type"] = "factual"
+                    result["supported"] = True
+                    result["confidence"] = (
+                        extraction_confidence(
+                            question, _ev_chunk,
+                            _sec_ans,
+                        )
+                    )
+                    result["context"] = _ev_chunk
+                    if verbose:
+                        print(
+                            "\nFactual answer"
+                            " (SOP section early):",
+                            _sec_ans,
+                        )
+                    if not _answer_addresses_question(
+                        question, _sec_ans,
+                    ):
+                        result = build_system_result(
+                            result,
+                        )
+                        return result
+                    return result
+
     # --- Factual QA path (conditional, lightweight) ---
     # Only for questions with NO specialized reasoning intent.
     # Specialized intents (cause / change / effect / comparison /
@@ -3987,7 +4588,10 @@ def _answer_question_impl(
     # reasoning model (which hallucinates on them).
     if (
         planned_intent == "general"
-        and is_factual_question(question)
+        and (
+            is_factual_question(question)
+            or question.strip().lower().startswith("how ")
+        )
     ):
         factual_answer, supported = extract_factual_answer(
             question,
@@ -4059,13 +4663,24 @@ def _answer_question_impl(
                     "\nSupported by evidence grounding check",
                 )
 
+            if not _answer_addresses_question(
+                question, factual_answer,
+            ):
+                result = build_system_result(
+                    result,
+                )
+                return result
+
             return result
 
         # A pure factual question the extractor could not ground.
         # Do NOT fall through to the 20M reasoning model here — it
         # hallucinates nonsense like "It was due to the Romanism."
-        # for "When was the Magna Carta signed?". Abstain honestly
-        # instead (same as the extractor route's fall-through).
+        # for "When was the Magna Carta signed?".  But DO fall
+        # through to the deterministic synthesizers below (summary,
+        # structure, etc.) which can handle multi-step or procedural
+        # questions that the factual extractor cannot condense into
+        # a single sentence.
         result[
             "context"
         ] = reasoning_context
@@ -4078,9 +4693,104 @@ def _answer_question_impl(
             "retrieval_passes"
         ] = retrieval_passes
 
-        result = build_system_result(
-            result
-        )
+        # Runtime-document full-chunk fallback: the aggregated
+        # context may be too weak for multi-step SOP questions
+        # (e.g. "What are the restart steps after maintenance?")
+        # because the aggregation only picks a few top sentences.
+        # When evidence has a high-scoring chunk whose FULL content
+        # contains the answer, extract from it.
+        if not reasoning_context.strip():
+            reasoning_context = ""
+
+        for _item in evidence_results:
+            if not isinstance(_item, dict):
+                continue
+            _chunk = _item.get("chunk", "")
+            if not _chunk or len(_chunk) < 100:
+                continue
+            _chunk_low = _chunk.lower()
+            _is_procedural = (
+                "sop" in _chunk_low
+                or "standard operating procedure" in _chunk_low
+                or "lockout/tagout" in _chunk_low
+                or "before starting" in _chunk_low
+            )
+            if not _is_procedural:
+                continue
+
+            # Section-level extraction for SOP documents: identify
+            # which section the question targets and collect all
+            # items under that section header.
+            _section_answer = (
+                _extract_sop_section(question, _chunk)
+            )
+            if _section_answer:
+                # Ground-check: the extracted section text must
+                # actually appear in the evidence chunk.
+                if (
+                    _section_answer.casefold()
+                    not in _chunk.casefold()
+                ):
+                    continue
+                result["answer"] = _section_answer
+                result["answer_type"] = "factual"
+                result["supported"] = True
+                result["confidence"] = (
+                    extraction_confidence(
+                        question, _chunk,
+                        _section_answer,
+                    )
+                )
+                result["context"] = _chunk
+                if verbose:
+                    print(
+                        "\nFactual answer"
+                        " (SOP section):",
+                        _section_answer,
+                    )
+                if not _answer_addresses_question(
+                    question, _section_answer,
+                ):
+                    result = build_system_result(
+                        result,
+                    )
+                    return result
+                return result
+
+            _fa, _fs = extract_factual_answer(
+                question, _chunk,
+            )
+            if _fa and _fs:
+                result["answer"] = _fa
+                result["answer_type"] = "factual"
+                result["supported"] = True
+                result["confidence"] = (
+                    extraction_confidence(
+                        question, _chunk, _fa,
+                    )
+                )
+                result["context"] = _chunk
+                if verbose:
+                    print(
+                        "\nFactual answer"
+                        " (runtime chunk):",
+                        _fa,
+                    )
+                if not _answer_addresses_question(
+                    question, _fa,
+                ):
+                    result = build_system_result(
+                        result,
+                    )
+                    return result
+                return result
+
+        # Factual extractor and SOP fallback both failed for a
+        # non-procedural question.  Return unsupported rather than
+        # falling through to deterministic synthesizers which need
+        # a tokenizer (may be None in test mocks) and would
+        # hallucinate on questions the extractor already rejected.
+        result = build_system_result(result)
 
         if verbose:
             print(
@@ -4311,6 +5021,7 @@ def _answer_question_impl(
         answer = synthesize_causal_answer(
             canonical_question,
             reasoning_context,
+            original_question=question,
         )
 
         if answer:
@@ -4575,6 +5286,21 @@ def _answer_question_impl(
 
         return result
 
+    # When the causal synthesizer could not match the question
+    # (e.g. false-premise questions with temporal modifiers),
+    # do NOT fall through to the reasoning model which would
+    # hallucinate an answer.  Return unsupported instead.
+    if intent == "cause":
+        result = build_system_result(result)
+
+        if verbose:
+            print(
+                "\nSystem:",
+                result["answer"],
+            )
+
+        return result
+
     change_answer = (
         synthesize_change_answer(
             question,
@@ -4737,6 +5463,14 @@ def _answer_question_impl(
                 "\nSummary synthesizer:",
                 summary_answer,
             )
+
+        if not _answer_addresses_question(
+            question, summary_answer,
+        ):
+            result = build_system_result(
+                result,
+            )
+            return result
 
         return result
 
@@ -4909,6 +5643,14 @@ def _answer_question_impl(
             "\nReasoning model:",
             answer,
         )
+
+    if not _answer_addresses_question(
+        question, answer,
+    ):
+        result = build_system_result(
+            result,
+        )
+        return result
 
     return result
 

@@ -1391,6 +1391,83 @@ def synthesize_summary_answer(
     if not evidence:
         return None
 
+    # ------------------------------------------
+    # Cross-concept gate
+    #
+    # If the subject combines terms from unrelated
+    # knowledge domains (e.g. "DNA photosynthesis
+    # process" or "Magna Carta compressor
+    # maintenance"), evidence may mention parts of
+    # the subject individually without ever
+    # discussing the compound as a real topic.
+    # Detect this by checking whether ALL subject
+    # terms appear across the evidence but NO
+    # single sentence carries them all together.
+    # ------------------------------------------
+
+    _subj_terms = {
+        _normalize_term(t)
+        for t in content_terms(subject)
+    }
+
+    # Filter generic terms that appear across unrelated domains.
+    # Words like "system", "process", "procedure", "steps" are
+    # too common to indicate a cross-concept mashup; only domain-
+    # specific terms should trigger the gate.
+    _GENERIC_SUBJ_TERMS = frozenset({
+        "system", "process", "procedure", "procedures",
+        "steps", "step", "phase", "method", "methods",
+        "technique", "techniques", "approach", "structure",
+        "configuration", "setup", "operation", "operations",
+        "maintenance", "components", "component", "parts",
+        "part", "items", "item", "details", "detail",
+        "information", "data", "measurements", "values",
+        "requirements", "requirement", "specifications",
+        "specification", "standards", "standard",
+    })
+
+    _domain_terms = _subj_terms - _GENERIC_SUBJ_TERMS
+
+    if len(_domain_terms) >= 2:
+
+        _all_covered = set()
+
+        _max_per_sentence = 0
+
+        for _sent in evidence:
+
+            _sent_terms = {
+                _normalize_term(t)
+                for t in content_terms(
+                    _sent
+                )
+            }
+
+            _all_covered |= _sent_terms
+
+            _overlap = len(
+                _domain_terms & _sent_terms
+            )
+
+            if _overlap > _max_per_sentence:
+                _max_per_sentence = _overlap
+
+        # All terms appear in evidence but never
+        # together in one sentence → cross-concept.
+        # Require at least half the domain-specific
+        # terms to co-occur in a single sentence; if
+        # none do, the evidence describes unrelated
+        # topics that merely share the question's
+        # keywords.
+        _cooccurrence_threshold = len(_domain_terms)
+
+        if (
+            _domain_terms <= _all_covered
+            and _max_per_sentence
+            < _cooccurrence_threshold
+        ):
+            return None
+
     evidence = remove_redundant(
         evidence
     )

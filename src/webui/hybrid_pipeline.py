@@ -78,6 +78,7 @@ def route_through_hybrid(
     *,
     top_k: int = 3,
     max_new_tokens: int = 256,
+    document_ids: list[str] | None = None,
 ) -> HybridTurn:
     """Run one turn, choosing between the small custom LM and Qwen polish."""
 
@@ -104,6 +105,7 @@ def route_through_hybrid(
             answer_fn=answer_question,
             contract_fn=build_answer_contract,
             sources_fn=collect_sources,
+            document_ids=document_ids,
         )
         result = execution.raw
     except Exception:

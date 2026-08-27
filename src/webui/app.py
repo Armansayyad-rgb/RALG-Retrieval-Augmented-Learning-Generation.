@@ -133,6 +133,7 @@ def respond(
     threshold: float,
     pipeline: dict,
     polish_llm_state,
+    scope_document_id: str | None = None,
 ):
     """Gradio callback: process one user message, append to history.
 
@@ -163,6 +164,11 @@ def respond(
         user_message,
         polish_llm_state,
         top_k=top_k,
+        document_ids=(
+            [scope_document_id]
+            if scope_document_id and scope_document_id != "All documents"
+            else None
+        ),
     )
     answer = turn.answer or ""
 
@@ -394,13 +400,24 @@ def build_demo(pipeline: dict, polish_llm=None):
                                 value=DEFAULT_DISPLAY_THRESHOLD,
                                 label="Confidence highlight threshold",
                             )
+                            scope_selector = gr.Dropdown(
+                                choices=["All documents"] + _document_choices(
+                                    pipeline.get("uploaded_docs", [])
+                                ),
+                                value="All documents",
+                                label="Scope to document",
+                                interactive=True,
+                            )
                         last_question_box = gr.Textbox(
                             label="Last question",
                             interactive=False,
                             visible=False,
                         )
 
-                def _respond_server(message, history, top_k_value, threshold_value):
+                def _respond_server(message, history, top_k_value, threshold_value, scope_value):
+                    selected_id = None
+                    if scope_value and scope_value != "All documents":
+                        selected_id = scope_value
                     return respond(
                         message,
                         history,
@@ -408,9 +425,10 @@ def build_demo(pipeline: dict, polish_llm=None):
                         threshold_value,
                         pipeline,
                         polish_llm,
+                        scope_document_id=selected_id,
                     )
 
-                chat_inputs = [msg, chatbot, top_k, threshold]
+                chat_inputs = [msg, chatbot, top_k, threshold, scope_selector]
                 # Per-turn state used by the feedback buttons.
                 last_intent_box = gr.State("")
                 last_answer_type_box = gr.State("")
@@ -500,30 +518,37 @@ def build_demo(pipeline: dict, polish_llm=None):
 
                 def _handle_uploads_server(files):
                     status_md, rows, _header_html = handle_uploads(files, pipeline)
+                    updated_choices = ["All documents"] + _document_choices(
+                        pipeline.get("uploaded_docs", [])
+                    )
                     return status_md, rows, gr.update(
                         choices=_document_choices(pipeline.get("uploaded_docs", []))
-                    )
+                    ), gr.update(choices=updated_choices)
 
                 upload_btn.click(
                     _handle_uploads_server,
                     inputs=[upload],
-                    outputs=[upload_status, kb_table, document_selector],
+                    outputs=[upload_status, kb_table, document_selector, scope_selector],
                 )
 
                 def _delete_document_server(document_id):
+                    updated_choices = ["All documents"] + _document_choices(
+                        pipeline.get("uploaded_docs", [])
+                    )
+                    scope_update = gr.update(choices=updated_choices, value="All documents")
                     if not document_id:
                         return "Select a document ID first.", _format_kb_table(
                             pipeline.get("uploaded_docs", [])
                         ), gr.update(
                             choices=_document_choices(pipeline.get("uploaded_docs", []))
-                        ), None
+                        ), None, scope_update
                     removed = remove_uploaded_document(pipeline, str(document_id))
                     if removed == 0:
                         return "Document not found.", _format_kb_table(
                             pipeline.get("uploaded_docs", [])
                         ), gr.update(
                             choices=_document_choices(pipeline.get("uploaded_docs", []))
-                        ), None
+                        ), None, scope_update
                     return (
                         f"Deleted document `{document_id}` ({removed} chunks removed).",
                         _format_kb_table(pipeline.get("uploaded_docs", [])),
@@ -531,12 +556,13 @@ def build_demo(pipeline: dict, polish_llm=None):
                             choices=_document_choices(pipeline.get("uploaded_docs", []))
                         ),
                         None,
+                        scope_update,
                     )
 
                 delete_btn.click(
                     _delete_document_server,
                     inputs=[document_selector],
-                    outputs=[delete_status, kb_table, document_selector, document_selector],
+                    outputs=[delete_status, kb_table, document_selector, document_selector, scope_selector],
                 )
 
             # ============== Export tab ==============
