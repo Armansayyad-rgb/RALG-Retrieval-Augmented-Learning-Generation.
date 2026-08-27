@@ -269,6 +269,7 @@ def execute_runtime(
     answer_fn: Callable[..., dict[str, Any]],
     contract_fn: Callable[..., Any],
     sources_fn: Callable[..., list[dict[str, Any]]],
+    document_ids: list[str] | None = None,
 ) -> ExecutionResult:
     """Run the single shared grounded execution path.
 
@@ -277,10 +278,17 @@ def execute_runtime(
     """
     normalized = question.strip()
     started = time.perf_counter()
-    raw = answer_fn(pipeline, normalized, verbose=False)
+    raw = answer_fn(pipeline, normalized, verbose=False, document_ids=document_ids)
+
     fallback = None
     if not raw.get("evidence"):
-        fallback = sources_fn(pipeline, normalized, top_k, answer=raw.get("answer", ""))
+        fallback = sources_fn(
+            pipeline,
+            normalized,
+            top_k,
+            answer=raw.get("answer", ""),
+            document_ids=document_ids,
+        )
     contract = contract_fn(
         pipeline, normalized, raw, top_k, fallback_sources=fallback
     )
@@ -303,10 +311,23 @@ def execute_runtime(
     # supported unless the gate passed, even if an upstream contract
     # object claims support.
     final_supported = bool(gate_passed)
+    # Scoped misses must not expose nearby-but-unrelated evidence as if it
+    # supported the answer. Unscoped executions retain the legacy citation
+    # behavior for compatibility.
+    output_sources = (
+        contract.sources
+        if document_ids is None or final_supported
+        else []
+    )
+    output_provenance = (
+        contract.provenance
+        if document_ids is None or final_supported
+        else []
+    )
     plan = _plan(normalized, raw)
     elapsed_ms = round((time.perf_counter() - started) * 1000, 2)
     multi_hop_trace = build_multi_hop_trace(
-        normalized, plan, raw, contract.sources, final_supported
+        normalized, plan, raw, output_sources, final_supported
     )
     return ExecutionResult(
         question=normalized,
@@ -314,8 +335,8 @@ def execute_runtime(
         supported=final_supported,
         confidence=contract.confidence if gate_passed else None,
         answer_type=contract.answer_type,
-        sources=contract.sources,
-        provenance=contract.provenance,
+        sources=output_sources,
+        provenance=output_provenance,
         traceable=contract.traceable,
         conflict=contract.conflict,
         plan=plan,
@@ -331,7 +352,7 @@ def execute_runtime(
             "generator": plan.generator,
             "evidence_ids": [
                 str(source.get("id") or source.get("chunk_index"))
-                for source in contract.sources
+                for source in output_sources
                 if isinstance(source, dict)
                 and (source.get("id") is not None or source.get("chunk_index") is not None)
             ],

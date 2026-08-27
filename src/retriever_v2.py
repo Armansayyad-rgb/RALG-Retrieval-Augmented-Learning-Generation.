@@ -22,6 +22,164 @@ FINAL_TOP_K = 5
 # Boost applied to runtime-ingested document chunks to prefer them over static KB
 INGESTED_CHUNK_BOOST = 5.0
 
+# Bounded boost for runtime-ingested procedural content (SOPs, checklists,
+# maintenance procedures, lockout/tagout steps, restart sequences, etc.)
+# when the user's question itself reads as a procedural inquiry.  This
+# addresses the failure mode where a generic phrase like "inspection phase"
+# matches many static-KB sentences on common English tokens, while the
+# active runtime SOP — which actually answers the question — is
+# outranked by IDF-coverage alone.
+#
+# Rules (deliberately generic, NO compressor or SOP-005-specific keywords):
+#   - The query must carry GENERIC procedural vocabulary (verbs like
+#     "inspect", "check", "verify", "lubricate", "restart", "start",
+#     "stop", "drain", "refill", "lockout", "tagout", "isolate",
+#     "de-energize", "bleed", "test"; or nouns like "phase", "step",
+#     "steps", "procedure", "checklist", "inspection", "lubrication",
+#     "maintenance", "startup", "start-up", "shutdown").
+#   - The runtime chunk itself must contain at least one of the same
+#     procedural markers — i.e. it is recognisably procedural content
+#     rather than a tangentially-related upload.
+#   - The boost is BOUNDED: a clearly better static-KB chunk (e.g. one
+#     with much stronger full-question coverage) is never displaced.
+#
+# Magnitudes are picked so the combined runtime boost (flat + procedural)
+# gives procedural runtime content a meaningful edge without being a hard
+# override.
+PROCEDURAL_RUNTIME_BOOST = 6.0
+PROCEDURAL_RUNTIME_BOOST_CAP = 14.0  # absolute ceiling on combined runtime boost
+
+# Generic procedural vocabulary. No domain-specific keywords.
+_PROCEDURAL_QUERY_TERMS = (
+    "inspect",
+    "inspection",
+    "check",
+    "checking",
+    "verify",
+    "verification",
+    "lubricate",
+    "lubrication",
+    "restart",
+    "restarting",
+    "startup",
+    "start-up",
+    "shutdown",
+    "shut down",
+    "drain",
+    "draining",
+    "refill",
+    "refilling",
+    "top up",
+    "top-up",
+    "lockout",
+    "tagout",
+    "loto",
+    "isolate",
+    "isolating",
+    "de-energize",
+    "de-energise",
+    "energize",
+    "energise",
+    "bleed",
+    "bleeding",
+    "vent",
+    "venting",
+    "test",
+    "testing",
+    "calibrate",
+    "calibrating",
+    "calibration",
+    "tighten",
+    "tightening",
+    "clean",
+    "cleaning",
+    "replace",
+    "replacing",
+    "remove",
+    "removing",
+    "apply",
+    "applying",
+    "engage",
+    "disengage",
+    "monitor",
+    "monitoring",
+    "log",
+    "logging",
+    "procedure",
+    "procedures",
+    "step",
+    "steps",
+    "phase",
+    "phases",
+    "checklist",
+    "checklists",
+    "sop",
+    "maintenance",
+    "service",
+    "servicing",
+    "start-up",
+    "start up",
+    "power up",
+    "power down",
+    "energize",
+    "re-energize",
+    "re-energise",
+    "safe",
+    "safety",
+)
+
+_PROCEDURAL_QUERY_MARKERS_FROZEN = frozenset(_PROCEDURAL_QUERY_TERMS)
+
+
+def _procedural_query(question):
+    """Return True when a question carries generic procedural vocabulary.
+
+    The check is intentionally lexical and conservative — it only fires
+    on unambiguous procedural verbs and nouns, not on generic English
+    words. It never matches case-specific tokens like "compressor" or
+    "Roman Empire".
+    """
+    q = str(question or "").lower()
+    if not q:
+        return False
+    return any(
+        f" {marker} " in f" {q} "
+        or q.startswith(f"{marker} ")
+        or q.endswith(f" {marker}")
+        or f" {marker}." in q
+        or f" {marker}," in q
+        or f" {marker}?" in q
+        or f" {marker};" in q
+        or q.strip() == marker
+        for marker in _PROCEDURAL_QUERY_MARKERS_FROZEN
+    )
+
+
+def _chunk_is_procedural(chunk_text):
+    """Return True when chunk text itself contains procedural vocabulary."""
+    c = str(chunk_text or "").lower()
+    if not c:
+        return False
+    return any(marker in c for marker in _PROCEDURAL_QUERY_MARKERS_FROZEN)
+
+
+def procedural_runtime_boost(question, chunk):
+    """Bounded extra boost for runtime-ingested procedural chunks.
+
+    Returns 0.0 unless:
+      - the chunk is procedural content, AND
+      - the question itself reads as a procedural inquiry.
+
+    The combined runtime boost (flat ``INGESTED_CHUNK_BOOST`` plus this
+    extra) is capped at ``PROCEDURAL_RUNTIME_BOOST_CAP`` so a clearly
+    better static-KB candidate can still win.
+    """
+    if not _procedural_query(question):
+        return 0.0
+    if not _chunk_is_procedural(chunk):
+        return 0.0
+    return PROCEDURAL_RUNTIME_BOOST
+
 
 class LexicalIndex(list):
     """Per-chunk term counts plus an exact term-to-chunk postings index."""
@@ -590,6 +748,8 @@ def retrieve_candidates(
     index,
     document_frequency,
     top_k=LEXICAL_TOP_K,
+    *,
+    document_ids=None,
 ):
     total_documents = len(
         chunks
@@ -608,9 +768,18 @@ def retrieve_candidates(
         candidate_indices = set()
         for term in query_terms:
             candidate_indices.update(postings.get(term, ()))
-        candidates = ((i, index[i]) for i in sorted(candidate_indices))
     else:
-        candidates = enumerate(index)
+        candidate_indices = set(range(len(chunks)))
+
+    if document_ids is not None:
+        allowed = set(document_ids)
+        candidate_indices = {
+            i for i in candidate_indices
+            if isinstance(chunks[i], RuntimeChunk)
+            and chunks[i].metadata.get("document_id") in allowed
+        }
+
+    candidates = ((i, index[i]) for i in sorted(candidate_indices))
 
     scored = []
 
@@ -639,10 +808,32 @@ def retrieve_candidates(
             else 0.0
         )
 
+        # Bounded procedural boost: only fires for runtime-ingested
+        # chunks whose content is recognisably procedural AND when the
+        # question itself reads as a procedural inquiry.  A clearly
+        # better static-KB candidate (much higher lexical_score) is
+        # never displaced because the total runtime bonus is capped
+        # and the lexical term-coverage term is preserved untouched.
+        procedural_boost = (
+            procedural_runtime_boost(
+                question,
+                chunks[i],
+            )
+            if isinstance(
+                chunks[i],
+                RuntimeChunk,
+            )
+            else 0.0
+        )
+        runtime_total = min(
+            ingested_boost + procedural_boost,
+            PROCEDURAL_RUNTIME_BOOST_CAP,
+        )
+
         candidate_score = (
             lexical
             + factual_bonus
-            + ingested_boost
+            + runtime_total
         )
 
         if candidate_score > 0:
@@ -927,6 +1118,8 @@ def retrieve(
     index,
     document_frequency,
     final_top_k=FINAL_TOP_K,
+    *,
+    document_ids=None,
 ):
     factual_relation = (
         detect_factual_relation(
@@ -951,6 +1144,7 @@ def retrieve(
             index,
             document_frequency,
             top_k=candidate_top_k,
+            document_ids=document_ids,
         )
     )
 

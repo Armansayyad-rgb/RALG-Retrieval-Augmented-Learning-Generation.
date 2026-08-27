@@ -668,6 +668,106 @@ def build_relation_answer(
     )
 
 
+def _sentence_contains_term(sentence_lower, term):
+    """Boundary-safe term match with light inflection tolerance."""
+    variants = {term}
+    if len(term) > 4 and term.endswith("ed"):
+        variants.add(term[:-2])
+    if len(term) > 5 and term.endswith("ing"):
+        variants.add(term[:-3])
+        variants.add(term[:-3] + "e")
+    if len(term) > 3 and term.endswith("s") and not term.endswith("ss"):
+        variants.add(term[:-1])
+    alternatives = "|".join(
+        re.escape(variant) for variant in sorted(variants)
+    )
+    return re.search(
+        r"\b(?:" + alternatives + r")(?:s|es|ed|ing|'s)?\b",
+        sentence_lower,
+    ) is not None
+
+
+def _shares_stem(first, second):
+    """Crude stem sharing for morphological variants (decline/declined)."""
+    if not first or not second:
+        return False
+    shorter = first if len(first) <= len(second) else second
+    longer = second if shorter is first else first
+    return longer.startswith(shorter[: max(4, len(shorter) - 1)])
+
+
+# Interrogative-frame vocabulary: these words carry the QUESTION FORM,
+# not a premise modifier, and must never count as focus terms.
+_FRAME_TERMS = {
+    "cause", "caused", "causes", "lead", "leads", "led",
+    "contribute", "contributes", "contributed", "factor", "factors",
+    "result", "resulted", "results", "due", "happen", "happened",
+    "explain", "describe", "reason", "reasons",
+}
+
+
+def _premise_focus_terms(question, subject, relation):
+    """Content terms the question asserts BEYOND subject and relation.
+
+    A causal question may embed additional premise modifiers — a year
+    ("fall in 2020"), an agent ("signed by Napoleon"), an extra
+    attribute ("had a President"). Evidence that merely describes the
+    subject's general history does NOT support those specific premises;
+    at least one focus term must appear in the evidence sentence.
+    """
+    question_terms = {
+        term
+        for term in content_terms(question or "")
+        if term not in _FRAME_TERMS
+    }
+    subject_terms = content_terms(subject or "")
+    relation_terms = content_terms(relation or "")
+
+    extra = set()
+    for term in question_terms:
+        if term in subject_terms:
+            continue
+        if any(
+            _shares_stem(term, rel)
+            for rel in relation_terms
+        ):
+            continue
+        # Also strip terms that are causal-verb synonyms of the
+        # relation.  "fall" and "decline" are not morphological
+        # variants but both appear in CAUSE_MARKERS as relation
+        # verbs — stripping one when the other is the parsed relation
+        # prevents "fall" from surviving as a false-focus term.
+        if term in CAUSE_MARKERS and relation in CAUSE_MARKERS:
+            continue
+        extra.add(term)
+    return extra
+
+
+_ANAPHORIC_STARTS = (
+    "he ", "she ", "it ", "they ", "this ", "these ", "those ",
+)
+
+
+def _unsafe_cause_clause(clause):
+    """Detect cause clauses that cannot stand alone as an explanation.
+
+    A clause beginning with an unresolved pronoun ("he assumed the
+    title of king") is anaphoric — it borrows its subject from earlier
+    discourse and would be templated into a nonsense answer. Clauses
+    containing stray parenthesis fragments are likewise truncated
+    text rather than a self-contained cause.
+    """
+    lowered = clause.strip().lower()
+    if not lowered:
+        return True
+    if any(
+        lowered.startswith(start)
+        for start in _ANAPHORIC_STARTS
+    ):
+        return True
+    return "(" in clause or ")" in clause
+
+
 # --------------------------------------------------
 # Main synthesis
 # --------------------------------------------------
@@ -675,6 +775,7 @@ def build_relation_answer(
 def synthesize_causal_answer(
     question,
     context,
+    original_question=None,
 ):
     parsed = parse_causal_question(
         question
@@ -723,6 +824,41 @@ def synthesize_causal_answer(
         return None
 
     # ------------------------------------------
+    # Premise-focus filter
+    #
+    # If the question asserts premise modifiers beyond the subject
+    # and relation (a year, an agent, an extra attribute), every
+    # piece of causal evidence must address at least one of them.
+    # Otherwise the synthesizer would happily "explain" a false
+    # premise from generic subject history.
+    # ------------------------------------------
+
+    focus_terms = _premise_focus_terms(
+        question,
+        subject,
+        relation,
+    )
+    if original_question:
+        focus_terms |= _premise_focus_terms(
+            original_question,
+            subject,
+            relation,
+        )
+
+    if focus_terms:
+        evidence = [
+            sentence
+            for sentence in evidence
+            if any(
+                _sentence_contains_term(sentence.lower(), term)
+                for term in focus_terms
+            )
+        ]
+
+    if not evidence:
+        return None
+
+    # ------------------------------------------
     # Highest priority:
     # explicit because/due-to clause
     # ------------------------------------------
@@ -734,7 +870,9 @@ def synthesize_causal_answer(
             )
         )
 
-        if because_clause:
+        if because_clause and not _unsafe_cause_clause(
+            because_clause
+        ):
             return build_relation_answer(
                 subject,
                 relation,

@@ -433,6 +433,10 @@ def detect_intent(question):
             r"how did .+ come to decline\b",
             q,
         )
+        or re.match(
+            r"how did .+ lead to\b",
+            q,
+        )
     ):
         return "cause"
 

@@ -74,6 +74,7 @@ class QueryRequest(StrictRequest):
     question: str = Field(..., min_length=1, max_length=MAX_QUESTION_CHARS)
     top_k: int = Field(default=5, ge=1, le=20)
     include_sources: bool = True
+    document_ids: list[str] | None = Field(default=None, max_length=10)
 
     @field_validator("question")
     @classmethod
@@ -331,6 +332,7 @@ def query(request: QueryRequest) -> QueryResponse:
             answer_fn=answer_question,
             contract_fn=build_answer_contract,
             sources_fn=collect_sources,
+            document_ids=request.document_ids,
         )
 
         return QueryResponse(

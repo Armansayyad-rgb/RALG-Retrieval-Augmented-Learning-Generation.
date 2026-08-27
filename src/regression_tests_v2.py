@@ -267,6 +267,47 @@ UNSUPPORTED_TESTS = [
             UNSUPPORTED_TEXT,
         ],
     },
+
+    # ------------------------------------------
+    # Cross-domain keyword-overlap (misleading)
+    # ------------------------------------------
+
+    {
+        "name": "mislead_compressor_dna",
+        "question": "What are the compressor lockout steps for DNA replication?",
+        "answer_type": "system",
+        "supported": False,
+        "must_contain": [
+            UNSUPPORTED_TEXT,
+        ],
+    },
+    {
+        "name": "mislead_magna_compressor",
+        "question": "Describe the Magna Carta compressor maintenance procedure.",
+        "answer_type": "system",
+        "supported": False,
+        "must_not_contain": [
+            "compressor",
+        ],
+    },
+    {
+        "name": "mislead_lockout_battalion",
+        "question": "What is the lockout procedure for the 38th Engineer Battalion's electrical systems?",
+        "answer_type": "system",
+        "supported": False,
+        "must_contain": [
+            UNSUPPORTED_TEXT,
+        ],
+    },
+    {
+        "name": "false_premise_bypass_loto",
+        "question": "What safety step requires bypassing lockout tagout before opening the electrical panel?",
+        "answer_type": "system",
+        "supported": False,
+        "must_contain": [
+            UNSUPPORTED_TEXT,
+        ],
+    },
 ]
 
 

@@ -170,13 +170,15 @@ assert len(TEST_CASES) == 50, f"Expected 50 test cases, got {len(TEST_CASES)}"
 # API helpers
 # ============================================================
 
-def query_api(question: str, top_k: int = TOP_K) -> dict:
+def query_api(question: str, top_k: int = TOP_K, document_ids: list[str] | None = None) -> dict:
     """Query the /query endpoint and return the raw response dict."""
-    payload = {
+    payload: dict[str, Any] = {
         "question": question,
         "top_k": top_k,
         "include_sources": True,
     }
+    if document_ids:
+        payload["document_ids"] = document_ids
     try:
         r = httpx.post(f"{BASE_URL}/query", json=payload, timeout=300)
         if r.status_code == 200:
@@ -518,11 +520,23 @@ def main() -> int:
     ingest_result = ingest(COMPRESSOR_SOP, "compressor_sop_reliability_v2")
     print(f"Ingest response: {json.dumps(ingest_result)[:200]}")
 
+    # Capture document_id for scoped queries — SOP/runtime cases
+    # exercise the actual document-scoped retrieval product path.
+    sop_document_id = ingest_result.get("document_id")
+
     results: list[CaseResult] = []
 
     for i, case in enumerate(TEST_CASES, start=1):
         print(f"[{i:02d}/50] {case.id} ({case.category}) - {case.question[:72]}")
-        response = query_api(case.question)
+        # SOP and runtime-ingested cases use document-scoped retrieval
+        # to query only the ingested SOP document, not the static KB.
+        scoped_ids = (
+            [sop_document_id]
+            if sop_document_id
+            and case.category in ("sop_procedure", "runtime_ingested")
+            else None
+        )
+        response = query_api(case.question, document_ids=scoped_ids)
         result = evaluate_case(case, response)
         results.append(result)
         print(
