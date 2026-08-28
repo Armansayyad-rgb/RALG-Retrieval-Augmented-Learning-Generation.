@@ -4,96 +4,108 @@ This document describes RALG's public technical/commercial readiness without exp
 
 ## Current stage
 
-RALG is a controlled-pilot technical product, not a hardened public SaaS service.
+RALG is a controlled technical-evaluation / pilot-oriented product, not a hardened public SaaS service.
 
-The current `master` includes:
+Current `master` includes:
 
-- shared `ExecutionPlan` / `execute_runtime()` orchestration for API and WebUI;
-- full-question-first hybrid grounded retrieval;
-- unified support/provenance/conflict gating;
-- document ingestion, persistence, listing, deletion, and restart recovery;
+- shared grounded execution for API and WebUI;
+- document-scoped retrieval;
+- evidence/provenance/conflict-aware support gating;
+- runtime document ingestion, persistence, listing, deletion, and restart recovery;
+- stable document IDs and scoped querying;
 - API and lightweight SDK flows;
 - deterministic benchmark/evaluation tooling;
-- synthetic and independently sourced evaluation corpora;
-- reproducibility, portability, soak, scale, and lifecycle evidence.
+- portability and third-party attribution hardening;
+- frozen holdout integrity tooling and preserved blind-result evidence;
+- explicit security/deployment limitations.
 
-These are engineering checkpoints, not customer adoption, revenue, production-SLA, or safety-certification claims.
+These are engineering checkpoints, not customer adoption, revenue, production-SLA, safety-certification, or acquisition-value guarantees.
 
-## Current validated engineering checkpoints
+## Strongest current blind evidence
 
-- regression suite: **23/23 PASS** in the current integration validation;
-- commercial validation: **quality gate PASS**;
-- Stage 5 preliminary unsupported rejection: **100%**;
-- Stage 5 preliminary false-support rate: **0%**;
-- clean Python 3.11 install: previously validated;
-- isolated API ingest/query/list/delete/restart lifecycle: previously validated;
-- live lightweight SDK integration: previously validated;
-- 1000-request / 8-worker soak: previously validated with 0 errors;
-- 100k retrieval scale: previously measured; larger 250k/500k runs remain deferred;
-- current CI on the core-runtime integration: **PASS**.
+The strongest frozen blind result currently committed on `master` is Holdout V2:
 
-## Current preliminary independent-source retrieval result
+- 70 cases across 7 technical domains;
+- 40 retrieval-supported cases;
+- 30 unsupported/adversarial gate cases;
+- RALG Recall@1/3/5: **100% / 100% / 100%** on the ranked subset;
+- RALG MRR: **1.000** on the ranked subset;
+- unsupported rejection: **93.33% (28/30)**;
+- false-support rate: **6.67% (2/30)**.
 
-Stage 5 uses 50 independently sourced IETF RFC documents and 300 automatically generated cases (210 supported / 90 unsupported).
+The result is preserved at:
 
-The current untouched preliminary retrieval run records:
+```text
+evaluation/results/holdout_v2_blind_once.json
+```
 
-| Metric | Lexical | RALG hybrid |
-| --- | ---: | ---: |
-| Recall@1 | 40.48% | **50.95%** |
-| Recall@3 | 87.62% | **90.95%** |
-| Recall@5 | 100.00% | **100.00%** |
-| MRR | 0.6485 | **0.7098** |
-| Unsupported rejection | 100% | **100%** |
-| False-support rate | 0% | **0%** |
+The two false-support failures were analyzed only after the blind run. A generalized post-blind fix and development regressions were added without rerunning or rewriting the original result.
 
-This is meaningful engineering evidence, but the 300 benchmark cases are still **not independently human-reviewed**. Therefore Stage 5 remains **BLOCKED ON INDEPENDENT REVIEW** and must not be represented as final external validation.
+### Evidence boundary
 
-Authoritative artifact: `evaluation/results/stage5_preliminary_results.json` (hybrid run, reproduced from frozen code). Historical pre-hybrid result and provenance: `docs/STAGE5_EVIDENCE_HISTORY.md`.
+Holdout V2 is strong internal independent evidence, but its source notes were authored validation material derived from public documentation. It is not third-party or acquisition-grade external validation.
+
+## Current development reliability evidence
+
+A separate 50-case live reliability benchmark reached the following validated hardening checkpoint:
+
+| Metric | Result |
+| --- | ---: |
+| Supported correctness | **100%** |
+| Unsupported rejection | **100%** |
+| False-support rate | **0%** |
+| False-rejection rate | **0%** |
+| API errors | **0** |
+
+This benchmark is development/regression evidence, not an untouched independent holdout.
 
 ## What is demonstrated today
 
-- local/private technical-document ingestion and question answering;
+- local/private technical-document ingestion and grounded question answering;
 - evidence-oriented answers with source/provenance handling;
-- conservative unsupported/false-premise behavior in validated sets;
+- conservative unsupported/false-premise behavior on validated sets;
 - one shared grounded runtime boundary across API and WebUI;
-- deterministic full-question-first hybrid retrieval;
-- factual extraction, comparison, reasoning, and bounded multi-hop state;
+- document-scoped retrieval with safe invalid-scope behavior;
+- factual, comparison, procedural, and bounded reasoning paths;
 - persistent runtime documents and restart recovery;
-- reproducible test and benchmark harnesses;
-- local API, WebUI, SDK, and Docker/Compose packaging;
-- explicit security and deployment limitations.
+- deterministic test and benchmark harnesses;
+- API, WebUI, SDK, and Docker/Compose packaging;
+- explicit deployment/security boundaries;
+- reproducible frozen-holdout evidence preservation.
 
-## Material gaps before a stronger commercial pilot
+## Material gaps before stronger commercial claims
 
-1. **Independent benchmark review** — Stage 5 cases need reviewer acceptance/correction and a frozen reviewed benchmark.
-2. **Docker lifecycle qualification** — current Compose is maintained, but a current clean end-to-end Docker run is still required.
-3. **Security boundary** — no built-in auth, TLS, tenant isolation, or production-grade rate limiting.
-4. **Multi-process lifecycle safety** — process-local mutation locking means the validated pilot deployment is single-worker.
-5. **Large-corpus qualification** — 250k/500k measurements are still deferred pending suitable hardware.
-6. **Dependency/IP diligence** — maintain an inventory of dependency licenses, third-party data rights, model rights, and historical source-license grants.
-7. **Customer evidence** — no customer revenue, reference deployment, or production workload is claimed by this repository.
+1. **Authoritative-source blind validation** — stronger evidence should use authoritative upstream technical documents with frozen provenance, benchmark, evaluator, and contamination controls.
+2. **External/customer validation** — no customer production deployment, revenue, or third-party benchmark authoring is claimed.
+3. **Security boundary** — no built-in production auth/authorization, TLS termination, tenant isolation, or production-grade rate limiting.
+4. **Multi-process lifecycle safety** — process-local mutation locking means the validated deployment profile is single application worker unless external coordination is added.
+5. **Container qualification** — Compose configuration exists, but a current full end-to-end production-container qualification remains a separate diligence item.
+6. **Large-corpus/concurrency qualification** — larger-scale and broader operational qualification should be reported separately from retrieval quality.
+7. **Dependency/IP diligence** — third-party dependency, model, dataset, and document-source rights require a maintained inventory and human/legal review where necessary.
+8. **Model/checkpoint distribution** — required private/local model assets must have explicit ownership and redistribution status.
 
 ## Technical diligence priorities
 
-Before any serious strategic, licensing, or buyer diligence process, be able to provide:
+Before a serious strategic, licensing, pilot, or buyer diligence process, be able to provide:
 
-- a clean commit/tag representing the evaluation build;
+- a clean release/evaluation commit or tag;
 - architecture and runtime-path documentation;
 - benchmark methodology and machine-readable results;
-- independent-source provenance and hashes;
-- explicit negative/failure evidence;
+- source provenance and exact hashes;
+- exact benchmark/evaluator hashes for frozen blind runs;
+- preserved negative/failure evidence;
 - dependency and third-party license inventory;
 - model/checkpoint ownership and redistribution status;
-- clean-install and Docker reproduction steps;
+- clean-install and deployment reproduction steps;
 - security boundary and known limitations;
-- an asset inventory distinguishing production, evaluation, training, and legacy code.
+- an asset inventory distinguishing production, evaluation, training, and legacy code;
+- a clear separation between internal, independent, authoritative-source, third-party, and customer evidence.
 
 See [Technical Diligence Status](docs/TECHNICAL_DILIGENCE_STATUS.md).
 
 ## Safe positioning
 
-> RALG Engine is a local, evidence-grounded technical-document intelligence engine with provenance-backed answers, conservative abstention, a unified grounded runtime, and reproducible retrieval evaluation.
+> RALG Engine is a local, evidence-grounded technical-document intelligence engine with provenance-backed answers, conservative abstention, document-scoped retrieval, and reproducible evaluation.
 
 ## Suggested target users
 
@@ -102,6 +114,10 @@ See [Technical Diligence Status](docs/TECHNICAL_DILIGENCE_STATUS.md).
 - internal technical-support teams;
 - engineering/operations teams with manuals, SOPs, standards, and policies;
 - organizations evaluating local/private document intelligence.
+
+## Security/deployment boundary
+
+Treat the current system as trusted-environment software unless deployment controls are provided externally. Do not present the default service as safe for direct public-internet exposure.
 
 ## Keep private
 
@@ -115,6 +131,16 @@ Do not store in the public repository:
 - credentials/tokens;
 - private model weights or licensed assets that cannot be redistributed.
 
-## Public-reporting rule
+## Public-reporting rules
 
-Always distinguish **historical**, **current measured**, **preliminary/unreviewed**, and **target** results. Never present synthetic, unreviewed, or historical results as customer-validated production performance.
+Always distinguish:
+
+- historical evidence;
+- development/regression evidence;
+- synthetic evidence;
+- frozen blind evidence;
+- authoritative-source evidence;
+- third-party/customer validation;
+- targets or planned work.
+
+Never present an internally authored, synthetic, development, or unreviewed result as customer-validated production performance.
