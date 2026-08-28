@@ -3,7 +3,7 @@
 # RALG Engine
 ### Retrieval-Augmented Learning & Generation
 
-A local, evidence-grounded technical-document intelligence engine focused on retrieval quality, provenance, safe abstention, and reproducible evaluation.
+A local-first, evidence-grounded technical-document intelligence engine focused on retrieval quality, provenance, document-scoped reasoning, conservative abstention, and reproducible evaluation.
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-Source--Available-orange)
@@ -13,56 +13,78 @@ A local, evidence-grounded technical-document intelligence engine focused on ret
 
 ---
 
-## Overview
+## What RALG is
 
-RALG is an experimental local-first AI system for answering questions over technical documents such as manuals, SOPs, maintenance notes, service bulletins, policies, standards, and internal knowledge bases.
+RALG is built for question answering over bounded technical-document collections such as manuals, SOPs, maintenance notes, service bulletins, policies, standards, and internal knowledge bases.
 
-The project emphasizes retrieval, evidence selection, provenance, unsupported-question rejection, document lifecycle integrity, and measurable evaluation. The target is not broad general chat; it is reliable, inspectable answers over bounded technical-document collections.
+The project is deliberately not positioned as a general-purpose chatbot. Its core design goal is to produce inspectable answers that are tied to retrieved evidence, preserve provenance, respect document scope, detect unsupported or misleading requests, and abstain when the available evidence is insufficient.
 
 ## Current state
 
-Prototype 1 RC1 is preserved at tag `0.1.0-rc1` (tag target `f5cb70505edf34c247d8dfadf56ac65c1bbbb57c`). Since RC1, the project has completed hardening, pilot-evidence, hybrid-retrieval, and runtime-consolidation work covering persistence, provenance, API lifecycle, concurrency, portability, retrieval performance, clean-install validation, SDK integration, independently sourced evaluation material, and unified API/WebUI grounded execution.
+Prototype 1 RC1 is preserved at tag `0.1.0-rc1`. Current `master` contains substantial post-RC hardening across:
 
-Current engineering checkpoints include:
+- unified API/WebUI grounded execution;
+- document-scoped retrieval;
+- persistent runtime documents and restart recovery;
+- stable document IDs, provenance, listing, deletion, and scoped querying;
+- support-gate hardening against false support and misleading overlap;
+- conflict-aware evidence handling;
+- retrieval performance and reproducibility work;
+- portability and third-party attribution cleanup;
+- buyer-demo and technical-diligence tooling;
+- frozen independent holdout methodology and immutable blind-result preservation.
 
-- regression suite: **23/23 PASS** in the current runtime-integration validation;
-- commercial validation: **quality gate PASS**;
-- unsupported rejection: **100%** on the current preliminary Stage 5 benchmark;
-- false-support rate: **0%** on the current preliminary Stage 5 benchmark;
-- clean Python 3.11 install: previously validated;
-- isolated API ingest/query/list/delete/restart lifecycle: previously validated;
-- live lightweight SDK integration: previously validated;
-- 1000-request / 8-worker soak: previously validated with **0 errors**;
-- 100k retrieval scale: previously measured in the Stage 2 environment;
-- Stage 4 synthetic external-style benchmark: historical rank-1 differentiation evidence;
-- Stage 5 independently sourced RFC benchmark: current preliminary hybrid retrieval leads the lexical baseline at Recall@1, Recall@3, and MRR while tying Recall@5.
+RALG remains a controlled technical-evaluation system rather than a hardened public SaaS deployment.
 
-These are engineering checkpoints, not production guarantees, customer-data validation, revenue, or safety certification.
+## Current independent holdout evidence
 
-## Stage 5 independent-source evidence
+The strongest frozen blind evidence currently committed on `master` is **Holdout V2**, a 70-case internal independent holdout spanning seven technical domains.
 
-Stage 5 uses **50 independently sourced IETF RFC documents** and a **300-case preliminary benchmark** (210 supported / 90 unsupported). Provenance, canonical source references, document hashes, corpus-integrity checks, and blinded review tooling are included in the repository.
+### Retrieval-supported cases
 
-Current untouched preliminary retrieval results:
+40 cases were retrieval-supported.
 
-| Metric | Lexical | RALG hybrid |
+| Metric | Lexical | RALG |
 | --- | ---: | ---: |
-| Recall@1 | 40.48% | **50.95%** |
-| Recall@3 | 87.62% | **90.95%** |
-| Recall@5 | 100.00% | **100.00%** |
-| MRR | 0.6485 | **0.7098** |
-| Unsupported rejection | 100% | **100%** |
-| False-support rate | 0% | **0%** |
+| Recall@1 | 100% | **100%** |
+| Recall@3 | 100% | **100%** |
+| Recall@5 | 100% | **100%** |
+| MRR | 1.000 | **1.000** |
 
-The runtime-integration validation preserved these quality metrics; recorded retrieval latency in that local integration run was approximately **6.9 ms p50 / 14.6 ms p95**.
+### Rejection / support-gate cases
 
-Authoritative artifact: `evaluation/results/stage5_preliminary_results.json` (hybrid run, reproduced from frozen code). Historical pre-hybrid result and provenance: `docs/STAGE5_EVIDENCE_HISTORY.md`.
+30 cases tested unsupported/adversarial behavior.
 
-All 300 benchmark cases are still automatically generated and unreviewed. Therefore the correct Stage 5 status remains **BLOCKED ON INDEPENDENT REVIEW**. These numbers are preliminary engineering evidence and must not be presented as final independent validation.
+| Metric | RALG |
+| --- | ---: |
+| Unsupported rejection | **93.33% (28/30)** |
+| False-support rate | **6.67% (2/30)** |
 
-## Core architecture
+The original blind result is intentionally preserved unchanged in:
 
-Grounded API and WebUI behavior now share one runtime orchestration boundary:
+```text
+evaluation/results/holdout_v2_blind_once.json
+```
+
+Two false-support failures were diagnosed only **after** the blind run and led to a generalized calculation-support gate fix plus new development regressions. The original V2 result was not rerun or rewritten after that fix.
+
+**Important evidence boundary:** Holdout V2 is strong internal independent evidence, but its seven source notes were authored validation material derived from public technical documentation. It should not be represented as third-party or acquisition-grade external validation.
+
+## Reliability development benchmark
+
+A separate 50-case reliability benchmark is used as development/regression evidence. In the validated hardening run it reached:
+
+- supported correctness: **100%**;
+- unsupported rejection: **100%**;
+- false-support rate: **0%**;
+- false-rejection rate: **0%**;
+- API errors: **0**.
+
+This is useful engineering evidence, but it is a development benchmark and must not be described as an untouched independent holdout.
+
+## Architecture
+
+Grounded API and WebUI behavior share one runtime orchestration boundary:
 
 ```text
 Question
@@ -70,57 +92,52 @@ Question
 execute_runtime()
    ↓
 ExecutionPlan
-   ├─ intent
-   ├─ authoritative route
+   ├─ intent / route
+   ├─ document scope
    ├─ retrieval strategy
-   └─ multi-hop state
+   └─ reasoning state
    ↓
-Factual extractor OR grounded reasoning
+Retrieval + factual extraction / grounded reasoning
    ↓
-Full-question-first hybrid retrieval
+Evidence contract
    ↓
-Evidence / answer contract
-   ↓
-Unified support gate
+Support gate
+   ├─ predicate / subject validation
+   ├─ conflict handling
    ├─ traceability
-   ├─ conflict detection
    └─ provenance
    ↓
 Supported answer or abstention
 ```
 
-`src/retriever_hybrid.py` is the authoritative grounded reasoning retriever. It protects strong full-question candidates and uses bounded secondary queries as additional evidence signals rather than replacing the complete-question match.
-
-The factual extractor route retains a cheaper single-pass V2 lookup as intentional route specialization.
-
-See [Current Architecture Status](docs/CURRENT_ARCHITECTURE_STATUS.md).
+Document scope is threaded end-to-end through the API and runtime retrieval path. Invalid or empty document scopes fail safely rather than falling back to unrelated global evidence.
 
 ## Key capabilities
 
-- evidence-grounded question answering;
-- safe abstention when evidence is insufficient;
-- full-question-first hybrid grounded retrieval;
-- deterministic candidate deduplication/fusion;
-- factual extraction, comparison, reasoning, and bounded multi-hop state;
-- provenance and conflict-aware support gating;
-- document ingestion for TXT, PDF, and DOCX;
-- runtime document persistence and restart recovery;
-- stable document IDs, provenance metadata, listing, and deletion;
-- FastAPI service with `/health`, `/ready`, `/stats`, `/documents`, `/ingest`, `/query`, and delete lifecycle support;
-- Gradio web interface using the same grounded runtime boundary;
+- local/private technical-document question answering;
+- evidence-backed answers and conservative abstention;
+- document-scoped retrieval and multi-document querying;
+- provenance and answer/evidence traceability;
+- misleading-overlap and false-premise resistance;
+- conflict-aware support gating;
+- factual extraction, comparison, procedural, and bounded reasoning paths;
+- TXT, PDF, and DOCX ingestion;
+- persistent runtime documents and restart recovery;
+- stable document IDs, listing, deletion, and provenance metadata;
+- FastAPI service with health/readiness, ingest, query, statistics, and document lifecycle endpoints;
+- Gradio web UI using the same grounded runtime boundary;
 - lightweight Python client/SDK;
 - CPU and CUDA support;
-- Docker and Docker Compose configuration;
-- benchmark, regression, performance, portability, persistence, provenance, and architecture test suites;
-- explicit model-registry classification for active, compatible, superseded, and legacy artifacts.
+- Docker / Docker Compose configuration;
+- benchmark, regression, persistence, provenance, portability, performance, and integrity tooling.
 
 ## Quick start
 
 ### Requirements
 
 - Python **3.11** recommended;
-- required model checkpoint supplied separately from Git;
-- tokenizer and configured corpus available in the repository/data layout.
+- required model checkpoint supplied separately from Git where applicable;
+- configured tokenizer/corpus available in the expected repository layout.
 
 ### Local Python
 
@@ -143,26 +160,28 @@ Run the web UI:
 python src\webui_bootstrap.py
 ```
 
-Liveness and readiness:
+Health endpoints:
 
 ```text
 GET http://127.0.0.1:8000/health
 GET http://127.0.0.1:8000/ready
 ```
 
-`/health` checks process liveness. `/ready` reports whether the configured model, tokenizer, corpus, and retrieval index are usable. Client-facing readiness errors are sanitized.
+`/health` checks process liveness. `/ready` reports whether the configured model, tokenizer, corpus, and retrieval index are usable.
 
-### Runtime documents
+## Runtime documents
 
 Runtime documents are stored under `data/runtime_uploads/` by default and can be redirected with `RUNTIME_UPLOAD_DIR`.
 
-The runtime document lifecycle supports ingest, list, provenance-backed query, delete, restart recovery, and corruption/missing-entry tolerance.
+The runtime lifecycle supports ingest, list, query, provenance, delete, restart recovery, and tolerance for missing/corrupt runtime entries.
 
-Lifecycle mutation locks are **process-local**. The validated pilot configuration uses a **single Uvicorn/application worker**; multi-process lifecycle safety is not claimed.
+Lifecycle mutation locks are process-local. The validated deployment profile is therefore a trusted, single-application-worker configuration unless additional coordination is added externally.
 
-### Model and tokenizer configuration
+## Model and tokenizer configuration
 
-The active grounded reasoning role uses the configured checkpoint, normally:
+Portable path handling is centralized in `config.py`; repository-root-relative defaults are preferred over machine-specific paths.
+
+The active grounded reasoning role normally uses:
 
 ```text
 checkpoints/v2/reasoning_model_v1.pt
@@ -170,38 +189,24 @@ checkpoints/v2/reasoning_model_v1.pt
 
 or `MODEL_FILE`.
 
-The tokenizer defaults to:
+The tokenizer normally uses:
 
 ```text
 data/tokenizer_v2.json
 ```
 
-and can be overridden with `TOKENIZER_FILE`.
+or `TOKENIZER_FILE`.
 
-Historical model/training artifacts remain for reproducibility but are explicitly classified by the runtime model registry rather than silently auto-loaded.
-
-### Optional polish model
-
-The optional Qwen polish path is not required for core grounded retrieval. It remains a non-grounded, opt-in role and cannot establish answer support.
-
-Install optional dependencies with:
-
-```powershell
-python -m pip install -r requirements-polish.txt
-```
+Historical model/training artifacts are retained for reproducibility but should not be treated as automatically active runtime assets.
 
 ## Docker
-
-Compose configuration is maintained and localhost-oriented:
 
 ```powershell
 docker compose config --quiet
 docker compose up --build
 ```
 
-Runtime uploads are persisted through the configured data volume.
-
-**Important:** a current full post-runtime-consolidation Docker lifecycle is still a diligence item. Compose syntax/configuration is not equivalent to end-to-end container qualification.
+Compose configuration is maintained, but Compose syntax/configuration alone is not equivalent to a current full production-container qualification.
 
 ## Testing
 
@@ -211,50 +216,44 @@ Run the Windows suite:
 scripts\test_all.bat
 ```
 
-For API-oriented testing after starting the service:
+For API-oriented tests after starting the service:
 
 ```powershell
 scripts\test_all.bat api
 ```
 
-The repository includes focused coverage for retrieval performance, hybrid ranking, unsupported/false-support behavior, architecture integration, answer/evidence traceability, conflicting evidence, API input hardening, upload provenance, persistence/restart recovery, portability/readiness, and runtime lifecycle/concurrency.
+Focused tests cover support-gate behavior, document scoping, retrieval performance, traceability, conflicting evidence, unified evidence handling, persistence, provenance, portability, runtime integrity, and holdout integrity.
 
-See [Windows Test Runner](docs/windows_test_runner.md).
+## Evaluation discipline
 
-## Evaluation
+RALG intentionally separates:
 
-RALG keeps retrieval quality, answer support, rejection behavior, provenance, and runtime performance as separate metrics rather than collapsing them into one score.
+- retrieval quality;
+- answer correctness;
+- unsupported rejection / false support;
+- provenance and traceability;
+- runtime errors;
+- latency and resource behavior.
 
-Evidence includes:
+Historical failures remain part of the evidence record. Frozen blind holdouts are not rerun to improve a score after failure analysis.
 
-- direct and hard synthetic technical-document retrieval benchmarks;
-- held-out commercial validation;
-- Stage 2 lifecycle/scale/reproducibility evidence;
-- Stage 3/4 synthetic customer-style/external-style comparisons;
-- Stage 5 independently sourced RFC corpus and preliminary evaluation;
-- lexical-vs-RALG comparisons;
-- retrieval latency/memory measurements;
-- concurrency soak tests;
-- clean-install and lifecycle validation.
-
-See [Validation & Evidence Index](docs/validation_evidence.md).
+See [Benchmarks](BENCHMARKS.md) and [Validation & Evidence Index](docs/validation_evidence.md).
 
 ## Current limitations
 
-RALG is suitable for controlled technical evaluation, not an untrusted public production deployment.
+RALG is suitable for controlled technical evaluation in a trusted environment, not direct exposure as an untrusted public production service.
 
 Known limitations include:
 
-- Stage 5 benchmark cases are not yet independently human-reviewed;
-- Docker runtime lifecycle needs a current post-#47/#49 end-to-end qualification;
-- 250k/500k scale validation is deferred for hardware-safety reasons;
-- lifecycle locking is process-local; multi-worker mutation safety is not claimed;
-- no built-in production authentication;
-- no TLS termination provided by the application;
+- no built-in production authentication/authorization layer;
+- no application-provided TLS termination;
 - no tenant isolation;
-- no production-grade rate limiting or shared multi-process transaction layer;
-- dependency/model/data-rights diligence is still incomplete;
-- historical training/research code remains in the repository for reproducibility;
+- no production-grade rate limiting;
+- process-local lifecycle mutation locking;
+- no claim of multi-process transactional document mutation safety;
+- no customer-production or safety-certification claim;
+- model/data/license diligence still requires human/legal review for some assets;
+- historical research/training code remains for reproducibility;
 - domain-specific validation is required before safety-critical use.
 
 ## Documentation
@@ -269,9 +268,8 @@ Known limitations include:
 - [Commercial readiness](COMMERCIAL_READINESS.md)
 - [Roadmap](ROADMAP.md)
 - [Benchmarks](BENCHMARKS.md)
-- [Stage 5 independent evidence](STAGE5_INDEPENDENT_EVIDENCE_REPORT.md)
-- [Stage 5 review guide](docs/STAGE5_REVIEW_GUIDE.md)
 - [Validation & Evidence Index](docs/validation_evidence.md)
+- [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 ## Security boundary
 
@@ -287,8 +285,8 @@ You may use, study, modify, and redistribute the project under the license terms
 
 This is a source-available license with commercial restrictions, not an OSI-approved open-source license. See [LICENSE](LICENSE).
 
-Earlier versions distributed under earlier licenses remain subject to the rights already granted with those versions.
+Earlier versions distributed under earlier licenses remain subject to rights already granted with those versions.
 
 ## Positioning
 
-> RALG Engine is a local, evidence-grounded technical-document intelligence system designed for private retrieval, provenance-backed answers, conservative abstention, and reproducible evaluation.
+> RALG Engine is a local, evidence-grounded technical-document intelligence system designed for private retrieval, provenance-backed answers, conservative abstention, document-scoped reasoning, and reproducible evaluation.
