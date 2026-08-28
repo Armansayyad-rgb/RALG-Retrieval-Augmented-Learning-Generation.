@@ -1,89 +1,137 @@
 # Benchmarks
 
-This file tracks the evidence needed before RALG can make serious technical or commercial claims.
+This document summarizes RALG's benchmark discipline and the evidence currently committed to the repository.
 
-## Benchmark principle
+## Benchmark principles
 
-RALG should not claim to beat normal RAG, larger systems, or commercial tools without fair, repeatable tests.
+RALG does not treat one score as proof of production readiness. Evaluation should keep separate measurements for:
 
-Every benchmark should report:
+- retrieval quality;
+- answer correctness;
+- unsupported rejection;
+- false-support and false-rejection behavior;
+- provenance / evidence traceability;
+- runtime errors;
+- latency and resource use.
 
-- dataset/domain
-- number of questions
-- baseline used
-- RALG version/commit
-- hardware
-- latency
-- RAM/VRAM usage
-- accuracy
-- support/grounding score
-- Recall@1, Recall@3, Recall@5, and MRR
-- failure examples
+Every serious benchmark should identify the dataset/domain, case count, baseline, RALG version/commit, relevant hardware, metric definitions, failures, and reproducible commands/artifacts.
 
-## New proof runner
+Frozen blind evaluations must remain immutable after execution. If a blind result exposes a failure, production fixes may be developed afterward, but the original result must not be rerun or rewritten to improve the score.
 
-A first lightweight retrieval proof runner is available:
+## Evidence hierarchy
 
-```bash
-python src/retrieval_proof_v1.py --dataset data/technical_doc_benchmark_v1.jsonl --knowledge-file data/technical_docs_sample.txt
-```
+RALG currently uses several evidence classes. They are not interchangeable.
 
-A small synthetic sample corpus is included at `data/technical_docs_sample.txt` so the benchmark can run without private company files.
+| Evidence class | Purpose | Claim boundary |
+| --- | --- | --- |
+| Development/regression benchmarks | Fast engineering feedback and generalized hardening | Not independent validation |
+| Historical/synthetic evaluations | Architecture and regression history | Not customer/external validation |
+| Frozen independent holdouts | Untouched pre-run case sets with integrity controls | Stronger internal evidence |
+| Authoritative-source / third-party evaluation | Future stronger source-validity evidence | Requires explicit methodology and independence controls |
+| Customer/pilot evidence | Real deployment validation | Not currently claimed by this repository |
 
-It compares:
+## Holdout V2 — frozen single-shot blind evaluation
 
-- `baseline_v2`: existing lexical retrieval path
-- `ralg_v4`: query-planned RALG retrieval path
-
-It writes JSON results to:
+`evaluation/holdout_v2/` contains the frozen 70-case Holdout V2 framework. The committed blind result is:
 
 ```text
-logs/retrieval_proof_v1_results.json
+evaluation/results/holdout_v2_blind_once.json
 ```
 
-This runner does not require the trained generation checkpoint. It tests retrieval quality first, because weak retrieval makes answer generation unreliable no matter how good the final answer layer is.
+The result metadata records:
 
-## Required comparisons
+- benchmark: `holdout_v2.0.0`;
+- 70 cases;
+- 7 documents;
+- status: `single_shot_blind_evaluation_no_tuning_afterwards`;
+- benchmark SHA-256: `2cb44e5dee8b2074036985928db9a98688046e81e0088ba92c1838d72017c1b5`.
 
-| Test | Purpose | Status |
-|---|---|---|
-| Plain lexical RAG baseline | Shows whether RALG improves over a simple retrieval pipeline | Added in `retrieval_proof_v1.py` |
-| Current RALG pipeline | Measures the actual project retrieval path | Added in `retrieval_proof_v1.py` |
-| Domain technical-doc benchmark | Tests the target startup use case | Seed JSONL added |
-| Unsupported-question set | Measures abstention/refusal quality | Seed cases added |
-| False-premise set | Measures resistance to wrong assumptions | Seed case added |
-| Latency report | Shows practical deployability | Added |
-| Memory report | Shows practical deployability | Still needed |
+### Retrieval-supported cases
 
-## Minimum public milestone
+40 cases were evaluated for ranked retrieval.
 
-Before pitching this as a serious technical advantage, the repo should include at least one narrow benchmark where RALG shows:
+| Metric | Lexical | RALG |
+| --- | ---: | ---: |
+| Recall@1 | 100% | **100%** |
+| Recall@3 | 100% | **100%** |
+| Recall@5 | 100% | **100%** |
+| MRR | 1.000 | **1.000** |
 
-- supported-answer accuracy of 80% or higher in the chosen domain
-- clear improvement over a plain baseline
-- acceptable latency on modest hardware
-- examples of both successes and failures
-- repeatable commands so another person can run the test
+The overall Recall@1/Recall@5 Wilson 95% interval recorded in the result is approximately `[0.9124, 1.0000]` for the 40 ranked cases.
 
-## Current caution
+### Rejection/support-gate cases
 
-Current benchmark claims should be written carefully. If a test result is weak, publish it honestly and use it to guide the roadmap.
+30 cases exercised unsupported/adversarial support gating.
 
-Bad claim:
+| Metric | RALG |
+| --- | ---: |
+| Unsupported rejection | **93.33% (28/30)** |
+| False-support rate | **6.67% (2/30)** |
 
-> RALG is better than normal RAG.
+The recorded unsupported-rejection 95% Wilson interval is approximately `[0.7868, 0.9815]`.
 
-Good claim:
+The two preserved failures are:
 
-> RALG is being evaluated against plain RAG. Current work is focused on retrieval quality, grounding, and domain-specific reliability.
+- `holdout_v2_025` — false support;
+- `holdout_v2_030` — false support.
 
+Those failures were analyzed only after the blind run and led to a generalized calculation-intent support-gate fix plus development regressions. Holdout V2 itself was not rerun after the fix.
 
-## Hard benchmark
+### Holdout V2 limitation
 
-A harder benchmark with distractors, comparison cases, multi-hop-style questions, unsupported cases, and false-premise cases is available:
+Holdout V2 is strong internal independent evidence, but the seven validation source notes were authored from public technical documentation rather than being a fully authoritative upstream-document corpus. It should not be described as third-party or acquisition-grade external validation.
+
+## Reliability benchmark — development/regression evidence
+
+`src/reliability_benchmark_v2.py` exercises live HTTP behavior across supported factual, paraphrased, procedural, unsupported, false-premise, misleading-overlap, runtime-ingested, and existing-KB regression cases.
+
+In the validated reliability-hardening run, the 50-case benchmark reached:
+
+| Metric | Result |
+| --- | ---: |
+| Supported correctness | **100%** |
+| Unsupported rejection | **100%** |
+| False-support rate | **0%** |
+| False-rejection rate | **0%** |
+| API errors | **0** |
+
+This benchmark is development/regression evidence. It is not an untouched independent holdout and should not be reported as one.
+
+## Holdout V1 — historical/diagnostic evidence
+
+`evaluation/holdout_v1/` remains preserved for reproducibility and historical comparison. Later reliability work inspected V1 failure modes, so V1 should no longer be described as untouched independent post-fix evidence for that development cycle.
+
+Do not modify the frozen V1 artifacts to improve historical results.
+
+## Earlier retrieval proof runners
+
+The original lightweight retrieval proof runner remains useful for fast local experimentation:
+
+```powershell
+python src\retrieval_proof_v1.py --dataset data\technical_doc_benchmark_v1.jsonl --knowledge-file data\technical_docs_sample.txt
+```
+
+A harder synthetic benchmark is also available:
 
 ```powershell
 python src\retrieval_proof_v1.py --dataset data\technical_doc_benchmark_hard_v1.jsonl --knowledge-file data\technical_docs_hard_sample.txt
 ```
 
-This benchmark is designed to test whether query planning and merged retrieval provide value beyond the simpler baseline.
+These tests are useful engineering/regression tools but are lower in the evidence hierarchy than frozen blind holdouts.
+
+## Reporting rules
+
+When publishing or discussing RALG benchmark results:
+
+1. State whether the benchmark is development, historical, synthetic, frozen blind, or externally/third-party validated.
+2. Report retrieval and support/rejection metrics separately.
+3. Preserve negative evidence and exact failures.
+4. Do not rerun a single-shot blind benchmark after inspecting its failures to obtain a better headline result.
+5. Do not weaken thresholds or cases to force a pass.
+6. Do not claim global performance from one benchmark/domain.
+7. Do not call internally authored benchmark questions or source notes third-party validation.
+8. Record exact benchmark/result artifacts and hashes when available.
+
+## Next evidence direction
+
+The next stronger validation track should use authoritative upstream technical documents, explicit source provenance/licenses, contamination checks against prior question sets, frozen case/evaluator hashes, single-shot result protection, and a blind run only after the benchmark is frozen and merged.
