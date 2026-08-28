@@ -110,5 +110,76 @@ the repository's LICENSE file.
 
 ---
 
+## 6. Holdout V3 Source Artifacts (External Validation)
+
+Seven upstream source documents acquired for Holdout V3 benchmark evaluation.
+All artifacts are committed under `evaluation/holdout_v3/sources/` with
+deterministic normalization applied. Raw unmodified copies are preserved
+under `evaluation/holdout_v3/sources/raw/`.
+
+### 6.1 SQLite Write-Ahead Logging
+
+- **Source:** SQLite documentation (sqlite.org)
+- **Canonical URL:** https://www.sqlite.org/wal.html
+- **Repository path:** `evaluation/holdout_v3/sources/sqlite_wal_mode.txt`
+- **Raw artifact:** `evaluation/holdout_v3/sources/raw/sqlite_wal_mode.raw`
+- **License:** Public Domain (SQLite is in the public domain per https://www.sqlite.org/copyright.html)
+
+### 6.2 PostgreSQL Routine Vacuuming
+
+- **Source:** PostgreSQL Global Development Group
+- **Canonical URL:** https://www.postgresql.org/docs/17/routine-vacuuming.html
+- **Repository:** https://github.com/postgres/postgres (branch REL_17_STABLE)
+- **Repository path:** `evaluation/holdout_v3/sources/postgresql_vacuuming.txt`
+- **Raw artifact:** `evaluation/holdout_v3/sources/raw/postgresql_vacuuming.raw`
+- **License:** PostgreSQL License (Copyright (c) 1996-2024, PostgreSQL Global Development Group)
+
+### 6.3 Kubernetes Probes
+
+- **Source:** Kubernetes documentation (kubernetes.io)
+- **Canonical URL:** https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+- **Repository:** https://github.com/kubernetes/website (commit fc900dc)
+- **Repository path:** `evaluation/holdout_v3/sources/kubernetes_probes.txt`
+- **Raw artifact:** `evaluation/holdout_v3/sources/raw/kubernetes_probes.raw`
+- **License:** CC BY 4.0 (Kubernetes documentation)
+
+### 6.4 systemd.unit
+
+- **Source:** systemd project (freedesktop.org)
+- **Canonical URL:** https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
+- **Repository:** https://github.com/systemd/systemd (tag v256)
+- **Repository path:** `evaluation/holdout_v3/sources/systemd_unit.txt`
+- **Raw artifact:** `evaluation/holdout_v3/sources/raw/systemd_unit.raw`
+- **License:** LGPL-2.1-or-later
+
+### 6.5 OpenTelemetry Propagators API
+
+- **Source:** OpenTelemetry specification
+- **Canonical URL:** https://opentelemetry.io/docs/specs/otel/context/api-propagators.html
+- **Repository:** https://github.com/open-telemetry/opentelemetry-specification (commit 8057bf6)
+- **Repository path:** `evaluation/holdout_v3/sources/otel_propagators.txt`
+- **Raw artifact:** `evaluation/holdout_v3/sources/raw/otel_propagators.raw`
+- **License:** Apache 2.0
+
+### 6.6 OCI Image Layout
+
+- **Source:** Open Container Initiative
+- **Canonical URL:** https://github.com/opencontainers/image-spec/blob/main/image-layout.md
+- **Repository:** https://github.com/opencontainers/image-spec (tag v1.1.0)
+- **Repository path:** `evaluation/holdout_v3/sources/oci_image_layout.txt`
+- **Raw artifact:** `evaluation/holdout_v3/sources/raw/oci_image_layout.raw`
+- **License:** Apache 2.0
+
+### 6.7 CMake Presets
+
+- **Source:** CMake documentation (cmake.org)
+- **Canonical URL:** https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
+- **Repository:** https://github.com/Kitware/CMake (tag v4.4.3)
+- **Repository path:** `evaluation/holdout_v3/sources/cmake_presets.txt`
+- **Raw artifact:** `evaluation/holdout_v3/sources/raw/cmake_presets.raw`
+- **License:** BSD 3-Clause
+
+---
+
 *Last updated: 2026-08-28*
 *For questions about licensing or attribution, contact the repository copyright holder.*

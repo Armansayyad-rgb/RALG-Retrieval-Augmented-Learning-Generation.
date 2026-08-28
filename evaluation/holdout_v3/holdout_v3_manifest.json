@@ -1,0 +1,24 @@
+{
+  "benchmark_version": "holdout_v3.0.0",
+  "status": "DRAFT / NOT FROZEN",
+  "generated_from": "verified upstream source artifacts with deterministic normalization",
+  "case_count": 120,
+  "category_counts": {
+    "supported": 15,
+    "paraphrased": 15,
+    "procedural": 15,
+    "causal": 10,
+    "cross_document": 10,
+    "document_scoped": 5,
+    "unsupported": 20,
+    "false_premise": 15,
+    "misleading_overlap": 10,
+    "conditional_or_qualified": 5
+  },
+  "retrieval_supported_cases": 70,
+  "rejection_cases": 45,
+  "conditional_cases": 5,
+  "source_count": 7,
+  "sources_manifest_sha256": "d2c1efb65767c1ca63c575ee0d3ca667be077e0222bf94a5b2ba289f1cef49b8",
+  "independence_statement": "No holdout_v1 PEP sources, holdout_v2 authored notes, Stage 5 RFC documents, evaluation_suite_v3 inline cases, or production knowledge corpus data are reused. All 120 cases derived exclusively from verified upstream source artifacts committed under evaluation/holdout_v3/sources/."
+}
