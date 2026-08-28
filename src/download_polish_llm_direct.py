@@ -17,7 +17,7 @@ unauthenticated, rate-limited requests). A plain ``requests.get`` with
 Targets ``Qwen/Qwen2.5-1.5B-Instruct`` on HuggingFace Hub and pulls
 ``model.safetensors`` (~3.09 GB) directly into the directory the
 loader expects:
-``C:\\AI-Project\\checkpoints\\qwen2.5-1.5b-instruct\\``.
+``<CHECKPOINTS_DIR>/qwen2.5-1.5b-instruct/``.
 
 Usage:
     python download_polish_llm_direct.py

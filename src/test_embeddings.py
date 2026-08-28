@@ -9,20 +9,14 @@ from pathlib import Path
 from tokenizers import Tokenizer
 
 from embedding_model import TextEmbeddingModel
-from config import MODEL_CONFIG
+from config import MODEL_CONFIG, PROJECT_ROOT, DATA_DIR, CHECKPOINTS_DIR
 
 
-KNOWLEDGE_FILE = Path(
-    r"C:\AI-Project\indexes\knowledge.json"
-)
+KNOWLEDGE_FILE = PROJECT_ROOT / "indexes" / "knowledge.json"
 
-TOKENIZER_FILE = Path(
-    r"C:\AI-Project\data\tokenizer.json"
-)
+TOKENIZER_FILE = DATA_DIR / "tokenizer.json"
 
-MODEL_FILE = Path(
-    r"C:\AI-Project\checkpoints\embedding_model.pt"
-)
+MODEL_FILE = CHECKPOINTS_DIR / "embedding_model.pt"
 
 MAX_LENGTH = 128
 TOP_K = 5

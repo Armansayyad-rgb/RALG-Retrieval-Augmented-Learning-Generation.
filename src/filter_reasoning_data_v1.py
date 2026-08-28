@@ -4,14 +4,14 @@ import re
 from collections import Counter
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR
 
-INPUT_FILE = Path(
-    r"C:\AI-Project\data\reasoning_train_v1.jsonl"
-)
 
-OUTPUT_FILE = Path(
-    r"C:\AI-Project\data\reasoning_train_v1_clean.jsonl"
-)
+INPUT_FILE = DATA_DIR / "reasoning_train_v1.jsonl"
+
+OUTPUT_FILE = DATA_DIR / "reasoning_train_v1_clean.jsonl"
 
 RANDOM_SEED = 42
 

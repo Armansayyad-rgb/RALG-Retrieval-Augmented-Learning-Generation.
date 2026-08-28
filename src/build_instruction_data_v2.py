@@ -3,13 +3,13 @@ import random
 import re
 from pathlib import Path
 
-KNOWLEDGE_FILE = Path(
-    r"C:\AI-Project\indexes\knowledge.json"
-)
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import PROJECT_ROOT, DATA_DIR
 
-OUTPUT_FILE = Path(
-    r"C:\AI-Project\data\instruction_train_v2.jsonl"
-)
+KNOWLEDGE_FILE = PROJECT_ROOT / "indexes" / "knowledge.json"
+
+OUTPUT_FILE = DATA_DIR / "instruction_train_v2.jsonl"
 
 RANDOM_SEED = 42
 EXAMPLES_PER_CHUNK = 3

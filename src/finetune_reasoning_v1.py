@@ -8,22 +8,18 @@ from tokenizers import Tokenizer
 
 from model_v2 import SmallLMV2
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR, CHECKPOINTS_DIR
 
-DATA_FILE = Path(
-    r"C:\AI-Project\data\reasoning_train_v1_clean.jsonl"
-)
 
-TOKENIZER_FILE = Path(
-    r"C:\AI-Project\data\tokenizer_v2.json"
-)
+DATA_FILE = DATA_DIR / "reasoning_train_v1_clean.jsonl"
 
-BASE_MODEL_FILE = Path(
-    r"C:\AI-Project\checkpoints\v2\instruction_model_v4.pt"
-)
+TOKENIZER_FILE = DATA_DIR / "tokenizer_v2.json"
 
-OUTPUT_FILE = Path(
-    r"C:\AI-Project\checkpoints\v2\reasoning_model_v1.pt"
-)
+BASE_MODEL_FILE = CHECKPOINTS_DIR / "v2" / "instruction_model_v4.pt"
+
+OUTPUT_FILE = CHECKPOINTS_DIR / "v2" / "reasoning_model_v1.pt"
 
 MAX_LENGTH = 512
 BATCH_SIZE = 1

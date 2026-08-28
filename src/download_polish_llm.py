@@ -3,7 +3,7 @@
 Targets ``Qwen/Qwen2.5-1.5B-Instruct`` on HuggingFace Hub and pulls
 ``model.safetensors`` (single 3.09 GB file, no sharding per the repo
 snapshot) directly into the directory the loader expects:
-``C:\\AI-Project\\checkpoints\\qwen2.5-1.5b-instruct\\``.
+``<CHECKPOINTS_DIR>/qwen2.5-1.5b-instruct/``.
 
 Why a script (not a one-liner):
 - The download is ~3 GB; if interrupted, re-running this script picks
@@ -17,7 +17,7 @@ Usage:
     python download_polish_llm.py
 
 Side effects:
-- Creates ``C:\\AI-Project\\checkpoints\\qwen2.5-1.5b-instruct\\`` if
+- Creates ``<CHECKPOINTS_DIR>/qwen2.5-1.5b-instruct/`` if
   it does not exist.
 - Writes ``model.safetensors`` (~3.09 GB) into that directory.
 - Writes nothing else; the rest of the model card files (config.json,

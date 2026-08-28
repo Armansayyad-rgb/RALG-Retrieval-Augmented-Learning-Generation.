@@ -1544,14 +1544,9 @@ if __name__ == "__main__":
         build_index,
     )
 
-    KNOWLEDGE_FILES = [
-        Path(
-            r"C:\AI-Project\data\wikitext_v2.txt"
-        ),
-        Path(
-            r"C:\AI-Project\data\knowledge_extra_v1.txt"
-        ),
-    ]
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from config import KNOWLEDGE_FILES
 
     print(
         "\nLoading adaptive comparison "
