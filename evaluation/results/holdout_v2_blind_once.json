@@ -1,0 +1,193 @@
+{
+  "benchmark": "holdout_v2.0.0",
+  "benchmark_sha256": "2cb44e5dee8b2074036985928db9a98688046e81e0088ba92c1838d72017c1b5",
+  "status": "single_shot_blind_evaluation_no_tuning_afterwards",
+  "cases": 70,
+  "documents": 7,
+  "systems": {
+    "lexical": {
+      "overall_ranked": {
+        "n": 40,
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "recall_at_1_ci95": [
+          0.9123754607496077,
+          1.0
+        ],
+        "recall_at_5_ci95": [
+          0.9123754607496077,
+          1.0
+        ]
+      },
+      "by_category": {
+        "cross_document": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        },
+        "paraphrased": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        },
+        "procedural": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        },
+        "supported": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        }
+      },
+      "unsupported_rejection": null,
+      "false_support_rate": null,
+      "unsupported_rejection_ci95": null,
+      "note": "lexical baseline has no production support gate"
+    },
+    "ralg": {
+      "overall_ranked": {
+        "n": 40,
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "recall_at_1_ci95": [
+          0.9123754607496077,
+          1.0
+        ],
+        "recall_at_5_ci95": [
+          0.9123754607496077,
+          1.0
+        ]
+      },
+      "by_category": {
+        "cross_document": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        },
+        "paraphrased": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        },
+        "procedural": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        },
+        "supported": {
+          "n": 10,
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "recall_at_1_ci95": [
+            0.7224598312333834,
+            1.0
+          ],
+          "recall_at_5_ci95": [
+            0.7224598312333834,
+            1.0
+          ]
+        }
+      },
+      "unsupported_rejection": 0.9333333333333333,
+      "false_support_rate": 0.06666666666666667,
+      "unsupported_rejection_ci95": [
+        0.7867618227892791,
+        0.9815233646723066
+      ],
+      "note": ""
+    }
+  },
+  "case_level_failures": [
+    {
+      "system": "ralg",
+      "case_id": "holdout_v2_025",
+      "category": "unsupported",
+      "issue": "false_support"
+    },
+    {
+      "system": "ralg",
+      "case_id": "holdout_v2_030",
+      "category": "unsupported",
+      "issue": "false_support"
+    }
+  ],
+  "gate_cases_run": 30
+}

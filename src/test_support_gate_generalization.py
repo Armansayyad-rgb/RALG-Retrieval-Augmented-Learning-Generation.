@@ -776,6 +776,42 @@ class SupportGateGeneralizationTests(unittest.TestCase):
         self.assertIsNone(answer)
         self.assertFalse(supported)
 
+    def test_calculation_question_rejects_topical_sentence_without_method(self):
+        answer, supported = extract_factual_answer(
+            "How should a clinic calculate an infant supplement dosage?",
+            (
+                "The clinic has a neonatal care unit and a separate "
+                "infant observation ward. Supplements are stored in "
+                "the pharmacy cabinet."
+            ),
+        )
+        self.assertIsNone(answer)
+        self.assertFalse(supported)
+
+    def test_calculation_question_rejects_engineering_terms_without_method(self):
+        answer, supported = extract_factual_answer(
+            "How do you calculate laminated timber joist deflection spacing?",
+            (
+                "The roof used laminated timber joists with regular "
+                "spacing across the old station hall. The project "
+                "also replaced several beams during restoration."
+            ),
+        )
+        self.assertIsNone(answer)
+        self.assertFalse(supported)
+
+    def test_calculation_question_allows_method_evidence(self):
+        answer, supported = extract_factual_answer(
+            "How do you calculate pump flow capacity?",
+            (
+                "Pump flow capacity is calculated by multiplying "
+                "displacement per revolution by shaft speed and then "
+                "adjusting for volumetric efficiency."
+            ),
+        )
+        self.assertIsNotNone(answer)
+        self.assertTrue(supported)
+
 
 if __name__ == "__main__":
     unittest.main()
