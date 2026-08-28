@@ -3,14 +3,14 @@ import random
 from collections import Counter
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR
 
-INPUT_FILE = Path(
-    r"C:\AI-Project\data\extractive_qa_v4.jsonl"
-)
 
-OUTPUT_FILE = Path(
-    r"C:\AI-Project\data\extractive_qa_v4_clean.jsonl"
-)
+INPUT_FILE = DATA_DIR / "extractive_qa_v4.jsonl"
+
+OUTPUT_FILE = DATA_DIR / "extractive_qa_v4_clean.jsonl"
 
 ALLOWED_TYPES = {
     "born_year",

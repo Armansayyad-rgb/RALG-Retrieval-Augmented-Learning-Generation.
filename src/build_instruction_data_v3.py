@@ -3,14 +3,14 @@ import random
 import re
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR
 
-SOURCE_FILE = Path(
-    r"C:\AI-Project\data\wikitext_v2.txt"
-)
 
-OUTPUT_FILE = Path(
-    r"C:\AI-Project\data\instruction_train_v3.jsonl"
-)
+SOURCE_FILE = DATA_DIR / "wikitext_v2.txt"
+
+OUTPUT_FILE = DATA_DIR / "instruction_train_v3.jsonl"
 
 RANDOM_SEED = 42
 MAX_EXAMPLES = 10000

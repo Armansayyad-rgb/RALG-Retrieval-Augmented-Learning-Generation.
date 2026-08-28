@@ -8,22 +8,18 @@ from tokenizers import Tokenizer
 
 from model_v2 import SmallLMV2
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR, CHECKPOINTS_DIR
 
-DATA_FILE = Path(
-    r"C:\AI-Project\data\wikitext_v2.txt"
-)
 
-TOKENIZER_FILE = Path(
-    r"C:\AI-Project\data\tokenizer_v2.json"
-)
+DATA_FILE = DATA_DIR / "wikitext_v2.txt"
 
-CHECKPOINT_DIR = Path(
-    r"C:\AI-Project\checkpoints\v2"
-)
+TOKENIZER_FILE = DATA_DIR / "tokenizer_v2.json"
 
-TOKEN_CACHE = Path(
-    r"C:\AI-Project\data\wikitext_v2_tokens.pt"
-)
+CHECKPOINT_DIR = CHECKPOINTS_DIR / "v2"
+
+TOKEN_CACHE = DATA_DIR / "wikitext_v2_tokens.pt"
 
 
 # RTX 3050 6GB-safe starting settings

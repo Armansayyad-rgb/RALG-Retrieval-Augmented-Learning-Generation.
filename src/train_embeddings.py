@@ -8,20 +8,14 @@ from torch.optim import AdamW
 from tokenizers import Tokenizer
 
 from embedding_model import TextEmbeddingModel
-from config import MODEL_CONFIG
+from config import MODEL_CONFIG, DATA_DIR, CHECKPOINTS_DIR
 
 
-DATA_FILE = Path(
-    r"C:\AI-Project\data\embedding_train.jsonl"
-)
+DATA_FILE = DATA_DIR / "embedding_train.jsonl"
 
-TOKENIZER_FILE = Path(
-    r"C:\AI-Project\data\tokenizer.json"
-)
+TOKENIZER_FILE = DATA_DIR / "tokenizer.json"
 
-OUTPUT_FILE = Path(
-    r"C:\AI-Project\checkpoints\embedding_model.pt"
-)
+OUTPUT_FILE = CHECKPOINTS_DIR / "embedding_model.pt"
 
 BATCH_SIZE = 8
 EPOCHS = 20

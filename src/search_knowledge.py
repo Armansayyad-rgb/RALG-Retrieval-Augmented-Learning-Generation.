@@ -5,7 +5,11 @@ import sys
 from pathlib import Path
 from collections import Counter
 
-INDEX_FILE = Path(r"C:\AI-Project\indexes\knowledge.json")
+import os
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import PROJECT_ROOT
+
+INDEX_FILE = PROJECT_ROOT / "indexes" / "knowledge.json"
 TOP_K = 5
 
 

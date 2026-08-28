@@ -8,22 +8,18 @@ from tokenizers import Tokenizer
 
 from model_v2 import SmallLMV2
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR, CHECKPOINTS_DIR
 
-DATA_FILE = Path(
-    r"C:\AI-Project\data\instruction_train_v3.jsonl"
-)
 
-TOKENIZER_FILE = Path(
-    r"C:\AI-Project\data\tokenizer_v2.json"
-)
+DATA_FILE = DATA_DIR / "instruction_train_v3.jsonl"
 
-BASE_MODEL_FILE = Path(
-    r"C:\AI-Project\checkpoints\v2\final_model_v2_3000.pt"
-)
+TOKENIZER_FILE = DATA_DIR / "tokenizer_v2.json"
 
-OUTPUT_FILE = Path(
-    r"C:\AI-Project\checkpoints\v2\instruction_model_v3.pt"
-)
+BASE_MODEL_FILE = CHECKPOINTS_DIR / "v2" / "final_model_v2_3000.pt"
+
+OUTPUT_FILE = CHECKPOINTS_DIR / "v2" / "instruction_model_v3.pt"
 
 
 MAX_LENGTH = 512

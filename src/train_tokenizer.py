@@ -5,8 +5,13 @@ from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.decoders import ByteLevel as ByteLevelDecoder
 from tokenizers.processors import TemplateProcessing
 
-DATA_FILE = r"C:\AI-Project\data\train.txt"
-OUTPUT_FILE = r"C:\AI-Project\data\tokenizer.json"
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR
+
+DATA_FILE = str(DATA_DIR / "train.txt")
+OUTPUT_FILE = str(DATA_DIR / "tokenizer.json")
 
 tokenizer = Tokenizer(BPE(unk_token="<UNK>"))
 

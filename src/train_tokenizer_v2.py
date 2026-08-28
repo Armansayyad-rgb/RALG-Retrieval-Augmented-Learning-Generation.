@@ -5,8 +5,13 @@ from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.decoders import ByteLevel as ByteLevelDecoder
 from tokenizers.processors import TemplateProcessing
 
-DATA_FILE = r"C:\AI-Project\data\wikitext_v2.txt"
-OUTPUT_FILE = r"C:\AI-Project\data\tokenizer_v2.json"
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config import DATA_DIR
+
+DATA_FILE = str(DATA_DIR / "wikitext_v2.txt")
+OUTPUT_FILE = str(DATA_DIR / "tokenizer_v2.json")
 
 VOCAB_SIZE = 16000
 
