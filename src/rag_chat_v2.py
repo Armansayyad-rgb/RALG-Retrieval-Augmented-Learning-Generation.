@@ -817,6 +817,26 @@ def _predicate_answers_question(
     candidate sentence is about a different property of that
     entity (the Atlantis tidal-wave / Ceres-asteroid case).
     """
+    q = question.lower()
+    candidate_low = candidate_sentence.lower()
+
+    # Calculation requests need evidence for a calculation method in the
+    # candidate sentence itself, not just topical nouns elsewhere nearby.
+    if re.search(r"\b(?:calculate|calculation|computed?|determine)\b", q):
+        calculation_vocab = (
+            "calculate", "calculated", "calculates", "calculation",
+            "compute", "computed", "computes", "computation",
+            "determine", "determined", "determines", "multiply",
+            "multiplied", "divide", "divided", "formula", "equation",
+            "ratio", "sum", "subtract", "add",
+        )
+        has_calculation_evidence = any(
+            _contains_term(candidate_low, term)
+            for term in calculation_vocab
+        )
+        if not has_calculation_evidence:
+            return False
+
     predicate_vocab = _extract_predicate(question)
 
     if not predicate_vocab:
@@ -828,8 +848,6 @@ def _predicate_answers_question(
             )
         # No recognizable predicate — nothing to gate.
         return True
-
-    candidate_low = candidate_sentence.lower()
 
     # The predicate must be grounded in the candidate sentence ITSELF.
     # A predicate that merely appears somewhere else in the retrieved
@@ -848,7 +866,6 @@ def _predicate_answers_question(
     # Answer-shape heuristics: if the candidate sentence contains
     # something that looks like an actual answer to this kind of
     # question (e.g. a year for "when"), accept it.
-    q = question.lower()
     if q.startswith("when "):
         if re.search(
             r"\b(1\d{3}|2\d{3})\b",
