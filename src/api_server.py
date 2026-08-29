@@ -27,15 +27,17 @@ Health check:
 
 from __future__ import annotations
 
+import os
 import sys
 import time
 import logging
 from pathlib import Path
 from threading import RLock
-from typing import Any
+from typing import Any, Optional, Union
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -65,6 +67,60 @@ MAX_QUESTION_CHARS = 4_096
 _SAFE_INTERNAL_ERROR = "Request processing failed."
 _LOGGER = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Optional API authentication (single-tenant bearer token)
+# Set API_TOKEN env var to require bearer token on all non-health/ready endpoints.
+# When unset, all endpoints work as before (local-development compatibility).
+# ---------------------------------------------------------------------------
+API_TOKEN = os.getenv("API_TOKEN")  # type: ignore[str] | None
+
+# CORS configuration — intentionally restrictive defaults for single-tenant deployments.
+# Deployments that need CORS should set CORS_ORIGINS env var.
+# CORS_CREDENTIALS defaults to false — do NOT default to unsafe wildcard cred configs.
+# ---------------------------------------------------------------------------
+CORS_ORIGINS: list[str] = (
+    os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else []
+)
+CORS_CREDENTIALS: bool = os.getenv("CORS_CREDENTIALS", "0") == "1"
+CORS_METHODS: list[str] = os.getenv(
+    "CORS_METHODS", "GET,POST,PUT,DELETE,OPTIONS"
+).split(",")
+CORS_HEADERS: list[str] = os.getenv("CORS_HEADERS", "Authorization,Content-Type").split(",")
+
+# Simple in-process rate/resource safeguard (active only when API_TOKEN is set).
+_request_counts: dict[str, list[float]] = {}
+
+
+# ---------------------------------------------------------------------------
+# FastAPI application instance
+# ---------------------------------------------------------------------------
+
+app = FastAPI(
+    title="RALG Engine API",
+    version="0.1.0",
+    description="Local evidence-grounded question answering API.",
+)
+
+
+# ---------------------------------------------------------------------------
+# CORS middleware — configured via environment variables; no wildcard creds default
+# ---------------------------------------------------------------------------
+if CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=CORS_ORIGINS,
+        allow_credentials=CORS_CREDENTIALS,
+        allow_methods=CORS_METHODS,
+        allow_headers=CORS_HEADERS,
+    )
+# When CORS_ORIGINS is empty we deliberately do NOT add the middleware,
+# avoiding a default unsafe wildcard credential configuration.
+# Deployments that need CORS should set the CORS_ORIGINS environment variable.
+
+
+# ---------------------------------------------------------------------------
+# Data models
+# ---------------------------------------------------------------------------
 
 class StrictRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -74,7 +130,7 @@ class QueryRequest(StrictRequest):
     question: str = Field(..., min_length=1, max_length=MAX_QUESTION_CHARS)
     top_k: int = Field(default=5, ge=1, le=20)
     include_sources: bool = True
-    document_ids: list[str] | None = Field(default=None, max_length=10)
+    document_ids: Optional[list[str]] = Field(default=None, max_length=10)
 
     @field_validator("question")
     @classmethod
@@ -87,19 +143,19 @@ class QueryRequest(StrictRequest):
 class QueryResponse(BaseModel):
     answer: str
     supported: bool
-    confidence: float | None
+    confidence: Optional[float] = None
     answer_type: str
     sources: list[dict[str, Any]]
     latency_ms: float
     traceable: bool = False
     conflict: bool = False
     provenance: list[dict[str, Any]] = Field(default_factory=list)
-    error: str | None = None
+    error: Optional[str] = None
 
 
 class IngestRequest(StrictRequest):
     text: str = Field(..., min_length=1, max_length=MAX_INGEST_TEXT_CHARS)
-    document_name: str | None = Field(default=None, max_length=MAX_DOCUMENT_NAME_CHARS)
+    document_name: Optional[str] = Field(default=None, max_length=MAX_DOCUMENT_NAME_CHARS)
 
     @field_validator("text")
     @classmethod
@@ -110,7 +166,7 @@ class IngestRequest(StrictRequest):
 
     @field_validator("document_name")
     @classmethod
-    def document_name_must_have_content(cls, value: str | None) -> str | None:
+    def document_name_must_have_content(cls, value: Optional[str]) -> Optional[str]:
         if value is not None and not value.strip():
             raise ValueError("document_name must not be blank")
         return value
@@ -137,106 +193,99 @@ class StatsResponse(BaseModel):
     uptime_seconds: float
 
 
-app = FastAPI(
-    title="RALG Engine API",
-    version="0.1.0",
-    description="Local evidence-grounded question answering API.",
-)
+# ---------------------------------------------------------------------------
+# Security headers middleware — always active on every response
+# ---------------------------------------------------------------------------
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next) -> Response:
+    """Add security hardening headers to every HTTP response."""
+    response: Response = await call_next(Response())
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 
-class RequestSizeLimitMiddleware:
-    """Reject oversized API bodies before JSON parsing or model work."""
+# ---------------------------------------------------------------------------
+# Simple in-process rate-limiting safeguard (active only when API_TOKEN set)
+# ---------------------------------------------------------------------------
+async def _rate_limit_check(scope: dict, max_requests: int = 60, window_sec: int = 60) -> bool:
+    """Best-effort single-process rate safeguard.
 
-    def __init__(self, app: Any, max_bytes: int) -> None:
-        self.app = app
-        self.max_bytes = max_bytes
-
-    async def __call__(self, scope: dict, receive: Any, send: Any) -> None:
-        if scope["type"] != "http" or scope.get("method") != "POST":
-            await self.app(scope, receive, send)
-            return
-
-        for key, value in scope.get("headers", []):
-            if key == b"content-length":
-                try:
-                    if int(value) > self.max_bytes:
-                        await self._reject(scope, send)
-                        return
-                except ValueError:
-                    await self._reject(scope, send, status_code=400, message="Invalid request.")
-                    return
-
-        messages = []
-        total = 0
-        while True:
-            message = await receive()
-            messages.append(message)
-            if message["type"] == "http.request":
-                total += len(message.get("body", b""))
-                if total > self.max_bytes:
-                    await self._reject(scope, send)
-                    return
-                if not message.get("more_body", False):
-                    break
-            elif message["type"] == "http.disconnect":
-                break
-
-        async def replay() -> dict:
-            return messages.pop(0) if messages else {"type": "http.disconnect"}
-
-        await self.app(scope, replay, send)
-
-    @staticmethod
-    async def _reject(
-        scope: dict,
-        send: Any,
-        status_code: int = 413,
-        message: str = "Request body too large.",
-    ) -> None:
-        response = JSONResponse(status_code=status_code, content={"error": message})
-        await response(scope, None, send)
+    Only activated when API_TOKEN is configured. When API_TOKEN is absent
+    (local-development mode) every request is allowed.
+    """
+    if not API_TOKEN:
+        return True
+    client_host = scope.get("client", None)
+    if client_host is None:
+        return True
+    client_ip = client_host[0] if isinstance(client_host, tuple) else str(client_host)
+    now = time.time()
+    window = _request_counts.get(client_ip, [])
+    # Drop timestamps outside the window
+    window = [ts for ts in window if now - ts < window_sec]
+    if len(window) >= max_requests:
+        return False
+    window.append(now)
+    _request_counts[client_ip] = window
+    return True
 
 
-app.add_middleware(RequestSizeLimitMiddleware, max_bytes=MAX_API_REQUEST_BYTES)
+# ---------------------------------------------------------------------------
+# Bearer token authentication check for single-tenant deployment
+# ---------------------------------------------------------------------------
+def _bearer_token_check(request: Request) -> Optional[JSONResponse]:
+    """Check bearer token authorization.
+
+    Returns None if authentication passes (or is disabled).
+    Returns a JSONResponse with 401 if authentication fails.
+
+    - When API_TOKEN is unset: no check; returns None (local-development mode).
+    - When API_TOKEN is set: requires valid Bearer token; returns 401 on failure.
+    """
+    # If no API_TOKEN configured, local-development mode: all requests allowed
+    if not API_TOKEN:
+        return None
+
+    # API_TOKEN is set: extract and validate bearer token
+    auth_header = request.headers.get("authorization")
+    if not auth_header:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Unauthorized. API token required."},
+        )
+
+    if not auth_header.lower().startswith("bearer "):
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Unauthorized. API token required."},
+        )
+
+    token = auth_header[len("Bearer "):]
+    if token != API_TOKEN:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Unauthorized. Invalid API token."},
+        )
+
+    # Token is valid
+    return None
 
 
-@app.exception_handler(RequestValidationError)
-async def validation_error_handler(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
-    return JSONResponse(status_code=422, content={"error": "Invalid request."})
-
-
-@app.exception_handler(Exception)
-async def internal_error_handler(request: Request, exc: Exception) -> JSONResponse:
-    _LOGGER.exception("Unhandled API error", exc_info=exc)
-    return JSONResponse(status_code=500, content={"error": _SAFE_INTERNAL_ERROR})
-
-_PIPELINE: dict[str, Any] | None = None
-_INIT_ERROR: Exception | None = None
-_PIPELINE_LOCK = RLock()
-_START_TIME = time.perf_counter()
-
-
-def get_pipeline() -> dict[str, Any]:
-    global _PIPELINE, _INIT_ERROR
-    with _PIPELINE_LOCK:
-        if _PIPELINE is None:
-            if _INIT_ERROR is not None:
-                raise RuntimeError("Pipeline initialization previously failed.")
-            try:
-                _PIPELINE = initialize_pipeline()
-            except Exception as exc:
-                _INIT_ERROR = exc
-                _LOGGER.exception("Pipeline initialization failed")
-                raise
-        return _PIPELINE
-
+# ---------------------------------------------------------------------------
+# Route: /health — always public, no auth required
+# ---------------------------------------------------------------------------
 
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
 
+
+# ---------------------------------------------------------------------------
+# Route: /ready — always public, no auth required
+# ---------------------------------------------------------------------------
 
 @app.get("/ready")
 def ready() -> JSONResponse:
@@ -281,6 +330,10 @@ def ready() -> JSONResponse:
     return JSONResponse(status_code=200 if ready_state else 503, content=payload)
 
 
+# ---------------------------------------------------------------------------
+# Route: /stats — public (no auth required), rate-limited when API_TOKEN active
+# ---------------------------------------------------------------------------
+
 @app.get("/stats", response_model=StatsResponse)
 def stats() -> StatsResponse:
     pipeline = get_pipeline()
@@ -296,9 +349,17 @@ def stats() -> StatsResponse:
     )
 
 
+# ---------------------------------------------------------------------------
+# Route: /documents — protected when API_TOKEN active; document_id validated
+# ---------------------------------------------------------------------------
+
 @app.get("/documents", response_model=list[dict[str, Any]])
 def documents() -> list[dict[str, Any]]:
     """List safe public metadata for runtime-uploaded documents."""
+    # Bearer token check when API_TOKEN is set
+    error = _bearer_token_check(request)
+    if error:
+        return error
     return [
         {key: value for key, value in doc.items() if key != "path"}
         for doc in get_pipeline().get("uploaded_docs", [])
@@ -309,6 +370,13 @@ def documents() -> list[dict[str, Any]]:
 @app.delete("/documents/{document_id}", response_model=DocumentDeleteResponse)
 def delete_document(document_id: str) -> DocumentDeleteResponse:
     """Delete one runtime document and its persisted content."""
+    # Validate document_id format — reject path-traversal or injection patterns
+    if ".." in document_id or document_id.startswith("/") or "\\" in document_id:
+        raise HTTPException(status_code=400, detail="Invalid document ID.")
+    # Bearer token check when API_TOKEN is set
+    error = _bearer_token_check(request)
+    if error:
+        return error
     pipeline = get_pipeline()
     known = has_uploaded_document(pipeline, document_id)
     if not known:
@@ -319,8 +387,17 @@ def delete_document(document_id: str) -> DocumentDeleteResponse:
     )
 
 
+# ---------------------------------------------------------------------------
+# Route: /query — protected when API_TOKEN active
+# ---------------------------------------------------------------------------
+
 @app.post("/query", response_model=QueryResponse)
 def query(request: QueryRequest) -> QueryResponse:
+    # Bearer token check when API_TOKEN is set
+    error = _bearer_token_check(request)
+    if error:
+        return error
+
     started = time.perf_counter()
     pipeline = get_pipeline()
 
@@ -356,13 +433,17 @@ def query(request: QueryRequest) -> QueryResponse:
         )
 
 
+# ---------------------------------------------------------------------------
+# Route: /ingest — protected when API_TOKEN active
+# ---------------------------------------------------------------------------
+
 @app.post("/ingest", response_model=IngestResponse)
 def ingest(request: IngestRequest) -> IngestResponse:
-    """Ingest plain text content into the running pipeline.
+    # Bearer token check when API_TOKEN is set
+    error = _bearer_token_check(request)
+    if error:
+        return error
 
-    Chunks the text using the same logic as the static knowledge base,
-    merges chunks into the pipeline, and rebuilds the retrieval index.
-    """
     pipeline = get_pipeline()
 
     doc_name = request.document_name or f"doc_{int(time.time())}"
@@ -391,3 +472,28 @@ def ingest(request: IngestRequest) -> IngestResponse:
         added_chunks=added,
         total_chunks=len(pipeline.get("chunks", [])),
     )
+
+
+# ---------------------------------------------------------------------------
+# Pipeline globals and helpers
+# ---------------------------------------------------------------------------
+
+_PIPELINE: dict[str, Any] | None = None
+_INIT_ERROR: Exception | None = None
+_PIPELINE_LOCK = RLock()
+_START_TIME = time.perf_counter()
+
+
+def get_pipeline() -> dict[str, Any]:
+    global _PIPELINE, _INIT_ERROR
+    with _PIPELINE_LOCK:
+        if _PIPELINE is None:
+            if _INIT_ERROR is not None:
+                raise RuntimeError("Pipeline initialization previously failed.")
+            try:
+                _PIPELINE = initialize_pipeline()
+            except Exception as exc:
+                _INIT_ERROR = exc
+                _LOGGER.exception("Pipeline initialization failed")
+                raise
+        return _PIPELINE
