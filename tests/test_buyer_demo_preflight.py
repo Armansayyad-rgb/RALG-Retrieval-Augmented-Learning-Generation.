@@ -7,16 +7,24 @@ or any benchmark that touches frozen independent evidence.
 import json
 import subprocess
 import sys
+import tempfile
+from io import StringIO
 from pathlib import Path
+from unittest import TestCase
+from unittest.mock import patch
 
-import unittest
+import contextlib
+import importlib
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
 PYTHON = sys.executable
 
+sys.path.insert(0, str(SCRIPTS))
+import buyer_demo_preflight
 
-class TestPreflightJsonStructure(unittest.TestCase):
+
+class TestPreflightJsonStructure(TestCase):
     """Preflight must produce valid JSON with expected keys even when checks fail."""
 
     def test_preflight_json_output_structure(self):
@@ -40,7 +48,7 @@ class TestPreflightJsonStructure(unittest.TestCase):
         pass
 
 
-class TestPreflightPythonVersion(unittest.TestCase):
+class TestPreflightPythonVersion(TestCase):
     """Preflight reports failure when Python < 3.10."""
 
     def test_preflight_python_version_failure_structure(self):
@@ -54,7 +62,7 @@ class TestPreflightPythonVersion(unittest.TestCase):
         self.assertIn("python_version", [c["name"] for c in data["checks"]])
 
 
-class TestPreflightRequiresTokenizer(unittest.TestCase):
+class TestPreflightRequiresTokenizer(TestCase):
     """Preflight requires data/tokenizer_v2.json to be present."""
 
     def test_preflight_requires_tokenizer(self):
@@ -72,24 +80,50 @@ class TestPreflightRequiresTokenizer(unittest.TestCase):
         self.assertTrue(tokenizer_pass, "tokenizer_v2.json should be present in repo")
 
 
-class TestPreflightMissingCheckpoint(unittest.TestCase):
+class TestPreflightMissingCheckpoint(TestCase):
     """Preflight reports missing checkpoints/v2."""
 
+    def _run_preflight_in_temp(self, tmp_path, include_checkpoint=False):
+        buyer_demo_preflight.ROOT = tmp_path
+        for rel in buyer_demo_preflight.REQUIRED_FILES:
+            path = tmp_path / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+        for rel in buyer_demo_preflight.RECOMMENDED_FILES:
+            path = tmp_path / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if not include_checkpoint and "reasoning_model" in rel:
+                continue
+            path.touch()
+        stdout = StringIO()
+        with contextlib.redirect_stdout(stdout):
+            with patch.object(buyer_demo_preflight, 'select_port', return_value=7860):
+                old_argv = sys.argv
+                sys.argv = [str(SCRIPTS / "buyer_demo_preflight.py")]
+                try:
+                    buyer_demo_preflight.main()
+                finally:
+                    sys.argv = old_argv
+        return json.loads(stdout.getvalue())
+
     def test_preflight_reports_missing_checkpoint(self):
-        result = subprocess.run(
-            [PYTHON, str(SCRIPTS / "buyer_demo_preflight.py")],
-            capture_output=True,
-            text=True,
-        )
-        data = json.loads(result.stdout)
-        checkpoint_checks = [c for c in data["checks"] if "checkpoint" in c["name"].lower()]
-        self.assertGreater(len(checkpoint_checks), 0)
-        # The detail should reference the path (it does; that's correct)
-        missing_cp = [c for c in checkpoint_checks if not c["pass"]]
-        self.assertGreater(len(missing_cp), 0)
+        with tempfile.TemporaryDirectory() as tmp:
+            data = self._run_preflight_in_temp(Path(tmp), include_checkpoint=False)
+            checkpoint_checks = [c for c in data["checks"] if "checkpoint" in c["name"].lower()]
+            self.assertGreater(len(checkpoint_checks), 0)
+            missing_cp = [c for c in checkpoint_checks if not c["pass"]]
+            self.assertGreater(len(missing_cp), 0)
+
+    def test_preflight_reports_present_checkpoint(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data = self._run_preflight_in_temp(Path(tmp), include_checkpoint=True)
+            checkpoint_checks = [c for c in data["checks"] if "checkpoint" in c["name"].lower()]
+            self.assertGreater(len(checkpoint_checks), 0)
+            present_cp = [c for c in checkpoint_checks if c["pass"]]
+            self.assertGreater(len(present_cp), 0)
 
 
-class TestPreflightPortRange(unittest.TestCase):
+class TestPreflightPortRange(TestCase):
     """Preflight selects a port from the bounded range 7860-7870."""
 
     def test_preflight_port_range(self):
@@ -103,7 +137,7 @@ class TestPreflightPortRange(unittest.TestCase):
         self.assertTrue(7860 <= selected <= 7870, f"Port {selected} outside allowed range 7860-7870")
 
 
-class TestRunnerScriptExists(unittest.TestCase):
+class TestRunnerScriptExists(TestCase):
     """The runner and preflight scripts exist and are readable."""
 
     def test_runner_script_exists(self):
@@ -113,7 +147,7 @@ class TestRunnerScriptExists(unittest.TestCase):
         self.assertTrue((SCRIPTS / "buyer_demo_preflight.py").exists())
 
 
-class TestDeterministicScenarioAssumptions(unittest.TestCase):
+class TestDeterministicScenarioAssumptions(TestCase):
     """BUYER_DEMO_GUIDE.md section 5 references valid demo data and truthful claims."""
 
     def test_guide_references_demo_data(self):
