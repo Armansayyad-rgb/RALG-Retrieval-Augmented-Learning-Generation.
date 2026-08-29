@@ -82,6 +82,15 @@ curl -X POST http://127.0.0.1:8000/ingest \
   -d '{"text":"Safety step: de-energize the panel and verify zero voltage with a certified tester before removing the cover.","document_name":"compressor_sop"}'
 ```
 
+Authenticated:
+
+```bash
+curl -X POST http://127.0.0.1:8000/ingest \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-api-token" \
+  -d '{"text":"Safety step: de-energize the panel and verify zero voltage with a certified tester before removing the cover.","document_name":"compressor_sop"}'
+```
+
 Response:
 ```json
 {
@@ -97,6 +106,15 @@ Response:
 ```bash
 curl -X POST http://127.0.0.1:8000/query \
   -H "Content-Type: application/json" \
+  -d '{"question":"What safety step is required before opening the electrical panel?","top_k":5,"include_sources":true}'
+```
+
+Authenticated:
+
+```bash
+curl -X POST http://127.0.0.1:8000/query \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-api-token" \
   -d '{"question":"What safety step is required before opening the electrical panel?","top_k":5,"include_sources":true}'
 ```
 
@@ -175,3 +193,27 @@ python src/test_api_demo.py
 ```
 
 Assumes the server is already running on `http://127.0.0.1:8000`.
+
+### Authenticated requests
+
+If the server is started with `API_TOKEN`, pass the token to the client:
+
+```python
+from src.ralg_client import RALGClient
+
+client = RALGClient(api_token="your-api-token")
+print(client.query("What is the inspection interval?"))
+```
+
+When `api_token` is omitted, the client sends unauthenticated requests.
+
+### Document-scoped queries
+
+```python
+response = client.query(
+    "What safety step is required?",
+    document_ids=["doc_id_1", "doc_id_2"]
+)
+```
+
+When `document_ids` is provided, the runtime only considers chunks from those documents.

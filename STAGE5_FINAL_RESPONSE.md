@@ -200,8 +200,8 @@ From Stage 4 report (on synthetic data):
   - POST /health (service readiness)
   - POST /ingest (document upload)
   - POST /query (natural language queries)
-  - GET /sources (list documents)
-  - DELETE /delete/{doc_id} (document deletion)
+  - GET /documents (list documents)
+  - DELETE /documents/{document_id} (document deletion)
 - Status: Documented; ready for pilot
 
 **35. Observability Result**
