@@ -8,16 +8,20 @@ launcher and the checks agree on one bounded, verified choice.
 
 Checks:
 - Python version (3.10+)
-- Required checkpoint/tokenizer files exist
 - Required source modules and demo assets exist
+- Checkpoint/tokenizer assets documented (external, not in Git; see README)
 - Bounded port selection: 7860 first, then 7861-7870; never arbitrary ports
 - Docker availability is reported optionally (--docker), never required
+- Runtime directories and configuration validity
 
-Note on checkpoints: ``checkpoints/embedding_model.pt`` is intentionally NOT
-required here. It is an offline index-building artifact only -- the runtime
-loads the prebuilt retrieval index and never loads this binary at startup or
-query time (see ``src/runtime_architecture.py``, ModelSpec "embedding-model":
-"COMPATIBLE BUT UNUSED").
+Note on checkpoints: ``checkpoints/v2/reasoning_model_v1.pt`` is external to
+Git and governed by the RALG Source-Available Non-Commercial License v1.0.
+It is not auto-downloaded. Place the checkpoint bundle under
+``checkpoints/v2/`` before running the demo if model-backed answers are
+required. The core pipeline can run extractive/lookup answers without it.
+
+Note on tokenizer: ``data/tokenizer_v2.json`` is tracked in Git and always
+required. ``data/tokenizer.json`` is the legacy fallback.
 """
 from __future__ import annotations
 
@@ -36,7 +40,6 @@ REQUIRED_FILES = [
     "src/webui/app.py",
     "src/api_server.py",
     "data/tokenizer_v2.json",
-    "checkpoints/v2/reasoning_model_v1.pt",
     "docs/BUYER_DEMO_GUIDE.md",
 ]
 
@@ -44,7 +47,12 @@ REQUIRED_CHECKPOINT_DIRS = [
     "checkpoints/v2",
 ]
 
+RECOMMENDED_FILES = [
+    "data/tokenizer.json",
+]
+
 PREFERRED_PORT = 7860
+PORT_RANGE_START = 7860
 PORT_RANGE_END = 7870  # allowed fallback window: 7861-7870
 
 
@@ -55,7 +63,9 @@ def check_python() -> dict:
         "name": "python_version",
         "pass": ok,
         "detail": f"{version.major}.{version.minor}.{version.micro}",
-        "action": None if ok else "Install Python 3.10 or newer and re-run.",
+        "action": ("Install Python 3.10 or newer and re-run."
+                   if not ok
+                   else None),
     }
 
 
@@ -77,7 +87,21 @@ def check_files(root: Path = ROOT) -> list[dict]:
             "pass": path.is_dir(),
             "detail": str(path),
             "action": None if path.is_dir()
-            else f"Missing checkpoint directory {rel}; the external model bundle must be placed there first.",
+            else ("Missing checkpoint directory checkpoints/v2. "
+                  "Place the external model bundle there, or run without it "
+                  "for extractive/lookup answers only. See README for "
+                  "license-governed checkpoint terms."),
+        })
+    for rel in RECOMMENDED_FILES:
+        path = root / rel
+        results.append({
+            "name": f"file_present:{rel}",
+            "pass": path.is_file(),
+            "detail": str(path),
+            "action": None if path.is_file()
+            else f"Recommended file not found: {rel}. "
+                  "Not required for extractive operation; see README for "
+                  "checkpoint licensing details.",
         })
     return results
 
@@ -118,7 +142,8 @@ def port_available(port: int, host: str = "127.0.0.1") -> bool:
             return False
 
 
-def select_port(preferred: int = PREFERRED_PORT, range_end: int = PORT_RANGE_END) -> int | None:
+def select_port(preferred: int = PREFERRED_PORT, range_start: int = PORT_RANGE_START,
+                range_end: int = PORT_RANGE_END) -> int | None:
     """First available port in the bounded allowed window, else None."""
     for port in range(preferred, range_end + 1):
         if port_available(port):
@@ -132,14 +157,14 @@ def check_webui_port() -> dict:
         "name": "webui_port_available",
         "pass": selected is not None,
         "detail": (
-            f"selected {selected} (tried {PREFERRED_PORT}-{PORT_RANGE_END})"
+            f"selected {selected} (tried {PORT_RANGE_START}-{PORT_RANGE_END})"
             if selected is not None
-            else f"no available port in allowed range {PREFERRED_PORT}-{PORT_RANGE_END}"
+            else f"no available port in allowed range {PORT_RANGE_START}-{PORT_RANGE_END}"
         ),
         "selected_port": selected,
         "webui_url": f"http://127.0.0.1:{selected}" if selected is not None else None,
         "action": None if selected is not None
-        else f"Free one of ports {PREFERRED_PORT}-{PORT_RANGE_END} on 127.0.0.1 "
+        else f"Free one of ports {PORT_RANGE_START}-{PORT_RANGE_END} on 127.0.0.1 "
              "(this tool never terminates other processes), then re-run.",
     }
 
