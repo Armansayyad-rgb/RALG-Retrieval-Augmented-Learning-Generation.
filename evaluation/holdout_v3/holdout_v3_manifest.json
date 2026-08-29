@@ -1,6 +1,7 @@
 {
   "benchmark_version": "holdout_v3.0.0",
-  "status": "DRAFT / NOT FROZEN",
+  "status": "FROZEN",
+  "freeze_date": "2026-08-29",
   "generated_from": "verified upstream source artifacts with deterministic normalization",
   "case_count": 120,
   "category_counts": {
@@ -15,10 +16,43 @@
     "misleading_overlap": 10,
     "conditional_or_qualified": 5
   },
-  "retrieval_supported_cases": 70,
-  "rejection_cases": 45,
-  "conditional_cases": 5,
+  "denominators": {
+    "total": 120,
+    "retrieval_supported": 75,
+    "answer_supported": 70,
+    "qualified": 5,
+    "rejection": 45,
+    "note": "retrieval_supported = all categories with evidence spans (75). answer_supported = ordinary support categories excluding qualified (70). qualified = conditional_or_qualified scored separately (5). rejection = unsupported + false_premise + misleading_overlap (45)."
+  },
+  "metric_formulas": {
+    "Recall@K": "|relevant expected documents in top K| / |relevant expected documents|, macro-averaged",
+    "HitRate@K": "1 if at least one relevant document in top K, else 0, macro-averaged",
+    "MRR": "1 / rank of first relevant document (0 if none), macro-averaged",
+    "supported_accuracy": "supported_correct / answer_supported, with Wilson 95% CI",
+    "correct_rejection": "correct_rejection / rejection, with Wilson 95% CI",
+    "qualified_accuracy": "qualified_correct / qualified (separate metric)"
+  },
   "source_count": 7,
-  "sources_manifest_sha256": "d2c1efb65767c1ca63c575ee0d3ca667be077e0222bf94a5b2ba289f1cef49b8",
-  "independence_statement": "No holdout_v1 PEP sources, holdout_v2 authored notes, Stage 5 RFC documents, evaluation_suite_v3 inline cases, or production knowledge corpus data are reused. All 120 cases derived exclusively from verified upstream source artifacts committed under evaluation/holdout_v3/sources/."
+  "sources_manifest_sha256": "3c6a767f55a724abb82ecfac494fef25c87805c0e650b3cb304f5c85f3f8c421",
+  "benchmark_sha256": "4367d88b16286845dce9ae4941c9089b7c8fe4f68259d276c01ffabc40a41ce2",
+  "evaluator_sha256": "65d23eef535ac6acb78f81596515d546a8ae26c3c2c7b1f2bb54cebedb71050d",
+  "evaluator_executed_before_freeze": false,
+  "independence_statement": "No holdout_v1 PEP sources, holdout_v2 authored notes, Stage 5 RFC documents, evaluation_suite_v3 inline cases, or production knowledge corpus data are reused. All 120 cases derived exclusively from verified upstream source artifacts committed under evaluation/holdout_v3/sources/.",
+  "contamination_review": {
+    "exact_duplicates": 0,
+    "high_token_similarity": 0,
+    "high_char_similarity": 0,
+    "same_domain_overlaps": 26,
+    "shared_generic_stems": 4121,
+    "verdict": "PASS",
+    "note": "26 same-domain overlaps are expected (V3 and V1/V2 cover overlapping technical domains). These are semantically different questions with Jaccard < 0.5. 4121 shared generic stems (e.g., 'what is the') are question-pattern overlap, not contamination."
+  },
+  "remediation_log": {
+    "unsupported_question_replacement": "10 duplicate V2 questions (v3_071-v3_080) replaced with new unique questions verified against all 426 existing questions across V1/V2/eval_suite",
+    "contamination_checker_rewrite": "Classified output (EXACT_DUPLICATE / HIGH_TOKEN_SIMILARITY / HIGH_CHAR_SIMILARITY / SHARED_GENERIC_STEM / SAME_DOMAIN_OVERLAP / CLEAN) replacing flat thresholds",
+    "evaluator_metrics_fix": "Implemented conventional Recall@K, HitRate@K, MRR with macro-averaging",
+    "single_shot_protection": "Pre-run exists() check + exclusive create mode ('x') for result file",
+    "error_accounting": "Per-case try/except with error recording; metrics null when incomplete",
+    "qualified_category": "conditional_or_qualified scored separately as qualified-support"
+  }
 }

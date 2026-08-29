@@ -48,9 +48,9 @@ ALL = []
 # ── SUPPORTED (15) ──────────────────────────────────────────────
 ALL += [
     case("v3_001","supported",["sqlite_wal_mode"],["PRAGMA journal_mode=WAL;"],"What SQL command activates WAL mode in SQLite?","PRAGMA journal_mode=WAL;"),
-    case("v3_002","supported",["postgresql_vacuuming"],["dead row"],"What PostgreSQL VACUUM removes?","dead row versions"),
-    case("v3_003","supported",["kubernetes_probes"],["readiness probe 15 seconds after the"],"Which Kubernetes probe controls traffic reception?","readiness probe"),
-    case("v3_004","supported",["systemd_unit"],["Wants="],"Which systemd dependency is weaker than Requires=?","Wants="),
+    case("v3_002","supported",["postgresql_vacuuming"],["visibility map"],"What PostgreSQL structure speeds index-only scans?","visibility map"),
+    case("v3_003","supported",["kubernetes_probes"],["initialDelaySeconds"],"Which Kubernetes field delays the first probe?","initialDelaySeconds"),
+    case("v3_004","supported",["systemd_unit"],["%n"],"Which systemd specifier expands to the full unit name?","%n"),
     case("v3_005","supported",["otel_propagators"],["TextMap Propagator"],"What propagator type reads and writes context data?","TextMap Propagator"),
     case("v3_006","supported",["oci_image_layout"],["oci-layout"],"Which file MUST exist in an OCI image layout?","oci-layout"),
     case("v3_007","supported",["cmake_presets"],["CMakeUserPresets.json"],"Which CMake file should NOT be tracked in VCS?","CMakeUserPresets.json"),
@@ -59,9 +59,9 @@ ALL += [
     case("v3_010","supported",["kubernetes_probes"],["Startup Probes"],"Which probe protects slow-starting containers?","startup probe"),
     case("v3_011","supported",["systemd_unit"],["After="],"Which directive orders a unit after another?","After="),
     case("v3_012","supported",["oci_image_layout"],["index.json"],"Which OCI file discovers manifests?","index.json"),
-    case("v3_013","supported",["cmake_presets"],["configurePresets"],"Which preset type is required for build/test presets?","configurePresets"),
+    case("v3_013","supported",["cmake_presets"],["inherits"],"Which CMake preset field declares inheritance?","inherits"),
     case("v3_014","supported",["otel_propagators"],["Inject"],"Which operation writes context to a carrier?","Inject"),
-    case("v3_015","supported",["systemd_unit"],["Before="],"Which directive orders a unit before another?","Before="),
+    case("v3_015","supported",["systemd_unit"],["Before="],"Which systemd ordering relationship schedules a unit earlier?","Before="),
 ]
 
 # ── PARAPHRASED (15) ────────────────────────────────────────────
@@ -78,7 +78,7 @@ ALL += [
     case("v3_025","paraphrased",["kubernetes_probes"],["liveness probes to detect and remedy"],"What does a liveness probe verify?","detects and remedies failures"),
     case("v3_026","paraphrased",["otel_propagators"],["Extract"],"What does Extract do?","reads context from a carrier"),
     case("v3_027","paraphrased",["systemd_unit"],["Conflicts="],"Which systemd setting prevents two units from running simultaneously?","Conflicts="),
-    case("v3_028","paraphrased",["oci_image_layout"],["imageLayoutVersion"],"What field identifies layout version?","imageLayoutVersion"),
+    case("v3_028","paraphrased",["oci_image_layout"],["unknown MUST NOT generate an error"],"What happens when an OCI layout encounters an unknown mediaType?","It must not generate an error"),
     case("v3_029","paraphrased",["cmake_presets"],["buildPresets"],"What adds build-specific arguments?","build presets"),
     case("v3_030","paraphrased",["sqlite_wal_mode"],["wal-index"],"What structure helps WAL readers find pages fast?","wal-index"),
 ]
@@ -96,7 +96,7 @@ ALL += [
     case("v3_039","procedural",["postgresql_vacuuming"],["ANALYZE"],"When to update planner statistics?","Run ANALYZE after large data changes"),
     case("v3_040","procedural",["kubernetes_probes"],["startup probe"],"How to configure a startup probe?","Use startup probe with failureThreshold"),
     case("v3_041","procedural",["systemd_unit"],["Alias="],"How do you create a runtime symlink for a systemd unit?","Add Alias= in [Install]"),
-    case("v3_042","procedural",["oci_image_layout"],["MUST exist"],"What must be in an OCI image layout?","oci-layout, index.json, blobs/"),
+    case("v3_042","procedural",["oci_image_layout"],["MUST exist"],"What components make up the minimum OCI layout structure?","oci-layout, index.json, blobs/"),
     case("v3_043","procedural",["otel_propagators"],["Composite"],"How to configure multiple propagators?","Use a Composite Propagator"),
     case("v3_044","procedural",["cmake_presets"],["testPresets"],"How to configure a test preset?","Define testPresets referencing configurePreset"),
     case("v3_045","procedural",["sqlite_wal_mode"],["WAL file is deleted automatically"],"How is the WAL file cleaned up?","Deleted when last connection closes"),
@@ -141,16 +141,16 @@ ALL += [
 
 # ── UNSUPPORTED (20) ────────────────────────────────────────────
 for i, q in enumerate([
-    "What is the torque specification for a 2025 electric vehicle wheel lug nut?",
-    "How does a BGP route reflector choose among equal local-preference paths?",
-    "Which ISO 27001 annex control maps to immutable S3 buckets?",
-    "What opcode encodes an ARMv8 exclusive load instruction?",
-    "How should a hospital calculate a pediatric medication dose?",
-    "What is the rated ampacity of 10 AWG copper wire in conduit?",
-    "How does a JPEG decoder reconstruct chroma subsampling?",
-    "What is the default retention policy for a Microsoft Purview label?",
-    "Which aviation checklist item arms an A320 autothrottle?",
-    "How do you calculate a reinforced concrete beam shear stirrup spacing?",
+    "What is the RTT variance calculation in TCP cubic congestion control?",
+    "How does a PLC ladder logic scan cycle execute outputs?",
+    "What NIST 800-53 control mandates write-once audit records?",
+    "What is the RISC-V compressed instruction encoding for C.JR?",
+    "How does an MRI T2-weighted sequence differentiate tissue types?",
+    "What is the NEC ampacity derating factor for 3 conductors in conduit?",
+    "How does a PID controller compute derivative windup prevention?",
+    "What is the default lease duration for a DHCPv6 IA_NA option?",
+    "Which ICAO phraseology clears an aircraft for visual approach?",
+    "How does a centrifugal pump calculate net positive suction head?",
     "What is the chemical formula for potassium permanganate?",
     "How does the Higgs field give mass to elementary particles?",
     "What is the blood oxygen saturation level for a healthy adult at sea level?",
@@ -199,7 +199,7 @@ ALL += [
 
 # ── CONDITIONAL_OR_QUALIFIED (5) ────────────────────────────────
 ALL += [
-    case("v3_116","conditional_or_qualified",["sqlite_wal_mode"],["WAL does not work over a network filesystem"],"Can SQLite WAL work across machines?","No, requires all processes on same host",None),
+    case("v3_116","conditional_or_qualified",["sqlite_wal_mode"],["WAL does not work over a network filesystem"],"Under what host constraint can SQLite WAL operate?","No, requires all processes on same host",None),
     case("v3_117","conditional_or_qualified",["postgresql_vacuuming"],["autovacuum_max_workers"],"Will autovacuum always prevent wraparound?","Only if tables are vacuumed before 2B transactions",None),
     case("v3_118","conditional_or_qualified",["kubernetes_probes"],["200 and less than 400 indicates success"],"Does HTTP probe succeed for any response?","Only for status >= 200 and < 400",None),
     case("v3_119","conditional_or_qualified",["otel_propagators"],["no-op propagators"],"Does OTel propagate context without config?","No, no-op by default; requires configuration",None),
