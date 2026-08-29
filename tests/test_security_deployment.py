@@ -9,6 +9,7 @@ suite that these complement.
 """
 
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,6 +21,7 @@ if str(PROJECT_ROOT) not in __import__("sys").path:
     __import__("sys").path.insert(0, str(PROJECT_ROOT))
 
 from src import api_server
+from src.retriever_v2 import build_index
 
 
 class TestSecurityDeploymentProfile(unittest.TestCase):
@@ -35,42 +37,63 @@ class TestSecurityDeploymentProfile(unittest.TestCase):
         assert response.status_code == 422
         assert response.json() == {"error": "Invalid request."}
 
+    @contextmanager
+    def _no_auth(self):
+        original = api_server.API_TOKEN
+        api_server.API_TOKEN = None
+        try:
+            yield
+        finally:
+            api_server.API_TOKEN = original
+
     # ------------------------------------------------------------------
     # 1. Auth disabled: local-development compatibility
     # -------------------------------------------------------------------------
     def test_unauthenticated_access_works_when_token_not_set(self):
         """When API_TOKEN is unset, all endpoints remain usable without a token."""
-        # /health should always be public
-        resp = self.client.get("/health")
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), {"status": "ok"})
+        with self._no_auth(), patch.object(
+            api_server, "get_pipeline", return_value={
+                "device": "cpu",
+                "model": "mock",
+                "tokenizer": "mock",
+                "chunks": [],
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+                "retrieval_index": build_index([]),
+                "document_frequency": {},
+            }
+        ):
+            # /health should always be public
+            resp = self.client.get("/health")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json(), {"status": "ok"})
 
-        # /ready should always be public
-        resp = self.client.get("/ready")
-        self.assertIn(resp.status_code, (200, 503))
+            # /ready should always be public
+            resp = self.client.get("/ready")
+            self.assertIn(resp.status_code, (200, 503))
 
-        # /stats should work without auth
-        resp = self.client.get("/stats")
-        self.assertEqual(resp.status_code, 200)
+            # /stats should work without auth
+            resp = self.client.get("/stats")
+            self.assertEqual(resp.status_code, 200)
 
-        # /documents should work without auth
-        resp = self.client.get("/documents")
-        self.assertEqual(resp.status_code, 200)
+            # /documents should work without auth
+            resp = self.client.get("/documents")
+            self.assertEqual(resp.status_code, 200)
 
-        # /query without token should work when API_TOKEN not set
-        resp = self.client.post(
-            "/query",
-            json={"question": "test question"},
-        )
-        # Should not 401 when no token is configured
-        self.assertNotEqual(resp.status_code, 401, "Auth should be disabled when API_TOKEN is not set")
+            # /query without token should work when API_TOKEN not set
+            resp = self.client.post(
+                "/query",
+                json={"question": "test question"},
+            )
+            # Should not 401 when no token is configured
+            self.assertNotEqual(resp.status_code, 401, "Auth should be disabled when API_TOKEN is not set")
 
-        # /ingest without token should work when API_TOKEN not set
-        resp = self.client.post(
-            "/ingest",
-            json={"text": "test text", "document_name": "test_doc"},
-        )
-        self.assertNotEqual(resp.status_code, 401, "Auth should be disabled when API_TOKEN is not set")
+            # /ingest without token should work when API_TOKEN not set
+            resp = self.client.post(
+                "/ingest",
+                json={"text": "test text", "document_name": "test_doc"},
+            )
+            self.assertNotEqual(resp.status_code, 401, "Auth should be disabled when API_TOKEN is not set")
 
     # ------------------------------------------------------------------
     # 2. Auth enabled: bearer token required
@@ -178,16 +201,25 @@ class TestSecurityDeploymentProfile(unittest.TestCase):
     # ------------------------------------------------------------------
     def test_unsafe_filename_sanitized(self):
         """Unsafe characters in document names are sanitized."""
-        # Upload a file with path-traversal in the name
-        resp = self.client.post(
-            "/ingest",
-            json={
-                "text": "test content",
-                "document_name": "../../../etc/passwd",
-            },
-        )
-        # Should not crash; name should be sanitized
-        self.assertIn(resp.status_code, (200, 400, 422))
+        with self._no_auth(), patch.object(
+            api_server, "get_pipeline", return_value={
+                "chunks": [],
+                "retrieval_index": build_index([]),
+                "document_frequency": {},
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+            }
+        ):
+            # Upload a file with path-traversal in the name
+            resp = self.client.post(
+                "/ingest",
+                json={
+                    "text": "test content",
+                    "document_name": "../../../etc/passwd",
+                },
+            )
+            # Should not crash; name should be sanitized
+            self.assertIn(resp.status_code, (200, 400, 422))
 
     # ------------------------------------------------------------------
     # 6. No secret echo — ensure tokens/credentials not reflected in responses
@@ -206,18 +238,19 @@ class TestSecurityDeploymentProfile(unittest.TestCase):
 
     def test_no_stack_trace_leak(self):
         """Server errors do not leak stack traces or internal paths."""
-        private_detail = "private traceback detail /app/secret/path"
+        with self._no_auth():
+            private_detail = "private traceback detail /app/secret/path"
 
-        def fail(*args, **kwargs):
-            raise RuntimeError(private_detail)
+            def fail(*args, **kwargs):
+                raise RuntimeError(private_detail)
 
-        with patch.object(api_server, "get_pipeline", return_value={}), patch.object(
-            api_server, "answer_question", side_effect=fail
-        ):
-            resp = self.client.post("/query", json={"question": "valid question"})
-        self.assertEqual(resp.status_code, 500)
-        self.assertEqual(resp.json()["error"], "Request processing failed.")
-        self.assertNotIn(private_detail, resp.text)
+            with patch.object(api_server, "get_pipeline", return_value={}), patch.object(
+                api_server, "answer_question", side_effect=fail
+            ):
+                resp = self.client.post("/query", json={"question": "valid question"})
+            self.assertEqual(resp.status_code, 500)
+            self.assertEqual(resp.json()["error"], "Request processing failed.")
+            self.assertNotIn(private_detail, resp.text)
 
     # ------------------------------------------------------------------
     # 7. Safe error responses (consistent formatting)
@@ -238,64 +271,66 @@ class TestSecurityDeploymentProfile(unittest.TestCase):
     @patch.object(api_server, "answer_question")
     def test_legitimate_query_behavior(self, mock_answer, mock_get_pipeline):
         """Existing legitimate query behavior is not broken by security changes."""
-        # Set up mock pipeline
-        mock_pipeline = {
-            "model": "mock-model",
-            "tokenizer": "mock-tokenizer",
-            "chunks": [],
-            "uploaded_docs": [],
-            "runtime_persistence": False,
-        }
-        mock_get_pipeline.return_value = mock_pipeline
+        with self._no_auth():
+            # Set up mock pipeline
+            mock_pipeline = {
+                "model": "mock-model",
+                "tokenizer": "mock-tokenizer",
+                "chunks": [],
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+            }
+            mock_get_pipeline.return_value = mock_pipeline
 
-        mock_answer.return_value = type(
-            "Execution",
-            (object,),
-            {
-                "answer": "I cannot verify that.",
-                "supported": False,
-                "answer_type": "abstention",
-                "confidence": None,
-                "sources": [],
-                "traceable": False,
-                "conflict": False,
-                "provenance": [],
-                "error": None,
-                "observability": {"latency_ms": 120.0},
-            },
-        )()
+            mock_answer.return_value = type(
+                "Execution",
+                (object,),
+                {
+                    "answer": "I cannot verify that.",
+                    "supported": False,
+                    "answer_type": "abstention",
+                    "confidence": None,
+                    "sources": [],
+                    "traceable": False,
+                    "conflict": False,
+                    "provenance": [],
+                    "error": None,
+                    "observability": {"latency_ms": 120.0},
+                },
+            )()
 
-        mock_get_pipeline.return_value = mock_pipeline
-        resp = self.client.post(
-            "/query",
-            json={"question": "What is this?", "top_k": 5},
-        )
-        # Should get a valid response (may be abstention if no evidence)
-        self.assertIn(resp.status_code, (200, 500))
-        if resp.status_code == 200:
-            body = resp.json()
-            self.assertIn("answer", body)
-            self.assertIn("supported", body)
+            mock_get_pipeline.return_value = mock_pipeline
+            resp = self.client.post(
+                "/query",
+                json={"question": "What is this?", "top_k": 5},
+            )
+            # Should get a valid response (may be abstention if no evidence)
+            self.assertIn(resp.status_code, (200, 500))
+            if resp.status_code == 200:
+                body = resp.json()
+                self.assertIn("answer", body)
+                self.assertIn("supported", body)
 
     @patch.object(api_server, "get_pipeline")
     @patch.object(api_server, "answer_question")
     def test_legitimate_ingest_behavior(self, mock_answer, mock_get_pipeline):
         """Existing legitimate ingest behavior is not broken by security changes."""
-        mock_pipeline = {
-            "chunks": [],
-            "retrieval_index": {},
-            "document_frequency": {},
-            "uploaded_docs": [],
-            "runtime_persistence": False,
-        }
-        mock_get_pipeline.return_value = mock_pipeline
+        with self._no_auth():
+            mock_pipeline = {
+                "chunks": [],
+                "retrieval_index": build_index([]),
+                "document_frequency": {},
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+            }
+            mock_get_pipeline.return_value = mock_pipeline
 
-        resp = self.client.post(
-            "/ingest",
-            json={"document_name": "my_doc", "text": "Pump pressure is 10 bar."},
-        )
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn("document_id", resp.json())
+            resp = self.client.post(
+                "/ingest",
+                json={"document_name": "my_doc", "text": "Pump pressure is 10 bar."},
+            )
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("document_id", resp.json())
 
 
 if __name__ == "__main__":

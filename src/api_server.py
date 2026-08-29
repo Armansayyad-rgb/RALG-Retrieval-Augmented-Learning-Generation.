@@ -25,15 +25,14 @@ Health check:
     curl http://127.0.0.1:8000/health
 """
 
-from __future__ import annotations
-
 import os
 import sys
 import time
 import logging
+import hmac
 from pathlib import Path
-from threading import RLock
-from typing import Any, Optional, Union
+from threading import RLock, Lock
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
@@ -60,23 +59,90 @@ from webui.document_processor import (
     has_uploaded_document,
 )  # noqa: E402
 
-MAX_API_REQUEST_BYTES = 1 * 1024 * 1024
+_MAX_API_REQUEST_BYTES = 1 * 1024 * 1024
 MAX_INGEST_TEXT_CHARS = 500_000
 MAX_DOCUMENT_NAME_CHARS = 255
 MAX_QUESTION_CHARS = 4_096
 _SAFE_INTERNAL_ERROR = "Request processing failed."
 _LOGGER = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Optional API authentication (single-tenant bearer token)
-# Set API_TOKEN env var to require bearer token on all non-health/ready endpoints.
-# When unset, all endpoints work as before (local-development compatibility).
-# ---------------------------------------------------------------------------
-API_TOKEN = os.getenv("API_TOKEN")  # type: ignore[str] | None
+# Public constant for request size limit (used by tests and middleware)
+MAX_API_REQUEST_BYTES = _MAX_API_REQUEST_BYTES
 
-# CORS configuration — intentionally restrictive defaults for single-tenant deployments.
-# Deployments that need CORS should set CORS_ORIGINS env var.
-# CORS_CREDENTIALS defaults to false — do NOT default to unsafe wildcard cred configs.
+# Rate-limiting state (thread-safe, process-local)
+_request_counts: dict[str, list[float]] = {}
+_rate_lock = Lock()
+
+
+# ---------------------------------------------------------------------------
+# RequestSizeLimitMiddleware — from master; reject oversized API bodies before
+# JSON parsing or model work.
+# ---------------------------------------------------------------------------
+
+class RequestSizeLimitMiddleware:
+    """Reject oversized API bodies before JSON parsing or model work."""
+
+    def __init__(self, app: Any, max_bytes: int) -> None:
+        self.app = app
+        self.max_bytes = max_bytes
+
+    async def __call__(self, scope: dict, receive: Any, send: Any) -> None:
+        if scope["type"] != "http" or scope.get("method") != "POST":
+            await self.app(scope, receive, send)
+            return
+
+        for key, value in scope.get("headers", []):
+            if key == b"content-length":
+                try:
+                    if int(value) > self.max_bytes:
+                        await self._reject(scope, send)
+                        return
+                except ValueError:
+                    await self._reject(scope, send, status_code=400, message="Invalid request.")
+                    return
+
+        messages = []
+        total = 0
+        while True:
+            message = await receive()
+            messages.append(message)
+            if message["type"] == "http.request":
+                total += len(message.get("body", b""))
+                if total > self.max_bytes:
+                    await self._reject(scope, send)
+                    return
+                if not message.get("more_body", False):
+                    break
+            elif message["type"] == "http.disconnect":
+                break
+
+        async def replay() -> dict:
+            return messages.pop(0) if messages else {"type": "http.disconnect"}
+
+        await self.app(scope, replay, send)
+
+    @staticmethod
+    async def _reject(
+        scope: dict,
+        send: Any,
+        status_code: int = 413,
+        message: str = "Request body too large.",
+    ) -> None:
+        response = JSONResponse(status_code=status_code, content={"error": message})
+        await response(scope, None, send)
+
+
+app = FastAPI(
+    title="RALG Engine API",
+    version="0.1.0",
+    description="Local evidence-grounded question answering API.",
+)
+
+app.add_middleware(RequestSizeLimitMiddleware, max_bytes=MAX_API_REQUEST_BYTES)
+
+
+# ---------------------------------------------------------------------------
+# CORS middleware — configured via environment variables; no wildcard creds default
 # ---------------------------------------------------------------------------
 CORS_ORIGINS: list[str] = (
     os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else []
@@ -87,24 +153,6 @@ CORS_METHODS: list[str] = os.getenv(
 ).split(",")
 CORS_HEADERS: list[str] = os.getenv("CORS_HEADERS", "Authorization,Content-Type").split(",")
 
-# Simple in-process rate/resource safeguard (active only when API_TOKEN is set).
-_request_counts: dict[str, list[float]] = {}
-
-
-# ---------------------------------------------------------------------------
-# FastAPI application instance
-# ---------------------------------------------------------------------------
-
-app = FastAPI(
-    title="RALG Engine API",
-    version="0.1.0",
-    description="Local evidence-grounded question answering API.",
-)
-
-
-# ---------------------------------------------------------------------------
-# CORS middleware — configured via environment variables; no wildcard creds default
-# ---------------------------------------------------------------------------
 if CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
@@ -116,6 +164,17 @@ if CORS_ORIGINS:
 # When CORS_ORIGINS is empty we deliberately do NOT add the middleware,
 # avoiding a default unsafe wildcard credential configuration.
 # Deployments that need CORS should set the CORS_ORIGINS environment variable.
+
+
+# ---------------------------------------------------------------------------
+# Optional API authentication (single-tenant bearer token)
+# Set API_TOKEN env var to require bearer token on all non-health/ready endpoints.
+# When unset, all endpoints work as before (local-development compatibility).
+# ---------------------------------------------------------------------------
+API_TOKEN = os.getenv("API_TOKEN")
+
+# Constant-time token comparison helper
+_configured_token = API_TOKEN
 
 
 # ---------------------------------------------------------------------------
@@ -194,12 +253,35 @@ class StatsResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Security headers middleware — always active on every response
+# RequestValidationError handler — from master; sanitized 422 response
 # ---------------------------------------------------------------------------
+
+@app.exception_handler(RequestValidationError)
+async def validation_error_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    return JSONResponse(status_code=422, content={"error": "Invalid request."})
+
+
+# ---------------------------------------------------------------------------
+# Internal error handler
+# ---------------------------------------------------------------------------
+
+@app.exception_handler(Exception)
+async def internal_error_handler(request: Request, exc: Exception) -> JSONResponse:
+    _LOGGER.exception("Unhandled API error", exc_info=exc)
+    return JSONResponse(status_code=500, content={"error": _SAFE_INTERNAL_ERROR})
+
+
+# ---------------------------------------------------------------------------
+# Security headers middleware — always active on every response
+# FIX: call_next must receive the incoming Request, not a fresh Response()
+# ---------------------------------------------------------------------------
+
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next) -> Response:
     """Add security hardening headers to every HTTP response."""
-    response: Response = await call_next(Response())
+    response: Response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
@@ -210,6 +292,7 @@ async def security_headers_middleware(request: Request, call_next) -> Response:
 # ---------------------------------------------------------------------------
 # Simple in-process rate-limiting safeguard (active only when API_TOKEN set)
 # ---------------------------------------------------------------------------
+
 async def _rate_limit_check(scope: dict, max_requests: int = 60, window_sec: int = 60) -> bool:
     """Best-effort single-process rate safeguard.
 
@@ -228,14 +311,28 @@ async def _rate_limit_check(scope: dict, max_requests: int = 60, window_sec: int
     window = [ts for ts in window if now - ts < window_sec]
     if len(window) >= max_requests:
         return False
-    window.append(now)
-    _request_counts[client_ip] = window
+    with _rate_lock:
+        window = [ts for ts in _request_counts.get(client_ip, []) if now - ts < window_sec]
+        if len(window) >= max_requests:
+            return False
+        window.append(now)
+        _request_counts[client_ip] = window
     return True
+
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next) -> Response:
+    if request.url.path in ("/health", "/ready"):
+        return await call_next(request)
+    if not await _rate_limit_check(request.scope):
+        return JSONResponse(status_code=429, content={"error": "Rate limit exceeded."})
+    return await call_next(request)
 
 
 # ---------------------------------------------------------------------------
 # Bearer token authentication check for single-tenant deployment
 # ---------------------------------------------------------------------------
+
 def _bearer_token_check(request: Request) -> Optional[JSONResponse]:
     """Check bearer token authorization.
 
@@ -244,7 +341,9 @@ def _bearer_token_check(request: Request) -> Optional[JSONResponse]:
 
     - When API_TOKEN is unset: no check; returns None (local-development mode).
     - When API_TOKEN is set: requires valid Bearer token; returns 401 on failure.
+    Uses constant-time comparison for the token value.
     """
+
     # If no API_TOKEN configured, local-development mode: all requests allowed
     if not API_TOKEN:
         return None
@@ -264,7 +363,7 @@ def _bearer_token_check(request: Request) -> Optional[JSONResponse]:
         )
 
     token = auth_header[len("Bearer "):]
-    if token != API_TOKEN:
+    if not hmac.compare_digest(token, API_TOKEN):
         return JSONResponse(
             status_code=401,
             content={"error": "Unauthorized. Invalid API token."},
@@ -351,10 +450,11 @@ def stats() -> StatsResponse:
 
 # ---------------------------------------------------------------------------
 # Route: /documents — protected when API_TOKEN active; document_id validated
+# FIX: inject FastAPI Request explicitly
 # ---------------------------------------------------------------------------
 
 @app.get("/documents", response_model=list[dict[str, Any]])
-def documents() -> list[dict[str, Any]]:
+def documents(request: Request) -> list[dict[str, Any]]:
     """List safe public metadata for runtime-uploaded documents."""
     # Bearer token check when API_TOKEN is set
     error = _bearer_token_check(request)
@@ -368,7 +468,7 @@ def documents() -> list[dict[str, Any]]:
 
 
 @app.delete("/documents/{document_id}", response_model=DocumentDeleteResponse)
-def delete_document(document_id: str) -> DocumentDeleteResponse:
+def delete_document(document_id: str, request: Request) -> DocumentDeleteResponse:
     """Delete one runtime document and its persisted content."""
     # Validate document_id format — reject path-traversal or injection patterns
     if ".." in document_id or document_id.startswith("/") or "\\" in document_id:
@@ -389,10 +489,11 @@ def delete_document(document_id: str) -> DocumentDeleteResponse:
 
 # ---------------------------------------------------------------------------
 # Route: /query — protected when API_TOKEN active
+# FIX: separate payload model from Request auth parameter
 # ---------------------------------------------------------------------------
 
 @app.post("/query", response_model=QueryResponse)
-def query(request: QueryRequest) -> QueryResponse:
+def query(payload: QueryRequest, request: Request) -> QueryResponse:
     # Bearer token check when API_TOKEN is set
     error = _bearer_token_check(request)
     if error:
@@ -404,12 +505,12 @@ def query(request: QueryRequest) -> QueryResponse:
     try:
         execution = execute_runtime(
             pipeline,
-            request.question.strip(),
-            request.top_k,
+            payload.question.strip(),
+            payload.top_k,
             answer_fn=answer_question,
             contract_fn=build_answer_contract,
             sources_fn=collect_sources,
-            document_ids=request.document_ids,
+            document_ids=payload.document_ids,
         )
 
         return QueryResponse(
@@ -417,7 +518,7 @@ def query(request: QueryRequest) -> QueryResponse:
             supported=execution.supported,
             confidence=execution.confidence,
             answer_type=execution.answer_type,
-            sources=execution.sources if request.include_sources else [],
+            sources=execution.sources if payload.include_sources else [],
             latency_ms=execution.observability["latency_ms"],
             traceable=execution.traceable,
             conflict=execution.conflict,
@@ -435,10 +536,11 @@ def query(request: QueryRequest) -> QueryResponse:
 
 # ---------------------------------------------------------------------------
 # Route: /ingest — protected when API_TOKEN active
+# FIX: separate payload model from Request auth parameter
 # ---------------------------------------------------------------------------
 
 @app.post("/ingest", response_model=IngestResponse)
-def ingest(request: IngestRequest) -> IngestResponse:
+def ingest(payload: IngestRequest, request: Request) -> IngestResponse:
     # Bearer token check when API_TOKEN is set
     error = _bearer_token_check(request)
     if error:
@@ -446,12 +548,12 @@ def ingest(request: IngestRequest) -> IngestResponse:
 
     pipeline = get_pipeline()
 
-    doc_name = request.document_name or f"doc_{int(time.time())}"
+    doc_name = payload.document_name or f"doc_{int(time.time())}"
     doc = UploadedDocument(
         name=doc_name,
         path=Path(doc_name),
         ext=".txt",
-        text=request.text,
+        text=payload.text,
     )
 
     doc.chunks = chunk_text(
@@ -496,4 +598,4 @@ def get_pipeline() -> dict[str, Any]:
                 _INIT_ERROR = exc
                 _LOGGER.exception("Pipeline initialization failed")
                 raise
-        return _PIPELINE
+    return _PIPELINE
