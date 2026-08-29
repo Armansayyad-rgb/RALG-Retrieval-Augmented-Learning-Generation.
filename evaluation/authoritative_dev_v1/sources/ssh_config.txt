@@ -1,0 +1,214 @@
+OpenSSH ssh_config Reference
+============================
+
+The ssh_config file configures SSH client behavior on a per-host basis.
+System-wide: /etc/ssh/ssh_config
+User-specific: ~/.ssh/config
+
+File Structure
+--------------
+  Host server1
+      HostName 192.168.1.100
+      User admin
+      Port 22
+
+  Host staging-*
+      User deploy
+      ForwardAgent yes
+      IdentityFile ~/.ssh/staging_key
+
+  Host *
+      ServerAliveInterval 60
+      ServerAliveCountMax 3
+
+Entries are processed in order. The first matching Host pattern wins for each
+directive.
+
+Host Directive
+--------------
+Specifies a pattern to match. Supports wildcards:
+
+  Host myserver           # Exact name
+  Host *.example.com      # Any subdomain of example.com
+  Host 192.168.1.*        # IP pattern
+  Host *                  # Default for all hosts (must be last)
+  Host db-?               # Single character wildcard
+
+The Host value is used as the connection alias:
+  ssh myserver            # Matches "Host myserver"
+
+HostName
+--------
+  HostName server.example.com
+  HostName 192.168.1.100
+  HostName server-name.internal
+
+The actual hostname or IP to connect to. Supports %h (host) and %p (port)
+expansion.
+
+User
+----
+  User deploy
+  User admin@domain.com
+
+The username to log in as.
+
+Port
+----
+  Port 22                 # Default
+  Port 2222
+  Port 443
+
+IdentityFile
+------------
+  IdentityFile ~/.ssh/id_rsa
+  IdentityFile ~/.ssh/deploy_key
+  IdentityFile ~/.ssh/id_ed25519 ~/.ssh/id_rsa
+
+Path to the private key file. Multiple keys can be specified. SSH tries
+each in order. Supports %h, %p, %r expansion.
+
+ProxyJump
+---------
+ProxyJump configures SSH to hop through a bastion host to reach the target.
+
+  # Single hop:
+  Host internal-server
+      ProxyJump bastion.example.com
+
+  # Multiple hops:
+  Host deep-server
+      ProxyJump bastion.example.com,gateway.internal
+
+  # Custom user for the jump host:
+  Host internal-server
+      ProxyJump admin@bastion.example.com:22
+
+Equivalent to the -J flag:
+  ssh -J bastion.example.com internal-server
+
+ProxyCommand (legacy alternative):
+  ProxyCommand ssh -W %h:%p bastion.example.com
+
+ForwardAgent
+------------
+  ForwardAgent yes         # Forward local agent to remote
+  ForwardAgent no          # Default: do not forward
+
+When enabled, your local SSH agent keys are available on the remote host.
+Useful for chained SSH connections through bastion hosts.
+
+  Host bastion
+      HostName bastion.example.com
+      ForwardAgent yes
+
+  Host internal
+      HostName 10.0.0.5
+      ProxyJump bastion
+      ForwardAgent yes
+
+AddKeysToAgent
+--------------
+  AddKeysToAgent yes       # Automatically add keys to ssh-agent
+  AddKeysToAgent no        # Default
+  AddKeysToAgent confirm   # Prompt before adding
+  AddKeysToAgent=ask       # Prompt with option to decline
+
+PubkeyAuthentication
+--------------------
+  PubkeyAuthentication yes  # Default: use public key auth
+  PubkeyAuthentication no   # Disable public key auth
+  PubkeyAuthentication=ask  # Prompt user
+
+StrictHostKeyChecking
+---------------------
+  StrictHostKeyChecking yes     # Refuse to connect to unknown hosts
+  StrictHostKeyChecking no      # Silently add new host keys
+  StrictHostKeyChecking ask     # Prompt to confirm (default)
+  StrictHostKeyChecking accept-new  # Auto-add on first connection only
+
+Other Common Directives
+-----------------------
+  IdentityFile ~/.ssh/id_ed25519
+  PasswordAuthentication no
+  ChallengeResponseAuthentication no
+  PreferredAuthentications publickey,keyboard-interactive
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+  Compression yes
+  LogLevel VERBOSE
+  ExitOnForwardFailure yes
+  ForwardX11 no
+  ForwardX11Trusted yes
+  SendEnv LANG LC_*
+  HashKnownHosts yes
+  StrictHostKeyChecking accept-new
+  UserKnownHostsFile ~/.ssh/known_hosts
+  GlobalKnownHostsFile /etc/ssh/known_hosts
+
+Complete Example - Multi-Environment Setup
+-------------------------------------------
+  # Bastion host
+  Host bastion
+      HostName bastion.example.com
+      User ops
+      Port 2222
+      IdentityFile ~/.ssh/bastion_key
+      ForwardAgent yes
+      StrictHostKeyChecking accept-new
+
+  # Production servers (accessed through bastion)
+  Host prod-*
+      ProxyJump bastion
+      User deploy
+      IdentityFile ~/.ssh/prod_key
+      ForwardAgent yes
+      AddKeysToAgent yes
+
+  Host prod-web-01
+      HostName web-01.internal
+
+  Host prod-db-01
+      HostName db-01.internal
+
+  # Staging
+  Host staging-*
+      ProxyJump bastion
+      User deploy
+      IdentityFile ~/.ssh/staging_key
+
+  Host staging-app
+      HostName staging-app.internal
+
+  # Local development
+  Host dev-*
+      HostName localhost
+      User developer
+      Port 2222
+      IdentityFile ~/.ssh/dev_key
+      ForwardAgent yes
+
+  # Default for everything else
+  Host *
+      ServerAliveInterval 60
+      ServerAliveCountMax 3
+      Compression yes
+
+Pattern Matching Details
+------------------------
+  *       Matches everything
+  ?       Matches any single character
+  [abc]   Matches any character in the set
+  [!abc]  Matches any character not in the set
+
+  Host web[0-9]*.example.com    # Matches web0.example.com, web1.example.com
+  Host dev?                     # Matches dev1, dev2, etc.
+
+SSH Config Command-Line
+------------------------
+  ssh -F /path/to/config myserver   # Use alternate config file
+  ssh -G myserver                   # Dump resolved config as key-value pairs
+  ssh -vvv myserver                 # Verbose output for debugging
+
+  # Test config:
+  ssh -G myserver | grep -E "^(hostname|port|user|identity)"

@@ -1,0 +1,217 @@
+Nginx Configuration Reference
+=============================
+
+Nginx uses a declarative configuration file, typically located at
+/etc/nginx/nginx.conf, with modular includes from /etc/nginx/conf.d/ and
+/etc/nginx/sites-available/.
+
+Configuration Structure
+-----------------------
+  worker_processes auto;       # Number of worker processes (auto = CPU cores)
+  events {
+      worker_connections 1024; # Max simultaneous connections per worker
+  }
+  http {
+      include       mime.types;
+      default_type  application/octet-stream;
+      sendfile      on;
+      keepalive_timeout 65;
+
+      # Additional directives
+      access_log /var/log/nginx/access.log;
+      error_log  /var/log/nginx/error.log;
+  }
+
+Server Blocks
+-------------
+A server block (virtual host) defines a listening socket and how requests
+on that socket are handled.
+
+  server {
+      listen 80;
+      listen [::]:80;
+      server_name example.com www.example.com;
+
+      root /var/www/example.com;
+      index index.html;
+
+      location / {
+          try_files $uri $uri/ =404;
+      }
+  }
+
+Multiple server blocks can coexist. Nginx selects the best match based on
+server_name and listen directives.
+
+Location Directives
+-------------------
+  location /static/ { }          # Prefix match
+  location = /health { }         # Exact match (highest priority)
+  location ~ \.php$ { }          # Regex match (case-sensitive)
+  location ~* \.(jpg|png)$ { }   # Regex match (case-insensitive)
+  location ^~ /images/ { }       # Prefix match, skip regex
+
+Priority order: = > ^~ > ~ > ~* > / (prefix)
+
+proxy_pass
+----------
+Proxies requests to a backend server.
+
+  location /api/ {
+      proxy_pass http://127.0.0.1:3000;
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+  }
+
+  # Strip /api/ prefix before forwarding
+  location /api/ {
+      proxy_pass http://127.0.0.1:3000/;
+  }
+
+  # Pass the full URI including query string
+  location /api/ {
+      proxy_pass http://127.0.0.1:3000$request_uri;
+  }
+
+upstream Blocks
+---------------
+Define load-balanced backend groups.
+
+  upstream backend {
+      least_conn;                          # Load balancing method
+      server 10.0.0.1:8080 weight=3;      # Weighted distribution
+      server 10.0.0.2:8080;
+      server 10.0.0.3:8080 backup;        # Only used when others are down
+      keepalive 32;                        # Keep-alive connections to upstream
+  }
+
+  upstream websocket {
+      ip_hash;                             # Sticky sessions by client IP
+      server 10.0.0.1:8080;
+      server 10.0.0.2:8080;
+  }
+
+  # Referenced as:
+  location / {
+      proxy_pass http://backend;
+  }
+
+  # For WebSocket, use the websocket upstream:
+  location /ws {
+      proxy_pass http://websocket;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+  }
+
+gzip Compression
+----------------
+  gzip on;
+  gzip_vary on;
+  gzip_proxied any;
+  gzip_comp_level 6;
+  gzip_min_length 256;
+  gzip_types
+      text/plain
+      text/css
+      text/xml
+      text/javascript
+      application/json
+      application/javascript
+      application/xml
+      application/rss+xml
+      image/svg+xml;
+
+SSL/TLS Configuration
+---------------------
+  server {
+      listen 443 ssl http2;
+      server_name example.com;
+
+      ssl_certificate     /etc/nginx/ssl/example.com.crt;
+      ssl_certificate_key /etc/nginx/ssl/example.com.key;
+      ssl_protocols       TLSv1.2 TLSv1.3;
+      ssl_ciphers         HIGH:!aNULL:!MD5;
+      ssl_prefer_server_ciphers on;
+      ssl_session_cache   shared:SSL:10m;
+      ssl_session_timeout 10m;
+
+      # HSTS header
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+  }
+
+  # Redirect HTTP to HTTPS
+  server {
+      listen 80;
+      server_name example.com;
+      return 301 https://$host$request_uri;
+  }
+
+try_files Directive
+-------------------
+Serves files in order, falling back to a handler.
+
+  location / {
+      try_files $uri $uri/ /index.html;        # SPA fallback
+  }
+
+  location / {
+      try_files $uri $uri/ @proxy;              # Fallback to named location
+  }
+
+  location @proxy {
+      proxy_pass http://127.0.0.1:3000;
+  }
+
+  location / {
+      try_files $uri $uri/ =404;                # Return 404 if not found
+  }
+
+Buffer and Timeout Settings
+---------------------------
+  proxy_buffer_size 4k;
+  proxy_buffers 8 4k;
+  proxy_connect_timeout 60s;
+  proxy_read_timeout 90s;
+  proxy_send_timeout 90s;
+  client_max_body_size 10m;
+  client_body_timeout 60s;
+  client_header_timeout 60s;
+
+Logging
+-------
+  log_format main '$remote_addr - $remote_user [$time_local] '
+                  '"$request" $status $body_bytes_sent '
+                  '"$http_referer" "$http_user_agent" '
+                  '$request_time $upstream_response_time';
+
+  access_log /var/log/nginx/access.log main buffer=16k flush=5m;
+  error_log  /var/log/nginx/error.log warn;
+
+Security Headers
+----------------
+  add_header X-Frame-Options "SAMEORIGIN" always;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header X-XSS-Protection "1; mode=block" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+  add_header Content-Security-Policy "default-src 'self'" always;
+
+Rate Limiting
+-------------
+  limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+
+  location /api/ {
+      limit_req zone=api burst=20 nodelay;
+      proxy_pass http://backend;
+  }
+
+Nginx Test and Reload
+---------------------
+  nginx -t                  # Test configuration syntax
+  nginx -s reload           # Reload without downtime
+  nginx -s reopen           # Reopen log files

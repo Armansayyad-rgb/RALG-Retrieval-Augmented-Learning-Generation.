@@ -1,0 +1,72 @@
+{
+  "retrieval": {
+    "recall@1": 0.9489583333333332,
+    "recall@3": 0.9614583333333332,
+    "recall@5": 0.9802083333333332,
+    "hit_rate@1": 0.99375,
+    "hit_rate@3": 0.99375,
+    "hit_rate@5": 1.0,
+    "mrr": 0.9949999999999999
+  },
+  "answer": {
+    "supported_correct": 90,
+    "supported_total": 105,
+    "false_rejection": 15,
+    "correct_rejection": 45,
+    "false_support": 0,
+    "rejection_total": 45,
+    "qualified_correct": 7,
+    "qualified_total": 10,
+    "supported_accuracy": 0.8571428571428571,
+    "false_rejection_rate": 0.14285714285714285,
+    "correct_rejection_rate": 1.0,
+    "false_support_rate": 0.0,
+    "qualified_accuracy": 0.7
+  },
+  "per_category": {
+    "supported": {
+      "total": 25,
+      "correct": 23
+    },
+    "paraphrased": {
+      "total": 20,
+      "correct": 19
+    },
+    "procedural": {
+      "total": 20,
+      "correct": 20
+    },
+    "causal": {
+      "total": 15,
+      "correct": 14
+    },
+    "cross_document": {
+      "total": 15,
+      "correct": 10
+    },
+    "document_scoped": {
+      "total": 10,
+      "correct": 4
+    },
+    "unsupported": {
+      "total": 20,
+      "correct": 20
+    },
+    "false_premise": {
+      "total": 15,
+      "correct": 15
+    },
+    "misleading_overlap": {
+      "total": 10,
+      "correct": 10
+    },
+    "conditional_or_qualified": {
+      "total": 10,
+      "correct": 7
+    }
+  },
+  "errors": 0,
+  "completed": 160,
+  "total": 160,
+  "latency_ms_avg": 4.058414697647095
+}

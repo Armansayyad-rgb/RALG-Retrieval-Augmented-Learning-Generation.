@@ -1,0 +1,218 @@
+Docker Dockerfile Reference
+===========================
+
+A Dockerfile is a text file containing instructions to build a Docker image.
+Each instruction creates a layer in the image. Layers are cached and reused
+across builds.
+
+FROM - Base Image
+-----------------
+Always the first instruction. Specifies the parent image.
+
+  FROM ubuntu:22.04
+  FROM node:20-alpine
+  FROM scratch                  # Empty image (for static binaries)
+  FROM --platform=linux/amd64 python:3.12-slim
+
+ARG can be used before FROM for build-time variables:
+  ARG NODE_VERSION=20
+  FROM node:${NODE_VERSION}-alpine
+
+RUN - Execute Commands
+-----------------------
+Runs commands during build. Each RUN creates a layer.
+
+  # Shell form (runs through /bin/sh -c):
+  RUN apt-get update && apt-get install -y curl git \
+      && rm -rf /var/lib/apt/lists/*
+
+  # Exec form (no shell, no variable expansion):
+  RUN ["/bin/bash", "-c", "echo $HOME"]
+
+Best practice: combine multiple commands into a single RUN with && and
+clean up in the same layer to reduce image size.
+
+COPY vs ADD - Copy Files
+-------------------------
+  COPY requirements.txt /app/requirements.txt
+  COPY . /app
+
+  # COPY with build-time variable:
+  COPY --from=builder /app/dist /usr/share/nginx/html
+
+  # COPY with specific user and permissions:
+  --chown=appuser:appuser
+  --chmod=644
+
+ADD has additional features:
+  ADD archive.tar.gz /app/    # Auto-extracts tar archives
+  ADD https://example.com/file /app/   # Downloads from URL (rarely needed)
+
+Recommendation: prefer COPY. Use ADD only for tar extraction.
+
+CMD vs ENTRYPOINT - Container Entrypoint
+-----------------------------------------
+CMD provides default arguments to ENTRYPOINT. Can be overridden at runtime.
+
+  # Exec form (preferred):
+  CMD ["python", "app.py"]
+
+  # Shell form:
+  CMD python app.py
+
+  # As default for ENTRYPOINT:
+  CMD ["--port", "8080"]
+
+ENTRYPOINT sets the main executable. Cannot be easily overridden.
+
+  # Exec form:
+  ENTRYPOINT ["python", "app.py"]
+
+  # Shell form:
+  ENTRYPOINT python app.py
+
+  # Exec form with variable substitution:
+  ENTRYPOINT ["sh", "-c", "python app.py --port ${PORT}"]
+
+Combined pattern (most flexible):
+  ENTRYPOINT ["python", "app.py"]
+  CMD ["--port", "8080"]
+
+Runtime override: docker run myimage --port 9090
+
+ENV - Environment Variables
+---------------------------
+  ENV APP_HOME=/app
+  ENV NODE_ENV=production
+  ENV PATH="${APP_HOME}/bin:${PATH}"
+
+  # Single form:
+  ENV MY_VAR=value
+
+  # Multiple form:
+  ENV MY_VAR1=value1 \
+      MY_VAR2=value2
+
+ENV values persist into the running container. Use ARG for build-time only.
+
+EXPOSE - Document Ports
+------------------------
+  EXPOSE 80
+  EXPOSE 443
+  EXPOSE 8080/tcp
+  EXPOSE 8080/udp
+
+EXPOSE documents which ports the container listens on. It does NOT publish
+ports. Use -p or -P at runtime to publish:
+  docker run -p 8080:80 myimage
+  docker run -P myimage
+
+WORKDIR - Working Directory
+---------------------------
+  WORKDIR /app
+
+  # Creates directory if it doesn't exist:
+  WORKDIR /app/src
+
+  # Can be used multiple times:
+  WORKDIR /app
+  COPY . .
+  WORKDIR /app/src
+
+ARG - Build Arguments
+---------------------
+  ARG APP_VERSION=1.0
+  ARG BASE_IMAGE=python:3.12-slim
+
+  FROM ${BASE_IMAGE}
+  ARG APP_VERSION
+  RUN echo "Building version ${APP_VERSION}"
+
+ARG values are available during build but NOT in the running container.
+Use ENV to persist values into the container.
+
+VOLUME - Anonymous Volumes
+---------------------------
+  VOLUME /data
+  VOLUME /var/log/nginx
+
+Volumes are created at runtime even if not explicitly mounted. Use named
+volumes for persistence:
+  docker run -v mydata:/data myimage
+
+USER - Run As
+-------------
+  RUN groupadd -r appuser && useradd -r -g appuser appuser
+  USER appuser
+
+  # Run as specific UID/GID:
+  USER 1000:1000
+
+All subsequent instructions run as this user. CMD/ENTRYPOINT also use it.
+
+HEALTHCHECK - Container Health
+-------------------------------
+  HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+      CMD curl -f http://localhost:8080/health || exit 1
+
+  HEALTHCHECK NONE     # Disable inherited health check
+
+Parameters:
+  --interval     Time between checks (default 30s)
+  --timeout      Max time for a check (default 30s)
+  --start-period Grace period for container startup (default 0s)
+  --retries      Consecutive failures before unhealthy (default 3)
+
+Multi-Stage Build Example
+--------------------------
+  # Stage 1: Build
+  FROM node:20-alpine AS builder
+  WORKDIR /app
+  COPY package*.json ./
+  RUN npm ci --production=false
+  COPY . .
+  RUN npm run build
+
+  # Stage 2: Production
+  FROM node:20-alpine
+  WORKDIR /app
+  COPY --from=builder /app/dist ./dist
+  COPY --from=builder /app/node_modules ./node_modules
+  COPY package*.json ./
+  EXPOSE 3000
+  CMD ["node", "dist/server.js"]
+
+Complete Dockerfile Example - Python Web App
+----------------------------------------------
+  FROM python:3.12-slim AS base
+  ENV PYTHONDONTWRITEBYTECODE=1 \
+      PYTHONUNBUFFERED=1
+  WORKDIR /app
+
+  FROM base AS builder
+  RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential libpq-dev
+  COPY requirements.txt .
+  RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+  FROM base AS production
+  RUN groupadd -r appuser && useradd -r -g appuser appuser
+  COPY --from=builder /install /usr/local
+  COPY . .
+  RUN chown -R appuser:appuser /app
+  USER appuser
+  EXPOSE 8000
+  HEALTHCHECK --interval=30s --timeout=5s \
+      CMD curl -f http://localhost:8000/health || exit 1
+  CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
+
+Additional Instructions
+------------------------
+  LABEL maintainer="team@example.com"
+  LABEL version="1.0" description="Production web app"
+
+  SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+  # Changes default shell; pipefail ensures pipe errors are caught.
+
+  ONBUILD RUN pip install -r requirements.txt
+  # Deferred instruction: runs when this image is used as a base image.

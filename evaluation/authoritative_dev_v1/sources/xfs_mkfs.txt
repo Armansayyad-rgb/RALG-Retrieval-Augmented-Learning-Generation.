@@ -1,0 +1,169 @@
+XFS mkfs (mkfs.xfs) Documentation
+====================================
+
+mkfs.xfs creates an XFS filesystem on a device or image file. XFS is a
+high-performance 64-bit journaling file system designed for large files
+and parallel I/O.
+
+Basic Syntax
+------------
+  mkfs.xfs [options] device
+  mkfs.xfs -f /dev/sdb1
+  mkfs.xfs /dev/nvme0n1p1
+
+The -f flag forces overwrite of an existing filesystem.
+
+Block Size (-b)
+---------------
+  mkfs.xfs -b size=<bytes> /dev/sdb1
+
+  -b size=512          # 512 bytes
+  -b size=4096         # 4 KiB (default)
+  -b size=65536        # 64 KiB (maximum)
+
+The block size determines the fundamental I/O unit. Larger blocks improve
+throughput for large sequential reads but waste space for small files.
+Default is 4096. Valid values: 512, 1024, 2048, 4096, 8192, 16384, 32768,
+65536 (power of 2, >= 512 and <= the system page size for metadata).
+
+Data Allocation (-d)
+--------------------
+Controls data section parameters.
+
+  mkfs.xfs -d agcount=<count> /dev/sdb1
+  mkfs.xfs -d agsize=<size> /dev/sdb1
+  mkfs.xfs -d file /dev/sdb1.img        # Create as file, not device
+  mkfs.xfs -d su=<stripe-unit>,sw=<stripe-width> /dev/sdb1
+
+  agcount     Number of allocation groups (default: calculated from size)
+  agsize      Size of each allocation group (in blocks or bytes)
+  su          Stripe unit (for RAID alignment)
+  sw          Stripe width (number of data disks in RAID)
+  file        Create filesystem in a regular file (implies size=)
+
+Allocation Groups:
+  XFS divides the filesystem into allocation groups (AGs) for parallel
+  allocation. More AGs allow more concurrent writes but increase metadata
+  overhead. Default: auto-calculated.
+
+  Example: RAID 0 with 64K stripe unit and 4 data disks:
+  mkfs.xfs -d su=65536,sw=4 /dev/md0
+
+Inode Size (-i)
+---------------
+  mkfs.xfs -i maxpct=<percent> /dev/sdb1
+  mkfs.xfs -i size=<bytes> /dev/sdb1
+
+  maxpct   Maximum percentage of disk space for inodes (default: 25%)
+  size     Inode size in bytes (default: 512, min: 256, max: 2048)
+
+The inode size affects how many extended attributes and inline data can be
+stored. Default 512 bytes is sufficient for most workloads.
+
+Log Section (-l)
+-----------------
+Controls the journal (log) size and placement.
+
+  mkfs.xfs -l logdev=/dev/sdb2,size=<blocks> /dev/sdb1
+  mkfs.xfs -l agcount=<count> /dev/sdb1
+
+  logdev     External log device (separate from data device)
+  size       Log size (in blocks or bytes)
+  agcount    Number of allocation groups for the log
+  version    Log stripe unit (internal log only)
+
+  Default log size: 8192 blocks (32 MiB with 4K blocks)
+
+  Example: External journal on a fast SSD:
+  mkfs.xfs -l logdev=/dev/nvme0n1p2,size=128m /dev/sdb1
+
+Naming Directory (-n)
+---------------------
+Controls the size of the real-time and naming directories.
+
+  mkfs.xfs -n agcount=<count> /dev/sdb1
+  mkfs.xfs -n size=<bytes> /dev/sdb1
+
+  agcount   Number of AGs for the naming directory
+  size      Naming directory block size (default: 8192)
+
+Metadata Alignment (-p)
+-----------------------
+  mkfs.xfs -p agcount=<count> /dev/sdb1
+
+Aligns internal data structures to specified boundaries for SSD or RAID.
+
+Realtime Section (-r)
+---------------------
+  mkfs.xfs -r rtdev=/dev/sdb3 /dev/sdb1
+  mkfs.xfs -r extsize=<blocks> /dev/sdb1
+
+  rtdev     Realtime device (separate from data device)
+  extsize   Realtime extent size (in blocks or bytes)
+
+The realtime section is used for guaranteed-rate I/O (rarely used in practice).
+
+Silent Mode (-q)
+-----------------
+  mkfs.xfs -q /dev/sdb1
+
+Suppresses all output except error messages.
+
+Force (-f)
+-----------
+  mkfs.xfs -f /dev/sdb1
+
+Forces overwrite of existing filesystem without confirmation.
+
+Common Command Examples
+-----------------------
+  # Basic filesystem with defaults:
+  mkfs.xfs /dev/sdb1
+
+  # Force overwrite:
+  mkfs.xfs -f /dev/sdb1
+
+  # Custom block size and AG count:
+  mkfs.xfs -b size=4096 -d agcount=32 /dev/sdb1
+
+  # RAID-aligned filesystem:
+  mkfs.xfs -d su=65536,sw=4 -l su=65536,sw=1 /dev/md0
+
+  # Large inode for heavy xattr usage:
+  mkfs.xfs -i size=1024 /dev/sdb1
+
+  # Large filesystem (64 TiB):
+  mkfs.xfs -d agcount=1024 -i maxpct=5 /dev/sdb1
+
+  # Filesystem on a file:
+  mkfs.xfs -f -d file,size=10g /data/disk.img
+
+  # External journal on fast device:
+  mkfs.xfs -l logdev=/dev/nvme0n1p2,size=256m /dev/sdb1
+
+  # Quiet creation:
+  mkfs.xfs -q /dev/sdb1
+
+XFS Geometry
+------------
+  xfs_info /dev/sdb1           # Display filesystem geometry
+  xfs_growfs /dev/sdb1         # Grow filesystem (online)
+
+  # View allocation group info:
+  xfs_db -c freesp /dev/sdb1
+
+Key Mount Options
+-----------------
+  mount -o noatime /dev/sdb1 /mnt       # Disable access time updates
+  mount -o discard /dev/sdb1 /mnt       # Enable TRIM for SSDs
+  mount -o logbufs=8 /dev/sdb1 /mnt     # Increase log buffers
+  mount -o logbsize=256k /dev/sdb1 /mnt # Increase log buffer size
+  mount -o allocsize=64m /dev/sdb1 /mnt # Set preallocation size
+
+Limitations
+-----------
+- XFS does not support shrinking a filesystem (only growing).
+- XFS does not support hard links across allocation groups without
+  the nlink64 feature (enabled by default in modern kernels).
+- XFS uses delayed allocation, which can cause data loss on unclean shutdown
+  without proper journaling.
