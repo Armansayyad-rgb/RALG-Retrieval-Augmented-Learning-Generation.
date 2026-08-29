@@ -69,7 +69,8 @@ jobs:
       - name: Check Docker entrypoint module exists
         run: |
           test -f src/webui/app.py
-          grep -Fq 'CMD ["python", "-m", "webui.app"]' Dockerfile
+          test -f src/webui_bootstrap.py
+          grep -Fq 'CMD ["python", "-m", "webui_bootstrap"]' Dockerfile
 
       - name: Check required public files
         run: |
