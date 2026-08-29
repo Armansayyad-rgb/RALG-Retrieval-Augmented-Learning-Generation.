@@ -33,8 +33,8 @@
     "qualified_accuracy": "qualified_correct / qualified (separate metric)"
   },
   "source_count": 7,
-  "sources_manifest_sha256": "3c6a767f55a724abb82ecfac494fef25c87805c0e650b3cb304f5c85f3f8c421",
-  "benchmark_sha256": "4367d88b16286845dce9ae4941c9089b7c8fe4f68259d276c01ffabc40a41ce2",
+  "sources_manifest_sha256": "163e1d8b9c4c34303cbbdd3ad062305c26a79151b4e6cd3b5537a0dca2b28b7b",
+  "benchmark_sha256": "ffe5a18fdd20dc4792ff5834333a599a90258f12f8f73e2197af5a2482648617",
   "evaluator_sha256": "65d23eef535ac6acb78f81596515d546a8ae26c3c2c7b1f2bb54cebedb71050d",
   "evaluator_executed_before_freeze": false,
   "independence_statement": "No holdout_v1 PEP sources, holdout_v2 authored notes, Stage 5 RFC documents, evaluation_suite_v3 inline cases, or production knowledge corpus data are reused. All 120 cases derived exclusively from verified upstream source artifacts committed under evaluation/holdout_v3/sources/.",
@@ -54,5 +54,11 @@
     "single_shot_protection": "Pre-run exists() check + exclusive create mode ('x') for result file",
     "error_accounting": "Per-case try/except with error recording; metrics null when incomplete",
     "qualified_category": "conditional_or_qualified scored separately as qualified-support"
+  },
+  "freeze_metadata_correction": {
+    "date": "2026-08-29",
+    "reason": "Pre-execution integrity verification found that benchmark_sha256 and sources_manifest_sha256 recorded during freeze preparation were stale. The committed frozen artifact bytes were unchanged; only these manifest metadata values were corrected before any blind execution.",
+    "blind_run_executed_before_correction": false,
+    "frozen_artifacts_modified": false
   }
 }
