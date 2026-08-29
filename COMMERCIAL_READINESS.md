@@ -94,7 +94,7 @@ This benchmark is development/regression evidence, not an untouched independent 
 | Complete | Dependency inventory maintained | `requirements.txt` with pinned versions; `THIRD_PARTY_NOTICES.md` covers data/model licenses | |
 | Complete | Model provenance documented | `config.py` model/tokenizer paths; `THIRD_PARTY_NOTICES.md` lists checkpoint/Qwen status | |
 | Complete | Source manifest with hashes | `evaluation/stage5_source_manifest.jsonl` (50 IETF RFCs with SHA-256); `holdout_v2/sources_manifest.jsonl` (7 sources) | |
-| Complete | Holdout V2 blind result preserved | `evaluation/results/holdout_v2_blind_once.json` immutable; SHA-256: `2cb44e5d...` | |
+| Complete | Holdout V2 blind result preserved | `evaluation/results/holdout_v2_blind_once.json` immutable; SHA-256: `f6925b819a2bdd1cc718898a168bc2dafb701fb85e9169e709b8c7766be0798f` | |
 | Complete | Holdout V1 historical preserved | `evaluation/holdout_v1/` unchanged; not rerun after fix | |
 | Complete | Claims-to-evidence matrix | `docs/CLAIMS_EVIDENCE_MATRIX.md` with VERIFIED/PRELIMINARY/NOT YET VALIDATED labels | |
 | Complete | Security boundary documented | `SECURITY.md`: local/trusted environment; no auth/TLS/tenant isolation by design | |
