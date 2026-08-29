@@ -1,4 +1,5 @@
 """Run with the API server up: python examples/python_client.py"""
+import os
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -15,5 +16,5 @@ if documents:
     print(client.delete(documents[-1]["document_id"]))
 
 # Optional authenticated client example:
-# client_auth = RALGClient(api_token="your-api-token")
+# client_auth = RALGClient(api_token=os.getenv("RALG_API_TOKEN"))
 # print(client_auth.query("Question?", document_ids=["doc_id_1"]))
