@@ -100,6 +100,12 @@ def _persist_document(pipeline: dict, doc: "UploadedDocument") -> None:
     documents_dir.mkdir(parents=True, exist_ok=True)
     content_path = documents_dir / f"{doc.doc_id}.txt"
     pre_existed = content_path.exists()
+    old_content = None
+    if pre_existed:
+        try:
+            old_content = content_path.read_text(encoding="utf-8")
+        except OSError:
+            old_content = None
     try:
         _atomic_write(content_path, doc.text)
         entries = _load_registry(pipeline)
@@ -116,7 +122,12 @@ def _persist_document(pipeline: dict, doc: "UploadedDocument") -> None:
         })
         _persist_registry(pipeline, entries)
     except OSError:
-        if not pre_existed and content_path.exists():
+        if pre_existed and old_content is not None:
+            try:
+                _atomic_write(content_path, old_content)
+            except OSError:
+                pass
+        elif not pre_existed and content_path.exists():
             try:
                 content_path.unlink()
             except OSError:

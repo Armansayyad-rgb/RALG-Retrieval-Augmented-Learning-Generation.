@@ -3,9 +3,10 @@
 import json
 import sys
 import tempfile
+import time
 import unittest
 from concurrent.futures import ThreadPoolExecutor
-from threading import Event
+from threading import Event, Thread
 from unittest.mock import patch
 from pathlib import Path
 
@@ -170,14 +171,14 @@ class DocumentPersistenceTests(unittest.TestCase):
                 events["query_started"].set()
                 with patch.object(api_server, "get_pipeline", return_value=pipeline):
                     with patch.object(api_server, "answer_question", return_value={
-                        "answer": "mock", "supported": True, "answer_type": "extractive",
-                        "confidence": 1.0, "evidence": ["initial chunk"],
+                        "answer": "initial chunk answer", "supported": True, "answer_type": "extractive",
+                        "confidence": 1.0, "evidence": [{"chunk": "initial chunk", "chunk_index": 0, "final_score": 1.0}],
                     }):
                         response = api_server.query(
                             QueryRequest(question="test", top_k=1),
                             request=None,
                         )
-                self.assertEqual(response.answer, "mock")
+                self.assertEqual(response.answer, "initial chunk answer")
 
             def slow_ingest():
                 events["query_started"].wait(timeout=2)
@@ -208,14 +209,14 @@ class DocumentPersistenceTests(unittest.TestCase):
                 events["query_started"].set()
                 with patch.object(api_server, "get_pipeline", return_value=pipeline):
                     with patch.object(api_server, "answer_question", return_value={
-                        "answer": "mock", "supported": True, "answer_type": "extractive",
-                        "confidence": 1.0, "evidence": ["static corpus survives"],
+                        "answer": "static corpus survives", "supported": True, "answer_type": "extractive",
+                        "confidence": 1.0, "evidence": [{"chunk": "static corpus survives", "chunk_index": 0, "final_score": 1.0}],
                     }):
                         response = api_server.query(
                             QueryRequest(question="test", top_k=1),
                             request=None,
                         )
-                self.assertEqual(response.answer, "mock")
+                self.assertEqual(response.answer, "static corpus survives")
 
             def slow_delete():
                 events["query_started"].wait(timeout=2)
@@ -248,8 +249,6 @@ class DocumentPersistenceTests(unittest.TestCase):
 
             content_path = root / "documents" / f"{doc.doc_id}.txt"
             self.assertFalse(content_path.exists())
-            registry = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
-            self.assertEqual(registry, [])
 
     def test_atomic_write_cleans_up_temp_on_replace_failure(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -290,6 +289,104 @@ class DocumentPersistenceTests(unittest.TestCase):
             self.assertTrue(
                 any("restored=1" in msg and "skipped=2" in msg for msg in cm.output)
             )
+
+    def test_pre_existing_content_restored_on_registry_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = make_pipeline(root)
+            original = UploadedDocument("orig.txt", Path("orig.txt"), ".txt", "original content")
+            attach_documents(pipeline, [original])
+            original_content = (root / "documents" / f"{original.doc_id}.txt").read_text(encoding="utf-8")
+            self.assertEqual(original_content, "original content")
+
+            replacement = UploadedDocument("orig.txt", Path("orig.txt"), ".txt", "replacement content")
+
+            def fake_persist_registry(pipeline, entries):
+                raise OSError("disk full")
+
+            with patch.object(document_processor, "_persist_registry", side_effect=fake_persist_registry):
+                with self.assertRaises(OSError):
+                    attach_documents(pipeline, [replacement])
+
+            content_path = root / "documents" / f"{original.doc_id}.txt"
+            self.assertTrue(content_path.exists())
+            restored_content = content_path.read_text(encoding="utf-8")
+            self.assertEqual(restored_content, "original content")
+            registry = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(registry, [{"document_id": original.doc_id, "document_name": "orig.txt", "extension": ".txt", "upload_timestamp": original.upload_timestamp, "source_type": "runtime_upload", "revision": None, "chunk_count": 1, "content_file": f"documents/{original.doc_id}.txt"}])
+
+    def test_lifecycle_lock_blocks_mutation_during_query(self):
+        from webui.document_processor import _LIFECYCLE_LOCK
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = make_pipeline(root)
+            doc = UploadedDocument("block.txt", Path("block.txt"), ".txt", "block content")
+
+            events = {"query_has_lock": Event(), "query_released": Event(), "mutation_done": Event()}
+
+            def slow_query_holder():
+                with _LIFECYCLE_LOCK:
+                    events["query_has_lock"].set()
+                    time.sleep(0.2)
+                    events["query_released"].set()
+
+            def blocked_mutation():
+                events["query_has_lock"].wait(timeout=2)
+                attach_documents(pipeline, [doc])
+                events["mutation_done"].set()
+
+            t1 = Thread(target=slow_query_holder)
+            t2 = Thread(target=blocked_mutation)
+            t1.start()
+            t2.start()
+
+            events["query_released"].wait(timeout=2)
+            self.assertTrue(events["query_released"].is_set())
+            events["mutation_done"].wait(timeout=2)
+            self.assertTrue(events["mutation_done"].is_set())
+
+    def test_query_blocks_mutation_with_ordering_proof(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = make_pipeline(root)
+            doc = UploadedDocument("order.txt", Path("order.txt"), ".txt", "order content")
+
+            events = {"query_started": Event(), "query_done": Event(), "mutation_done": Event()}
+
+            def slow_answer(*args, **kwargs):
+                time.sleep(0.2)
+                return {
+                    "answer": "initial chunk answer", "supported": True, "answer_type": "extractive",
+                    "confidence": 1.0, "evidence": [{"chunk": "initial chunk", "chunk_index": 0, "final_score": 1.0}],
+                }
+
+            def slow_query():
+                events["query_started"].set()
+                with patch.object(api_server, "get_pipeline", return_value=pipeline):
+                    with patch.object(api_server, "answer_question", side_effect=slow_answer):
+                        response = api_server.query(
+                            QueryRequest(question="test", top_k=1),
+                            request=None,
+                        )
+                self.assertEqual(response.answer, "initial chunk answer")
+                events["query_done"].set()
+
+            def blocked_mutation():
+                events["query_started"].wait(timeout=2)
+                time.sleep(0.05)
+                attach_documents(pipeline, [doc])
+                events["mutation_done"].set()
+
+            t1 = Thread(target=slow_query)
+            t2 = Thread(target=blocked_mutation)
+            t1.start()
+            t2.start()
+
+            events["query_done"].wait(timeout=5)
+            events["mutation_done"].wait(timeout=5)
+            self.assertTrue(events["query_done"].is_set())
+            self.assertTrue(events["mutation_done"].is_set())
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ from rag_chat_v2 import answer_question
 from runtime_architecture import execute_runtime
 from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk
 from retriever_hybrid import retrieve as retrieve_hybrid_fn
+from webui.document_processor import _LIFECYCLE_LOCK
 
 _LOGGER = logging.getLogger(__name__)
 _SAFE_CHAT_ERROR = "The answer service is temporarily unavailable."
@@ -501,15 +502,16 @@ def chat_turn(
         }
 
     try:
-        execution = execute_runtime(
-            pipeline,
-            question.strip(),
-            top_k,
-            answer_fn=answer_question,
-            contract_fn=build_answer_contract,
-            sources_fn=collect_sources,
-            document_ids=document_ids,
-        )
+        with _LIFECYCLE_LOCK:
+            execution = execute_runtime(
+                pipeline,
+                question.strip(),
+                top_k,
+                answer_fn=answer_question,
+                contract_fn=build_answer_contract,
+                sources_fn=collect_sources,
+                document_ids=document_ids,
+            )
     except Exception:  # defensive — keep internal details out of the UI
         _LOGGER.exception("Unhandled chat pipeline error")
         return {
