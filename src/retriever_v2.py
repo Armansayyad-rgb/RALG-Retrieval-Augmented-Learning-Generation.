@@ -304,63 +304,50 @@ def load_chunks(paths):
             encoding="utf-8",
             errors="ignore",
         ) as f:
+            text = f.read()
 
-            for line in f:
-                line = clean_text(
-                    line
+        if not text.strip():
+            print(
+                "Chunks loaded from file:",
+                0,
+            )
+            continue
+
+        paragraphs = re.split(
+            r"\n\s*\n",
+            text,
+        )
+
+        current = []
+        current_length = 0
+
+        for para in paragraphs:
+            para = clean_text(para)
+
+            if not para:
+                continue
+
+            sentences = re.split(
+                r"(?<=[.!?])\s+",
+                para,
+            )
+
+            for sentence in sentences:
+                sentence = (
+                    sentence.strip()
                 )
 
-                if len(line) < 80:
+                if not sentence:
                     continue
 
-                sentences = re.split(
-                    r"(?<=[.!?])\s+",
-                    line,
-                )
-
-                current = []
-                current_length = 0
-
-                for sentence in sentences:
-                    sentence = (
-                        sentence.strip()
+                if (
+                    current
+                    and (
+                        current_length
+                        + len(sentence)
+                        > MAX_CONTEXT_CHARS
                     )
-
-                    if not sentence:
-                        continue
-
-                    if (
-                        current
-                        and (
-                            current_length
-                            + len(sentence)
-                            > MAX_CONTEXT_CHARS
-                        )
-                    ):
-                        chunk = " ".join(
-                            current
-                        )
-
-                        if len(chunk) >= 80:
-                            chunks.append(
-                                chunk
-                            )
-
-                            file_chunks += 1
-
-                        current = []
-                        current_length = 0
-
-                    current.append(
-                        sentence
-                    )
-
-                    current_length += (
-                        len(sentence)
-                        + 1
-                    )
-
-                if current:
+                ):
                     chunk = " ".join(
                         current
                     )
@@ -371,6 +358,27 @@ def load_chunks(paths):
                         )
 
                         file_chunks += 1
+
+                    current = []
+                    current_length = 0
+
+                current.append(
+                    sentence
+                )
+
+                current_length += (
+                    len(sentence)
+                    + 1
+                )
+
+        if current:
+            chunk = " ".join(
+                current
+            )
+
+            chunks.append(chunk)
+
+            file_chunks += 1
 
         print(
             "Chunks loaded from file:",

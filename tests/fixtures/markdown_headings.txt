@@ -1,0 +1,38 @@
+# Configuration Guide
+
+## Database Settings
+
+The database connection string
+defines how the application
+connects to the data store.
+
+### Connection Pool
+
+Pool size determines concurrent
+connections available to
+the application thread pool.
+
+### Timeout Settings
+
+Connection timeout defaults
+to 30 seconds. This can be
+adjusted via configuration.
+
+## Network Configuration
+
+Port binding controls which
+network interface the server
+listens on for incoming requests.
+
+### SSL/TLS Settings
+
+Secure connections require
+a valid certificate chain
+and private key file path.
+
+## Logging Options
+
+Log levels control verbosity
+of application output messages.
+Debug level provides maximum
+detail for troubleshooting.
