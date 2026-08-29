@@ -26,10 +26,13 @@ Health check:
 """
 
 import os
+import re
 import sys
 import time
+import uuid
 import logging
 import hmac
+import hashlib
 from pathlib import Path
 from threading import RLock, Lock
 from typing import Any, Optional
@@ -96,6 +99,28 @@ _request_counts: dict[str, list[float]] = {}
 _rate_lock = Lock()
 
 
+def _safe_question_meta(question: str) -> str:
+    length = len(question)
+    digest = hashlib.sha256(question.encode("utf-8", errors="replace")).hexdigest()[:8]
+    return f"len={length} hash={digest}"
+
+
+def _client_ip(request: Request) -> str:
+    client = request.scope.get("client")
+    if isinstance(client, tuple):
+        return client[0]
+    return str(client) if client else "unknown"
+
+
+def _log_security_event(status_code: int, request: Request, detail: str) -> None:
+    ip = _client_ip(request)
+    request_id = getattr(request.state, "request_id", "unknown")
+    _LOGGER.warning(
+        "security_event status=%d request_id=%s client_ip=%s detail=%s",
+        status_code, request_id, ip, detail,
+    )
+
+
 # ---------------------------------------------------------------------------
 # RequestSizeLimitMiddleware — from master; reject oversized API bodies before
 # JSON parsing or model work.
@@ -117,10 +142,12 @@ class RequestSizeLimitMiddleware:
             if key == b"content-length":
                 try:
                     if int(value) > self.max_bytes:
-                        await self._reject(scope, send)
+                        req = Request(scope)
+                        await self._reject(scope, send, request=req)
                         return
                 except ValueError:
-                    await self._reject(scope, send, status_code=400, message="Invalid request.")
+                    req = Request(scope)
+                    await self._reject(scope, send, request=req, status_code=400, message="Invalid request.")
                     return
 
         messages = []
@@ -131,7 +158,8 @@ class RequestSizeLimitMiddleware:
             if message["type"] == "http.request":
                 total += len(message.get("body", b""))
                 if total > self.max_bytes:
-                    await self._reject(scope, send)
+                    req = Request(scope)
+                    await self._reject(scope, send, request=req)
                     return
                 if not message.get("more_body", False):
                     break
@@ -147,9 +175,12 @@ class RequestSizeLimitMiddleware:
     async def _reject(
         scope: dict,
         send: Any,
+        request: Request | None = None,
         status_code: int = 413,
         message: str = "Request body too large.",
     ) -> None:
+        if status_code == 413 and request is not None:
+            _log_security_event(413, request, "oversized_body")
         response = JSONResponse(status_code=status_code, content={"error": message})
         await response(scope, None, send)
 
@@ -322,6 +353,29 @@ async def security_headers_middleware(request: Request, call_next) -> Response:
 
 
 # ---------------------------------------------------------------------------
+# X-Request-ID correlation — generate when absent, validate caller-supplied IDs
+# ---------------------------------------------------------------------------
+
+_CONTROL_CHARS_RE = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _safe_request_id(value: str) -> str:
+    if not value or len(value) > 64 or _CONTROL_CHARS_RE.search(value):
+        return str(uuid.uuid4())
+    return value
+
+
+@app.middleware("http")
+async def request_id_middleware(request: Request, call_next) -> Response:
+    raw_id = request.headers.get("X-Request-ID", "")
+    safe_id = _safe_request_id(raw_id)
+    request.state.request_id = safe_id
+    response: Response = await call_next(request)
+    response.headers["X-Request-ID"] = safe_id
+    return response
+
+
+# ---------------------------------------------------------------------------
 # Simple in-process rate-limiting safeguard (active only when API_TOKEN set)
 # ---------------------------------------------------------------------------
 
@@ -357,6 +411,7 @@ async def rate_limit_middleware(request: Request, call_next) -> Response:
     if request.url.path in ("/health", "/ready"):
         return await call_next(request)
     if not await _rate_limit_check(request.scope):
+        _log_security_event(429, request, "rate_limit_exceeded")
         return JSONResponse(status_code=429, content={"error": "Rate limit exceeded."})
     return await call_next(request)
 
@@ -383,12 +438,14 @@ def _bearer_token_check(request: Request) -> Optional[JSONResponse]:
     # API_TOKEN is set: extract and validate bearer token
     auth_header = request.headers.get("authorization")
     if not auth_header:
+        _log_security_event(401, request, "missing_auth_header")
         return JSONResponse(
             status_code=401,
             content={"error": "Unauthorized. API token required."},
         )
 
     if not auth_header.lower().startswith("bearer "):
+        _log_security_event(401, request, "invalid_auth_scheme")
         return JSONResponse(
             status_code=401,
             content={"error": "Unauthorized. API token required."},
@@ -396,6 +453,7 @@ def _bearer_token_check(request: Request) -> Optional[JSONResponse]:
 
     token = auth_header[len("Bearer "):]
     if not hmac.compare_digest(token, API_TOKEN):
+        _log_security_event(401, request, "invalid_token")
         return JSONResponse(
             status_code=401,
             content={"error": "Unauthorized. Invalid API token."},
@@ -502,18 +560,25 @@ def documents(request: Request = None) -> list[dict[str, Any]]:
 @app.delete("/documents/{document_id}", response_model=DocumentDeleteResponse)
 def delete_document(document_id: str, request: Request = None) -> DocumentDeleteResponse:
     """Delete one runtime document and its persisted content."""
-    # Validate document_id format — reject path-traversal or injection patterns
     if not _is_valid_document_id(document_id):
         return JSONResponse(status_code=400, content={"error": "Invalid document ID."})
     if request is not None:
         error = _bearer_token_check(request)
         if error:
             return error
+
+    request_id = getattr(request.state, "request_id", "unknown") if request else "unknown"
+    started = time.perf_counter()
     pipeline = get_pipeline()
     known = has_uploaded_document(pipeline, document_id)
     if not known:
         return JSONResponse(status_code=404, content={"error": "Document not found."})
     removed = remove_uploaded_document(pipeline, document_id)
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
+    _LOGGER.info(
+        "lifecycle_delete request_id=%s document_id=%s chunks_removed=%d latency_ms=%.2f",
+        request_id, document_id, removed, latency_ms,
+    )
     return DocumentDeleteResponse(
         document_id=document_id, deleted=True, chunks_removed=removed
     )
@@ -531,6 +596,9 @@ def query(payload: QueryRequest, request: Request = None) -> QueryResponse:
         if error:
             return error
 
+    request_id = getattr(request.state, "request_id", "unknown") if request else "unknown"
+    question_meta = _safe_question_meta(payload.question.strip())
+    scope_count = len(payload.document_ids) if payload.document_ids else 0
     started = time.perf_counter()
     pipeline = get_pipeline()
 
@@ -545,6 +613,12 @@ def query(payload: QueryRequest, request: Request = None) -> QueryResponse:
                 sources_fn=collect_sources,
                 document_ids=payload.document_ids,
             )
+        latency_ms = round((time.perf_counter() - started) * 1000, 2)
+        _LOGGER.info(
+            "lifecycle_query request_id=%s question=%s top_k=%d scope_count=%d latency_ms=%.2f supported=%s answer_type=%s conflict=%s",
+            request_id, question_meta, payload.top_k, scope_count,
+            latency_ms, execution.supported, execution.answer_type, execution.conflict,
+        )
 
         return QueryResponse(
             answer=execution.answer,
@@ -579,6 +653,8 @@ def ingest(payload: IngestRequest, request: Request = None) -> IngestResponse:
         if error:
             return error
 
+    request_id = getattr(request.state, "request_id", "unknown") if request else "unknown"
+    started = time.perf_counter()
     pipeline = get_pipeline()
 
     doc_name = payload.document_name or f"doc_{int(time.time())}"
@@ -600,6 +676,11 @@ def ingest(payload: IngestRequest, request: Request = None) -> IngestResponse:
     doc.chunk_count = len(doc.chunks)
 
     added = attach_documents(pipeline, [doc])
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
+    _LOGGER.info(
+        "lifecycle_ingest request_id=%s document_id=%s added_chunks=%d latency_ms=%.2f",
+        request_id, doc.doc_id, added, latency_ms,
+    )
 
     return IngestResponse(
         document_id=doc.doc_id,

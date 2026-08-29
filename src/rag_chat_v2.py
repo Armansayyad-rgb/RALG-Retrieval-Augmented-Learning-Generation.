@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import logging
 import re
 
@@ -26,6 +27,25 @@ logger = setup_logging(
     log_dir=LOG_DIR,
     log_name="rag_chat",
 )
+
+
+def _safe_text_hash(text: str) -> str:
+    if not text:
+        return "empty"
+    return hashlib.sha256(text.encode("utf-8", errors="replace")).hexdigest()[:8]
+
+
+def _safe_log_question(text: str) -> str:
+    length = len(text)
+    digest = _safe_text_hash(text)
+    return f"len={length} hash={digest}"
+
+
+def _safe_log_answer(answer_type: str, text: str) -> str:
+    length = len(text)
+    digest = _safe_text_hash(text)
+    return f"type={answer_type} len={length} hash={digest}"
+
 
 from model_v2 import SmallLMV2
 from extractor_v1 import extract_answer
@@ -3626,7 +3646,7 @@ def answer_question(
 ):
     logger.info(
         "Question received: %s",
-        question,
+        _safe_log_question(question),
     )
 
     try:
@@ -3638,8 +3658,8 @@ def answer_question(
         )
     except Exception as exc:
         logger.error(
-            "Unhandled error while answering question: %r",
-            question,
+            "Unhandled error while answering question: %s",
+            _safe_log_question(question),
             exc_info=True,
         )
         raise
@@ -3700,9 +3720,9 @@ def _answer_question_impl(
     )
 
     logger.debug(
-        "Semantic plan: intent=%s subject=%r",
+        "Semantic plan: intent=%s subject=%s",
         planned_intent,
-        plan.get("subject"),
+        _safe_log_question(plan.get("subject") or ""),
     )
 
     # runtime_plan is the sole authoritative routing decision.
@@ -4112,7 +4132,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (extractor): %s",
-            answer,
+            _safe_log_answer("extractor", answer),
         )
 
         if verbose:
@@ -4336,7 +4356,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (comparison): %s",
-            answer,
+            _safe_log_answer("comparison", answer),
         )
 
         if verbose:
@@ -5059,7 +5079,7 @@ def _answer_question_impl(
 
             logger.info(
                 "Answer generated (causal): %s",
-                answer,
+                _safe_log_answer("causal", answer),
             )
 
             if verbose:
@@ -5096,7 +5116,7 @@ def _answer_question_impl(
 
             logger.info(
                 "Answer generated (change): %s",
-                answer,
+                _safe_log_answer("change", answer),
             )
 
             if verbose:
@@ -5133,7 +5153,7 @@ def _answer_question_impl(
 
             logger.info(
                 "Answer generated (effect): %s",
-                answer,
+                _safe_log_answer("effect", answer),
             )
 
             if verbose:
@@ -5172,7 +5192,7 @@ def _answer_question_impl(
 
             logger.info(
                 "Answer generated (entity_list): %s",
-                answer,
+                _safe_log_answer("entity_list", answer),
             )
 
             if verbose:
@@ -5211,7 +5231,7 @@ def _answer_question_impl(
 
             logger.info(
                 "Answer generated (structure): %s",
-                answer,
+                _safe_log_answer("structure", answer),
             )
 
             if verbose:
@@ -5256,7 +5276,7 @@ def _answer_question_impl(
 
             logger.info(
                 "Answer generated (summary): %s",
-                answer,
+                _safe_log_answer("summary", answer),
             )
 
             if verbose:
@@ -5295,7 +5315,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (causal-fallback): %s",
-            causal_answer,
+            _safe_log_answer("causal-fallback", causal_answer),
         )
 
         if verbose:
@@ -5343,7 +5363,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (change-fallback): %s",
-            change_answer,
+            _safe_log_answer("change-fallback", change_answer),
         )
 
         if verbose:
@@ -5376,7 +5396,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (effect-fallback): %s",
-            effect_answer,
+            _safe_log_answer("effect-fallback", effect_answer),
         )
 
         if verbose:
@@ -5409,7 +5429,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (entity_list-fallback): %s",
-            entity_list_answer,
+            _safe_log_answer("entity_list-fallback", entity_list_answer),
         )
 
         if verbose:
@@ -5442,7 +5462,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (structure-fallback): %s",
-            structure_answer,
+            _safe_log_answer("structure-fallback", structure_answer),
         )
 
         if verbose:
@@ -5475,7 +5495,7 @@ def _answer_question_impl(
 
         logger.info(
             "Answer generated (summary-fallback): %s",
-            summary_answer,
+            _safe_log_answer("summary-fallback", summary_answer),
         )
 
         if verbose:
@@ -5655,7 +5675,7 @@ def _answer_question_impl(
 
     logger.info(
         "Answer generated (reasoning_model): %s",
-        answer,
+        _safe_log_answer("reasoning_model", answer),
     )
 
     if verbose:
