@@ -52,7 +52,7 @@ if (-not $preflight.pass) {
     exit 1
 }
 if (-not $preflight.selected_port) {
-    Write-Host ("[FAIL] No available port in allowed range $($PORT_RANGE_START)-$($PORT_RANGE_END). " +
+    Write-Host ("[FAIL] No available port in allowed range 7860-7870. " +
         "Free one of those ports on 127.0.0.1 and re-run. This launcher never terminates other processes.") -ForegroundColor Red
     exit 1
 }
@@ -76,7 +76,7 @@ Write-Host "FastAPI API server background job started (Job ID: $($apiJob.Id))"
 Write-Host "--- Stage 4: Launch Gradio WebUI ---"
 Write-Host "Starting Gradio WebUI on 127.0.0.1:$env:WEBUI_PORT (background)..."
 $webuiJob = Start-Job {
-    & $py -m webui.app
+    & $py -m webui_bootstrap
 }
 Write-Host "Gradi WebUI background job started (Job ID: $($webuiJob.Id))"
 
@@ -105,7 +105,7 @@ if (-not $ready) {
 # ---- Stage 6: Status and Ctrl+C cleanup ----
 Write-Host ""
 Write-Host "Both services are running."
-Write-Host "  API (FastAPI):      http://127.0.0.1:8000  (endpoints: /health, /ready, /ingest, /query)"
+Write-Host "  API (FastAPI):      http://127.0.0.1:8000  (common demo endpoints: /health, /ready, /ingest, /query)"
 Write-Host "  WebUI (Gradio):     http://127.0.0.1:$env:WEBUI_PORT"
 Write-Host "Press Ctrl+C to stop the services and exit."
 

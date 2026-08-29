@@ -222,7 +222,7 @@ the deterministic buyer-demo scenario (Section 5 of `docs/BUYER_DEMO_GUIDE.md`):
 | Step | Expected outcome |
 |---|---|
 | Service health (`/health`) | `{"status":"ok"}` |
-| Service readiness (`/ready`) | `{"ready":true, ...}` |
+| Service readiness (`/ready`) | `{"ready":true, ...}` when the model/checkpoint is present and initialization is healthy; extractive-only mode without the checkpoint may return `503` |
 | Document ingestion | Document parsed, chunked, indexed; KB table updates |
 | Supported question | Direct answer with cited sources; answer_type="supported" |
 | Unsupported question | System reports corpus does not contain the answer (abstention) |
