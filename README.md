@@ -112,6 +112,8 @@ Supported answer or abstention
 
 Document scope is threaded end-to-end through the API and runtime retrieval path. Invalid or empty document scopes fail safely rather than falling back to unrelated global evidence.
 
+`API_TOKEN` authentication is optional under the current single-tenant deployment profile.
+
 ## Key capabilities
 
 - local/private technical-document question answering;

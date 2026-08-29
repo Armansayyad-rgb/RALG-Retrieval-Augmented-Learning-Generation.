@@ -13,3 +13,7 @@ documents = client.documents()
 print(documents)
 if documents:
     print(client.delete(documents[-1]["document_id"]))
+
+# Optional authenticated client example:
+# client_auth = RALGClient(api_token="your-api-token")
+# print(client_auth.query("Question?", document_ids=["doc_id_1"]))
