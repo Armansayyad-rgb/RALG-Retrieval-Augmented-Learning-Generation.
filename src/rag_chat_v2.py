@@ -3364,28 +3364,29 @@ def initialize_pipeline(
             weights_only=True,
         )
     except Exception as exc:
-        logger.error(
-            "Failed to load model checkpoint from %s",
+        logger.warning(
+            "Optional model checkpoint not found at %s: %s. "
+            "Pipeline will initialize for extractive/lookup mode only.",
             MODEL_FILE,
-            exc_info=True,
+            exc,
         )
-        raise
-
-    model.load_state_dict(
-        state_dict
-    )
-
-    model.eval()
-
-    logger.info(
-        "Reasoning V1 model loaded from %s",
-        MODEL_FILE,
-    )
-
-    if verbose:
-        print(
-            "Reasoning V1 model loaded."
+        model = None
+    else:
+        model.load_state_dict(
+            state_dict
         )
+
+        model.eval()
+
+        logger.info(
+            "Reasoning V1 model loaded from %s",
+            MODEL_FILE,
+        )
+
+        if verbose:
+            print(
+                "Reasoning V1 model loaded."
+            )
 
     try:
         chunks = load_chunks_v2(

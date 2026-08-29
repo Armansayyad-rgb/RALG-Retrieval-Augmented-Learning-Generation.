@@ -454,12 +454,12 @@ def stats() -> StatsResponse:
 # ---------------------------------------------------------------------------
 
 @app.get("/documents", response_model=list[dict[str, Any]])
-def documents(request: Request) -> list[dict[str, Any]]:
+def documents(request: Request = None) -> list[dict[str, Any]]:
     """List safe public metadata for runtime-uploaded documents."""
-    # Bearer token check when API_TOKEN is set
-    error = _bearer_token_check(request)
-    if error:
-        return error
+    if request is not None:
+        error = _bearer_token_check(request)
+        if error:
+            return error
     return [
         {key: value for key, value in doc.items() if key != "path"}
         for doc in get_pipeline().get("uploaded_docs", [])
@@ -468,15 +468,15 @@ def documents(request: Request) -> list[dict[str, Any]]:
 
 
 @app.delete("/documents/{document_id}", response_model=DocumentDeleteResponse)
-def delete_document(document_id: str, request: Request) -> DocumentDeleteResponse:
+def delete_document(document_id: str, request: Request = None) -> DocumentDeleteResponse:
     """Delete one runtime document and its persisted content."""
     # Validate document_id format — reject path-traversal or injection patterns
     if ".." in document_id or document_id.startswith("/") or "\\" in document_id:
         raise HTTPException(status_code=400, detail="Invalid document ID.")
-    # Bearer token check when API_TOKEN is set
-    error = _bearer_token_check(request)
-    if error:
-        return error
+    if request is not None:
+        error = _bearer_token_check(request)
+        if error:
+            return error
     pipeline = get_pipeline()
     known = has_uploaded_document(pipeline, document_id)
     if not known:
@@ -493,11 +493,11 @@ def delete_document(document_id: str, request: Request) -> DocumentDeleteRespons
 # ---------------------------------------------------------------------------
 
 @app.post("/query", response_model=QueryResponse)
-def query(payload: QueryRequest, request: Request) -> QueryResponse:
-    # Bearer token check when API_TOKEN is set
-    error = _bearer_token_check(request)
-    if error:
-        return error
+def query(payload: QueryRequest, request: Request = None) -> QueryResponse:
+    if request is not None:
+        error = _bearer_token_check(request)
+        if error:
+            return error
 
     started = time.perf_counter()
     pipeline = get_pipeline()
@@ -540,11 +540,11 @@ def query(payload: QueryRequest, request: Request) -> QueryResponse:
 # ---------------------------------------------------------------------------
 
 @app.post("/ingest", response_model=IngestResponse)
-def ingest(payload: IngestRequest, request: Request) -> IngestResponse:
-    # Bearer token check when API_TOKEN is set
-    error = _bearer_token_check(request)
-    if error:
-        return error
+def ingest(payload: IngestRequest, request: Request = None) -> IngestResponse:
+    if request is not None:
+        error = _bearer_token_check(request)
+        if error:
+            return error
 
     pipeline = get_pipeline()
 

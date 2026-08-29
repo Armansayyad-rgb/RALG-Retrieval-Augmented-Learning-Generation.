@@ -43,12 +43,9 @@ REQUIRED_FILES = [
     "docs/BUYER_DEMO_GUIDE.md",
 ]
 
-REQUIRED_CHECKPOINT_DIRS = [
-    "checkpoints/v2",
-]
-
 RECOMMENDED_FILES = [
     "data/tokenizer.json",
+    "checkpoints/v2/reasoning_model_v1.pt",
 ]
 
 PREFERRED_PORT = 7860
@@ -79,18 +76,6 @@ def check_files(root: Path = ROOT) -> list[dict]:
             "detail": str(path),
             "action": None if path.is_file()
             else f"Missing required file. Verify the repository checkout provides {rel}.",
-        })
-    for rel in REQUIRED_CHECKPOINT_DIRS:
-        path = root / rel
-        results.append({
-            "name": f"dir_exists:{rel}",
-            "pass": path.is_dir(),
-            "detail": str(path),
-            "action": None if path.is_dir()
-            else ("Missing checkpoint directory checkpoints/v2. "
-                  "Place the external model bundle there, or run without it "
-                  "for extractive/lookup answers only. See README for "
-                  "license-governed checkpoint terms."),
         })
     for rel in RECOMMENDED_FILES:
         path = root / rel

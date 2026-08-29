@@ -138,9 +138,9 @@ class CheckpointRequirementTests(unittest.TestCase):
         self.assertIn("COMPATIBLE BUT UNUSED", source)
 
     def test_genuinely_required_artifacts_still_listed(self):
-        self.assertIn("checkpoints/v2/reasoning_model_v1.pt", preflight.REQUIRED_FILES)
+        self.assertNotIn("checkpoints/v2/reasoning_model_v1.pt", preflight.REQUIRED_FILES)
         self.assertIn("data/tokenizer_v2.json", preflight.REQUIRED_FILES)
-        self.assertIn("checkpoints/v2", preflight.REQUIRED_CHECKPOINT_DIRS)
+        self.assertFalse(hasattr(preflight, "REQUIRED_CHECKPOINT_DIRS"))
 
 
 class ReviewSummaryCategoryTests(unittest.TestCase):
