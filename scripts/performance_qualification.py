@@ -32,6 +32,7 @@ except Exception:
     pass
 
 from src.retriever_v2 import build_index, retrieve, extend_index
+from src.runtime_architecture import execute_runtime
 
 
 def rss_mb():
@@ -123,20 +124,68 @@ def measure_retrieval_only(chunks, idx, df, warmup=3, repeats=50):
 def measure_deterministic_ralg(chunks, idx, df, warmup=3, repeats=30):
     """Measure deterministic RALG runtime latency (no model generation).
 
-    Measures the full deterministic pipeline excluding model generation.
+    Attempts to exercise the production execute_runtime / answer_question pipeline.
+    If the model is not available (no pipeline), reports NOT_MEASURED rather than
+    measuring a simplified retrieve() proxy and mislabeling it as RALG runtime.
     """
+    # Attempt to load the pipeline from runtime_architecture
+    pipeline = None
+    try:
+        from src.runtime_architecture import get_pipeline
+        pipeline = get_pipeline()
+    except Exception:
+        pipeline = None
+
+    if pipeline is None:
+        # Model not available; cannot exercise production deterministic runtime.
+        # Report NOT_MEASURED instead of measuring retrieve() as "RALG runtime".
+        return {
+            "status": "NOT_MEASURED",
+            "reason": "Pipeline/model not available; cannot exercise production deterministic runtime.",
+        }
+
     qs = [f"domain {i % 16} control value {i % 97}" for i in range(max(repeats + 10, 40))]
 
     lats = []
     # Warmup
     for _ in range(warmup):
         for q in qs[:3]:
-            retrieve(q, chunks, idx, df)
+            try:
+                execute_runtime(
+                    pipeline,
+                    q,
+                    top_k=5,
+                    answer_fn=lambda p, qq, **kwargs: {"evidence": [], "answer": "", "supported": False, "answer_type": "system"},
+                    contract_fn=lambda p, qq, **kwargs: type("C", (), {"answer": "", "confidence": None, "sources": [], "provenance": [], "conflict": False, "traceable": False})(),
+                    sources_fn=lambda p, qq, **kwargs: [],
+                    document_ids=None,
+                )
+            except Exception:
+                pass  # warmup may fail; we continue
 
     for q in qs[:repeats]:
         t0 = time.perf_counter()
-        retrieve(q, chunks, idx, df)
-        lats.append((time.perf_counter() - t0) * 1000)  # ms
+        try:
+            # Minimal execution: use a no-op answer fn that doesn't invoke model generation
+            # The key deterministic path is retrieval + support gate; model generate is separate
+            from src.runtime_architecture import execute_runtime
+            result = execute_runtime(
+                pipeline,
+                q,
+                top_k=5,
+                answer_fn=lambda p, qq, **kwargs: {"evidence": [], "answer": "", "supported": False, "answer_type": "system"},
+                contract_fn=lambda p, qq, **kwargs: type("C", (), {"answer": "", "confidence": None, "sources": [], "provenance": [], "conflict": False, "traceable": False})(),
+                sources_fn=lambda p, qq, **kwargs: [],
+                document_ids=None,
+            )
+            elapsed_ms = round((time.perf_counter() - t0) * 1000, 3)
+            lats.append(elapsed_ms)
+        except Exception as e:
+            # If even the deterministic path requires model inference, stop measuring
+            return {
+                "status": "NOT_MEASURED",
+                "reason": f"Production runtime requires model generation: {e}",
+            }
 
     def pct(arr, p):
         if not arr:
@@ -359,10 +408,13 @@ def main():
     print("\n=== Phase 3: Deterministic RALG Runtime ===")
     ralg = measure_deterministic_ralg(chunks, idx, df)
 
-    print(f"Deterministic p50: {ralg['deterministic_p50_ms']} ms")
-    print(f"Deterministic p95: {ralg['deterministic_p95_ms']} ms")
-    print(f"Deterministic p99: {ralg['deterministic_p99_ms']} ms")
-    print(f"Deterministic throughput: {ralg['throughput_qps']} qps")
+    if ralg.get("status") == "NOT_MEASURED":
+        print(f"Status: {ralg['status']} — {ralg.get('reason', '')}")
+    else:
+        print(f"Deterministic p50: {ralg['deterministic_p50_ms']} ms")
+        print(f"Deterministic p95: {ralg['deterministic_p95_ms']} ms")
+        print(f"Deterministic p99: {ralg['deterministic_p99_ms']} ms")
+        print(f"Deterministic throughput: {ralg['throughput_qps']} qps")
 
     # === Phase 4: Model Generation ===
     print("\n=== Phase 4: Model Generation ===")
