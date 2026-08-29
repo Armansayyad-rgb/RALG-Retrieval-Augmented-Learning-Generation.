@@ -11,7 +11,7 @@ This runbook guides technical teams through a single-worker local pilot deployme
 ### Environment
 
 - Linux or macOS (Windows requires WSL2)
-- Python 3.11+
+- Python 3.11
 - 8 GB RAM minimum (16 GB recommended for 250k+ document corpus)
 - 10 GB disk space for indexes and artifacts
 - Outbound network access (for model downloads on first run)

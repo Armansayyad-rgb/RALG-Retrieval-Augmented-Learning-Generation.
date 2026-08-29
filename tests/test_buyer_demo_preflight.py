@@ -43,8 +43,8 @@ class TestPreflightJsonStructure(TestCase):
         self.assertIsInstance(data["checks"], list)
 
     def test_preflight_json_valid_when_checks_pass(self):
-        """When preflight passes (Python 3.10+, checkpoint present), structure is valid."""
-        # Skip in this env (Python 3.9); the structure test above covers the case.
+        """When preflight passes (Python 3.11, checkpoint present), structure is valid."""
+        # Skip in environments without Python 3.11; the structure test above covers the case.
         pass
 
 
@@ -60,6 +60,40 @@ class TestPreflightPythonVersion(TestCase):
         data = json.loads(result.stdout)
         # Structure is valid regardless of pass/fail
         self.assertIn("python_version", [c["name"] for c in data["checks"]])
+
+
+class _FakeVersion:
+    """Minimal stand-in for sys.version_info supporting the comparisons used."""
+    def __init__(self, major, minor, micro=0):
+        self.major = major
+        self.minor = minor
+        self.micro = micro
+
+    def __lt__(self, other):
+        return (self.major, self.minor, self.micro) < tuple(other)
+
+
+class TestPreflightPythonVersionExact(TestCase):
+    """Preflight must require exactly Python 3.11 (reject 3.10 and 3.12)."""
+
+    def _check(self, major, minor):
+        with patch.object(sys, "version_info", _FakeVersion(major, minor)):
+            return buyer_demo_preflight.check_python()
+
+    def test_preflight_rejects_3_10(self):
+        result = self._check(3, 10)
+        self.assertFalse(result["pass"])
+        self.assertIn("3.11", result["action"])
+
+    def test_preflight_accepts_3_11(self):
+        result = self._check(3, 11)
+        self.assertTrue(result["pass"])
+        self.assertIsNone(result["action"])
+
+    def test_preflight_rejects_3_12(self):
+        result = self._check(3, 12)
+        self.assertFalse(result["pass"])
+        self.assertIn("3.11", result["action"])
 
 
 class TestPreflightRequiresTokenizer(TestCase):

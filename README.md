@@ -5,7 +5,7 @@
 
 A local-first, evidence-grounded technical-document intelligence engine focused on retrieval quality, provenance, document-scoped reasoning, conservative abstention, and reproducible evaluation.
 
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-Source--Available-orange)
 ![Status](https://img.shields.io/badge/Status-Controlled%20Technical%20Evaluation-blue)
 
@@ -146,15 +146,15 @@ PowerShell logic to bash or run the Python preflight directly).
 
 ### 2. Python version
 
-Python **3.10 or newer** is required. The preflight check (`scripts/buyer_demo_preflight.py`)
+Python **3.11** is required. The preflight check (`scripts/buyer_demo_preflight.py`)
 validates this and reports `[FAIL] python_version` if the installed version is
-older. If only Python 3.9 is available, create a venv with a newer Python
-before proceeding.
+not exactly 3.11. If a different Python version is installed, create a venv with
+Python 3.11 before proceeding.
 
 ```powershell
 # Verify Python version
 python --version
-# Expected: 3.10.x or newer
+# Expected: 3.11.x
 ```
 
 ### 3. Dependency install
@@ -233,7 +233,7 @@ the deterministic buyer-demo scenario (Section 5 of `docs/BUYER_DEMO_GUIDE.md`):
 
 | Symptom | Fix |
 |---|---|
-| `[FAIL] python_version` | Install Python 3.10+ and re-run; or create venv with newer Python |
+| `[FAIL] python_version` | Install Python 3.11 and re-run; or create a venv with Python 3.11 |
 | `[FAIL] file_exists:checkpoints/v2` | Place the external checkpoint bundle under `checkpoints/v2/` or run in extractive mode without it |
 | `[FAIL] webui_port_available` | Free one of ports 7860-7870 on 127.0.0.1; the launcher never terminates other processes |
 | Service starts but `/ready` returns 503 | Wait a few seconds for initialization; check logs for initialization errors |
