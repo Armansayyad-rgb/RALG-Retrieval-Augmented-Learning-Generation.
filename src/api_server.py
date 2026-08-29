@@ -34,7 +34,7 @@ from pathlib import Path
 from threading import RLock, Lock
 from typing import Any, Optional
 
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -69,6 +69,24 @@ _LOGGER = logging.getLogger(__name__)
 
 # Public constant for request size limit (used by tests and middleware)
 MAX_API_REQUEST_BYTES = _MAX_API_REQUEST_BYTES
+MAX_DOCUMENT_ID_CHARS = 255
+
+# Shared document-identifier safety check.
+# Rejects empty/whitespace-only, path-traversal (".."), slash/backslash
+# path-like values, control characters, and over-long values. Does NOT
+# require the id to currently exist. Used by both the DELETE route and the
+# document_ids query validator so the rules never diverge.
+def _is_valid_document_id(value: str) -> bool:
+    if not value or not value.strip():
+        return False
+    if len(value) > MAX_DOCUMENT_ID_CHARS:
+        return False
+    if ".." in value or "/" in value or "\\" in value:
+        return False
+    if any(ord(ch) < 0x20 for ch in value):
+        return False
+    return True
+
 
 # Rate-limiting state (thread-safe, process-local)
 _request_counts: dict[str, list[float]] = {}
@@ -197,6 +215,16 @@ class QueryRequest(StrictRequest):
     def question_must_have_content(cls, value: str) -> str:
         if not value.strip():
             raise ValueError("question must not be blank")
+        return value
+
+    @field_validator("document_ids")
+    @classmethod
+    def document_ids_must_be_valid(cls, value: Optional[list[str]]) -> Optional[list[str]]:
+        if value is None:
+            return value
+        for document_id in value:
+            if not _is_valid_document_id(document_id):
+                raise ValueError("document_ids contains an invalid identifier")
         return value
 
 
@@ -472,8 +500,8 @@ def documents(request: Request = None) -> list[dict[str, Any]]:
 def delete_document(document_id: str, request: Request = None) -> DocumentDeleteResponse:
     """Delete one runtime document and its persisted content."""
     # Validate document_id format — reject path-traversal or injection patterns
-    if ".." in document_id or document_id.startswith("/") or "\\" in document_id:
-        raise HTTPException(status_code=400, detail="Invalid document ID.")
+    if not _is_valid_document_id(document_id):
+        return JSONResponse(status_code=400, content={"error": "Invalid document ID."})
     if request is not None:
         error = _bearer_token_check(request)
         if error:
@@ -481,7 +509,7 @@ def delete_document(document_id: str, request: Request = None) -> DocumentDelete
     pipeline = get_pipeline()
     known = has_uploaded_document(pipeline, document_id)
     if not known:
-        raise HTTPException(status_code=404, detail="Document not found.")
+        return JSONResponse(status_code=404, content={"error": "Document not found."})
     removed = remove_uploaded_document(pipeline, document_id)
     return DocumentDeleteResponse(
         document_id=document_id, deleted=True, chunks_removed=removed

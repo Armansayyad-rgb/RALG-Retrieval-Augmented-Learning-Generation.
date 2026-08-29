@@ -153,6 +153,8 @@ curl -X POST http://127.0.0.1:8000/query \
 
 When `document_ids` is provided, the runtime only considers chunks from those documents. Unscoped queries search the full knowledge base.
 
+Each `document_id` must be a safe identifier: no empty/whitespace-only, `..`, `/`, `\`, control characters, or values longer than 255 characters. Malformed `document_ids` are rejected with `422` and `{"error": "Invalid request."}`. Up to 10 ids are allowed per request.
+
 ### /documents
 
 ```bash
@@ -185,6 +187,8 @@ Response:
   "chunks_removed": 1
 }
 ```
+
+Malformed `document_id` values return `400` and unknown ids return `404`, both with the `{"error": ...}` envelope (consistent with the rest of the API).
 
 ## Python client (test script)
 
