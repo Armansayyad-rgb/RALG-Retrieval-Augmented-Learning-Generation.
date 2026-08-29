@@ -1,0 +1,32 @@
+Write-Ahead Logging
+SQLite supports a WAL mode
+that allows concurrent reads
+and writes to the database.
+The WAL file stores changes
+before they are committed.
+This improves performance
+for write-heavy workloads.
+The checkpoint process moves
+data from the WAL back to
+the main database file.
+WAL mode is the default
+for most SQLite operations.
+It provides better concurrency
+than the rollback journal.
+Multiple readers can access
+the database simultaneously
+while a single writer proceeds.
+The WAL checkpoint can run
+automatically or manually.
+It scans the WAL file for
+completed transactions and
+applies them to the database.
+After checkpointing, the WAL
+file can be truncated or
+reused for new transactions.
+The WAL index file stores
+shared memory used by readers
+to determine which pages
+have been modified by writers.
+This allows lock-free reads
+in most common scenarios.

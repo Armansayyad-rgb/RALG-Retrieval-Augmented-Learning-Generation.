@@ -1,0 +1,19 @@
+## Deployment Procedure
+
+1. First, verify all tests pass in the CI pipeline.
+2. Then, build the Docker image with the release tag.
+3. Push the image to the container registry.
+4. Update the deployment manifest with the new image tag.
+5. Apply the manifest to the Kubernetes cluster.
+6. Verify the pods are running and healthy.
+7. Run smoke tests against the staging environment.
+8. Notify the team that deployment is complete.
+
+## Rollback Procedure
+
+1. Identify the previous working deployment version.
+2. Update the manifest to reference the old image tag.
+3. Apply the rollback manifest to the cluster.
+4. Verify pods restart with the correct version.
+5. Confirm application functionality is restored.
+6. Document the rollback reason in the incident log.
