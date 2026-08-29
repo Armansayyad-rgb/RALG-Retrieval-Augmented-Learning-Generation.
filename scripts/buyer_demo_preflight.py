@@ -7,7 +7,7 @@ services beyond localhost. Also selects the actual WebUI port so the
 launcher and the checks agree on one bounded, verified choice.
 
 Checks:
-- Python version (3.10+)
+- Python version (must be exactly 3.11)
 - Required source modules and demo assets exist
 - Checkpoint/tokenizer assets documented (external, not in Git; see README)
 - Bounded port selection: 7860 first, then 7861-7870; never arbitrary ports
@@ -55,14 +55,22 @@ PORT_RANGE_END = 7870  # allowed fallback window: 7861-7870
 
 def check_python() -> dict:
     version = sys.version_info
-    ok = version >= (3, 10)
+    ok = (version.major, version.minor) == (3, 11)
+    detail = f"{version.major}.{version.minor}.{version.micro}"
+    if not ok:
+        if version < (3, 11):
+            action = ("Install Python 3.11 and re-run. This release is "
+                      "validated only on Python 3.11; 3.10 is not supported.")
+        else:
+            action = ("The validated runtime for this release is Python 3.11. "
+                      "Python 3.12 is not currently supported; use Python 3.11.")
+    else:
+        action = None
     return {
         "name": "python_version",
         "pass": ok,
-        "detail": f"{version.major}.{version.minor}.{version.micro}",
-        "action": ("Install Python 3.10 or newer and re-run."
-                   if not ok
-                   else None),
+        "detail": detail,
+        "action": action,
     }
 
 

@@ -16,12 +16,19 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from gradio_client import utils as client_utils
+SRC_DIR = Path(__file__).resolve().parent
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+import runtime_guard
+runtime_guard.enforce_python_311()
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+from gradio_client import utils as client_utils
 
 
 _original_get_type = client_utils.get_type

@@ -44,6 +44,9 @@ SRC_DIR = Path(__file__).resolve().parent
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
+import runtime_guard
+runtime_guard.enforce_python_311()
+
 from rag_chat_v2 import answer_question, initialize_pipeline  # noqa: E402
 from config import DATA_DIR  # noqa: E402
 from webui.chat_handler import (  # noqa: E402

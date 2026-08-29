@@ -41,7 +41,7 @@ Comprehensive guide for human technical experts to validate benchmark cases:
 **Lines:** 12,869  
 
 Complete runbook for deploying and evaluating RALG in pilot environment:
-- Prerequisites (Python 3.11+, 8–16 GB RAM, 10 GB disk)
+- Prerequisites (Python 3.11, 8–16 GB RAM, 10 GB disk)
 - Installation (source or Docker)
 - Quick start (health check, ingest, query, unsupported handling)
 - Full API reference (health, ingest, query, sources, delete)

@@ -13,7 +13,7 @@ must already be present locally (see Preflight).
 | Requirement | Detail |
 |---|---|
 | OS | Windows 10/11 (PowerShell 5.1+); Docker Desktop optional |
-| Python | 3.10 or newer on PATH, or a prepared `.venv` in the repo root |
+| Python | 3.11 on PATH, or a prepared `.venv` in the repo root |
 | Dependencies | `pip install -r requirements.txt` into `.venv` |
 | Model bundle | `checkpoints\v2\reasoning_model_v1.pt`, `checkpoints\embedding_model.pt`, `data\tokenizer_v2.json` present locally |
 | Network | localhost only |
@@ -296,7 +296,7 @@ considering the demo a release candidate.
 
 ### Dependency install
 
-- [ ] Python 3.10+ verified (`python --version`)
+- [ ] Python 3.11 verified (`python --version`)
 - [ ] Virtual environment created and activated (`.venv`)
 - [ ] `pip install -r requirements.txt` completed without errors
 - [ ] Optional: `pip install -r requirements-polish.txt` if Qwen polish LLM is desired

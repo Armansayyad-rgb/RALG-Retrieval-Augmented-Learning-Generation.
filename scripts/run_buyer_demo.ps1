@@ -33,7 +33,7 @@ foreach ($candidate in $pyCandidates) {
     }
 }
 if (-not $py) {
-    Write-Host "[FAIL] No Python found. Install Python 3.10+, or create .venv first:" -ForegroundColor Red
+    Write-Host "[FAIL] No Python found. Install Python 3.11, or create .venv first:" -ForegroundColor Red
     Write-Host "       python -m venv .venv; .venv\Scripts\Activate.ps1; python -m pip install -r requirements.txt"
     exit 1
 }
