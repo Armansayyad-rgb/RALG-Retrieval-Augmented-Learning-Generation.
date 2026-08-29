@@ -1,0 +1,256 @@
+npm Scripts Documentation
+========================
+
+npm scripts are user-defined shell commands that run during various stages
+of the npm lifecycle. They are defined in package.json under the "scripts"
+key.
+
+Basic Syntax
+------------
+  {
+    "scripts": {
+      "start": "node server.js",
+      "build": "webpack --config webpack.config.js",
+      "test": "jest",
+      "lint": "eslint src/",
+      "format": "prettier --write src/"
+    }
+  }
+
+  npm run start
+  npm run build
+  npm run test
+  npm run lint
+
+  # Shortcuts for lifecycle scripts:
+  npm start
+  npm test
+  npm stop
+  npm restart
+
+Pre/Post Hooks
+--------------
+npm automatically runs pre and post scripts when they exist.
+
+  {
+    "scripts": {
+      "prebuild": "npm run clean",
+      "build": "webpack --config webpack.config.js",
+      "postbuild": "echo Build complete!"
+    }
+  }
+
+  npm run build
+  # Executes: prebuild -> build -> postbuild
+
+Naming convention: prefix "pre" or "post" to any script name.
+
+Lifecycle Scripts
+-----------------
+npm defines built-in lifecycle scripts that run automatically at specific
+stages of package management.
+
+install (after `npm install`):
+  Runs after all dependencies are installed.
+  {
+    "scripts": {
+      "install": "node postinstall.js"
+    }
+  }
+
+prepare (after `npm install`, before `npm publish`):
+  Runs after install, and before publishing. Commonly used to build.
+  {
+    "scripts": {
+      "prepare": "npm run build"
+    }
+  }
+
+prepublishOnly (before `npm publish`):
+  Runs before the package is published. Use for final checks.
+  {
+    "scripts": {
+      "prepublishOnly": "npm run test && npm run build"
+    }
+  }
+
+prepack / postpack:
+  Runs before/after `npm pack`.
+
+version:
+  Runs after `npm version` bumps the version.
+  {
+    "scripts": {
+      "version": "npm run build && git add dist/"
+    }
+  }
+
+postversion:
+  Runs after version is committed and tagged.
+
+preuninstall / uninstall / postuninstall:
+  Run during package uninstallation.
+
+start:
+  Default command for `npm start`.
+  {
+    "scripts": {
+      "start": "node server.js"
+    }
+  }
+
+stop:
+  Default command for `npm stop`.
+
+restart:
+  Runs `stop` then `start`. If `restart` script is defined, it runs instead.
+
+test:
+  Default command for `npm test`.
+
+  {
+    "scripts": {
+      "test": "jest --coverage"
+    }
+  }
+
+Lifecycles for `npm install`:
+  preinstall -> install -> postinstall -> prepublish -> prepare -> prepack
+
+Lifecycles for `npm publish`:
+  prepublishOnly -> prepack -> publish -> postpack -> postpublish
+
+Package Lifecycle Events
+------------------------
+  preinstall        Before `npm install`
+  install           After `npm install`
+  postinstall       After `npm install`
+  prepublish        Before `npm publish` (deprecated, use prepublishOnly)
+  prepare           After install, before publish
+  prepublishOnly    Before `npm publish`
+  prepack           Before `npm pack`
+  postpack          After `npm pack`
+  publish           After `npm publish`
+  postpublish       After `npm publish`
+  preuninstall      Before package uninstall
+  uninstall         During package uninstall
+  postuninstall     After package uninstall
+
+Running Scripts
+---------------
+  npm run <script>              # Run a custom script
+  npm start                     # Runs "start" script
+  npm stop                      # Runs "stop" script
+  npm test                      # Runs "test" script
+  npm restart                   # Runs "restart" script
+  npm run                       # Lists all available scripts
+
+  # Pass arguments to scripts:
+  npm run test -- --coverage
+  # Runs: jest --coverage
+
+  # Run scripts in parallel:
+  npm run build & npm run lint
+
+  # Run scripts sequentially:
+  npm run build && npm run test
+
+  # Use environment variables:
+  NODE_ENV=production npm run build
+
+Accessing Arguments
+-------------------
+npm passes everything after -- to the script.
+
+  "scripts": {
+    "test": "jest"
+  }
+
+  npm run test -- --updateSnapshot --coverage
+  # jest receives --updateSnapshot --coverage
+
+  # Within scripts, access npm config values:
+  "scripts": {
+    "start": "echo $npm_config_registry"
+  }
+
+Using npm package.json Variables
+---------------------------------
+  "scripts": {
+    "start": "echo $npm_package_name@$npm_package_version"
+  }
+
+  "scripts": {
+    "env": "node -e 'console.log(process.env)'"
+  }
+
+  npm provides:
+    $npm_package_name
+    $npm_package_version
+    $npm_package_description
+    $npm_package_main
+    $npm_config_<key>
+
+Complete package.json Example
+-----------------------------
+  {
+    "name": "my-project",
+    "version": "1.0.0",
+    "scripts": {
+      "preinstall": "node scripts/check-node-version.js",
+      "postinstall": "node scripts/setup.js",
+      "prepare": "npm run build",
+      "prebuild": "npm run lint",
+      "build": "webpack --config webpack.config.js",
+      "postbuild": "echo 'Build complete'",
+      "pretest": "npm run build",
+      "test": "jest --coverage",
+      "posttest": "cat coverage/lcov.info | coveralls",
+      "lint": "eslint src/ --ext .js,.ts",
+      "lint:fix": "eslint src/ --ext .js,.ts --fix",
+      "format": "prettier --write 'src/**/*.{js,ts}'",
+      "prepublishOnly": "npm test && npm run build",
+      "start": "node server.js",
+      "dev": "nodemon server.js",
+      "clean": "rm -rf dist coverage node_modules/.cache"
+    },
+    "dependencies": {
+      "express": "^4.18.0"
+    },
+    "devDependencies": {
+      "eslint": "^8.0.0",
+      "jest": "^29.0.0",
+      "nodemon": "^3.0.0",
+      "prettier": "^3.0.0",
+      "webpack": "^5.0.0"
+    }
+  }
+
+Script Hooks for CI/CD
+-----------------------
+  {
+    "scripts": {
+      "pretest": "npm run lint",
+      "test": "jest --coverage --ci",
+      "posttest": "node scripts/check-coverage.js",
+      "predeploy": "npm run test && npm run build",
+      "deploy": "node scripts/deploy.js",
+      "postdeploy": "echo 'Deployment complete'"
+    }
+  }
+
+Error Handling
+--------------
+If a pre script fails (exits with non-zero), npm does not run the main
+script. If a post script fails, the overall command still fails.
+
+  # This will NOT run if prebuild fails:
+  "prebuild": "npm run lint",
+  "build": "webpack"
+
+Script Naming Conventions
+-------------------------
+- Use kebab-case: `build:dev`, `test:unit`
+- Prefix with action: `prebuild`, `postbuild`
+- Group related scripts: `test`, `test:unit`, `test:e2e`
+- Use colons for variants: `lint`, `lint:fix`

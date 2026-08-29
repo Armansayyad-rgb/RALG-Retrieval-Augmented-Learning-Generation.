@@ -1,0 +1,219 @@
+Prometheus Alerting Rules Documentation
+========================================
+
+Prometheus alerting rules allow you to define conditions that trigger alerts
+when a metric expression evaluates to true for a specified duration.
+
+Alerting Rules Format
+---------------------
+  groups:
+    - name: example
+      rules:
+        - alert: HighRequestLatency
+          expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+          annotations:
+            summary: "High request latency on {{ $labels.instance }}"
+            description: "P99 latency is {{ $value }}s, exceeding 0.5s threshold"
+
+Rule Fields
+-----------
+alert:          Name of the alert. Must be unique within a group.
+expr:           PromQL expression evaluated each evaluation interval.
+for:            Duration the condition must be true before firing.
+labels:         Additional labels attached to the alert.
+annotations:    Human-readable descriptions with template variables.
+
+The `for` clause prevents transient spikes from causing false alerts. The
+alert only fires after the expression is continuously true for the `for`
+duration.
+
+PromQL Functions for Alerting
+-----------------------------
+rate():
+  Calculates per-second rate of increase. Use for counters.
+  rate(http_requests_total[5m])
+
+increase():
+  Calculates the increase in a counter over a time window.
+  increase(http_requests_total[1h])
+
+histogram_quantile():
+  Calculates a quantile from a histogram.
+  histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
+
+avg_over_time():
+  Average of a metric over a time window.
+  avg_over_time(cpu_usage[5m])
+
+Template Variables in Annotations
+---------------------------------
+  {{ $labels.<labelname> }}    Label value of the alert
+  {{ $value }}                 Current value of the alerting expression
+  {{ $labels.instance }}       Instance label
+  {{ $labels.job }}            Job label
+  {{ $labels.namespace }}      Kubernetes namespace
+  {{ $labels.pod }}            Kubernetes pod name
+
+  Example annotations:
+  annotations:
+    summary: "Disk space low on {{ $labels.instance }}"
+    description: "{{ $labels.mountpoint }} has {{ $value | humanizePercentage }} free space"
+
+Alert Groups
+------------
+Groups organize related rules. Rules within a group are evaluated sequentially.
+
+  groups:
+    - name: infrastructure
+      interval: 30s
+      rules:
+        - alert: HighCPU
+          expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU on {{ $labels.instance }}"
+
+    - name: application
+      rules:
+        - alert: HighErrorRate
+          expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Error rate above 5%"
+
+Complete Alerting Rules File
+----------------------------
+  groups:
+    - name: alerts
+      rules:
+        # CPU Alert
+        - alert: HighCPU
+          expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+          for: 10m
+          labels:
+            severity: warning
+            team: infrastructure
+          annotations:
+            summary: "High CPU usage on {{ $labels.instance }}"
+            description: "CPU usage is {{ $value | printf \"%.1f\" }}%"
+
+        # Memory Alert
+        - alert: HighMemory
+          expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+          for: 5m
+          labels:
+            severity: critical
+            team: infrastructure
+          annotations:
+            summary: "Memory usage above 90% on {{ $labels.instance }}"
+            description: "Memory usage is {{ $value | humanizePercentage }}"
+
+        # Disk Alert
+        - alert: DiskSpaceLow
+          expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+          for: 5m
+          labels:
+            severity: critical
+            team: infrastructure
+          annotations:
+            summary: "Disk space low on {{ $labels.instance }}"
+            description: "{{ $labels.mountpoint }} has {{ $value | humanizePercentage }} free space"
+
+        # HTTP Error Rate
+        - alert: HighErrorRate
+          expr: |
+            sum(rate(http_requests_total{status=~"5.."}[5m])) by (job, instance)
+            /
+            sum(rate(http_requests_total[5m])) by (job, instance)
+            > 0.05
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+          annotations:
+            summary: "High error rate on {{ $labels.instance }}"
+            description: "Error rate is {{ $value | printf \"%.2f\" }}%"
+
+        # P99 Latency
+        - alert: HighLatency
+          expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, instance)) > 1.0
+          for: 10m
+          labels:
+            severity: warning
+            team: backend
+          annotations:
+            summary: "P99 latency high on {{ $labels.instance }}"
+            description: "P99 latency is {{ $value }}s"
+
+        # Kubernetes Pod Restarts
+        - alert: PodRestarts
+          expr: increase(kube_pod_container_status_restarts_total[1h]) > 5
+          for: 0m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Pod {{ $labels.pod }} restarting frequently"
+            description: "Pod has restarted {{ $value }} times in the last hour"
+
+        # Certificate Expiry
+        - alert: CertificateExpirySoon
+          expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 30
+          for: 1h
+          labels:
+            severity: warning
+            team: security
+          annotations:
+            summary: "TLS certificate expires in less than 30 days"
+            description: "Certificate for {{ $labels.instance }} expires in {{ $value | printf \"%.0f\" }} days"
+
+Alertmanager Routing
+--------------------
+In alertmanager.yml, route alerts to receivers based on labels.
+
+  route:
+    receiver: default
+    group_by: ['alertname', 'cluster']
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+    routes:
+      - match:
+          severity: critical
+        receiver: pager-critical
+      - match:
+          team: backend
+        receiver: slack-backend
+
+  receivers:
+    - name: default
+      webhook_configs:
+        - url: 'http://alertmanager-webhook:9095'
+
+    - name: pager-critical
+      pagerduty_configs:
+        - service_key: '<key>'
+
+    - name: slack-backend
+      slack_configs:
+        - channel: '#backend-alerts'
+          send_resolved: true
+
+Inhibition Rules
+----------------
+Suppress lower-severity alerts when a higher-severity alert is active.
+
+  inhibit_rules:
+    - source_match:
+        severity: critical
+      target_match:
+        severity: warning
+      equal: ['alertname', 'instance']

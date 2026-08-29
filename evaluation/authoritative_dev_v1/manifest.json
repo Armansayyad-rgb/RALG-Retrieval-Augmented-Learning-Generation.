@@ -1,0 +1,34 @@
+{
+  "benchmark_version": "authoritative_dev_v1.0.0",
+  "status": "DEVELOPMENT - intentionally rerunnable",
+  "case_count": 160,
+  "category_counts": {
+    "supported": 25,
+    "paraphrased": 20,
+    "procedural": 20,
+    "causal": 15,
+    "cross_document": 15,
+    "document_scoped": 10,
+    "unsupported": 20,
+    "false_premise": 15,
+    "misleading_overlap": 10,
+    "conditional_or_qualified": 10
+  },
+  "source_count": 12,
+  "sources_manifest_sha256": "e9416741884895f9259a8bd35f1d538f91eae8dfa1fd816424886118d070e6b2",
+  "benchmark_sha256": "290884f21bbd298e9510629256e3ea31e250a60a89f59277942c3163f047fd33",
+  "evaluator_sha256": "cbc89156aade641a1c2460bf6be369c2761e60b5abd00e476f2f02065d76df3a",
+  "contamination_status": "PASS - no exact/high overlap with V1/V2/V3",
+  "methodology": "Development benchmark using production retriever_v2 pipeline with evidence-grounded scoring. Intentionally rerunnable for iterative improvement.",
+  "independence_statement": "Source documents distinct from Holdout V3. No V3 questions, answers, or evidence spans reused. V3 was not rerun.",
+  "targets": {
+    "retrieval_recall_at_5": 0.85,
+    "retrieval_hit_rate_at_5": 0.9,
+    "retrieval_mrr": 0.75,
+    "supported_accuracy": 0.75,
+    "false_rejection": 0.25,
+    "correct_rejection": 0.9,
+    "false_support": 0.1,
+    "qualified_accuracy": 0.7
+  }
+}

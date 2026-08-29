@@ -1,0 +1,147 @@
+Git Rebase Documentation
+========================
+
+Rebasing is the process of moving or combining a sequence of commits to a new
+base commit. It is an alternative to `git merge` for integrating changes from
+one branch into another.
+
+Core Concepts
+-------------
+Unlike `git merge`, which creates a merge commit, rebase rewrites the commit
+history by replaying commits on top of a different base. This produces a linear
+history, which many teams prefer for readability and bisecting.
+
+Basic Usage
+-----------
+  git rebase <base>
+  git rebase <upstream> <branch>
+  git rebase --onto <newbase> <upstream> <branch>
+
+Example: Rebase the current branch onto main:
+  git rebase main
+
+Example: Rebase feature-x onto origin/main:
+  git rebase origin/main feature-x
+
+Interactive Rebase
+------------------
+  git rebase -i <base>
+
+Opens an editor with a list of commits from <base> to HEAD. Each commit can be
+marked with a command:
+
+  pick    Use the commit as-is.
+  reword  Use the commit, but edit the commit message.
+  edit    Use the commit, but stop for amending.
+  squash  Use the commit, but meld into previous commit.
+  fixup   Like squash, but discard this commit's log message.
+  drop    Remove the commit entirely.
+
+Example interactive rebase of the last 3 commits:
+  $ git rebase -i HEAD~3
+  pick a1b2c3d Add user validation
+  squash d4e5f6a Fix validation typo
+  pick b7c8d9e Add email check
+
+This squashes the two validation commits into one, then applies the email check.
+
+Squash and Fixup
+----------------
+Squash combines the commit message from both commits:
+  pick a1b2c3d Add user validation
+  squash d4e5f6a Fix validation typo
+
+Fixup discards the later commit message entirely:
+  pick a1b2c3d Add user validation
+  fixup d4e5f6a Fix validation typo
+
+Autosquash
+----------
+If you use `--autosquash` (or set `rebase.autosquash = true`), commits created
+with `git commit --fixup=` or `git commit --squash=` are automatically reordered
+and marked for squashing:
+
+  $ git commit --fixup=b7c8d9e
+  $ git rebase -i main
+  # fixup commit is automatically placed after b7c8d9e and marked "fixup"
+
+Configuration
+-------------
+  rebase.autoStash    When true, runs `git stash` before rebase and
+                      `git stash pop` after. Default: false.
+                      Set with: git config --global rebase.autoStash true
+
+  rebase.onto         Equivalent to --onto. Useful for advanced workflows
+                      where you want to rebase onto a different upstream
+                      than the tracking branch.
+
+  rebase.rebaseMerges When true, rebase preserves merge commits using
+                      `--rebase-merges`. Commits referenced by merge
+                      commits are renumbered.
+
+Options
+-------
+  -i, --interactive     Open interactive editor.
+  -p, --preserve-merges Preserve merge commits (legacy; prefer --rebase-merges).
+  --rebase-merges       Preserve merge structure, re-enumerating commits.
+  -r, --rebase-merges   Alias for --rebase-merges.
+  --onto <newbase>      Rebase onto <newbase> instead of <upstream>.
+  --no-autosquash       Disable autosquash even if rebase.autosquash is set.
+  --abort               Return to the state before the rebase started.
+  --continue            After resolving conflicts, continue the rebase.
+  --skip                Skip the current patch and continue.
+
+Conflict Resolution During Rebase
+----------------------------------
+When conflicts occur, rebase stops at the conflicting commit. To resolve:
+
+  1. Edit the conflicting files.
+  2. Stage the resolved files:  git add <files>
+  3. Continue:                  git rebase --continue
+     Or abort:                  git rebase --abort
+
+Since rebase replays each commit individually, you may need to resolve
+conflicts multiple times for a long-running rebase.
+
+--onto Deep Dive
+-----------------
+The --onto form lets you specify three arguments:
+
+  git rebase --onto <newbase> <upstream> <branch>
+
+This rebases commits from <upstream> to <branch> onto <newbase>.
+
+Example: Move commits from feature-b that are not in feature-a onto main:
+  git rebase --onto main feature-a feature-b
+
+This detaches commits unique to feature-b and replays them on top of main.
+
+Recovering from a Bad Rebase
+-----------------------------
+Rebase rewrites history, but Git keeps reflog entries for 90 days:
+
+  $ git reflog
+  a1b2c3d HEAD@{5}: rebase (start): checkout main
+  ...
+  $ git reset --hard HEAD@{4}
+
+Interactive Rebase Tips
+-----------------------
+- Reorder commits by moving their lines in the editor.
+- Split a commit: mark it `edit`, then at the stop: `git reset HEAD^`,
+  stage partial changes, `git commit`, `git rebase --continue`.
+- Remove a commit: mark it `drop` or delete the line.
+
+Safety
+------
+Never rebase commits that have been pushed to a public/shared branch without
+coordinating with collaborators. Rebased commits have new SHA-1 hashes, which
+will cause conflicts and confusion for anyone who has already pulled the
+original commits.
+
+Working with Conflicts in Large Rebases
+----------------------------------------
+For large rebases, consider `git rebase --onto <newbase> <upstream> <branch>`
+to minimize the number of commits being replayed. You can also use
+`git rerere` (reuse recorded resolution) to automatically resolve previously
+seen conflicts.

@@ -1,0 +1,232 @@
+cURL TLS/SSL Options Documentation
+===================================
+
+cURL supports TLS/SSL encryption for secure HTTP (HTTPS), FTPS, IMAPS,
+and other protocols. The options below control certificate verification,
+client authentication, protocol versions, and cipher suites.
+
+Certificate Verification Options
+--------------------------------
+--cacert <file>
+  Specify the CA certificate bundle file for server certificate verification.
+
+  curl --cacert /etc/ssl/certs/ca-certificates.crt https://example.com
+  curl --cacert ./custom-ca-bundle.pem https://internal.example.com
+
+  Default: compiled-in CA bundle (typically /etc/ssl/certs or system store).
+
+--capath <directory>
+  Specify a directory containing CA certificates in PEM format. The
+  directory must contain hashed filenames (c_rehash).
+
+  curl --capath /etc/ssl/certs/ https://example.com
+
+  # Create the hash directory:
+  c_rehash /etc/ssl/certs/
+
+-n, --no-check-certificate
+  Skip server certificate verification. INSECURE. Use only for testing.
+
+  curl -k https://self-signed.example.com
+  curl --no-check-certificate https://self-signed.example.com
+
+Client Certificate Options
+--------------------------
+--cert <certificate[:password]>
+  Specify the client certificate file for mutual TLS (mTLS).
+
+  curl --cert client.pem https://example.com
+  curl --cert client.p12:password https://example.com
+
+  PEM format: --cert client.pem
+  P12 format: --cert client.p12:password
+  DER format: --cert client.der
+
+--key <private-key>
+  Specify the client private key file. If not provided, cURL uses the
+  certificate file.
+
+  curl --cert client.pem --key client-key.pem https://example.com
+  curl --cert client.p12 --key client-key.pem https://example.com
+
+--key-type <type>
+  Specify the private key type.
+
+  curl --key-type PEM --key client-key.pem https://example.com
+  curl --key-type DER --key client-key.der https://example.com
+
+--cacert, --cert, --key combined:
+  curl --cacert ca.pem --cert client.pem --key client-key.pem https://example.com
+
+Protocol Version Options
+------------------------
+--tlsv1
+  Use TLSv1.0 or newer (deprecated in curl 7.71.0+).
+
+  curl --tlsv1 https://example.com
+
+--tlsv1.0
+  Use TLSv1.0 only.
+
+--tlsv1.1
+  Use TLSv1.1 only.
+
+--tlsv1.2
+  Use TLSv1.2 or newer (recommended minimum).
+
+  curl --tlsv1.2 https://example.com
+
+--tlsv1.3
+  Use TLSv1.3 only.
+
+  curl --tlsv1.3 https://example.com
+
+--tls-max <version>
+  Maximum TLS version to use. Options: 1.0, 1.1, 1.2, 1.3, default.
+
+  curl --tls-max 1.2 https://example.com
+  curl --tlsv1.2 --tls-max 1.3 https://example.com
+
+  # Restrict to TLS 1.2 only:
+  curl --tlsv1.2 --tls-max 1.2 https://example.com
+
+  # Restrict to TLS 1.3 only:
+  curl --tlsv1.3 --tls-max 1.3 https://example.com
+
+SSL/SSH Protocol Selection
+---------------------------
+--ssl
+  Attempt to use SSL/TLS for the connection.
+
+--ssl-reqd
+  Require SSL/TLS. Fail if not available.
+
+  curl --ssl-reqd ftps://example.com/file.txt
+
+Cipher and Curve Selection
+---------------------------
+--ciphers <list>
+  Specify the list of ciphers to use. Colon-separated.
+
+  # Modern ciphers only:
+  curl --ciphers 'ECDHE+AESGCM:ECDHE+CHACHA20' https://example.com
+
+  # All ciphers:
+  curl --ciphers ALL https://example.com
+
+  # High-strength ciphers:
+  curl --ciphers HIGH https://example.com
+
+  # Exclude weak ciphers:
+  curl --ciphers 'HIGH:!aNULL:!eNULL:!DES:!RC4:!MD5' https://example.com
+
+  # TLS 1.3 ciphers (uses different syntax):
+  curl --ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384' https://example.com
+
+--curves <list>
+  Specify elliptic curves for key exchange (TLS 1.2).
+
+  curl --curves X25519:secp256r1 https://example.com
+  curl --curves auto https://example.com
+
+  # List available curves:
+  curl --curves '' https://example.com 2>&1 | grep curves
+
+Certificate Pinning
+--------------------
+--pinnedpubkey <hashes>
+  Verify the server's public key matches a pinned certificate. Prevents
+  MITM attacks even if a CA is compromised.
+
+  # Pin by file:
+  curl --pinnedpubkey server-cert.pem https://example.com
+
+  # Pin by hash (sha256):
+  curl --pinnedpubkey 'sha256//YhKJG1OJfYr...' https://example.com
+
+  # Multiple pins:
+  curl --pinnedpubkey 'sha256//hash1;sha256//hash2' https://example.com
+
+  # Generate pin:
+  openssl x509 -in cert.pem -pubkey -noout | \
+    openssl dgst -sha256 -binary | base64
+
+Certificate Status
+------------------
+--cert-status
+  Request the OCSP (Online Certificate Status Protocol) stapled response
+  from the server.
+
+  curl --cert-status https://example.com
+
+  This verifies the server certificate has not been revoked by checking
+  with the certificate authority's OCSP responder.
+
+OCSP Stapling
+--------------
+--cert-status enables OCSP stapling. The server staples the OCSP response
+to the TLS handshake, reducing latency and privacy concerns.
+
+  curl -v --cert-status https://example.com 2>&1 | grep OCSP
+
+Session and Cache Options
+-------------------------
+--ciphers <list>
+  Specify cipher suites (detailed above).
+
+--tlsauthtype <type>
+  TLS authentication type. Currently only "SRP" is supported.
+
+--tlsuser <name>
+  TLS username for SRP authentication.
+
+--tlspassword <string>
+  TLS password for SRP authentication.
+
+--ssl-allow-beast
+  Allow the BEAST vulnerability. For compatibility only.
+
+--ssl-no-revoke
+  Disable certificate revocation checks (Windows).
+
+Complete Examples
+-----------------
+  # Basic HTTPS with default verification:
+  curl https://example.com
+
+  # Client certificate (mTLS):
+  curl --cert client.pem --key client-key.pem --cacert ca.pem \
+      https://secure.example.com/api
+
+  # TLS 1.3 only with specific cipher:
+  curl --tlsv1.3 --tls-max 1.3 https://example.com
+
+  # Self-signed certificate (testing only):
+  curl -k https://self-signed.local
+
+  # Custom CA bundle:
+  curl --cacert /etc/pki/tls/certs/custom-ca.crt https://internal.example.com
+
+  # Pin public key:
+  curl --pinnedpubkey 'sha256//YhKJG1OJfYr...' https://example.com
+
+  # Check OCSP status:
+  curl --cert-status -v https://example.com 2>&1 | grep -i ocsp
+
+  # List ciphers supported by server:
+  curl --ciphers '' https://example.com
+
+  # Restrict to TLS 1.2-1.3:
+  curl --tlsv1.2 --tls-max 1.3 https://example.com
+
+Debugging TLS
+-------------
+  # Verbose output shows TLS handshake details:
+  curl -v https://example.com 2>&1 | grep -E "(SSL|TLS|certificate)"
+
+  # Show certificate chain:
+  curl -v https://example.com 2>&1 | grep -A 1 "subject:"
+
+  # Check certificate expiry:
+  echo | openssl s_client -connect example.com:443 2>/dev/null | \
+    openssl x509 -noout -dates

@@ -1,0 +1,214 @@
+Linux ip Command Reference
+===========================
+
+The `ip` command is the modern replacement for `ifconfig`, `route`, and
+`netstat`. It is part of the iproute2 package and communicates with the
+kernel via netlink sockets.
+
+Basic Syntax
+------------
+  ip [options] object { command | help }
+
+  Objects: addr, link, route, neigh, rule, tunnel, monitor, etc.
+  Commands vary by object (show, add, del, set, etc.)
+
+ip addr - IP Addresses
+-----------------------
+  ip addr                           # Show all addresses
+  ip addr show                      # Same as above
+  ip addr show dev eth0             # Show addresses for eth0
+  ip addr show scope global         # Show only global addresses
+  ip addr show to 10.0.0.0/8        # Filter by subnet
+
+  ip addr add 192.168.1.100/24 dev eth0          # Add address
+  ip addr add 10.0.0.5/16 dev eth0 label eth0:0  # Add with alias
+  ip addr del 192.168.1.100/24 dev eth0           # Remove address
+  ip addr flush dev eth0                          # Remove all addresses
+
+  # Show with brief output:
+  ip -br addr                      # Brief format (like ifconfig)
+  ip -br addr show dev eth0
+
+  # Show with statistics:
+  ip -s addr show dev eth0
+
+Sample output:
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+      link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+      inet 192.168.1.100/24 brd 192.168.1.255 scope global dynamic noprefixroute eth0
+         valid_lft 864000sec preferred_lft 864000sec
+      inet6 fe80::5054:ff:fe12:3456/64 scope link noprefixroute
+         valid_lft forever preferred_lft forever
+
+ip route - Routing Table
+-------------------------
+  ip route                                    # Show routing table
+  ip route show                               # Same
+  ip route show dev eth0                      # Routes via eth0
+  ip route show to match 10.0.0.0             # Match specific subnet
+  ip route show table all                     # Show all routing tables
+
+  ip route add 10.0.0.0/8 via 192.168.1.1 dev eth0    # Add route
+  ip route add default via 192.168.1.1                  # Default gateway
+  ip route add 172.16.0.0/16 via 10.0.0.1 metric 100   # With metric
+  ip route del 10.0.0.0/8                                # Delete route
+  ip route replace default via 192.168.1.1               # Replace route
+  ip route flush cache                                  # Flush route cache
+
+  # Show with protocol:
+  ip route show proto static
+  ip route show proto kernel
+
+Sample output:
+  default via 192.168.1.1 dev eth0 proto dhcp metric 100
+  10.0.0.0/8 via 192.168.1.254 dev eth0 proto static metric 200
+  192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100 metric 100
+  172.16.0.0/16 via 10.0.0.1 dev eth0 proto static metric 150
+
+ip link - Link Layer (Network Interfaces)
+-----------------------------------------
+  ip link show                                 # Show all interfaces
+  ip link show dev eth0                        # Show specific interface
+  ip link show type bridge                     # Show bridges only
+  ip link show up                              # Show active interfaces
+
+  ip link set eth0 up                          # Bring interface up
+  ip link set eth0 down                        # Bring interface down
+  ip link set eth0 mtu 9000                    # Set MTU (Jumbo frames)
+  ip link set eth0 promisc on                  # Enable promiscuous mode
+  ip link set eth0 name wan0                   # Rename interface
+
+  # Change MAC address:
+  ip link set eth0 address 52:54:00:12:34:56
+
+Sample output:
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+      link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+
+ip neigh - ARP/Neighbor Table
+------------------------------
+  ip neigh show                                 # Show ARP table
+  ip neigh show dev eth0                        # Show neighbors on eth0
+  ip neigh show nud all                         # Show all neighbor states
+
+  ip neigh add 192.168.1.200 lladdr 00:11:22:33:44:55 dev eth0
+  ip neigh replace 192.168.1.200 lladdr 00:11:22:33:44:55 dev eth0
+  ip neigh del 192.168.1.200 dev eth0
+  ip neigh flush all                            # Clear ARP cache
+
+Neighbor states:
+  PERMANENT    Manually configured
+  STALE        Entry has expired
+  DELAY        Waiting for confirmation
+  PROBE        Actively probing
+  REACHABLE    Confirmed reachable
+  INCOMPLETE   ARP request sent, no reply yet
+
+Sample output:
+  192.168.1.1 dev eth0 lladdr 00:11:22:33:44:55 REACHABLE
+  192.168.1.200 dev eth0 lladdr aa:bb:cc:dd:ee:ff STALE
+
+ip rule - Routing Policy
+-------------------------
+  ip rule show                                   # Show routing rules
+  ip rule add from 192.168.1.0/24 table 100     # Policy routing
+  ip rule add from 10.0.0.0/8 table 200 priority 100
+  ip rule add to 172.16.0.0/16 table 300
+  ip rule del from 192.168.1.0/24 table 100
+
+  # With fwmark (from iptables/nftables):
+  ip rule add fwmark 1 table 100
+
+  # With IP range:
+  ip rule add from 10.0.0.1-10.0.0.10 table 100
+
+Sample output:
+  0:      from all lookup local
+  32766:  from all lookup main
+  32767:  from all lookup default
+
+ip tunnel - Tunnels
+-------------------
+  ip tunnel show                                # Show all tunnels
+  ip tunnel add tun0 mode gre remote 10.0.0.1 local 192.168.1.100
+  ip tunnel add tun0 mode ipip remote 10.0.0.1 local 192.168.1.100
+  ip tunnel del tun0
+
+  # GRE tunnel:
+  ip tunnel add gre-tunnel mode gre remote 10.0.0.2 local 10.0.0.1 ttl 255
+  ip link set gre-tunnel up
+  ip addr add 192.168.100.1/30 dev gre-tunnel
+  ip route add 192.168.100.0/24 dev gre-tunnel
+
+  # IPIP tunnel:
+  ip tunnel add ipip-tunnel mode ipip remote 10.0.0.2 local 10.0.0.1
+  ip link set ipip-tunnel up
+
+  # VXLAN tunnel:
+  ip link add vxlan0 type vxlan id 42 remote 10.0.0.2 dev eth0 dstport 4789
+
+ip monitor - Event Monitoring
+------------------------------
+  ip monitor                                    # Monitor all events
+  ip monitor link                               # Monitor link events
+  ip monitor address                            # Monitor address changes
+  ip monitor route                              # Monitor route changes
+  ip monitor neigh                              # Monitor ARP events
+
+  # Output shows real-time state changes:
+  [REMOTE]192.168.1.1 dev eth0 lladdr 00:11:22:33:44:55 REACHABLE
+  [LOCAL]3: eth0: <BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state UP
+  [DELETE]10.0.0.0/8 via 192.168.1.1 dev eth0 proto static
+
+Complete Examples
+-----------------
+  # Configure static IP:
+  ip addr add 192.168.1.100/24 dev eth0
+  ip link set eth0 up
+  ip route add default via 192.168.1.1
+
+  # Configure with DHCP (run dhclient):
+  dhclient eth0
+
+  # Add secondary IP:
+  ip addr add 10.0.0.5/24 dev eth0 label eth0:1
+
+  # Show network summary:
+  ip -br addr
+  ip -br link
+  ip -br route
+
+  # Debug connectivity:
+  ip addr show
+  ip route show
+  ip neigh show
+  ip link show
+
+  # Set up policy routing:
+  ip route add default via 192.168.1.1 table 100
+  ip rule add from 192.168.1.0/24 table 100
+
+  # Create a bridge:
+  ip link add br0 type bridge
+  ip link set eth0 master br0
+  ip link set eth1 master br0
+  ip link set br0 up
+  ip addr add 192.168.1.1/24 dev br0
+
+  # Create VLAN:
+  ip link add link eth0 name eth0.100 type vlan id 100
+  ip addr add 192.168.100.1/24 dev eth0.100
+  ip link set eth0.100 up
+
+Comparison with Legacy Commands
+-------------------------------
+  ip addr show              =  ifconfig
+  ip link set eth0 up       =  ifconfig eth0 up
+  ip route show             =  route -n
+  ip route add ...          =  route add ...
+  ip neigh show             =  arp -n
+  ip tunnel show            =  ifconfig tun0
+  ip rule show              =  netstat --rule
+
+Use `ip` for all new scripts and configurations. The legacy commands are
+deprecated and may not support newer kernel features.

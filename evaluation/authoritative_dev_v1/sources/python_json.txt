@@ -1,0 +1,194 @@
+Python json Module Documentation
+=================================
+
+The `json` module provides an API for working with JSON (JavaScript Object
+Notation) data, a lightweight data interchange format based on a subset of
+JavaScript syntax.
+
+Serialization (Encoding)
+-------------------------
+Converts Python objects to JSON strings.
+
+  json.dumps(obj, skipkeys=False, ensure_ascii=True, check_circular=True,
+             allow_nan=True, cls=None, indent=None, separators=None,
+             default=None, sort_keys=False, **kw)
+
+  json.dump(obj, fp, skipkeys=False, ensure_ascii=True, check_circular=True,
+            allow_nan=True, cls=None, indent=None, separators=None,
+            default=None, sort_keys=False, **kw)
+
+`dumps` returns a string; `dump` writes to a file-like object.
+
+Deserialization (Decoding)
+--------------------------
+Converts JSON strings to Python objects.
+
+  json.loads(s, cls=None, object_hook=None, parse_float=None,
+             parse_int=None, parse_constant=None, object_pairs_hook=None,
+             **kw)
+
+  json.load(fp, cls=None, object_hook=None, parse_float=None,
+            parse_int=None, parse_constant=None, object_pairs_hook=None,
+            **kw)
+
+`loads` parses a string; `load` reads from a file-like object.
+
+Basic Examples
+--------------
+  >>> import json
+  >>> data = {"name": "Alice", "scores": [98, 87, 91]}
+  >>> json.dumps(data)
+  '{"name": "Alice", "scores": [98, 87, 91]}'
+
+  >>> json.dumps(data, indent=2)
+  '{
+    "name": "Alice",
+    "scores": [
+      98,
+      87,
+      91
+    ]
+  }'
+
+  >>> json.dumps(data, sort_keys=True)
+  '{"name": "Alice", "scores": [98, 87, 91]}'
+
+  >>> s = '{"name": "Bob", "age": 30}'
+  >>> obj = json.loads(s)
+  >>> obj['name']
+  'Bob'
+
+Handling Complex Types
+----------------------
+Python objects that are not natively JSON-serializable (datetime, Decimal,
+bytes, custom classes) require special handling via `default` (for dumps/dump)
+or `object_hook` (for loads/load).
+
+Custom encoder:
+  import json
+  from datetime import datetime
+
+  class DateTimeEncoder(json.JSONEncoder):
+      def default(self, obj):
+          if isinstance(obj, datetime):
+              return obj.isoformat()
+          return super().default(obj)
+
+  data = {"created": datetime.now(), "value": 42}
+  print(json.dumps(data, cls=DateTimeEncoder))
+
+Custom decoder:
+  import json
+  from datetime import datetime
+
+  def custom_hook(dct):
+      if 'created' in dct:
+          dct['created'] = datetime.fromisoformat(dct['created'])
+      return dct
+
+  s = '{"created": "2025-03-15T10:30:00", "value": 42}'
+  obj = json.loads(s, object_hook=custom_hook)
+
+Key Parameters
+--------------
+indent (int or None):
+  If an integer, JSON output is pretty-printed with that indentation level.
+  None (default) produces compact output.
+
+sort_keys (bool):
+  When True, dictionary keys are sorted lexicographically in the output.
+
+ensure_ascii (bool):
+  When True (default), all non-ASCII characters are escaped. Set to False
+  to output Unicode characters directly.
+
+separators (tuple):
+  Override the default (', ', ': ') separator pair. Compact output:
+    json.dumps(data, separators=(',', ':'))
+  Output: '{"name":"Alice","scores":[98,87,91]}'
+
+default (callable):
+  Called when an object cannot be serialized. Should raise TypeError for
+  objects it cannot handle.
+
+object_hook (callable):
+  Called for every decoded JSON object (dict). Use for custom deserialization
+  of objects like datetime or Decimal.
+
+parse_float (callable):
+  Called for each JSON float value. Default uses float(). Use Decimal for
+  precision: json.loads(s, parse_float=decimal.Decimal)
+
+parse_int (callable):
+  Called for each JSON integer value. Default uses int().
+
+JSONEncoder and JSONDecoder Classes
+------------------------------------
+For complex customization, subclass the encoder/decoder:
+
+  class CustomEncoder(json.JSONEncoder):
+      def encode(self, obj):
+          # Pre-process the object
+          return super().encode(self.transform(obj))
+
+      def transform(self, obj):
+          if isinstance(obj, set):
+              return sorted(list(obj))
+          elif isinstance(obj, bytes):
+              return obj.decode('utf-8')
+          elif isinstance(obj, datetime):
+              return obj.isoformat()
+          return obj
+
+  class CustomDecoder(json.JSONDecoder):
+      def __init__(self, *args, **kwargs):
+          super().__init__(object_hook=self.object_hook, *args, **kwargs)
+
+      def object_hook(self, dct):
+          if '__datetime__' in dct:
+              return datetime.fromisoformat(dct['value'])
+          return dct
+
+JSON Lines (JSONL)
+-------------------
+For line-delimited JSON, process each line independently:
+
+  import json
+
+  def read_jsonl(path):
+      records = []
+      with open(path, 'r') as f:
+          for line in f:
+              line = line.strip()
+              if line:
+                  records.append(json.loads(line))
+      return records
+
+  def write_jsonl(records, path):
+      with open(path, 'w') as f:
+          for record in records:
+              f.write(json.dumps(record) + '\n')
+
+Error Handling
+--------------
+  json.JSONDecodeError: Raised when a JSON string cannot be parsed.
+  TypeError: Raised by json.dumps when an object is not serializable.
+
+  try:
+      data = json.loads(user_input)
+  except json.JSONDecodeError as e:
+      print(f"Invalid JSON: {e.msg} at line {e.lineno}")
+
+Compact Encoding
+----------------
+For maximum compactness (APIs, logging):
+  json.dumps(data, separators=(',', ':'), ensure_ascii=False)
+
+Performance Considerations
+--------------------------
+- For large datasets, use `json.loads` over `json.load` with `fp.read()` as
+  the string parser is faster than the file wrapper for large inputs.
+- `orjson` and `ujson` are faster drop-in replacements for large-scale
+  processing. `orjson` also handles datetime and numpy types natively.
+- `json.dumps` with `sort_keys=True` is slightly slower than without due to
+  the sorting step.

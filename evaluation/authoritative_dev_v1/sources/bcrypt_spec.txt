@@ -1,0 +1,165 @@
+bcrypt Password Hashing Specification
+=====================================
+
+bcrypt is a password hashing function based on the Blowfish cipher, designed
+by Niels Provos and David Mazières in 1999. It incorporates a salt and a
+configurable work factor to protect against brute-force and rainbow table
+attacks.
+
+Algorithm Overview
+------------------
+bcrypt follows the structure: $2a$cost$salt+hash
+
+  $2a$08$K8jKBSqYHPGcFRjMYCOz7.gkFwZJMPHB2lBrYJnWpIXy5Ww3Hk3Wu
+
+  - $2a$      Version identifier (2a, 2b, or 2y)
+  - 08        Cost factor (work factor exponent)
+  - K8jKBSqYHPGcFRjMYCOz7.gk  22-character salt (Base64-encoded)
+  - FwZJMPHB2lBrYJnWpIXy5Ww3Hk3Wu  31-character hash (Base64-encoded)
+
+The output is 60 characters total.
+
+Work Factor (Cost Factor)
+-------------------------
+The work factor determines the number of rounds: 2^cost iterations of the
+Blowfish key schedule.
+
+  Cost    Rounds      Time (approximate, CPU-dependent)
+  4       16          ~0.067s
+  8       256         ~0.5s
+  10      1,024       ~1.0s
+  12      4,096       ~3.0s
+  14      16,384      ~10-15s
+  16      65,536      ~35-60s
+
+Higher cost factors increase computation time exponentially. The cost factor
+is encoded in the hash string, so bcrypt implementations automatically use
+the correct number of rounds for verification.
+
+Salting
+-------
+bcrypt generates a 16-byte (128-bit) random salt per password. The salt is
+encoded as 22 characters of modified Base64 and embedded directly in the
+hash string.
+
+  Salt generation: 16 random bytes from /dev/urandom
+  Encoding: Modified Radix64 (BCrypt alphabet)
+
+The salt prevents rainbow table attacks and ensures identical passwords
+produce different hashes.
+
+Blowfish Key Schedule Extension
+-------------------------------
+bcrypt modifies the standard Blowfish key schedule:
+
+1. Initialize P-boxes and S-boxes with digits of pi.
+2. XOR the P-boxes with the salt bytes (repeated cyclically).
+3. Encrypt the salt using the Blowfish EKS (expensive key schedule) with
+   cost * 2^cost Blowfish block encryptions.
+4. Encrypt a magic string "OrpheanBeholderScryDoubt" (18 rounds) to
+   produce the final hash.
+
+The EKS step is what makes bcrypt expensive: the key schedule is re-derived
+for each password, making hardware acceleration less effective.
+
+Version History
+---------------
+  $2a$  Original bcrypt specification. Minor implementation issues in
+        some early versions (crypt_blowfish handled $2a$00 edge cases).
+
+  $2b$  Modern bcrypt variant. Fixes the $2a$00 issue by requiring cost
+        >= 4. Used by modern implementations (OpenBSD, Python bcrypt).
+
+  $2y$  crypt_blowfish compatibility. Identical to $2b$ except for the
+        version tag. Ensures backward compatibility.
+
+Recommendation: use $2b$ for new implementations.
+
+Python Implementation
+---------------------
+  import bcrypt
+
+  # Hash a password with default work factor (12):
+  password = b"my_secret_password"
+  hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+
+  # Verify a password:
+  if bcrypt.checkpw(password, hashed):
+      print("Password matches")
+  else:
+      print("Invalid password")
+
+  # Custom work factor:
+  hashed = bcrypt.hashpw(password, bcrypt.gensalt(rounds=14))
+
+  # Check existing hash with different cost:
+  # bcrypt.checkpw() handles the cost factor from the stored hash.
+
+JavaScript Implementation
+--------------------------
+  const bcrypt = require('bcrypt');
+
+  const saltRounds = 12;
+
+  // Hash a password:
+  bcrypt.hash('my_secret_password', saltRounds, (err, hash) => {
+      console.log(hash);
+  });
+
+  // Verify:
+  bcrypt.compare('my_secret_password', hash, (err, result) => {
+      console.log(result); // true or false
+  });
+
+  // Synchronous API:
+  const hash = bcrypt.hashSync('my_secret_password', saltRounds);
+  const result = bcrypt.compareSync('my_secret_password', hash);
+
+CLI Usage
+---------
+  # Hash a password interactively:
+  $ htpasswd -BC 12 "" mypassword
+  :$2b$12$...
+
+  # Or with openssl (if bcrypt module is available):
+  $ python3 -c "import bcrypt; print(bcrypt.hashpw(b'mypassword', bcrypt.gensalt()).decode())"
+
+  # Verify:
+  $ python3 -c "
+  import bcrypt
+  h = b'\$2b\$12\$K8jKBSqYHPGcFRjMYCOz7.gkFwZJMPHB2lBrYJnWpIXy5Ww3Hk3Wu'
+  print(bcrypt.checkpw(b'test', h))
+  "
+
+Security Properties
+-------------------
+- Salted: Each hash has a unique 128-bit salt.
+- Adaptive: Cost factor can be increased as hardware improves.
+- Memory-hard: The Blowfish S-boxes require ~4 KB per hash, limiting
+  parallel attacks on GPUs and ASICs.
+- One-way: Cannot be reversed; only brute-force or dictionary attacks.
+- Constant-time comparison: Modern implementations use constant-time
+  comparison to prevent timing attacks.
+
+Limitations
+-----------
+- Maximum password length: 72 bytes (Blowfish block size). Characters
+  beyond 72 are ignored. Some implementations allow longer passwords by
+  first hashing with MD5/SHA-256, but this is non-standard.
+- Not suitable for high-throughput scenarios (e.g., rate-limiting with
+  thousands of hashes per second). Use Argon2 or scrypt for such cases.
+- The 22-character salt encoding uses a modified Base64 alphabet
+  (./A-Za-z0-9), not standard Base64.
+
+Comparison with Other Algorithms
+--------------------------------
+  Algorithm     Memory    Parallelism   GPU Resistance
+  bcrypt        4 KB      Sequential    Moderate
+  scrypt        Configurable  Configurable  High
+  Argon2id      Configurable  Configurable  High (winner of PHC)
+  PBKDF2        Low       Sequential    Low
+  SHA-256       None      None          None (unsuitable)
+
+bcrypt remains widely used due to its simplicity, proven track record,
+and broad library support. For new projects, consider Argon2id as the
+primary choice, with bcrypt as a fallback.

@@ -1,0 +1,246 @@
+GNU Make Documentation
+======================
+
+GNU Make reads Makefiles to determine which parts of a program need to be
+recompiled and how to compile them.
+
+Basic Makefile Structure
+------------------------
+  target: dependencies
+  	commands
+
+  # Note: commands MUST be indented with a single tab character.
+
+  app: main.o utils.o
+  	gcc -o app main.o utils.o
+
+  main.o: main.c
+  	gcc -c main.c
+
+  utils.o: utils.c
+  	gcc -c utils.c
+
+Variables
+---------
+Variables store values for use throughout the Makefile.
+
+  CC = gcc
+  CFLAGS = -Wall -g
+  SOURCES = main.c utils.c
+  OBJECTS = $(SOURCES:.c=.o)
+
+  app: $(OBJECTS)
+  	$(CC) $(CFLAGS) -o app $(OBJECTS)
+
+  # Append to a variable:
+  CFLAGS += -O2
+
+  # Set only if not already set:
+  CC ?= gcc
+
+  # Override from command line:
+  # make CFLAGS="-Wall -O3"
+
+Automatic Variables
+-------------------
+  $@      Target of the current rule
+  $<      First prerequisite
+  $^      All prerequisites (duplicates removed)
+  $+      All prerequisites (duplicates preserved)
+  $?      Prerequisites newer than target
+  $*      Stem (the matched part of a pattern rule)
+  $(@D)   Directory part of $@
+  $(@F)   File part of $@
+
+Example:
+  %.o: %.c
+  	$(CC) $(CFLAGS) -c $< -o $@
+
+  # $< expands to the .c file
+  # $@ expands to the .o file
+
+Pattern Rules
+-------------
+  # Compile any .c file to .o:
+  %.o: %.c
+  	$(CC) $(CFLAGS) -c $< -o $@
+
+  # Compile any .c file directly to an executable:
+  %: %.c
+  	$(CC) $(CFLAGS) -o $@ $<
+
+  # Multiple patterns:
+  %.o: %.c %.h
+  	$(CC) $(CFLAGS) -c $< -o $@
+
+VPATH
+-----
+Directs Make to search for source files in additional directories.
+
+  VPATH = src:include:../common
+
+  # Now Make will search src/, include/, and ../common/ for prerequisites.
+
+  # Or use vpath (lowercase) directive for specific patterns:
+  vpath %.c src
+  vpath %.h include
+
+.PHONY
+-------
+Declares phony targets (targets that are not actual files).
+
+  .PHONY: clean all install test
+
+  clean:
+  	rm -f *.o app
+
+  all: app
+
+  install: app
+  	install app /usr/local/bin/
+
+Without .PHONY, if a file named "clean" or "all" exists, Make considers
+the target up to date.
+
+Conditional Directives
+----------------------
+  # ifeq / else ifneq / else / endif
+  ifeq ($(DEBUG),1)
+  	CFLAGS += -g -DDEBUG
+  else
+  	CFLAGS += -O2
+  endif
+
+  # ifdef / ifndef
+  ifdef USE_LTO
+  	LDFLAGS += -flto
+  endif
+
+  # String comparison:
+  ifneq ($(CC),gcc)
+  	CFLAGS += -Wno-unused
+  endif
+
+Makefile Functions
+------------------
+  # $(subst from,to,text)
+  SOURCES = main.c utils.c
+  OBJECTS = $(subst .c,.o,$(SOURCES))
+
+  # $(patsubst pattern,replacement,text)
+  OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
+
+  # $(filter pattern...,text)
+  SOURCES = main.c main.o utils.c
+  C_FILES = $(filter %.c,$(SOURCES))
+
+  # $(filter-out pattern...,text)
+  NON_C = $(filter-out %.c,$(SOURCES))
+
+  # $(wildcard pattern)
+  SOURCES = $(wildcard src/*.c)
+
+  # $(shell command)
+  GIT_HASH = $(shell git rev-parse --short HEAD)
+
+  # $(dir names-list)
+  FILES = src/main.c src/utils.c
+  DIRS = $(dir $(FILES))       # src/ src/
+
+  # $(notdir names-list)
+  NOTDIR = $(notdir $(FILES))  # main.c utils.c
+
+  # $(basename names-list)
+  BASENAMES = $(basename $(FILES))  # src/main src/utils
+
+  # $(addsuffix suffix,names-list)
+  OBJS = $(addsuffix .o,main utils)  # main.o utils.o
+
+  # $(addprefix prefix,names-list)
+  PATHS = $(addprefix src/,main utils)  # src/main src/utils
+
+  # $(foreach var,list,text)
+  FILES = main utils logger
+  DEPS = $(foreach f,$(FILES),$(f).o)
+
+Complete Makefile Example
+--------------------------
+  CC      := gcc
+  CFLAGS  := -Wall -Wextra -g
+  LDFLAGS :=
+  TARGET  := app
+
+  SRCDIR  := src
+  OBJDIR  := obj
+  INCDIR  := include
+
+  SOURCES := $(wildcard $(SRCDIR)/*.c)
+  OBJECTS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
+  DEPS    := $(OBJECTS:.o=.d)
+
+  ifeq ($(DEBUG),1)
+  	CFLAGS += -O0 -DDEBUG
+  else
+  	CFLAGS += -O2
+  endif
+
+  all: $(TARGET)
+
+  $(TARGET): $(OBJECTS)
+  	$(CC) $(LDFLAGS) $^ -o $@
+
+  $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+  	$(CC) $(CFLAGS) -I$(INCDIR) -MMD -MP -c $< -o $@
+
+  $(OBJDIR):
+  	mkdir -p $(OBJDIR)
+
+  clean:
+  	rm -rf $(OBJDIR) $(TARGET)
+
+  -include $(DEPS)
+
+  .PHONY: all clean
+
+Multi-Line Variables
+--------------------
+  define header
+  ============================
+  Building $(TARGET)
+  ============================
+  endef
+
+  all:
+  	$(info $(header))
+
+  # Shell expansion:
+  define run_server
+  cd $(SRCDIR) && \
+  ./server --port $(PORT) --debug
+  endef
+
+  run:
+  	$(run_server)
+
+Special Variables
+-----------------
+  MAKEFLAGS       Flags passed to make
+  MAKECMDGOALS    Command-line targets
+  .DEFAULT_GOAL   Default target (if none specified)
+  .PHONY          Declare phony targets
+  .SUFFIXES       Clear suffix rules: .SUFFIXES:
+  MAKEFILE_LIST   List of Makefiles that have been read
+  CURDIR          Current working directory
+
+Command-Line Usage
+------------------
+  make                     # Build default target
+  make all                 # Build 'all' target
+  make clean               # Run 'clean' target
+  make -j4                 # Parallel build with 4 jobs
+  make -j$(nproc)          # Parallel with all CPU cores
+  make -n                  # Dry run (print commands)
+  make -B                  # Unconditional make (ignore timestamps)
+  make -C subdir           # Change to subdir before building
+  make CC=clang            # Override variable
+  make -f CustomMakefile   # Use alternative Makefile
