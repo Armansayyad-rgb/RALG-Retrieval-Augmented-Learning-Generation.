@@ -51,8 +51,8 @@ class FullQuestionProtectionTests(unittest.TestCase):
         question = "kiln serial number label"
         real_retrieve = retriever_hybrid.retrieve_v2
 
-        def fake_retrieve(query, chunks, idx, df, final_top_k=10):
-            base = real_retrieve(query, chunks, idx, df, final_top_k=final_top_k)
+        def fake_retrieve(query, chunks, idx, df, final_top_k=10, document_ids=None):
+            base = real_retrieve(query, chunks, idx, df, final_top_k=final_top_k, document_ids=document_ids)
             if query != question:
                 # Sub-query pass returns an unrelated chunk with an inflated score.
                 inflated = [dict(row) for row in base]
@@ -96,10 +96,10 @@ class BoundedSecondaryTests(unittest.TestCase):
         calls = []
         real_retrieve = retriever_hybrid.retrieve_v2
 
-        def counting_retrieve(query, chunks, idx, df, final_top_k=10):
+        def counting_retrieve(query, chunks, idx, df, final_top_k=10, document_ids=None):
             calls.append(query)
             return real_retrieve(
-                query, chunks, idx, df, final_top_k=final_top_k
+                query, chunks, idx, df, final_top_k=final_top_k, document_ids=document_ids
             )
 
         with patch.object(retriever_hybrid, "retrieve_v2", side_effect=counting_retrieve):
