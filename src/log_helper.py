@@ -25,6 +25,7 @@ Design notes:
 from __future__ import annotations
 
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -47,6 +48,21 @@ DEFAULT_BACKUP_COUNT = 3
 DEFAULT_LOG_LEVEL = logging.INFO
 
 DEFAULT_ENCODING = "utf-8"
+
+_LOG_LEVEL_MAP = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
+
+
+def _log_level_from_env() -> int:
+    raw = os.getenv("RALG_LOG_LEVEL", "").strip().upper()
+    if not raw:
+        return DEFAULT_LOG_LEVEL
+    return _LOG_LEVEL_MAP.get(raw, DEFAULT_LOG_LEVEL)
 
 
 # --------------------------------------------------
@@ -83,7 +99,7 @@ def make_console_formatter() -> logging.Formatter:
 def setup_logging(
     log_dir,
     log_name: str = "rag_chat",
-    log_level: int = DEFAULT_LOG_LEVEL,
+    log_level: int | None = None,
     max_bytes: int = DEFAULT_MAX_BYTES,
     backup_count: int = DEFAULT_BACKUP_COUNT,
     log_to_console: bool = True,
@@ -99,8 +115,10 @@ def setup_logging(
     log_name : str
         Base name for the log file (without extension) AND the
         name of the logger that will be returned.
-    log_level : int
-        Logging level (e.g. logging.INFO, logging.DEBUG).
+    log_level : int | None
+        Logging level (e.g. logging.INFO, logging.DEBUG). When None,
+        reads RALG_LOG_LEVEL environment variable; falls back to
+        DEFAULT_LOG_LEVEL on missing/invalid value.
     max_bytes : int
         Maximum size of a single log file before rotation.
     backup_count : int
@@ -129,8 +147,10 @@ def setup_logging(
 
     log_file = log_path / f"{log_name}.log"
 
+    effective_level = log_level if log_level is not None else _log_level_from_env()
+
     logger = logging.getLogger(log_name)
-    logger.setLevel(log_level)
+    logger.setLevel(effective_level)
 
     # Remove any pre-existing handlers so we do not accumulate
     # duplicates across repeated calls or test invocations.
@@ -149,14 +169,14 @@ def setup_logging(
         encoding=DEFAULT_ENCODING,
         delay=True,  # open file lazily so startup stays fast
     )
-    file_handler.setLevel(log_level)
+    file_handler.setLevel(effective_level)
     file_handler.setFormatter(make_formatter())
 
     logger.addHandler(file_handler)
 
     if log_to_console:
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(log_level)
+        console_handler.setLevel(effective_level)
         console_handler.setFormatter(make_console_formatter())
         logger.addHandler(console_handler)
 

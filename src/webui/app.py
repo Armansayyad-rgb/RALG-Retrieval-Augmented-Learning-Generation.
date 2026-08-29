@@ -9,6 +9,7 @@ Phase 1 + Phase 2. Run with::
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from pathlib import Path
 
@@ -45,6 +46,8 @@ from webui.document_processor import (  # noqa: E402
 from webui.export import to_json, to_markdown, save_to_disk  # noqa: E402
 from webui.config import LOGS_DIR  # noqa: E402
 from webui.feedback_log import log_feedback  # noqa: E402
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def _build_welcome_html() -> str:
@@ -594,26 +597,26 @@ def build_demo(pipeline: dict, polish_llm=None):
 
 
 def main():
-    print("Initializing pipeline ...", flush=True)
+    _LOGGER.info("Initializing pipeline")
     pipeline = initialize_pipeline(verbose=True)
     pipeline["model_name"] = "reasoning_model_v1"
     pipeline.setdefault("uploaded_docs", [])
 
     polish_llm = None
     try:
-        print("Loading polish LLM (Qwen2.5-1.5B-Instruct) ...", flush=True)
+        _LOGGER.info("Loading polish LLM (Qwen2.5-1.5B-Instruct)")
         polish_llm = load_polish_llm()
-        print(
-            f"Polish LLM ready on {polish_llm.device} "
-            f"({polish_llm.model_name}).",
-            flush=True,
+        _LOGGER.info(
+            "Polish LLM ready on %s (%s)",
+            polish_llm.device,
+            polish_llm.model_name,
         )
     except FileNotFoundError:
-        print("[warn] Optional polish LLM not available; using core answers.", flush=True)
+        _LOGGER.warning("Optional polish LLM not available; using core answers.")
     except Exception:
-        print("[warn] Optional polish LLM failed to load; using core answers.", flush=True)
+        _LOGGER.warning("Optional polish LLM failed to load; using core answers.")
 
-    print("Pipeline ready. Launching Gradio UI ...", flush=True)
+    _LOGGER.info("Pipeline ready. Launching Gradio UI")
 
     demo = build_demo(pipeline, polish_llm=polish_llm)
     demo.queue(default_concurrency_limit=4).launch(

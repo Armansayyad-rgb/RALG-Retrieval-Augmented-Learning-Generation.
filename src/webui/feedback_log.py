@@ -13,10 +13,14 @@ Design constraints:
 - Atomic write per line so a crash mid-write cannot corrupt the log.
 - Schema versioned (``schema_version=1``) so future migrations are cheap.
 - No PII beyond what the user typed; we do not log IP, user-agent, etc.
+- Privacy mode controlled by RALG_FEEDBACK_LOG_ENABLED (default: enabled).
+  When disabled, feedback is not persisted. When enabled, raw text is
+  replaced with safe hashes and evidence text is stripped.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import time
@@ -27,6 +31,13 @@ from webui.config import FEEDBACK_LOG
 
 
 SCHEMA_VERSION = 1
+_FEEDBACK_ENABLED = os.getenv("RALG_FEEDBACK_LOG_ENABLED", "1") == "1"
+
+
+def _safe_text_hash(text: str) -> str:
+    if not text:
+        return "empty"
+    return hashlib.sha256(text.encode("utf-8", errors="replace")).hexdigest()[:8]
 
 
 def _ensure_parent(path: Path) -> None:
@@ -62,7 +73,7 @@ def log_feedback(
     sources: list[dict] | None = None,
     extra: dict[str, Any] | None = None,
     log_path: Path | None = None,
-) -> Path:
+) -> Path | None:
     """Append one feedback row.
 
     Parameters
@@ -81,24 +92,33 @@ def log_feedback(
 
     Returns
     -------
-    Path
-        The log file path that was written.
+    Path | None
+        The log file path that was written, or None if logging is disabled.
     """
+    if not _FEEDBACK_ENABLED:
+        return None
+
     if vote not in (-1, 0, 1):
         vote = 0
+
+    safe_sources = []
+    for source in (sources or []):
+        safe = dict(source)
+        safe.pop("evidence", None)
+        safe_sources.append(safe)
 
     record: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "ts": time.time(),
         "iso": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
         "vote": vote,
-        "question": question,
-        "answer": answer,
+        "question": _safe_text_hash(question),
+        "answer": _safe_text_hash(answer),
         "intent": intent,
         "answer_type": answer_type,
         "confidence": confidence,
         "supported": supported,
-        "sources": sources or [],
+        "sources": safe_sources,
     }
     if extra:
         record["extra"] = extra
