@@ -15,6 +15,14 @@ The default model checkpoint is `checkpoints/v2/reasoning_model_v1.pt`; the
 tokenizer is `data/tokenizer_v2.json`. Override them with `MODEL_FILE` and
 `TOKENIZER_FILE`.
 
+## API documentation
+
+FastAPI serves interactive API docs at:
+
+- `/openapi.json` — OpenAPI schema (JSON)
+- `/docs` — Swagger UI
+- `/redoc` — ReDoc UI
+
 ## Endpoints
 
 | Method | Path | Description |
@@ -35,7 +43,7 @@ tokenizer is `data/tokenizer_v2.json`. Override them with `MODEL_FILE` and
 curl http://127.0.0.1:8000/health
 ```
 
-Example response shape (answer content, scores, and latency vary with the knowledge base):
+Example response shape:
 ```json
 {"status":"ok"}
 ```
@@ -48,8 +56,6 @@ curl http://127.0.0.1:8000/ready
 
 `200` means the model, tokenizer, corpus, and retrieval index are usable.
 `503` means the process is alive but initialization is incomplete or failed.
-The response contains safe state flags and a concise error, never local paths
-or stack traces.
 
 ### /stats
 
@@ -79,6 +85,7 @@ curl -X POST http://127.0.0.1:8000/ingest \
 Response:
 ```json
 {
+  "document_id": "abc123...",
   "document_name": "compressor_sop",
   "added_chunks": 1,
   "total_chunks": 107651
@@ -104,7 +111,60 @@ Response:
     {"rank": 1, "id": 107650, "preview": "Safety step: de-energize...", "score": 12.34}
   ],
   "latency_ms": 234.1,
+  "traceable": false,
+  "conflict": false,
+  "provenance": [],
   "error": null
+}
+```
+
+### /query with document scoping
+
+Restrict retrieval to specific runtime-uploaded documents:
+
+```bash
+curl -X POST http://127.0.0.1:8000/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What safety step is required before opening the electrical panel?",
+    "top_k": 5,
+    "include_sources": true,
+    "document_ids": ["doc_id_1", "doc_id_2"]
+  }'
+```
+
+When `document_ids` is provided, the runtime only considers chunks from those documents. Unscoped queries search the full knowledge base.
+
+### /documents
+
+```bash
+curl http://127.0.0.1:8000/documents
+```
+
+Response:
+```json
+[
+  {
+    "document_id": "abc123...",
+    "document_name": "compressor_sop",
+    "chunk_count": 1,
+    "upload_timestamp": "2026-01-01T00:00:00Z"
+  }
+]
+```
+
+### DELETE /documents/{document_id}
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/documents/abc123...
+```
+
+Response:
+```json
+{
+  "document_id": "abc123...",
+  "deleted": true,
+  "chunks_removed": 1
 }
 ```
 

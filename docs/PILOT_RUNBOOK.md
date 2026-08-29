@@ -30,7 +30,7 @@ This runbook guides technical teams through a single-worker local pilot deployme
 
 ### Network Requirements
 
-- Localhost binding only (127.0.0.1:5000)
+- Localhost binding only (127.0.0.1:8000)
 - Outbound HTTPS for model downloads
 - No ingress firewall changes required
 
@@ -69,7 +69,7 @@ source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
 
 # Verify installation
-python -c "import src.api; print('OK')"
+python -c "import src.api_server; print('OK')"
 ```
 
 ### Option B: Docker Installation (Recommended for Isolation)
@@ -82,7 +82,7 @@ docker build -t ralg:pilot .
 
 # Run container
 docker run \
-  -p 5000:5000 \
+  -p 8000:8000 \
   -v $(pwd)/data:/app/data \
   -v $(pwd)/indexes:/app/indexes \
   --name ralg_pilot \
@@ -100,20 +100,20 @@ docker run \
 ```bash
 cd /path/to/RALG
 source .venv/bin/activate
-python -m src.api --host 127.0.0.1 --port 5000
+uvicorn src.api_server:app --host 127.0.0.1 --port 8000
 ```
 
 **Expected output:**
 
 ```
-INFO: Uvicorn running on http://127.0.0.1:5000
+INFO: Uvicorn running on http://127.0.0.1:8000
 INFO: Loaded 0 documents. Ready for ingest.
 ```
 
 #### Docker Installation
 
 ```bash
-docker run -p 5000:5000 -v $(pwd)/data:/app/data ralg:pilot
+docker run -p 8000:8000 -v $(pwd)/data:/app/data ralg:pilot
 ```
 
 **Container should be running and ready in 15–30 seconds.**
@@ -121,16 +121,14 @@ docker run -p 5000:5000 -v $(pwd)/data:/app/data ralg:pilot
 ### 2. Verify Health
 
 ```bash
-curl http://127.0.0.1:5000/health
+curl http://127.0.0.1:8000/health
 ```
 
 **Expected response (200 OK):**
 
 ```json
 {
-  "status": "ready",
-  "documents_indexed": 0,
-  "version": "0.1.0-rc1"
+  "status": "ok"
 }
 ```
 
@@ -142,20 +140,20 @@ curl http://127.0.0.1:5000/health
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{
-    "filename": "example.md",
-    "content": "# My Document\n\nKey information here.",
-    "metadata": {"source": "manual_upload", "domain": "example"}
+    "text": "# My Document\n\nKey information here.",
+    "document_name": "example.md"
   }' \
-  http://127.0.0.1:5000/ingest
+  http://127.0.0.1:8000/ingest
 ```
 
-**Expected response (202 Accepted):**
+**Expected response (200 OK):**
 
 ```json
 {
-  "doc_id": "example_md_abc123",
-  "status": "queued",
-  "message": "Document queued for indexing"
+  "document_id": "abc123...",
+  "document_name": "example.md",
+  "added_chunks": 1,
+  "total_chunks": 1
 }
 ```
 
@@ -164,7 +162,7 @@ curl -X POST \
 ```bash
 python src/cli_ingest.py \
   --input-dir /path/to/documents \
-  --endpoint http://127.0.0.1:5000 \
+  --endpoint http://127.0.0.1:8000 \
   --recursive
 ```
 
@@ -174,27 +172,32 @@ python src/cli_ingest.py \
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "What are the main features?",
+    "question": "What are the main features?",
     "top_k": 5
   }' \
-  http://127.0.0.1:5000/query
+  http://127.0.0.1:8000/query
 ```
 
 **Expected response:**
 
 ```json
 {
-  "query": "What are the main features?",
-  "results": [
+  "answer": "...",
+  "supported": true,
+  "confidence": 0.95,
+  "answer_type": "extractive",
+  "sources": [
     {
       "rank": 1,
-      "doc_id": "example_md_abc123",
-      "score": 0.87,
-      "snippet": "Key information here."
+      "id": 107650,
+      "preview": "Key information here.",
+      "score": 12.34
     }
   ],
-  "latency_ms": 42,
-  "supported": true
+  "latency_ms": 234.1,
+  "traceable": true,
+  "conflict": false,
+  "provenance": []
 }
 ```
 
@@ -204,27 +207,32 @@ curl -X POST \
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "What is the secret number that has never been mentioned?",
+    "question": "What is the secret number that has never been mentioned?",
     "top_k": 5
   }' \
-  http://127.0.0.1:5000/query
+  http://127.0.0.1:8000/query
 ```
 
 **Expected response:**
 
 ```json
 {
-  "query": "What is the secret number?",
-  "results": [],
-  "latency_ms": 38,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
   "supported": false,
-  "message": "No supporting evidence found. Abstention recommended."
+  "confidence": null,
+  "answer_type": "system",
+  "sources": [],
+  "latency_ms": 38.0,
+  "traceable": false,
+  "conflict": false,
+  "provenance": [],
+  "error": null
 }
 ```
 
 ## API Reference
 
-### POST /health
+### GET /health
 
 Check service readiness.
 
@@ -232,10 +240,43 @@ Check service readiness.
 
 ```json
 {
-  "status": "ready|initializing",
-  "documents_indexed": 0,
-  "index_size_mb": 0.0,
-  "version": "0.1.0-rc1"
+  "status": "ok"
+}
+```
+
+---
+
+### GET /ready
+
+Check runtime readiness (model, tokenizer, corpus, index).
+
+**Response (200):**
+
+```json
+{
+  "ready": true,
+  "model_loaded": true,
+  "tokenizer_loaded": true,
+  "index_loaded": true,
+  "chunk_count": 100000,
+  "retrieval_ready": true,
+  "model_ready": true,
+  "error": null
+}
+```
+
+**Response (503):**
+
+```json
+{
+  "ready": false,
+  "model_loaded": false,
+  "tokenizer_loaded": false,
+  "index_loaded": false,
+  "chunk_count": 0,
+  "retrieval_ready": false,
+  "model_ready": false,
+  "error": "Runtime is not ready."
 }
 ```
 
@@ -243,18 +284,14 @@ Check service readiness.
 
 ### POST /ingest
 
-Ingest a single document.
+Ingest plain text into the running pipeline.
 
 **Request:**
 
 ```json
 {
-  "filename": "document.md",
-  "content": "...",
-  "metadata": {
-    "source": "string",
-    "domain": "string"
-  }
+  "text": "Your document text here...",
+  "document_name": "my_doc"
 }
 ```
 
@@ -262,9 +299,10 @@ Ingest a single document.
 
 ```json
 {
-  "doc_id": "string",
-  "status": "queued|indexed|error",
-  "message": "string"
+  "document_id": "abc123...",
+  "document_name": "my_doc",
+  "added_chunks": 1,
+  "total_chunks": 100001
 }
 ```
 
@@ -278,8 +316,10 @@ Query the system with a natural language question.
 
 ```json
 {
-  "query": "string",
-  "top_k": 5
+  "question": "string",
+  "top_k": 5,
+  "include_sources": true,
+  "document_ids": ["doc_id_1", "doc_id_2"]
 }
 ```
 
@@ -287,57 +327,58 @@ Query the system with a natural language question.
 
 ```json
 {
-  "query": "string",
-  "results": [
+  "answer": "string",
+  "supported": true,
+  "confidence": 0.95,
+  "answer_type": "extractive",
+  "sources": [
     {
       "rank": 1,
-      "doc_id": "string",
-      "score": 0.87,
-      "snippet": "...",
-      "spans": [{"start": 100, "end": 150, "text": "..."}]
+      "id": 107650,
+      "preview": "...",
+      "score": 12.34
     }
   ],
-  "latency_ms": 42,
-  "supported": true,
-  "message": "optional"
+  "latency_ms": 234.1,
+  "traceable": true,
+  "conflict": false,
+  "provenance": [],
+  "error": null
 }
 ```
 
 ---
 
-### GET /sources
+### GET /documents
 
-List ingested documents.
+List persisted runtime document metadata.
 
 **Response:**
 
 ```json
-{
-  "documents": [
-    {
-      "doc_id": "string",
-      "filename": "string",
-      "indexed_at": "2026-01-01T12:00:00Z",
-      "size_bytes": 5000
-    }
-  ],
-  "total": 10,
-  "indexed": 10
-}
+[
+  {
+    "document_id": "abc123...",
+    "document_name": "my_doc",
+    "chunk_count": 1,
+    "upload_timestamp": "2026-01-01T00:00:00Z"
+  }
+]
 ```
 
 ---
 
-### DELETE /delete/{doc_id}
+### DELETE /documents/{document_id}
 
-Remove a document from the index.
+Remove a persisted runtime document.
 
 **Response:**
 
 ```json
 {
-  "doc_id": "string",
-  "status": "deleted|not_found"
+  "document_id": "abc123...",
+  "deleted": true,
+  "chunks_removed": 1
 }
 ```
 
@@ -350,9 +391,9 @@ Remove a document from the index.
 ```bash
 cd /path/to/RALG
 source .venv/bin/activate
-python -m src.api --host 127.0.0.1 --port 5000 &
+uvicorn src.api_server:app --host 127.0.0.1 --port 8000 &
 sleep 2
-curl http://127.0.0.1:5000/health  # Verify
+curl http://127.0.0.1:8000/health  # Verify
 ```
 
 ### Step 2: Prepare Documents
@@ -369,7 +410,7 @@ cp evaluation/stage5_documents/*.md /tmp/evaluation_docs/
 ```bash
 python src/cli_ingest.py \
   --input-dir /tmp/evaluation_docs \
-  --endpoint http://127.0.0.1:5000 \
+  --endpoint http://127.0.0.1:8000 \
   --log-level INFO
 ```
 
@@ -379,7 +420,7 @@ python src/cli_ingest.py \
 
 ```bash
 python src/evaluate_pilot.py \
-  --endpoint http://127.0.0.1:5000 \
+  --endpoint http://127.0.0.1:8000 \
   --queries evaluation/stage5_questions.jsonl \
   --output results/pilot_evaluation.jsonl
 ```
@@ -395,7 +436,7 @@ python src/analyze_results.py \
 ### Step 6: Stop the Service
 
 ```bash
-pkill -f "python -m src.api"
+pkill -f "uvicorn src.api_server:app"
 ```
 
 ## Known Limitations
@@ -404,8 +445,8 @@ pkill -f "python -m src.api"
 
 - **Local environment only**: Designed for localhost evaluation only
 - **Single worker**: Process-local concurrency only; no distributed indexing
-- **No authentication**: No user/API key validation
-- **No TLS**: Communication is unencrypted
+- **Optional authentication**: Bearer-token auth via `API_TOKEN` env var (unset = open)
+- **No TLS**: Communication is unencrypted; use reverse proxy for TLS termination
 - **No tenant isolation**: All documents are accessible from all queries
 - **Synthetic evidence**: Stage 4 evaluation was on synthetic data (not production customer data)
 
@@ -428,14 +469,14 @@ pkill -f "python -m src.api"
 ### Issue: "Connection refused"
 
 ```
-curl: (7) Failed to connect to 127.0.0.1 port 5000: Connection refused
+curl: (7) Failed to connect to 127.0.0.1 port 8000: Connection refused
 ```
 
 **Solutions:**
 
-1. Verify the service started: `ps aux | grep api`
+1. Verify the service started: `ps aux | grep uvicorn`
 2. Check logs: `cat logs/server.log | tail -50`
-3. Restart: `pkill -f "python -m src.api"; sleep 2; python -m src.api ...`
+3. Restart: `pkill -f "uvicorn src.api_server:app"; sleep 2; uvicorn src.api_server:app ...`
 
 ---
 
@@ -580,7 +621,7 @@ grep "query" logs/server.log | tail -20
 ### Stop the Service
 
 ```bash
-pkill -f "python -m src.api"
+pkill -f "uvicorn src.api_server:app"
 ```
 
 ### Clear Indexed Documents
@@ -607,7 +648,7 @@ cp backups/indexes_v1/ indexes/
 If pilot succeeds, next milestones are:
 
 1. **Independent Evidence Stage 5**: Evaluation on customer/expert-sourced documents
-2. **Hardening**: Multi-worker safety, authentication, TLS
+2. **Hardening**: API authentication (`API_TOKEN`), CORS policy, rate limiting, TLS termination via reverse proxy
 3. **Production Deployment**: Kubernetes, distributed indexing, monitoring
 4. **Customer Integration**: SDK, custom document processors, operational runbooks
 

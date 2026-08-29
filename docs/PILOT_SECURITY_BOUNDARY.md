@@ -33,26 +33,31 @@ This document defines the security boundary and known limitations.
 
 - [ ] Service binds to localhost only (127.0.0.1, not 0.0.0.0)
 - [ ] Single worker process (no parallel workers exposed)
-- [ ] No TLS/HTTPS required (assumes trusted network)
+- [ ] No TLS/HTTPS required (assumes trusted network); reverse proxy recommended for production
 - [ ] Input validation for document upload (filename, size, encoding)
 - [ ] Path traversal protection (document IDs are sanitized)
 - [ ] Malformed file rejection (invalid JSON, corrupt PDFs)
 - [ ] Resource limits (document size cap, max corpus size)
 - [ ] Graceful error responses (no stack traces to clients)
+- [ ] Request body size limit (`MAX_API_REQUEST_BYTES = 1 MB`)
+- [ ] Security headers on all responses (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`)
+- [ ] Optional bearer-token authentication (`API_TOKEN` env var)
+- [ ] Process-local rate limiting when `API_TOKEN` is set (60 req/min/IP)
+- [ ] CORS disabled by default; explicit `CORS_ORIGINS` required for production browser access
 
 ### ⚠ Considerations (May Need Hardening Before Production)
 
 - [ ] Process-local only (no multi-process safety)
-- [ ] No authentication (all operations are public within localhost)
+- [ ] Authentication optional (all endpoints open when `API_TOKEN` is unset)
 - [ ] No audit logging (limited operational visibility)
 - [ ] Logs may contain request metadata (queries, doc IDs)
 - [ ] Loose file permissions (indexes world-readable if deployed to shared system)
-- [ ] No rate limiting (no protection against resource exhaustion)
+- [ ] Rate limiting is process-local only (not distributed)
 
 ### ✗ NOT Implemented in Pilot
 
 - [ ] TLS/HTTPS encryption
-- [ ] User authentication (API keys, OAuth)
+- [ ] Multi-tenant isolation
 - [ ] Role-based access control
 - [ ] Encryption at rest
 - [ ] Distributed/multi-worker deployment
@@ -60,6 +65,7 @@ This document defines the security boundary and known limitations.
 - [ ] Compliance logging (SOC 2, HIPAA, etc.)
 - [ ] Intrusion detection
 - [ ] DDoS mitigation
+- [ ] Distributed rate limiting
 
 ## Known Attack Vectors
 
@@ -103,11 +109,11 @@ This document defines the security boundary and known limitations.
 
 **Threat:** Attacker sends thousands of queries to exhaust CPU/memory.
 
-**Current Mitigation:** None (no rate limiting).
+**Current Mitigation:** Process-local rate limit (60 req/min/IP) active when `API_TOKEN` is set; request body capped at 1 MB.
 
-**Residual Risk:** HIGH (localhost trusted, but still risky in shared environments)
+**Residual Risk:** MEDIUM (localhost trusted; rate limit is not distributed)
 
-**Mitigation for Production:** Per-IP rate limiting, request queuing, circuit breaker.
+**Mitigation for Production:** Per-IP rate limiting, request queuing, circuit breaker, distributed limit via reverse proxy.
 
 ---
 
@@ -224,14 +230,14 @@ Verify service binds to 127.0.0.1 only:
 
 ```bash
 # Start service
-python -m src.api --host 127.0.0.1 --port 5000
+uvicorn src.api_server:app --host 127.0.0.1 --port 8000
 
 # In another terminal, verify
-netstat -tlnp | grep 5000
-# Expected: tcp  0  0  127.0.0.1:5000  ...
+netstat -tlnp | grep 8000
+# Expected: tcp  0  0  127.0.0.1:8000  ...
 
 # NOT acceptable:
-# tcp  0  0  0.0.0.0:5000  ...  (binds to all interfaces)
+# tcp  0  0  0.0.0.0:8000  ...  (binds to all interfaces)
 ```
 
 ### No Ingress Firewall Rules Required
@@ -275,7 +281,7 @@ ls -la /var/run/ralg/  # or wherever socket lives
 
 If you accidentally ingest sensitive data, immediately:
 
-1. Stop the service: `pkill -f "python -m src.api"`
+1. Stop the service: `pkill -f "uvicorn src.api_server:app"`
 2. Delete indexes: `rm -rf indexes/*`
 3. Delete data: `rm -rf data/documents/*`
 4. Review logs for exposure: `grep "sensitive_term" logs/`
@@ -336,7 +342,7 @@ echo "✓ Pre-flight checks passed"
 
 If you suspect unauthorized access or data exposure:
 
-1. **STOP immediately**: `pkill -f "python -m src.api"`
+1. **STOP immediately**: `pkill -f "uvicorn src.api_server:app"`
 2. **Preserve logs**: `cp logs/server.log logs/incident_$(date +%s).log`
 3. **Disable network access**: Unplug network cable or disable network interface
 4. **Review logs for access**: `grep -E "query|ingest|delete" logs/incident_*.log`

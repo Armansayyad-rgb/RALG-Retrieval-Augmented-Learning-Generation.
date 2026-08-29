@@ -6,13 +6,14 @@ RALG is a retrieval-first local AI pipeline.
 
 ```text
 Question
-  -> query planning
-  -> retrieval
-  -> evidence filtering
-  -> route selection
-  -> answer / reasoning path
-  -> support check
-  -> answer with evidence or abstention
+  -> api_server / webui
+  -> execute_runtime()            shared orchestration boundary
+  -> ExecutionPlan                intent + route decision
+  -> factual extractor OR grounded reasoning
+  -> retriever_hybrid             full-question-first hybrid retrieval
+  -> unified support gate         evidence identity, traceability,
+                                  conflict status, provenance
+  -> supported answer OR abstention
 ```
 
 ## Main components
@@ -27,6 +28,16 @@ Question
 | Confidence/support logic | Decides whether the system should answer or abstain |
 | Web UI | Provides an interactive Gradio interface |
 | Evaluation suites | Test accuracy, support, false-premise rejection, and multi-hop behavior |
+| `execute_runtime` | Shared orchestration boundary for API and WebUI |
+| `retriever_hybrid` | Authoritative full-question-first hybrid retriever |
+
+## Authoritative runtime path
+
+- `src/api_server.py` → `execute_runtime()` → `rag_chat_v2.answer_question()` → `retriever_hybrid.retrieve()`
+- `src/webui/hybrid_pipeline.py` → `execute_runtime()` → same grounded path
+- API contract: `uvicorn src.api_server:app --host 127.0.0.1 --port 8000`
+- Request uses `question`; response uses `sources` / `answer`
+- Endpoints: `/health`, `/ready`, `/stats`, `/documents`, `DELETE /documents/{id}`, `/ingest`, `/query`
 
 ## Design constraints
 
