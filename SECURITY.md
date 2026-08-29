@@ -9,9 +9,9 @@ describes the single-tenant deployment security profile for the hardening branch
 |---|---|---|---|---|
 | API endpoints | Unauthorized access to query/ingest functions | Medium (high if exposed publicly) | Data exfiltration, unintended document modification | Optional bearer-token authentication via `API_TOKEN` env var; localhost-only by default |
 | Document storage | Path traversal, unsafe filename execution | Low (with sanitization) | Remote code execution, data leakage | `_sanitize_display_name`, document ID validation, path confinement checks |
-| Uploaded content | Malformed PDFs/DOCX with embedded macros | Medium | Host compromise | Lazy-imported parsers only; extensions strictly limited to .txt/.pdf/.docx |
+| Uploaded content | Malformed PDFs/DOCX with embedded macros | Medium | Host compromise risk (dependency/runtime) | Lazy-imported parsers only; extension restrictions (.txt/.pdf/.docx) reduce attack surface but do NOT guarantee safety |
 | API body size | Denial-of-service via oversized requests | Medium | Resource exhaustion | `RequestSizeLimitMiddleware` with `MAX_API_REQUEST_BYTES = 1MB`; `UPLOAD_POLICY.max_batch_bytes = 50MB` |
-| Rate abuse | Automated repeated queries/ingest | Medium | Resource exhaustion | Simple in-process rate safeguard (60 requests/min/IP) active only when `API_TOKEN` is set |
+| Rate abuse | Automated repeated queries/ingest | Medium | Resource exhaustion | Basic process-local rate safeguard (60 requests/min/IP) active only when `API_TOKEN` is set — NOT distributed protection |
 | Error disclosure | Stack traces or filesystem paths leaked to clients | Low (already handled) | Information leakage | Sanitized 500/422 responses; full details logged server-side only via `_LOGGER.exception()` |
 | CORS misconfiguration | Wildcard origins with credentials | High (if not configured) | Cross-origin data exposure | CORS disabled by default; must set `CORS_ORIGINS` explicitly for production use |
 | Secret exposure | `API_TOKEN` or other secrets committed to source | Low (human error) | Credential leakage | `API_TOKEN` must be set via environment variable; never committed to source |
@@ -85,7 +85,8 @@ user authentication (beyond optional bearer token), or multi-tenant data segrega
 
 - `API_TOKEN`: Set this environment variable to a strong random string to enable
   bearer-token authentication on all non-health/ready endpoints.
-  - Example: `export API_TOKEN="$(openssl rand -hex 32)"`
+  - Example: generate a 32-byte hex token (e.g., `openssl rand -hex 32` on Linux/macOS
+    or equivalent on Windows) and set via the deployment platform's env-var mechanism
   - Never commit this value to source control or Dockerfiles
   - If unset, all endpoints remain open for local-development compatibility
 - `CORS_ORIGINS`: Comma-separated list of allowed origins for production deployments.
