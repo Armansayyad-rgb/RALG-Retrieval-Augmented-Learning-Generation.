@@ -4,14 +4,26 @@ RALG currently contains both product/runtime code and research/evaluation toolin
 
 ## Runtime / product-facing code
 
-- `src/api_server.py` — local FastAPI interface
+- `src/api_server.py` — local FastAPI interface (`uvicorn src.api_server:app --host 127.0.0.1 --port 8000`)
+- `src/runtime_architecture.py` — shared orchestration boundary (`execute_runtime`); used by API and WebUI
 - `src/rag_chat_v2.py` — main question-answering orchestration
 - `src/query_planner_v1.py` — intent/query planning
-- `src/retriever_v4.py` — active retrieval/ranking path
+- `src/retriever_hybrid.py` — **authoritative** full-question-first hybrid retriever
+- `src/retriever_v2.py` — core lexical retriever (used by `retriever_hybrid` for candidate generation)
 - `src/webui/` — Gradio UI, document ingestion, feedback, export, and optional answer-polish components
 - `config.py` — shared runtime paths and settings
 
 Changes to these files can directly affect benchmark and user-facing behavior and should be covered by regression tests.
+
+## Legacy / superseded modules (not authoritative)
+
+These files remain in the repository for historical/reproducibility reasons but are **not** the active production path:
+
+- `src/retriever_v4.py` — **SUPERSEDED**. Intent-aware multi-query retriever. Replaced by `retriever_hybrid` as the single authoritative retrieval path. Still imported by `rag_chat_v2` for `aggregate_results()` and `build_adaptive_query_plan()` utility functions only.
+- `src/retriever_v3.py` — **SUPERSEDED**. Intermediate retriever version between v2 and v4/hybrid. Not imported by any production path.
+- `src/hybrid_search.py` — **SUPERSEDED**. Earlier semantic search module. Superseded by `retriever_hybrid`.
+- `src/rag_chat.py` — **SUPERSEDED**. Legacy V1 RAG pipeline. Replaced by `rag_chat_v2`. Retained for historical reference.
+- `src/model.py` — **SUPERSEDED**. Original SmallLM definition. `model_v2.py` is the active version. Not imported by any production runtime path.
 
 ## Evaluation / benchmark code
 

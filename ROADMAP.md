@@ -65,7 +65,7 @@ RALG is past its first release-candidate and initial pilot-validation phases. Th
 - blinded review pack and deterministic 75-case pilot-review sample
 - corpus-integrity controls added to CI
 
-Preliminary untouched Stage 5 retrieval results currently favor the lexical baseline:
+Preliminary untouched Stage 5 retrieval results currently favor the lexical baseline (**HISTORICAL — pre-hybrid implementation**):
 
 - lexical Recall@1/3/5: 40.48% / 87.62% / 100.00%
 - RALG Recall@1/3/5: 37.14% / 77.62% / 92.86%
