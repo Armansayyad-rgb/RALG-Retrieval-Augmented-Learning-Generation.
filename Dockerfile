@@ -37,4 +37,4 @@ EXPOSE 7860
 
 # src/webui/app.py already owns the supported Gradio configuration. Start the
 # real module directly so the container executes the same source committed to Git.
-CMD ["python", "-m", "webui.app"]
+CMD ["python", "-m", "webui_bootstrap"]
