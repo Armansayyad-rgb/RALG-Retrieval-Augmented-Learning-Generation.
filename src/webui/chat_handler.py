@@ -113,6 +113,76 @@ def is_traceable_support(answer: str, supported: bool, sources: list[dict]) -> b
     return evidence_overlap(answer, sources) >= required_terms
 
 
+def _subject_predicate_grounded(question, sources, answer_type, route):
+    """Require factual evidence to ground both question subject and predicate.
+
+    A supported factual claim must have evidence that addresses both:
+    1. The question's subject/entity/concept
+    2. The question's predicate/property/relation
+
+    This prevents wrong-subject or wrong-predicate evidence from
+    producing false-supported answers. Procedural, causal, summary,
+    comparison, and conflict paths are not subject to this check.
+
+    Each source is evaluated independently: at least one source must
+    contain terms from both the subject and predicate halves of the
+    question. For questions with named entities, the entity must
+    appear in the evidence.
+    """
+    if answer_type not in ("factual", "reasoning_model") and route != "extractor":
+        return True
+    if not sources:
+        return True
+
+    q_lower = (question or "").casefold()
+
+    q_terms = [
+        t for t in re.findall(r"[a-z0-9]{3,}", q_lower)
+        if t not in _TRACEABILITY_STOPWORDS
+    ]
+    if len(q_terms) < 2:
+        return True
+
+    entity_re = re.compile(r"\b[A-Z][a-zA-Z]*(?:[-_][A-Za-z]+)*\b")
+    question_entities = {
+        m.group(0).casefold()
+        for m in entity_re.finditer(question or "")
+        if m.group(0).casefold() not in _TRACEABILITY_STOPWORDS
+    }
+
+    split = max(1, len(q_terms) // 2)
+    subject_terms = q_terms[:split]
+    predicate_terms = [
+        t for t in q_terms[split:]
+        if t not in {
+            "set", "get", "use", "make", "do", "does", "did",
+            "done", "using", "making", "doing", "sets", "gets",
+            "uses", "made", "apply", "applies", "applied",
+            "work", "works", "working", "worked",
+        }
+    ]
+    if not predicate_terms:
+        predicate_terms = q_terms[split:]
+
+    for source in sources:
+        source_text = _source_evidence(source)
+        if not source_text or not source_text.strip():
+            continue
+        source_lower = source_text.casefold()
+
+        if question_entities:
+            subject_ok = any(e in source_lower for e in question_entities)
+        else:
+            subject_ok = any(t in source_lower for t in subject_terms)
+
+        predicate_ok = any(t in source_lower for t in predicate_terms)
+
+        if subject_ok and predicate_ok:
+            return True
+
+    return False
+
+
 def _source_evidence(source: dict) -> str:
     return str(source.get("evidence") or source.get("preview") or "")
 
@@ -407,6 +477,7 @@ def build_answer_contract(
         sources,
     )
     supported = bool(result.get("supported", False)) and traceable
+
     # Deterministic synthesizers (causal, structure, change,
     # effect, entity_list) do their own evidence filtering
     # internally and only emit answers grounded in specific
@@ -431,6 +502,19 @@ def build_answer_contract(
     confidence = result.get("confidence")
     if not isinstance(confidence, (int, float)):
         confidence = None
+
+    _answer_type = str(result.get("answer_type", ""))
+    _plan = result.get("runtime_plan") or {}
+    _route = _plan.get("route") or "model"
+    if supported and _answer_type in ("factual", "reasoning_model"):
+        if not _subject_predicate_grounded(
+            question, sources, _answer_type, _route,
+        ):
+            supported = False
+            conflict = True
+            answer = CONFLICT_RESPONSE
+            answer_type = "conflict"
+            confidence = None
 
     answer_type = str(result.get("answer_type", "unknown"))
     if conflict:
