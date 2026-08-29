@@ -131,162 +131,125 @@ Document scope is threaded end-to-end through the API and runtime retrieval path
 - Docker / Docker Compose configuration;
 - benchmark, regression, persistence, provenance, portability, performance, and integrity tooling.
 
-## Quick start
+## Quick start (canonical path for technical buyer)
 
-### Requirements
+The following gets a buyer to a running demo with minimal commands. All paths
+are repository-root-relative; no machine-specific absolute paths are encoded.
 
-- Python **3.11** recommended;
-- required model checkpoint supplied separately from Git where applicable;
-- configured tokenizer/corpus available in the expected repository layout.
+### 1. OS assumption
 
-### Local Python
+Windows 10/11 with PowerShell 5.1+ (the provided `run_buyer_demo.ps1` and
+`buyer_demo_preflight.py` are Windows-native; Linux/macOS users can adapt the
+PowerShell logic to bash or run the Python preflight directly).
+
+### 2. Python version
+
+Python **3.10 or newer** is required. The preflight check (`scripts/buyer_demo_preflight.py`)
+validates this and reports `[FAIL] python_version` if the installed version is
+older. If only Python 3.9 is available, create a venv with a newer Python
+before proceeding.
+
+```powershell
+# Verify Python version
+python --version
+# Expected: 3.10.x or newer
+```
+
+### 3. Dependency install
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-Run the API from the repository root:
+### 4. Local model requirements
+
+The checkpoint bundle `checkpoints/v2/reasoning_model_v1.pt` is **external to
+Git** and governed by the RALG Source-Available Non-Commercial License v1.0.
+It is not auto-downloaded. Place the checkpoint under `checkpoints/v2/` before
+running the demo if model-backed (generative) answers are required. The core
+pipeline supports extractive/lookup answers without it.
+
+The tokenizer `data/tokenizer_v2.json` is tracked in Git and always required.
+
+### 5. Optional model behavior
+
+The polish LLM (Qwen2.5-1.5B-Instruct) is optional. If available, it enables
+generative and hybrid answer modes. If not available, the system produces
+extractive grounded answers only. The preflight reports this as a warning, not
+a failure.
+
+### 6. CPU/GPU assumptions
+
+The default Docker image is CPU-only (`python:3.11-slim` with CPU PyTorch).
+GPU execution is supported if CUDA is available and the appropriate PyTorch
+wheel is installed, but the buyer-demo workflow is validated on CPU.
+
+### 7. Startup command
 
 ```powershell
-python -m uvicorn src.api_server:app --host 127.0.0.1 --port 8000
+# From the repository root (C:\AI-Project-Diligence)
+powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
 ```
 
-Run the web UI:
+This script:
+1. Discovers Python (venv or system)
+2. Runs preflight checks (Python version, required files, checkpoint status,
+   bounded port selection 7860-7870)
+3. Launches the Gradio WebUI
+4. Includes a readiness probe with 30s timeout
+
+If preflight fails, the script prints actionable messages and exits with code 1.
+
+### 8. Demo command
+
+After the service starts, open `http://127.0.0.1:7860` in a browser and follow
+the deterministic buyer-demo scenario (Section 5 of `docs/BUYER_DEMO_GUIDE.md`):
+
+- Ingest `data/technical_docs_sample.txt` (or a subset via the WebUI or API)
+- Ask a supported question → verify grounded answer with cited sources
+- Ask an unsupported question → verify visible abstention
+- Inspect evidence/provenance traces for accepted answers
+- Try document-scoped queries via the WebUI scope dropdown
+
+### 9. Expected high-level behavior
+
+| Step | Expected outcome |
+|---|---|
+| Service health (`/health`) | `{"status":"ok"}` |
+| Service readiness (`/ready`) | `{"ready":true, ...}` |
+| Document ingestion | Document parsed, chunked, indexed; KB table updates |
+| Supported question | Direct answer with cited sources; answer_type="supported" |
+| Unsupported question | System reports corpus does not contain the answer (abstention) |
+| Evidence trace | Each accepted answer traces to specific spans in named documents |
+| Persistence (Docker) | Document survives `docker restart` via named volume `ralg_data` |
+
+### 10. Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `[FAIL] python_version` | Install Python 3.10+ and re-run; or create venv with newer Python |
+| `[FAIL] file_exists:checkpoints/v2` | Place the external checkpoint bundle under `checkpoints/v2/` or run in extractive mode without it |
+| `[FAIL] webui_port_available` | Free one of ports 7860-7870 on 127.0.0.1; the launcher never terminates other processes |
+| Service starts but `/ready` returns 503 | Wait a few seconds for initialization; check logs for initialization errors |
+| Answer appears without citations | Verify the document was successfully ingested (check KB table) |
+| Ctrl+C does not stop the server | Press Ctrl+C again; the Gradio process may need a moment to shut down gracefully |
+
+### Canonical path summary
 
 ```powershell
-python src\webui_bootstrap.py
+# 1. Create venv and install deps
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+
+# 2. Place checkpoint (external, license-governed)
+#    - checkpoints/v2/reasoning_model_v1.pt  (RALG Source-Available license)
+
+# 3. Start the demo
+powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
+
+# 4. Follow the deterministic scenario (Section 5 of BUYER_DEMO_GUIDE.md)
 ```
-
-Health endpoints:
-
-```text
-GET http://127.0.0.1:8000/health
-GET http://127.0.0.1:8000/ready
-```
-
-`/health` checks process liveness. `/ready` reports whether the configured model, tokenizer, corpus, and retrieval index are usable.
-
-## Runtime documents
-
-Runtime documents are stored under `data/runtime_uploads/` by default and can be redirected with `RUNTIME_UPLOAD_DIR`.
-
-The runtime lifecycle supports ingest, list, query, provenance, delete, restart recovery, and tolerance for missing/corrupt runtime entries.
-
-Lifecycle mutation locks are process-local. The validated deployment profile is therefore a trusted, single-application-worker configuration unless additional coordination is added externally.
-
-## Model and tokenizer configuration
-
-Portable path handling is centralized in `config.py`; repository-root-relative defaults are preferred over machine-specific paths.
-
-The active grounded reasoning role normally uses:
-
-```text
-checkpoints/v2/reasoning_model_v1.pt
-```
-
-or `MODEL_FILE`.
-
-The tokenizer normally uses:
-
-```text
-data/tokenizer_v2.json
-```
-
-or `TOKENIZER_FILE`.
-
-Historical model/training artifacts are retained for reproducibility but should not be treated as automatically active runtime assets.
-
-## Docker
-
-```powershell
-docker compose config --quiet
-docker compose up --build
-```
-
-Compose configuration is maintained, but Compose syntax/configuration alone is not equivalent to a current full production-container qualification.
-
-## Testing
-
-Run the Windows suite:
-
-```powershell
-scripts\test_all.bat
-```
-
-For API-oriented tests after starting the service:
-
-```powershell
-scripts\test_all.bat api
-```
-
-Focused tests cover support-gate behavior, document scoping, retrieval performance, traceability, conflicting evidence, unified evidence handling, persistence, provenance, portability, runtime integrity, and holdout integrity.
-
-## Evaluation discipline
-
-RALG intentionally separates:
-
-- retrieval quality;
-- answer correctness;
-- unsupported rejection / false support;
-- provenance and traceability;
-- runtime errors;
-- latency and resource behavior.
-
-Historical failures remain part of the evidence record. Frozen blind holdouts are not rerun to improve a score after failure analysis.
-
-See [Benchmarks](BENCHMARKS.md) and [Validation & Evidence Index](docs/validation_evidence.md).
-
-## Current limitations
-
-RALG is suitable for controlled technical evaluation in a trusted environment, not direct exposure as an untrusted public production service.
-
-Known limitations include:
-
-- no built-in production authentication/authorization layer;
-- no application-provided TLS termination;
-- no tenant isolation;
-- no production-grade rate limiting;
-- process-local lifecycle mutation locking;
-- no claim of multi-process transactional document mutation safety;
-- no customer-production or safety-certification claim;
-- model/data/license diligence still requires human/legal review for some assets;
-- historical research/training code remains for reproducibility;
-- domain-specific validation is required before safety-critical use.
-
-## Documentation
-
-- [Current architecture status](docs/CURRENT_ARCHITECTURE_STATUS.md)
-- [Technical diligence status](docs/TECHNICAL_DILIGENCE_STATUS.md)
-- [Architecture](docs/architecture.md)
-- [Repository layout](docs/repository_layout.md)
-- [Use cases](docs/use_cases.md)
-- [API quick start](docs/API_QUICKSTART.md)
-- [Security](SECURITY.md)
-- [Commercial readiness](COMMERCIAL_READINESS.md)
-- [Roadmap](ROADMAP.md)
-- [Benchmarks](BENCHMARKS.md)
-- [Validation & Evidence Index](docs/validation_evidence.md)
-- [Third-party notices](THIRD_PARTY_NOTICES.md)
-
-## Security boundary
-
-Treat RALG as a local/trusted-environment prototype unless additional deployment controls are added externally. Do not expose the default service directly to an untrusted public network.
-
-See [SECURITY.md](SECURITY.md).
-
-## License
-
-RALG is distributed under the **RALG Source-Available Non-Commercial License v1.0**.
-
-You may use, study, modify, and redistribute the project under the license terms. Commercial redistribution, paid hosted/SaaS use, or presenting the project as your own work requires prior written permission from the copyright holder.
-
-This is a source-available license with commercial restrictions, not an OSI-approved open-source license. See [LICENSE](LICENSE).
-
-Earlier versions distributed under earlier licenses remain subject to rights already granted with those versions.
-
-## Positioning
-
-> RALG Engine is a local, evidence-grounded technical-document intelligence system designed for private retrieval, provenance-backed answers, conservative abstention, document-scoped reasoning, and reproducible evaluation.
