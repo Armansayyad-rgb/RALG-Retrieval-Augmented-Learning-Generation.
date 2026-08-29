@@ -1,0 +1,61 @@
+{
+  "benchmark_version": "holdout_v3.0.0",
+  "run_status": "complete",
+  "total_cases": 120,
+  "completed_cases": 120,
+  "error_cases": 0,
+  "denominators": {
+    "retrieval_supported": 75,
+    "answer_supported": 70,
+    "qualified": 5,
+    "rejection": 45
+  },
+  "metrics": {
+    "retrieval": {
+      "macro_recall": 0.6067,
+      "macro_hit_rate": 0.64,
+      "macro_mrr": 0.5404,
+      "recall_at_1": 0.4333,
+      "recall_at_3": 0.5867,
+      "recall_at_5": 0.6067,
+      "hit_rate_at_1": 0.4667,
+      "hit_rate_at_3": 0.6267,
+      "hit_rate_at_5": 0.64,
+      "formula_note": "Recall@K = |relevant docs in top K| / |relevant docs|. HitRate@K = 1 if Recall@K > 0 else 0. MRR = 1/rank of first relevant doc. All macro-averaged across retrieval-supported cases."
+    },
+    "answer": {
+      "supported_correct": 6,
+      "false_rejection": 64,
+      "correct_rejection": 1,
+      "false_support": 44,
+      "supported_accuracy_ci95": [
+        0.0399,
+        0.1747
+      ],
+      "correct_rejection_ci95": [
+        0.0039,
+        0.1157
+      ]
+    },
+    "qualified": {
+      "qualified_correct": 0,
+      "qualified_total": 5,
+      "qualified_accuracy": 0.0,
+      "note": "conditional_or_qualified cases scored separately; included in retrieval metrics but not in answer_supported denominator"
+    }
+  },
+  "metrics_valid": true,
+  "latency_ms_avg": 0.12,
+  "category_counts": {
+    "supported": 15,
+    "paraphrased": 15,
+    "procedural": 15,
+    "causal": 10,
+    "cross_document": 10,
+    "document_scoped": 5,
+    "unsupported": 20,
+    "false_premise": 15,
+    "misleading_overlap": 10,
+    "conditional_or_qualified": 5
+  }
+}
