@@ -27,6 +27,7 @@ from webui.chat_handler import (
     build_answer_contract,
     collect_sources,
 )
+from webui.document_processor import _LIFECYCLE_LOCK
 from webui.polish_llm import (
     PolishLLM,
     polish_generative_answer,
@@ -98,15 +99,16 @@ def route_through_hybrid(
     # 1. Let rag_chat_v2 do the routing + retrieval + (small LM) generation.
     # ------------------------------------------------------------------
     try:
-        execution = execute_runtime(
-            pipeline,
-            question.strip(),
-            top_k,
-            answer_fn=answer_question,
-            contract_fn=build_answer_contract,
-            sources_fn=collect_sources,
-            document_ids=document_ids,
-        )
+        with _LIFECYCLE_LOCK:
+            execution = execute_runtime(
+                pipeline,
+                question.strip(),
+                top_k,
+                answer_fn=answer_question,
+                contract_fn=build_answer_contract,
+                sources_fn=collect_sources,
+                document_ids=document_ids,
+            )
         result = execution.raw
     except Exception:
         _LOGGER.exception("Unhandled routing pipeline error")
