@@ -198,14 +198,15 @@ This script:
 1. Discovers Python (venv or system)
 2. Runs preflight checks (Python version, required files, checkpoint status,
    bounded port selection 7860-7870)
-3. Launches the Gradio WebUI
-4. Includes a readiness probe with 30s timeout
+3. Launches FastAPI on 127.0.0.1:8000
+4. Launches the Gradio WebUI on the preflight-selected port 7860-7870
+5. Probes FastAPI `/ready` on port 8000 after startup (up to 30s timeout)
 
 If preflight fails, the script prints actionable messages and exits with code 1.
 
 ### 8. Demo command
 
-After the service starts, open `http://127.0.0.1:7860` in a browser and follow
+After the service starts, open the WebUI URL printed by the launcher (selected from 127.0.0.1:7860-7870) in a browser and follow
 the deterministic buyer-demo scenario (Section 5 of `docs/BUYER_DEMO_GUIDE.md`):
 
 - Ingest `data/technical_docs_sample.txt` (or a subset via the WebUI or API)
