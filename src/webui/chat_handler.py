@@ -128,7 +128,7 @@ def _subject_predicate_grounded(question, sources, answer_type, route):
     question. For questions with named entities, the entity must
     appear in the evidence.
     """
-    if answer_type != "factual" and route != "extractor":
+    if answer_type not in ("factual", "reasoning_model") and route != "extractor":
         return True
     if not sources:
         return True
@@ -505,7 +505,7 @@ def build_answer_contract(
     _answer_type = str(result.get("answer_type", ""))
     _plan = result.get("runtime_plan") or {}
     _route = _plan.get("route") or "model"
-    if supported and _answer_type == "factual":
+    if supported and _answer_type in ("factual", "reasoning_model"):
         if not _subject_predicate_grounded(
             question, sources, _answer_type, _route,
         ):
