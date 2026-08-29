@@ -46,6 +46,20 @@
 - **Commercial use:** Subject to RALG source-available license
 - **Risk:** LOW
 
+### data/train.txt
+- **Source:** UNKNOWN. Apparent Wikipedia-derived plain text; exact source URL and acquisition method are not documented in the repository.
+- **Introduced:** Commit `c73e91d` ("The first overall project", 2026-08-11); unchanged since introduction.
+- **Purpose:** Training/development material only. Referenced by `src/train.py`, `src/train_tokenizer.py`, and `src/build_knowledge.py`.
+- **Included in repo:** Yes (tracked in Git)
+- **License:** UNKNOWN. No attribution or license notice is present in the repository for this file.
+- **Redistribution:** NOT PERMITTED until provenance and license are resolved.
+- **Commercial use:** UNKNOWN
+- **Risk:** HIGH (legal/provenance gap)
+- **Production runtime required:** NO. The active production runtime uses `data/tokenizer_v2.json`, `data/wikitext_v2.txt`, `data/knowledge_extra_v1.txt`, and runtime uploads. `data/train.txt` is not consumed by `src/api_server.py`, `src/rag_chat_v2.py`, `src/webui/*.py`, or `config.py`.
+- **Checkpoint lineage:** Relationship to tokenizer/checkpoint artifacts is UNPROVEN. No explicit provenance record links specific checkpoints to this file.
+- **Generation script:** None. No repository script produces `data/train.txt`. `src/download_corpus.py` downloads `Salesforce/wikitext` to `data/wikitext_v2.txt`, not `train.txt`.
+- **Release disposition:** EXCLUDE FROM RELEASE DISTRIBUTION UNTIL provenance and license are resolved.
+
 ---
 
 ## 2. Customer/Pilot Corpus (Synthetic)

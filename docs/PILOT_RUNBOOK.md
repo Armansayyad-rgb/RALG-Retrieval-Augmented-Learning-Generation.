@@ -159,12 +159,21 @@ curl -X POST \
 
 #### Bulk ingest from directory
 
+The current runtime supports single-document ingest via the API. For bulk
+directory ingestion, iterate over files and POST each one:
+
 ```bash
-python src/cli_ingest.py \
-  --input-dir /path/to/documents \
-  --endpoint http://127.0.0.1:8000 \
-  --recursive
+for f in /tmp/evaluation_docs/*.md; do
+  curl -X POST \
+    -H "Content-Type: application/json" \
+    -d "{\"text\": $(jq -Rs . < "$f"), \"document_name\": \"$(basename "$f")\"}" \
+    http://127.0.0.1:8000/ingest
+done
 ```
+
+Alternatively, use the Python client (`src/ralg_client.py`) for single-document
+or programmatic ingest. Note that no bulk-directory ingest CLI script is
+provided in the current codebase.
 
 ### 4. Query the System
 
@@ -407,31 +416,49 @@ cp evaluation/stage5_documents/*.md /tmp/evaluation_docs/
 
 ### Step 3: Ingest Documents
 
+Ingest each evaluation document via the API. Example using curl for a single
+document:
+
 ```bash
-python src/cli_ingest.py \
-  --input-dir /tmp/evaluation_docs \
-  --endpoint http://127.0.0.1:8000 \
-  --log-level INFO
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Document content here...",
+    "document_name": "doc.md"
+  }' \
+  http://127.0.0.1:8000/ingest
 ```
 
-**Monitor until all documents are indexed.**
+For multiple documents, use a loop or the Python client (`src/ralg_client.py`).
+Verify ingestion:
+
+```bash
+curl http://127.0.0.1:8000/documents
+```
 
 ### Step 4: Run Evaluation Queries
 
+Query the system using the API. Example:
+
 ```bash
-python src/evaluate_pilot.py \
-  --endpoint http://127.0.0.1:8000 \
-  --queries evaluation/stage5_questions.jsonl \
-  --output results/pilot_evaluation.jsonl
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What are the main features?",
+    "top_k": 5
+  }' \
+  http://127.0.0.1:8000/query
 ```
+
+Record results manually or with a simple script. The repository does not
+include a bundled evaluation-runner CLI; use the API directly or write a
+short wrapper around `src/ralg_client.py`.
 
 ### Step 5: Analyze Results
 
-```bash
-python src/analyze_results.py \
-  --results results/pilot_evaluation.jsonl \
-  --expected evaluation/stage5_answers.jsonl
-```
+Review the recorded query results against expected answers. The repository
+does not include a bundled results-analysis CLI; analyze the output manually
+or with a custom script.
 
 ### Step 6: Stop the Service
 
