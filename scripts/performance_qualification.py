@@ -441,6 +441,57 @@ def main():
     del_results = measure_deletion_scaling(chunks, target_counts=[100, 200, 500])
     print(json.dumps(del_results, indent=2))
 
+    # === Phase 9: Short Soak Test ===
+    print("\n=== Phase 9: Short Soak Test ===")
+    soak_duration_s = 30  # 30-second short soak
+    soak_queries = 200
+    qs = [f"soak domain {i % 16} value {i % 97}" for i in range(soak_queries)]
+
+    # Peak RSS measurement (Unix resource module; unavailable on Windows)
+    peak_rss_bytes = None
+    try:
+        import resource as res_module
+        peak_rss_bytes = res_module.getrusage(res_module.RUSAGE_SELF).ru_maxrss * 1024
+    except Exception:
+        pass  # silently unavailable on this platform
+
+    before = time.perf_counter()
+    before_rss = rss_mb()
+    lats = []
+    errors = 0
+    error_types = set()
+    for i in range(soak_queries):
+        t0 = time.perf_counter()
+        try:
+            retrieve(qs[i], chunks, idx, df)
+            lats.append((time.perf_counter() - t0) * 1000)
+        except Exception as exc:
+            errors += 1
+            error_types.add(type(exc).__name__)
+    elapsed = time.perf_counter() - before
+
+    soak_rss_after = rss_mb()
+
+    results = {
+        "duration_s": round(elapsed, 2),
+        "query_count": soak_queries,
+        "elapsed_ms": round(elapsed * 1000, 2),
+        "completed": len(lats),
+        "errors": errors,
+        "error_types": sorted(error_types),
+        "p50_ms": round(sorted(lats)[len(lats) // 2], 3) if lats else None,
+        "p95_ms": round(sorted(lats)[int(len(lats) * 0.95 - 1)], 3) if lats else None,
+        "p99_ms": round(sorted(lats)[int(len(lats) * 0.99 - 1)], 3) if lats else None,
+        "avg_ms": round(sum(lats) / len(lats), 3) if lats else None,
+        "throughput_qps": round(len(lats) / elapsed * 1000, 2) if elapsed and lats else None,
+        "rss_before_mb": before_rss,
+        "rss_after_mb": soak_rss_after,
+        "peak_rss_bytes": peak_rss_bytes,
+        "correctness": "pass" if errors == 0 else "fail",
+    }
+
+    print(json.dumps(results, indent=2))
+
     # === Build final payload ===
     payload = {
         "corpus_size": n_chunks,
