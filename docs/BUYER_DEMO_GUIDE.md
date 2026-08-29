@@ -117,7 +117,7 @@ WebUI process and re-check the documents list against the local data volume.
 
 ```powershell
 uvicorn src.api_server:app --host 127.0.0.1 --port 8000
-# endpoints: GET /health, GET /ready, POST /ingest, POST /query, GET /documents
+# endpoints: GET /health, GET /ready, GET /stats, GET /documents, DELETE /documents/{document_id}, POST /ingest, POST /query
 ```
 
 Same behavior; useful when the buyer wants to script the walkthrough.
@@ -163,7 +163,7 @@ with up to 30s timeout).
 Once the WebUI is open, verify the service is healthy:
 
 - Open `http://127.0.0.1:8000/health` — should return `{"status":"ok"}`
-- Open `http://127.0.0.1:8000/ready` — should return `{"ready":true, ...}`
+- Open `http://127.0.0.1:8000/ready` — with the model/checkpoint present and initialization healthy it returns `{"ready":true, ...}`; in extractive-only mode without the checkpoint the service still answers but `/ready` may correctly return `503` (full production readiness requires the model)
 - Or via curl:
   ```powershell
   curl http://127.0.0.1:8000/health
@@ -321,13 +321,13 @@ considering the demo a release candidate.
 
 - [ ] Service started via `powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1`
 - [ ] `/health` returns `{"status":"ok"}`
-- [ ] `/ready` returns `{"ready":true, ...}`
+- [ ] `/ready` returns `{"ready":true, ...}` when the model/checkpoint is present and initialization is healthy (extractive-only mode without the checkpoint may correctly return `503`)
 - [ ] Readiness probe completes within 30 seconds
 
 ### Health / readiness
 
 - [ ] `curl http://127.0.0.1:8000/health` → `{"status":"ok"}`
-- [ ] `curl http://127.0.0.1:8000/ready` → `{"ready":true, ...}`
+- [ ] `curl http://127.0.0.1:8000/ready` → `{"ready":true, ...}` when the model/checkpoint is present and initialization is healthy (extractive-only mode without the checkpoint may correctly return `503`)
 
 ### Demo execution
 
