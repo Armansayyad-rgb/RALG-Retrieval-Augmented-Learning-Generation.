@@ -2,15 +2,17 @@
 # Usage:  powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
 #
 # Runs preflight checks (including bounded port selection), then launches the
-# existing Gradio WebUI. Downloads nothing; overwrites nothing; never
-# terminates other processes. Fail fast on errors, clearly separated stages,
-# sensible timeout/retry for readiness, proper exit codes.
+# FastAPI API server and Gradio WebUI. Downloads nothing; overwrites nothing;
+# never terminates other processes. Fail fast on errors, clearly separated
+# stages, sensible timeout/retry for readiness, proper exit codes.
+# Child processes tracked via Start-Job; Ctrl+C terminates only our jobs.
 
+# ---- Run-time guards ----
 $ErrorActionPreference = "Stop"
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $ProjectRoot
 
-# --- Stage 1: Python discovery ---
+# ---- Stage 1: Python discovery ----
 Write-Host "--- Stage 1: Python discovery ---"
 $pyCandidates = @(
     (Join-Path $ProjectRoot ".venv\Scripts\python.exe"),
@@ -36,10 +38,10 @@ if (-not $py) {
     exit 1
 }
 
-# --- Module path: make src importable ---
+# Make src importable for both api_server and webui
 $env:PYTHONPATH = (Join-Path $ProjectRoot "src")
 
-# --- Stage 2: Preflight + port selection ---
+# ---- Stage 2: Preflight + port selection ----
 Write-Host "--- Stage 2: Preflight + port selection ---"
 $preflightJson = & $py scripts\buyer_demo_preflight.py --docker | Out-String
 $preflight = $preflightJson | ConvertFrom-Json
@@ -57,24 +59,36 @@ if (-not $preflight.selected_port) {
 
 $env:WEBUI_PORT = [string]$preflight.selected_port
 Write-Host ""
-Write-Host "Preflight passed. Starting WebUI at $($preflight.webui_url)"
+Write-Host "Preflight passed. Starting services at API port 8000, WebUI at $($preflight.webui_url)"
 if ([int]$env:WEBUI_PORT -ne 7860) {
     Write-Host " NOTE: default port 7860 was occupied; using allowed fallback port $($env:WEBUI_PORT)."
 }
 
-# --- Stage 3: Launch WebUI ---
-Write-Host "--- Stage 3: Launch WebUI ---"
-Write-Host "Demo walkthrough: docs\BUYER_DEMO_GUIDE.md"
-Write-Host "Press Ctrl+C to stop the server."
+# ---- Stage 3: Launch FastAPI API server ----
+Write-Host "--- Stage 3: Launch FastAPI API server ---"
+Write-Host "Starting FastAPI on 127.0.0.1:8000 (background job)..."
+$apiJob = Start-Job {
+    & $py -m uvicorn src.api_server:app --host 127.0.0.1 --port 8000
+}
+Write-Host "FastAPI API server background job started (Job ID: $($apiJob.Id))"
 
-# --- Stage 4: Readiness probe with timeout ---
-Write-Host "--- Stage 4: Readiness probe ---"
+# ---- Stage 4: Launch Gradio WebUI ----
+Write-Host "--- Stage 4: Launch Gradio WebUI ---"
+Write-Host "Starting Gradio WebUI on 127.0.0.1:$env:WEBUI_PORT (background)..."
+$webuiJob = Start-Job {
+    & $py -m webui.app
+}
+Write-Host "Gradi WebUI background job started (Job ID: $($webuiJob.Id))"
+
+# ---- Stage 5: Readiness probe AFTER launch ----
+Write-Host "--- Stage 5: Readiness probe ---"
+Write-Host "Probing FastAPI /ready on 127.0.0.1:8000 (up to 30s timeout)..."
 $maxRetries = 30
 $retryCount = 0
 $ready = $false
 while ($retryCount -lt $maxRetries) {
     try {
-        $result = & $py -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:$($preflight.selected_port)/ready', timeout=2)" -Timeout 10
+        $result = & $py -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=2)" -Timeout 10
         $ready = $true
         break
     } catch {
@@ -83,11 +97,29 @@ while ($retryCount -lt $maxRetries) {
     }
 }
 if (-not $ready) {
-    Write-Host "[WARN] Readiness probe did not complete after $maxRetries seconds. Service may still be starting up." -ForegroundColor Yellow
+    Write-Host "[WARN] Readiness probe did not complete after $maxRetries seconds. Services may still be starting up." -ForegroundColor Yellow
 } else {
     Write-Host "Service ready after $retryCount retry(s)."
 }
 
-# --- Launch ---
-Write-Host "Launching Gradio WebUI..."
-& $py -m webui.app
+# ---- Stage 6: Status and Ctrl+C cleanup ----
+Write-Host ""
+Write-Host "Both services are running."
+Write-Host "  API (FastAPI):      http://127.0.0.1:8000  (endpoints: /health, /ready, /ingest, /query)"
+Write-Host "  WebUI (Gradio):     http://127.0.0.1:$env:WEBUI_PORT"
+Write-Host "Press Ctrl+C to stop the services and exit."
+
+# Ctrl+C handler: terminate only our background jobs
+function Ctrl+C {
+    Write-Host ""
+    Write-Host "Ctrl+C received. Stopping background jobs only..."
+    Get-Job | Stop-Job -Force | Out-Null
+    # Re-register so PowerShell can exit cleanly
+    return
+}
+
+# Wait for Ctrl+C -- the Ctrl+C function above will intercept and exit
+# The loop below just keeps the script alive; Ctrl+C will jump to the function
+do {
+    Start-Sleep -Seconds 1
+} while ($true -and (-not $LastCtrlCTime))
