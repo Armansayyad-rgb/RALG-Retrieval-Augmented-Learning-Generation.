@@ -69,12 +69,21 @@ def _persistence_dir(pipeline: dict) -> Path:
 
 def _atomic_write(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        "w", encoding="utf-8", dir=path.parent, delete=False
-    ) as handle:
-        handle.write(content)
-        temporary = Path(handle.name)
-    temporary.replace(path)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=path.parent, delete=False
+        ) as handle:
+            temporary = Path(handle.name)
+            handle.write(content)
+        temporary.replace(path)
+    except OSError:
+        if temporary is not None and temporary.exists():
+            try:
+                temporary.unlink()
+            except OSError:
+                pass
+        raise
 
 
 def _registry_path(pipeline: dict) -> Path:
@@ -90,20 +99,29 @@ def _persist_document(pipeline: dict, doc: "UploadedDocument") -> None:
     documents_dir = root / "documents"
     documents_dir.mkdir(parents=True, exist_ok=True)
     content_path = documents_dir / f"{doc.doc_id}.txt"
-    _atomic_write(content_path, doc.text)
-    entries = _load_registry(pipeline)
-    entries = [entry for entry in entries if entry.get("document_id") != doc.doc_id]
-    entries.append({
-        "document_id": doc.doc_id,
-        "document_name": doc.safe_display_name,
-        "extension": doc.ext,
-        "upload_timestamp": doc.upload_timestamp,
-        "source_type": doc.source_type,
-        "revision": doc.revision,
-        "chunk_count": doc.chunk_count,
-        "content_file": f"documents/{doc.doc_id}.txt",
-    })
-    _persist_registry(pipeline, entries)
+    pre_existed = content_path.exists()
+    try:
+        _atomic_write(content_path, doc.text)
+        entries = _load_registry(pipeline)
+        entries = [entry for entry in entries if entry.get("document_id") != doc.doc_id]
+        entries.append({
+            "document_id": doc.doc_id,
+            "document_name": doc.safe_display_name,
+            "extension": doc.ext,
+            "upload_timestamp": doc.upload_timestamp,
+            "source_type": doc.source_type,
+            "revision": doc.revision,
+            "chunk_count": doc.chunk_count,
+            "content_file": f"documents/{doc.doc_id}.txt",
+        })
+        _persist_registry(pipeline, entries)
+    except OSError:
+        if not pre_existed and content_path.exists():
+            try:
+                content_path.unlink()
+            except OSError:
+                pass
+        raise
 
 
 def _load_registry(pipeline: dict) -> list[dict]:
@@ -126,26 +144,38 @@ def restore_persisted_documents(pipeline: dict) -> list[UploadedDocument]:
     documents_dir = root / "documents"
     restored: list[UploadedDocument] = []
     seen: set[str] = set()
+    skipped = 0
+    skip_reasons: dict[str, int] = {}
     for entry in _load_registry(pipeline):
         doc_id = entry.get("document_id")
         ext = str(entry.get("extension", "")).lower()
         if not isinstance(doc_id, str) or not doc_id or doc_id in seen:
+            skipped += 1
+            skip_reasons["invalid_or_duplicate"] = skip_reasons.get("invalid_or_duplicate", 0) + 1
             _LOGGER.warning("Skipping invalid or duplicate persisted document entry")
             continue
         if ext not in SUPPORTED_EXTS:
+            skipped += 1
+            skip_reasons["unsupported_extension"] = skip_reasons.get("unsupported_extension", 0) + 1
             _LOGGER.warning("Skipping persisted document with unsupported extension")
             continue
         relative = entry.get("content_file", f"documents/{doc_id}.txt")
         content_path = (root / relative).resolve()
         if content_path.parent != documents_dir.resolve():
+            skipped += 1
+            skip_reasons["unsafe_content_reference"] = skip_reasons.get("unsafe_content_reference", 0) + 1
             _LOGGER.warning("Skipping persisted document with unsafe content reference")
             continue
         try:
             text = content_path.read_text(encoding="utf-8")
         except Exception:
+            skipped += 1
+            skip_reasons["read_failure"] = skip_reasons.get("read_failure", 0) + 1
             _LOGGER.exception("Failed to restore persisted document %s", doc_id)
             continue
         if not text.strip() or len(text) > MAX_EXTRACTED_TEXT_LEN:
+            skipped += 1
+            skip_reasons["empty_or_oversized"] = skip_reasons.get("empty_or_oversized", 0) + 1
             _LOGGER.warning("Skipping empty or oversized persisted document %s", doc_id)
             continue
         doc = UploadedDocument(
@@ -165,6 +195,11 @@ def restore_persisted_documents(pipeline: dict) -> list[UploadedDocument]:
         doc.chunk_count = len(doc.chunks)
         restored.append(doc)
         seen.add(doc_id)
+    if skipped > 0 or restored:
+        _LOGGER.info(
+            "Runtime document recovery complete: restored=%d, skipped=%d, reasons=%s",
+            len(restored), skipped, skip_reasons,
+        )
     return restored
 
 

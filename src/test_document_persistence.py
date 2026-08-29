@@ -4,6 +4,8 @@ import json
 import sys
 import tempfile
 import unittest
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event
 from unittest.mock import patch
 from pathlib import Path
 
@@ -14,6 +16,7 @@ for import_path in (PROJECT_ROOT, PROJECT_ROOT / "src"):
 
 from retriever_v2 import RuntimeChunk, build_index, retrieve
 from webui.chat_handler import format_evidence_sources
+from webui import document_processor
 from webui.document_processor import (
     UploadedDocument,
     attach_documents,
@@ -21,6 +24,7 @@ from webui.document_processor import (
     restore_persisted_documents,
 )
 import api_server
+from api_server import QueryRequest, IngestRequest
 
 
 def make_pipeline(root: Path) -> dict:
@@ -151,6 +155,141 @@ class DocumentPersistenceTests(unittest.TestCase):
             with patch.object(api_server, "get_pipeline", return_value={"uploaded_docs": [], "chunks": []}):
                 api_server.delete_document("missing")
         self.assertEqual(error.exception.status_code, 404)
+
+    def test_query_is_serialized_with_ingest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = make_pipeline(root)
+            pipeline["chunks"] = ["initial chunk"]
+            pipeline["retrieval_index"], pipeline["document_frequency"] = build_index(pipeline["chunks"])
+            doc = UploadedDocument("concurrent.txt", Path("concurrent.txt"), ".txt", "concurrent content")
+
+            events = {"query_started": Event(), "ingest_done": Event()}
+
+            def slow_query():
+                events["query_started"].set()
+                with patch.object(api_server, "get_pipeline", return_value=pipeline):
+                    with patch.object(api_server, "answer_question", return_value={
+                        "answer": "mock", "supported": True, "answer_type": "extractive",
+                        "confidence": 1.0, "evidence": ["initial chunk"],
+                    }):
+                        response = api_server.query(
+                            QueryRequest(question="test", top_k=1),
+                            request=None,
+                        )
+                self.assertEqual(response.answer, "mock")
+
+            def slow_ingest():
+                events["query_started"].wait(timeout=2)
+                attach_documents(pipeline, [doc])
+                events["ingest_done"].set()
+
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                futures = [
+                    executor.submit(slow_query),
+                    executor.submit(slow_ingest),
+                ]
+                for future in futures:
+                    future.result(timeout=5)
+
+            self.assertTrue(events["ingest_done"].is_set())
+            self.assertIn("concurrent content", " ".join(c for c in pipeline["chunks"] if isinstance(c, str)))
+
+    def test_query_is_serialized_with_delete(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = make_pipeline(root)
+            doc = UploadedDocument("delete_me.txt", Path("delete_me.txt"), ".txt", "delete me")
+            attach_documents(pipeline, [doc])
+
+            events = {"query_started": Event(), "delete_done": Event()}
+
+            def slow_query():
+                events["query_started"].set()
+                with patch.object(api_server, "get_pipeline", return_value=pipeline):
+                    with patch.object(api_server, "answer_question", return_value={
+                        "answer": "mock", "supported": True, "answer_type": "extractive",
+                        "confidence": 1.0, "evidence": ["static corpus survives"],
+                    }):
+                        response = api_server.query(
+                            QueryRequest(question="test", top_k=1),
+                            request=None,
+                        )
+                self.assertEqual(response.answer, "mock")
+
+            def slow_delete():
+                events["query_started"].wait(timeout=2)
+                remove_uploaded_document(pipeline, doc.doc_id)
+                events["delete_done"].set()
+
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                futures = [
+                    executor.submit(slow_query),
+                    executor.submit(slow_delete),
+                ]
+                for future in futures:
+                    future.result(timeout=5)
+
+            self.assertTrue(events["delete_done"].is_set())
+            self.assertNotIn(doc.doc_id, [d.get("document_id") for d in pipeline["uploaded_docs"]])
+
+    def test_persist_document_cleans_up_on_registry_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pipeline = make_pipeline(root)
+            doc = UploadedDocument("fail.txt", Path("fail.txt"), ".txt", "content that fails")
+
+            def fake_persist_registry(pipeline, entries):
+                raise OSError("disk full")
+
+            with patch.object(document_processor, "_persist_registry", side_effect=fake_persist_registry):
+                with self.assertRaises(OSError):
+                    attach_documents(pipeline, [doc])
+
+            content_path = root / "documents" / f"{doc.doc_id}.txt"
+            self.assertFalse(content_path.exists())
+            registry = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(registry, [])
+
+    def test_atomic_write_cleans_up_temp_on_replace_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "target.txt"
+
+            def fake_replace(self, target):
+                raise OSError("disk full")
+
+            with patch("pathlib.Path.replace", new=fake_replace):
+                with self.assertRaises(OSError):
+                    document_processor._atomic_write(path, "content")
+
+            temp_files = list(Path(directory).glob("tmp*"))
+            self.assertEqual(temp_files, [])
+
+    def test_failed_persist_does_not_report_success(self):
+        pipeline = make_pipeline(Path(tempfile.mkdtemp()))
+        with patch.object(document_processor, "_persist_document", side_effect=OSError("disk full")):
+            with self.assertRaises(OSError):
+                attach_documents(pipeline, [
+                    UploadedDocument("fail.txt", Path("fail.txt"), ".txt", "fail content")
+                ])
+
+    def test_recovery_diagnostics_log_counts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "documents").mkdir()
+            (root / "metadata.json").write_text(json.dumps([
+                {"document_id": "missing", "extension": ".txt"},
+                {"document_id": "bad", "extension": ".exe"},
+                {"document_id": "good", "extension": ".txt", "content_file": "documents/good.txt", "document_name": "good"},
+            ]), encoding="utf-8")
+            (root / "documents" / "good.txt").write_text("good content", encoding="utf-8")
+            pipeline = make_pipeline(root)
+            with self.assertLogs("webui.document_processor", level="INFO") as cm:
+                restored = restore_persisted_documents(pipeline)
+            self.assertEqual(len(restored), 1)
+            self.assertTrue(
+                any("restored=1" in msg and "skipped=2" in msg for msg in cm.output)
+            )
 
 
 if __name__ == "__main__":

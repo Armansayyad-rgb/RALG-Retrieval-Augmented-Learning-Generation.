@@ -57,6 +57,7 @@ from webui.document_processor import (
     attach_documents,
     remove_uploaded_document,
     has_uploaded_document,
+    _LIFECYCLE_LOCK,
 )  # noqa: E402
 
 _MAX_API_REQUEST_BYTES = 1 * 1024 * 1024
@@ -503,15 +504,16 @@ def query(payload: QueryRequest, request: Request = None) -> QueryResponse:
     pipeline = get_pipeline()
 
     try:
-        execution = execute_runtime(
-            pipeline,
-            payload.question.strip(),
-            payload.top_k,
-            answer_fn=answer_question,
-            contract_fn=build_answer_contract,
-            sources_fn=collect_sources,
-            document_ids=payload.document_ids,
-        )
+        with _LIFECYCLE_LOCK:
+            execution = execute_runtime(
+                pipeline,
+                payload.question.strip(),
+                payload.top_k,
+                answer_fn=answer_question,
+                contract_fn=build_answer_contract,
+                sources_fn=collect_sources,
+                document_ids=payload.document_ids,
+            )
 
         return QueryResponse(
             answer=execution.answer,
