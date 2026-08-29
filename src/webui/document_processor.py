@@ -25,6 +25,7 @@ Provenance limitations (this checkpoint):
 
 from __future__ import annotations
 
+import copy
 import logging
 import json
 import os
@@ -482,34 +483,81 @@ def _attach_documents_unlocked(
         raise ValueError("Upload batch exceeds total size limit.")
     if len(new_chunks) > UPLOAD_POLICY.max_total_chunks_per_batch:
         raise ValueError("Upload batch exceeds maximum total chunk limit.")
-    if persist and pipeline.get("runtime_persistence", False):
-        for doc in uploaded:
-            _persist_document(pipeline, doc)
-    if not new_chunks:
-        return 0
 
-    # retriever_v2 expects a list of RuntimeChunk objects.
-    old_chunk_count = len(pipeline["chunks"])
-    pipeline["chunks"].extend(new_chunks)
-    index = pipeline.get("retrieval_index")
-    frequency = pipeline.get("document_frequency")
-    if (
-        index is not None
-        and frequency is not None
-        and len(index) == old_chunk_count
-    ):
-        extend_index_v2(index, frequency, new_chunks, old_chunk_count)
-    else:
-        pipeline["retrieval_index"], pipeline["document_frequency"] = build_index_v2(
-            pipeline["chunks"]
+    old_chunks = copy.deepcopy(pipeline.get("chunks", []))
+    old_index = copy.deepcopy(pipeline.get("retrieval_index"))
+    old_frequency = copy.deepcopy(pipeline.get("document_frequency"))
+    old_uploaded_docs = list(pipeline.get("uploaded_docs", []))
+
+    old_registry = None
+    old_contents = {}
+    if persist and pipeline.get("runtime_persistence", False):
+        old_registry = _load_registry(pipeline)
+        for doc in uploaded:
+            content_path = _persistence_dir(pipeline) / "documents" / f"{doc.doc_id}.txt"
+            if content_path.exists():
+                try:
+                    old_contents[doc.doc_id] = content_path.read_text(encoding="utf-8")
+                except OSError:
+                    old_contents[doc.doc_id] = None
+            else:
+                old_contents[doc.doc_id] = None
+
+    try:
+        if persist and pipeline.get("runtime_persistence", False):
+            for doc in uploaded:
+                _persist_document(pipeline, doc)
+        if not new_chunks:
+            return 0
+
+        # retriever_v2 expects a list of RuntimeChunk objects.
+        old_chunk_count = len(pipeline["chunks"])
+        pipeline["chunks"].extend(new_chunks)
+        index = pipeline.get("retrieval_index")
+        frequency = pipeline.get("document_frequency")
+        if (
+            index is not None
+            and frequency is not None
+            and len(index) == old_chunk_count
+        ):
+            extend_index_v2(index, frequency, new_chunks, old_chunk_count)
+        else:
+            pipeline["retrieval_index"], pipeline["document_frequency"] = build_index_v2(
+                pipeline["chunks"]
+            )
+
+        # Track uploads in the pipeline so the UI can list them.
+        pipeline.setdefault("uploaded_docs", []).extend(
+            [d.to_dict() for d in uploaded]
         )
 
-    # Track uploads in the pipeline so the UI can list them.
-    pipeline.setdefault("uploaded_docs", []).extend(
-        [d.to_dict() for d in uploaded]
-    )
+        return len(new_chunks)
+    except Exception:
+        pipeline["chunks"] = old_chunks
+        if old_index is not None:
+            pipeline["retrieval_index"] = old_index
+        if old_frequency is not None:
+            pipeline["document_frequency"] = old_frequency
+        pipeline["uploaded_docs"] = old_uploaded_docs
 
-    return len(new_chunks)
+        if persist and pipeline.get("runtime_persistence", False) and old_registry is not None:
+            try:
+                _persist_registry(pipeline, old_registry)
+            except Exception as registry_exc:
+                _LOGGER.warning("Rollback: failed to restore registry: %s", type(registry_exc).__name__)
+            for doc in uploaded:
+                content_path = _persistence_dir(pipeline) / "documents" / f"{doc.doc_id}.txt"
+                old_content = old_contents.get(doc.doc_id)
+                try:
+                    if old_content is not None:
+                        _atomic_write(content_path, old_content)
+                    else:
+                        if content_path.exists():
+                            content_path.unlink()
+                except OSError as content_exc:
+                    _LOGGER.warning("Rollback: failed to restore content for %s: %s", doc.doc_id, type(content_exc).__name__)
+
+        raise
 
 
 def attach_documents(
@@ -543,6 +591,24 @@ def _remove_uploaded_document_unlocked(pipeline: dict, document_id: str) -> int:
     - Returns the number of chunks removed.
     - If ``document_id`` is not found, returns 0 without modifying pipeline.
     """
+    old_chunks = copy.deepcopy(pipeline.get("chunks", []))
+    old_index = copy.deepcopy(pipeline.get("retrieval_index"))
+    old_frequency = copy.deepcopy(pipeline.get("document_frequency"))
+    old_uploaded_docs = list(pipeline.get("uploaded_docs", []))
+
+    old_registry = None
+    old_content = None
+    content_path = _persistence_dir(pipeline) / "documents" / f"{document_id}.txt"
+    if pipeline.get("runtime_persistence", False):
+        old_registry = _load_registry(pipeline)
+        if content_path.exists():
+            try:
+                old_content = content_path.read_text(encoding="utf-8")
+            except OSError:
+                old_content = None
+        else:
+            old_content = None
+
     chunks = pipeline.get("chunks", [])
 
     # Identify chunks to remove
@@ -558,39 +624,59 @@ def _remove_uploaded_document_unlocked(pipeline: dict, document_id: str) -> int:
         else:
             to_keep.append(chunk)
 
-    if removed_count == 0:
+    try:
+        if removed_count == 0:
+            if pipeline.get("runtime_persistence", False):
+                entries = _load_registry(pipeline)
+                if any(d.get("document_id") == document_id for d in entries):
+                    _persist_registry(
+                        pipeline, [d for d in entries if d.get("document_id") != document_id]
+                    )
+                    content_path.unlink(missing_ok=True)
+            return 0
+
+        pipeline["chunks"] = to_keep
+        pipeline["retrieval_index"], pipeline["document_frequency"] = build_index_v2(
+            to_keep
+        )
+
+        # Remove from uploaded_docs tracking
+        uploaded_docs = pipeline.get("uploaded_docs", [])
+        pipeline["uploaded_docs"] = [
+            d for d in uploaded_docs
+            if d.get("document_id") != document_id
+        ]
         if pipeline.get("runtime_persistence", False):
             entries = _load_registry(pipeline)
-            if any(d.get("document_id") == document_id for d in entries):
-                _persist_registry(
-                    pipeline, [d for d in entries if d.get("document_id") != document_id]
-                )
-                ( _persistence_dir(pipeline) / "documents" / f"{document_id}.txt").unlink(
-                    missing_ok=True
-                )
-        return 0
+            _persist_registry(
+                pipeline, [d for d in entries if d.get("document_id") != document_id]
+            )
+            content_path.unlink(missing_ok=True)
 
-    pipeline["chunks"] = to_keep
-    pipeline["retrieval_index"], pipeline["document_frequency"] = build_index_v2(
-        to_keep
-    )
+        return removed_count
+    except Exception:
+        pipeline["chunks"] = old_chunks
+        if old_index is not None:
+            pipeline["retrieval_index"] = old_index
+        if old_frequency is not None:
+            pipeline["document_frequency"] = old_frequency
+        pipeline["uploaded_docs"] = old_uploaded_docs
 
-    # Remove from uploaded_docs tracking
-    uploaded_docs = pipeline.get("uploaded_docs", [])
-    pipeline["uploaded_docs"] = [
-        d for d in uploaded_docs
-        if d.get("document_id") != document_id
-    ]
-    if pipeline.get("runtime_persistence", False):
-        entries = _load_registry(pipeline)
-        _persist_registry(
-            pipeline, [d for d in entries if d.get("document_id") != document_id]
-        )
-        (_persistence_dir(pipeline) / "documents" / f"{document_id}.txt").unlink(
-            missing_ok=True
-        )
+        if pipeline.get("runtime_persistence", False) and old_registry is not None:
+            try:
+                _persist_registry(pipeline, old_registry)
+            except Exception as registry_exc:
+                _LOGGER.warning("Rollback: failed to restore registry: %s", type(registry_exc).__name__)
+            try:
+                if old_content is not None:
+                    _atomic_write(content_path, old_content)
+                else:
+                    if content_path.exists():
+                        content_path.unlink()
+            except OSError as content_exc:
+                _LOGGER.warning("Rollback: failed to restore content for %s: %s", document_id, type(content_exc).__name__)
 
-    return removed_count
+        raise
 
 
 def remove_uploaded_document(pipeline: dict, document_id: str) -> int:
