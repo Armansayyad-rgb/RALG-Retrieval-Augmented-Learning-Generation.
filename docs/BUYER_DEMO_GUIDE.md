@@ -162,12 +162,12 @@ with up to 30s timeout).
 
 Once the WebUI is open, verify the service is healthy:
 
-- Open `http://127.0.0.1:7860/health` — should return `{"status":"ok"}`
-- Open `http://127.0.0.1:7860/ready` — should return `{"ready":true, ...}`
+- Open `http://127.0.0.1:8000/health` — should return `{"status":"ok"}`
+- Open `http://127.0.0.1:8000/ready` — should return `{"ready":true, ...}`
 - Or via curl:
   ```powershell
-  curl http://127.0.0.1:7860/health
-  curl http://127.0.0.1:7860/ready
+  curl http://127.0.0.1:8000/health
+  curl http://127.0.0.1:8000/ready
   ```
 
 #### Step 3 — Ingest a technical document
@@ -176,7 +176,7 @@ Use the included `data/technical_docs_sample.txt` or any technical PDF/TXT you
 have rights to. The upload uses the WebUI document panel or the API:
 
 ```powershell
-curl.exe -X POST http://127.0.0.1:7860/ingest `
+curl.exe -X POST http://127.0.0.1:8000/ingest `
   -H "Content-Type: application/json" `
   -d "{\"text\": \"Compressor Restart SOP. Before restarting the compressor after an overheating event, the technician must confirm cooling airflow, inspect the intake filter, check for blocked vents, and wait until the housing temperature returns to the safe operating range. Restart the compressor only after the inspection is complete.\", \"document_name\": \"sop-compressor.txt\""
 ```
@@ -326,8 +326,8 @@ considering the demo a release candidate.
 
 ### Health / readiness
 
-- [ ] `curl http://127.0.0.1:<WEBUI_PORT>/health` → `{"status":"ok"}` (selected by preflight from range 7860-7870)
-- [ ] `curl http://127.0.0.1:<WEBUI_PORT>/ready` → `{"ready":true, ...}` (same port; readiness probe waits up to 30s)
+- [ ] `curl http://127.0.0.1:8000/health` → `{"status":"ok"}`
+- [ ] `curl http://127.0.0.1:8000/ready` → `{"ready":true, ...}`
 
 ### Demo execution
 

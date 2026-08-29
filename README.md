@@ -190,7 +190,7 @@ wheel is installed, but the buyer-demo workflow is validated on CPU.
 ### 7. Startup command
 
 ```powershell
-# From the repository root (C:\AI-Project-Diligence)
+# From the repository root
 powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
 ```
 
