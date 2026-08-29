@@ -1,0 +1,84 @@
+{
+  "evaluator_version": "authoritative_dev_v1_e2e_v1",
+  "methodology": "production execute_runtime() pipeline",
+  "layer_a_retrieval": {
+    "recall@1": 0.9263285024154589,
+    "recall@3": 0.9722222222222223,
+    "recall@5": 0.9855072463768116,
+    "hit_rate@1": 0.9782608695652174,
+    "hit_rate@3": 1.0,
+    "hit_rate@5": 1.0,
+    "mrr": 0.9891304347826086
+  },
+  "layer_b_answer": {
+    "supported_correct": 26,
+    "supported_total": 75,
+    "false_rejection": 49,
+    "correct_rejection": 28,
+    "false_support": 14,
+    "rejection_total": 42,
+    "qualified_correct": 0,
+    "qualified_total": 6,
+    "cross_document_correct": 8,
+    "cross_document_total": 15,
+    "document_scoped_correct": 0,
+    "document_scoped_total": 0,
+    "auto_scored": 138,
+    "human_review_required": 0,
+    "supported_accuracy": 0.3466666666666667,
+    "false_rejection_rate": 0.6533333333333333,
+    "correct_rejection_rate": 0.6666666666666666,
+    "false_support_rate": 0.3333333333333333,
+    "qualified_accuracy": 0.0,
+    "cross_document_accuracy": 0.5333333333333333,
+    "document_scoped_accuracy": 0
+  },
+  "per_category": {
+    "supported": {
+      "total": 21,
+      "correct": 4
+    },
+    "paraphrased": {
+      "total": 19,
+      "correct": 8
+    },
+    "procedural": {
+      "total": 20,
+      "correct": 14
+    },
+    "causal": {
+      "total": 15,
+      "correct": 0
+    },
+    "cross_document": {
+      "total": 15,
+      "correct": 8
+    },
+    "document_scoped": {
+      "total": 0,
+      "correct": 0
+    },
+    "unsupported": {
+      "total": 20,
+      "correct": 16
+    },
+    "false_premise": {
+      "total": 12,
+      "correct": 4
+    },
+    "misleading_overlap": {
+      "total": 10,
+      "correct": 8
+    },
+    "conditional_or_qualified": {
+      "total": 6,
+      "correct": 0
+    }
+  },
+  "errors": 22,
+  "model_required": 12,
+  "completed": 138,
+  "total": 160,
+  "latency_ms_avg_retrieval": 0,
+  "latency_ms_avg_e2e": 9.193359941676043
+}
