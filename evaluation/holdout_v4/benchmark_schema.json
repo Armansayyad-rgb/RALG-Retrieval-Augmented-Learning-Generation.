@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RALG Holdout V4 Case",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["case_id","category","question","expected_behavior","relevant_document_ids","answerable","required_evidence","reasoning_notes_for_reviewers","pre_run_review_status"],
+  "properties": {
+    "case_id": {"type":"string","pattern":"^holdout_v4_[0-9]{3}$"},
+    "category": {"enum":["supported_factual","paraphrased_supported","procedural","causal","cross_document","document_scoped","conflicting_evidence","conditional_or_qualified","unsupported","false_premise","misleading_overlap"]},
+    "question": {"type":"string","minLength":8},
+    "expected_behavior": {"type":"string","minLength":3},
+    "relevant_document_ids": {"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "answerable": {"type":"boolean"},
+    "ground_truth_answer": {"type":"string"},
+    "required_evidence": {"type":"array","items":{"type":"object","required":["document_id","anchor"],"properties":{"document_id":{"type":"string"},"anchor":{"type":"string"}}}},
+    "forbidden_or_contradictory_evidence": {"type":"array"},
+    "document_scope": {"type":["array","null"],"items":{"type":"string"}},
+    "reasoning_notes_for_reviewers": {"type":"string"},
+    "pre_run_review_status": {"enum":["PENDING","APPROVED","REJECTED"]}
+  }
+}
