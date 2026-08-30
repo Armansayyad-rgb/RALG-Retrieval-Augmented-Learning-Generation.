@@ -15,7 +15,7 @@ from typing import Any
 
 from rag_chat_v2 import answer_question
 from runtime_architecture import execute_runtime
-from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk
+from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk, _procedural_query
 from retriever_hybrid import retrieve as retrieve_hybrid_fn
 from webui.document_processor import _LIFECYCLE_LOCK
 
@@ -113,7 +113,23 @@ def is_traceable_support(answer: str, supported: bool, sources: list[dict]) -> b
     return evidence_overlap(answer, sources) >= required_terms
 
 
-def _subject_predicate_grounded(question, sources, answer_type, route):
+def _is_procedural_question(question, intent):
+    """Return True for genuine procedural/instructional questions.
+
+    The atomic subject/predicate grounding split is designed for
+    entity-attribute factual claims. Applying it to procedural
+    questions (SOPs, checklists, maintenance steps) causes false
+    rejections because the evidence uses imperative verbs while the
+    question uses modal passives. Both the runtime intent and generic
+    procedural vocabulary are used so the check stays generalized and
+    compressor-agnostic.
+    """
+    if intent == "process":
+        return True
+    return _procedural_query(question)
+
+
+def _subject_predicate_grounded(question, sources, answer_type, route, intent=""):
     """Require factual evidence to ground both question subject and predicate.
 
     A supported factual claim must have evidence that addresses both:
@@ -128,10 +144,20 @@ def _subject_predicate_grounded(question, sources, answer_type, route):
     contain terms from both the subject and predicate halves of the
     question. For questions with named entities, the entity must
     appear in the evidence.
+
+    Genuine procedural/instructional questions are excluded: their
+    evidence uses imperative verbs ("Check", "Inspect") while the
+    question uses modal passives ("must be checked"), so an atomic
+    subject/predicate split would reject valid procedural answers.
+    The runtime intent and generic procedural vocabulary are both
+    used to recognize these cases.
     """
     if answer_type not in ("factual", "reasoning_model") and route != "extractor":
         return True
     if not sources:
+        return True
+
+    if _is_procedural_question(question, intent):
         return True
 
     q_lower = (question or "").casefold()
@@ -506,9 +532,10 @@ def build_answer_contract(
     _answer_type = str(result.get("answer_type", ""))
     _plan = result.get("runtime_plan") or {}
     _route = _plan.get("route") or "model"
+    _intent = _plan.get("intent") or "general"
     if supported and _answer_type in ("factual", "reasoning_model"):
         if not _subject_predicate_grounded(
-            question, sources, _answer_type, _route,
+            question, sources, _answer_type, _route, _intent,
         ):
             supported = False
             conflict = True
