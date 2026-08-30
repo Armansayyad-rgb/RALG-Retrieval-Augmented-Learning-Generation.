@@ -1,185 +1,131 @@
 # Third-Party Notices
 
-This file documents third-party materials redistributed with or used by this
-repository, along with their licenses and required attribution.
+This file documents third-party materials redistributed with or used by this repository, together with repository-level attribution and provenance notes. Upstream license texts and terms remain controlling. This document is not legal advice.
 
----
+## 1. WikiText / Salesforce WikiText Language Modeling Corpus
 
-## 1. WikiText-2 / Salesforce WikiText Language Modeling Corpus
-
-- **Source:** Salesforce AI Research (`salesforce/wikitext` on HuggingFace)
+- **Source:** Salesforce AI Research (`salesforce/wikitext` distribution path used by the project)
 - **Paper:** Merity et al., "Pointer Sentinel Mixture Models" (arXiv:1609.07843, 2016)
 - **Repository path:** `data/wikitext_v2.txt`
-- **License:** Creative Commons Attribution-ShareAlike
+- **License family:** Creative Commons Attribution-ShareAlike
 
-The HuggingFace dataset card's "Licensing Information" section states
-"CC BY-SA 4.0." The HuggingFace structured metadata field lists
-`cc-by-sa-3.0`. The original arXiv paper does not specify a license
-version. **The version applicable to this dataset should be verified
-against the original Salesforce distribution or by consulting the
-dataset curators before any commercial deployment.** The attribution
-requirement (Creative Commons Attribution-ShareAlike) applies under
-either version.
+Repository evidence currently contains a license-version ambiguity: the Hugging Face dataset card documentation has stated CC BY-SA 4.0 while structured metadata has also identified CC BY-SA 3.0. The authoritative version applicable to the exact distributed corpus should be verified against the upstream Salesforce distribution before commercial redistribution. Attribution/share-alike obligations must be preserved in either case.
 
-**Required attribution when redistributing:**
+**Attribution:**
 
-> WikiText-2 dataset, Copyright 2016 Salesforce AI Research.
-> Licensed under Creative Commons Attribution-ShareAlike (CC BY-SA).
-> Original paper: Merity, S., Xiong, C., Bradbury, J., and Socher, R.
-> "Pointer Sentinel Mixture Models." arXiv:1609.07843, 2016.
-> Source: https://huggingface.co/datasets/salesforce/wikitext
+> WikiText dataset, Salesforce AI Research. Original paper: Merity, S., Xiong, C., Bradbury, J., and Socher, R., "Pointer Sentinel Mixture Models," arXiv:1609.07843 (2016). Source: https://huggingface.co/datasets/salesforce/wikitext
 
----
+## 2. Qwen2.5-1.5B-Instruct (optional third-party model)
 
-## 2. Qwen2.5-1.5B-Instruct (Optional Model Dependency)
-
-- **Source:** Qwen Team, Alibaba Cloud (Qwen/Qwen2.5-1.5B-Instruct on HuggingFace)
+- **Source:** Qwen Team / Alibaba Cloud (`Qwen/Qwen2.5-1.5B-Instruct`)
 - **License:** Apache License 2.0
-- **Repository path:** Model files are stored locally in `checkpoints/qwen2.5-1.5b-instruct/`
-  and are **NOT committed to Git**. The download scripts are at:
-  - `src/download_polish_llm.py`
-  - `src/download_polish_llm_direct.py`
-- **Status:** This is an optional local dependency. The repository's core pipeline
-  (custom SmallLM/SmallLMV2 models) does not require Qwen. Qwen is used only
-  when the user explicitly runs the download script and configures the polish
-  LLM path.
+- **Repository status:** weights are local/external and are not committed to Git
+- **Download helpers:** `src/download_polish_llm.py`, `src/download_polish_llm_direct.py`
 
-**Required attribution (Apache 2.0):**
+Qwen is a third-party optional dependency and is not a project-owned checkpoint. Its upstream Apache 2.0 license and notices apply independently.
 
-> Qwen2.5-1.5B-Instruct, Copyright 2024 Qwen Team (Alibaba Cloud).
-> Licensed under the Apache License, Version 2.0.
-> You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-> Source: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
+**Attribution:**
 
----
+> Qwen2.5-1.5B-Instruct, Qwen Team (Alibaba Cloud), licensed under Apache License 2.0. Source: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
 
-## 3. IETF RFC Documents (Stage 5 Evaluation Corpus)
+## 3. IETF RFC documents (Stage 5 evaluation corpus)
 
-- **Source:** Internet Engineering Task Force (IETF)
-- **Repository path:** `evaluation/stage5_documents/rfc*.txt` (50 files)
+- **Source:** Internet Engineering Task Force / RFC Editor
+- **Repository path:** `evaluation/stage5_documents/rfc*.txt`
 - **Provenance manifest:** `evaluation/stage5_source_manifest.jsonl`
-- **License:** IETF Trust Legal Provisions (IETF Documents are freely
-  distributable per RFC 7841, Section 3.1.3, for any purpose and without
-  restrictions, provided that proper attribution is given)
+- **Rights:** governed by applicable IETF Trust Legal Provisions
 
-**Required attribution:**
+Preserve the required IETF notices and attribution when redistributing these documents. Repository documentation must not describe the RFCs as project-owned or public-domain material.
 
-> RFC documents are published by the Internet Engineering Task Force (IETF)
-> and are freely redistributable under the IETF Trust Legal Provisions.
-> Source: https://www.ietf.org
+## 4. Python Enhancement Proposals (Holdout V1 source material)
 
----
+- **Source:** Python Software Foundation / Python community PEP repository
+- **Repository paths:** PEP source artifacts used by `evaluation/holdout_v1/`
+- **Purpose:** frozen historical/diagnostic evaluation source material
 
-## 4. Python Enhancement Proposals (PEPs)
+Preserve upstream attribution and any source-specific notices. The frozen Holdout V1 benchmark/result boundary is independent of the licensing classification and must not be rewritten or rerun for presentation.
 
-- **Source:** Python Software Foundation
-- **Repository path:** Embedded as text references in `evaluation/holdout_v1/` cases
-- **License:** Public domain / freely redistributable (PEPs are not copyrighted;
-  they are community documents)
+## 5. Project-authored synthetic/development data
 
-**Note:** PEP texts are referenced within the evaluation dataset but are not
-stored as separate files in the repository. No separate attribution file is
-required for public-domain materials, but the source should be acknowledged
-when citing evaluation results.
+Project-authored evaluation and development fixtures include material under paths such as:
 
----
+- `data/technical_doc_benchmark_v1.jsonl`;
+- `data/technical_doc_benchmark_hard_v1.jsonl`;
+- `data/stage3_customer_corpus_v1.jsonl`;
+- `data/stage4_customer_corpus_v1.jsonl`;
+- `data/pilot_customer_corpus_v1.jsonl`;
+- `data/knowledge_extra_v1.txt`.
 
-## 5. Synthetic Test Data
+These are governed by the repository's current license unless a file-specific notice states otherwise. They are development/synthetic evidence and must not be represented as customer-authored or independently authored validation data.
 
-- **Generated by:** RALG development team
-- **Repository paths:** `data/technical_doc_benchmark_v1.jsonl`,
-  `data/technical_doc_benchmark_hard_v1.jsonl`, `data/stage3_customer_corpus_v1.jsonl`,
-  `data/stage4_customer_corpus_v1.jsonl`, `data/pilot_customer_corpus_v1.jsonl`,
-  `data/knowledge_extra_v1.txt`
-- **License:** Governed by the repository's own LICENSE file (RALG Source-Available
-  Non-Commercial License v1.0)
+## 6. Custom model/checkpoint artifacts
 
----
+Local custom checkpoint names documented by the project include:
 
-## Custom Model Artifacts
+- `checkpoints/v2/reasoning_model_v1.pt`;
+- `checkpoints/v2/instruction_model_v4.pt`;
+- `checkpoints/embedding_model.pt`.
 
-The following custom-trained model files are produced by this repository's
-training pipeline and are **NOT committed to Git** (excluded via `.gitignore`):
+These files are not committed to Git. Although the repository contains project-authored training code, the reviewed repository does not contain sufficient immutable training records to establish a complete commercial provenance chain for every custom checkpoint (exact dataset versions/hashes, preprocessing lineage, training command/environment, and output-generation record).
 
-- `checkpoints/v2/reasoning_model_v1.pt`
-- `checkpoints/v2/instruction_model_v4.pt`
-- `checkpoints/embedding_model.pt`
+**Current distribution classification:** `PROVENANCE INCOMPLETE — EXCLUDE FROM COMMERCIAL DISTRIBUTION` until the lineage is reconstructed and independently verified. Do not describe these checkpoints as commercially cleared solely because the training code is project-authored.
 
-These artifacts are owned by the repository copyright holder and governed by
-the repository's LICENSE file.
+See `docs/IP_PROVENANCE_AND_RELEASE_BOUNDARIES.md` and `docs/DATA_RIGHTS_INVENTORY.md`.
 
----
+## 7. Holdout V3 upstream source artifacts
 
-## 6. Holdout V3 Source Artifacts (External Validation)
+Holdout V3 uses seven authoritative upstream technical sources committed under `evaluation/holdout_v3/sources/` with source manifests/revisions. Holdout V3 is an **authoritative-source independent blind holdout**; this label describes evaluation methodology and does not mean the upstream source licenses are uniform.
 
-Seven upstream source documents acquired for Holdout V3 benchmark evaluation.
-All artifacts are committed under `evaluation/holdout_v3/sources/` with
-deterministic normalization applied. Raw unmodified copies are preserved
-under `evaluation/holdout_v3/sources/raw/`.
+### 7.1 SQLite Write-Ahead Logging
 
-### 6.1 SQLite Write-Ahead Logging
-
-- **Source:** SQLite documentation (sqlite.org)
-- **Canonical URL:** https://www.sqlite.org/wal.html
+- **Source:** SQLite documentation
 - **Repository path:** `evaluation/holdout_v3/sources/sqlite_wal_mode.txt`
-- **Raw artifact:** `evaluation/holdout_v3/sources/raw/sqlite_wal_mode.raw`
-- **License:** Public Domain (SQLite is in the public domain per https://www.sqlite.org/copyright.html)
+- **License status:** SQLite documentation/project material identified by upstream as public domain; verify any page-specific notice when redistributing.
 
-### 6.2 PostgreSQL Routine Vacuuming
+### 7.2 PostgreSQL Routine Vacuuming
 
 - **Source:** PostgreSQL Global Development Group
-- **Canonical URL:** https://www.postgresql.org/docs/17/routine-vacuuming.html
-- **Repository:** https://github.com/postgres/postgres (branch REL_17_STABLE)
 - **Repository path:** `evaluation/holdout_v3/sources/postgresql_vacuuming.txt`
-- **Raw artifact:** `evaluation/holdout_v3/sources/raw/postgresql_vacuuming.raw`
-- **License:** PostgreSQL License (Copyright (c) 1996-2024, PostgreSQL Global Development Group)
+- **License:** PostgreSQL License
 
-### 6.3 Kubernetes Probes
+### 7.3 Kubernetes Probes
 
-- **Source:** Kubernetes documentation (kubernetes.io)
-- **Canonical URL:** https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-- **Repository:** https://github.com/kubernetes/website (commit fc900dc)
+- **Source:** Kubernetes documentation
 - **Repository path:** `evaluation/holdout_v3/sources/kubernetes_probes.txt`
-- **Raw artifact:** `evaluation/holdout_v3/sources/raw/kubernetes_probes.raw`
-- **License:** CC BY 4.0 (Kubernetes documentation)
+- **License:** CC BY 4.0
 
-### 6.4 systemd.unit
+### 7.4 systemd.unit
 
-- **Source:** systemd project (freedesktop.org)
-- **Canonical URL:** https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
-- **Repository:** https://github.com/systemd/systemd (tag v256)
+- **Source:** systemd project
 - **Repository path:** `evaluation/holdout_v3/sources/systemd_unit.txt`
-- **Raw artifact:** `evaluation/holdout_v3/sources/raw/systemd_unit.raw`
-- **License:** LGPL-2.1-or-later
+- **License:** LGPL-2.1-or-later (see exact upstream source/revision record)
 
-### 6.5 OpenTelemetry Propagators API
+### 7.5 OpenTelemetry Propagators API
 
 - **Source:** OpenTelemetry specification
-- **Canonical URL:** https://opentelemetry.io/docs/specs/otel/context/api-propagators.html
-- **Repository:** https://github.com/open-telemetry/opentelemetry-specification (commit 8057bf6)
 - **Repository path:** `evaluation/holdout_v3/sources/otel_propagators.txt`
-- **Raw artifact:** `evaluation/holdout_v3/sources/raw/otel_propagators.raw`
 - **License:** Apache 2.0
 
-### 6.6 OCI Image Layout
+### 7.6 OCI Image Layout
 
-- **Source:** Open Container Initiative
-- **Canonical URL:** https://github.com/opencontainers/image-spec/blob/main/image-layout.md
-- **Repository:** https://github.com/opencontainers/image-spec (tag v1.1.0)
+- **Source:** Open Container Initiative image-spec
 - **Repository path:** `evaluation/holdout_v3/sources/oci_image_layout.txt`
-- **Raw artifact:** `evaluation/holdout_v3/sources/raw/oci_image_layout.raw`
 - **License:** Apache 2.0
 
-### 6.7 CMake Presets
+### 7.7 CMake Presets
 
-- **Source:** CMake documentation (cmake.org)
-- **Canonical URL:** https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
-- **Repository:** https://github.com/Kitware/CMake (tag v4.4.3)
+- **Source:** CMake documentation / Kitware
 - **Repository path:** `evaluation/holdout_v3/sources/cmake_presets.txt`
-- **Raw artifact:** `evaluation/holdout_v3/sources/raw/cmake_presets.raw`
-- **License:** BSD 3-Clause
+- **License:** BSD 3-Clause (see exact upstream source/revision record)
+
+The exact canonical URLs, revisions, hashes, and acquisition records are maintained in the Holdout V3 manifests. Preserve source-specific attribution and license obligations when redistributing these artifacts.
+
+## 8. Unresolved training artifact: `data/train.txt`
+
+`data/train.txt` is tracked historical training/development material with incomplete repository provenance and apparent Wikipedia-derived content. No reliable repository record establishes the exact acquisition source or license chain.
+
+**Current distribution classification:** `PROVENANCE INCOMPLETE — EXCLUDE FROM COMMERCIAL DISTRIBUTION` until provenance and rights are resolved.
 
 ---
 
-*Last updated: 2026-08-28*
-*For questions about licensing or attribution, contact the repository copyright holder.*
+*Last reviewed: 2026-08-30*
