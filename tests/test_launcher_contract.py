@@ -1,6 +1,6 @@
-"""Focused launcher-contract tests for the buyer demo.
+"""Focused launcher-contract tests for the demonstration environment.
 
-Verifies the canonical Windows buyer-demo path launches ``webui_bootstrap``
+Verifies the canonical Windows demonstration path launches ``webui_bootstrap``
 (not ``webui.app``), the bounded port-failure message is valid, the endpoint
 display is not misleading, and the readiness documentation matches ``/ready``
 semantics.
@@ -18,31 +18,28 @@ SCRIPTS = REPO_ROOT / "scripts"
 SRC = REPO_ROOT / "src"
 DOCS = REPO_ROOT / "docs"
 
-LAUNCHER = SCRIPTS / "run_buyer_demo.ps1"
+LAUNCHER = SCRIPTS / "run_demo.ps1"
 BOOTSTRAP = SRC / "webui_bootstrap.py"
-GUIDE = DOCS / "BUYER_DEMO_GUIDE.md"
+GUIDE = DOCS / "DEMO_GUIDE.md"
 README = REPO_ROOT / "README.md"
 
 
 class TestLauncherWebUIEntrypoint(unittest.TestCase):
-    """The canonical Windows buyer-demo path must launch webui_bootstrap."""
+    """The canonical Windows demonstration path must launch webui_bootstrap."""
 
     def test_launcher_launches_webui_bootstrap(self):
         content = LAUNCHER.read_text()
         self.assertIn("-m webui_bootstrap", content)
-        # The direct app entry point must not be used: it bypasses the gradio
-        # compatibility patch and the Python 3.11 runtime guard.
         self.assertNotIn("-m webui.app", content)
 
     def test_launcher_preserves_port_env_behavior(self):
         content = LAUNCHER.read_text()
-        # Port selection from preflight is still threaded through WEBUI_PORT.
         self.assertIn("WEBUI_PORT", content)
         self.assertIn("selected_port", content)
 
 
 class TestBootstrapReachesRuntimeGuard(unittest.TestCase):
-    """webui_bootstrap wires in the gradio patch and the Python 3.11 guard."""
+    """webui_bootstrap wires in the Gradio patch and the Python 3.11 guard."""
 
     def test_bootstrap_imports_runtime_guard(self):
         content = BOOTSTRAP.read_text()
@@ -73,11 +70,7 @@ class TestEndpointDisplayNotMisleading(unittest.TestCase):
 
     def test_endpoint_display_qualifies_list(self):
         content = LAUNCHER.read_text()
-        # The old misleading bare "endpoints:" partial list must be gone.
-        self.assertNotIn(
-            "(endpoints: /health, /ready, /ingest, /query)", content
-        )
-        # It should label the shown URLs as common/demo rather than complete.
+        self.assertNotIn("(endpoints: /health, /ready, /ingest, /query)", content)
         self.assertRegex(content, r"(common|demo).*(endpoints|/health)")
 
     def test_api_only_variant_lists_delete_route(self):
@@ -88,7 +81,7 @@ class TestEndpointDisplayNotMisleading(unittest.TestCase):
 class TestDocsReadinessSemantics(unittest.TestCase):
     """Docs must not imply extractive-without-checkpoint => /ready 200."""
 
-    def test_buyer_guide_readiness_semantics(self):
+    def test_demo_guide_readiness_semantics(self):
         content = GUIDE.read_text()
         self.assertIn("extractive-only", content)
         self.assertIn("503", content)
