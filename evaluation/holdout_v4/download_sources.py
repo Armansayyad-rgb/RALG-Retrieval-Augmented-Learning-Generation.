@@ -25,6 +25,17 @@ def normalize(raw: bytes) -> bytes:
     return text.encode("utf-8")
 
 
+def github_commit(repo: str, ref: str) -> str:
+    url = f"https://api.github.com/repos/{repo}/commits/{ref}"
+    req = urllib.request.Request(url, headers={"User-Agent": "RALG-Holdout-V4/1.0", "Accept": "application/vnd.github+json"})
+    with urllib.request.urlopen(req, timeout=60) as response:
+        payload = json.load(response)
+    sha = str(payload.get("sha", ""))
+    if len(sha) != 40:
+        raise RuntimeError(f"unable to resolve immutable commit for {repo}@{ref}")
+    return sha
+
+
 def main() -> None:
     specs = json.loads(SPECS.read_text(encoding="utf-8"))
     RAW_DIR.mkdir(parents=True, exist_ok=True)
@@ -34,7 +45,10 @@ def main() -> None:
 
     for src in specs["sources"]:
         doc_id = src["document_id"]
-        req = urllib.request.Request(src["raw_url"], headers={"User-Agent": "RALG-Holdout-V4/1.0"})
+        commit_sha = github_commit(src["upstream_repo"], src["ref"])
+        pinned_raw_url = f"https://raw.githubusercontent.com/{src['upstream_repo']}/{commit_sha}/{src['upstream_path']}"
+        pinned_canonical_url = f"https://github.com/{src['upstream_repo']}/blob/{commit_sha}/{src['upstream_path']}"
+        req = urllib.request.Request(pinned_raw_url, headers={"User-Agent": "RALG-Holdout-V4/1.0"})
         with urllib.request.urlopen(req, timeout=60) as response:
             raw = response.read()
             final_url = response.geturl()
@@ -47,6 +61,10 @@ def main() -> None:
 
         rows.append({
             **src,
+            "selected_ref": src["ref"],
+            "resolved_commit_sha": commit_sha,
+            "canonical_url": pinned_canonical_url,
+            "raw_url": pinned_raw_url,
             "acquired_at_utc": acquired,
             "resolved_url": final_url,
             "raw_path": raw_path.relative_to(ROOT).as_posix(),
@@ -60,7 +78,7 @@ def main() -> None:
         })
 
     MANIFEST.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows), encoding="utf-8")
-    print(f"acquired {len(rows)} sources -> {MANIFEST}")
+    print(f"acquired {len(rows)} commit-pinned sources -> {MANIFEST}")
 
 
 if __name__ == "__main__":
