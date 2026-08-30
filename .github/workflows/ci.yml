@@ -105,3 +105,53 @@ jobs:
       - name: Validate Stage 5 third-party corpus integrity
         run: |
           python scripts/stage5_prepare.py
+
+  dependency-lock-freshness:
+    name: Dependency lock freshness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pip-tools
+        run: |
+          python -m pip install "pip==23.3.1" "pip-tools==7.4.1"
+
+      - name: Regenerate the Linux dependency lock into a temporary file
+        run: |
+          set -euo pipefail
+          test -f requirements.txt
+          test -f requirements.lock.txt
+          # The regenerated lock is written to a temporary path only; the
+          # committed requirements.lock.txt is never overwritten here, so the
+          # comparison below stays meaningful. The temporary file is seeded with
+          # the committed lock so that --reuse-hashes reuses the existing hashes
+          # (full hash regeneration across the PyTorch index is bandwidth-heavy)
+          # and --no-upgrade keeps already locked transitive versions. Anything
+          # requirements.txt pins directly still wins.
+          cp requirements.lock.txt "${RUNNER_TEMP}/requirements.lock.regenerated.txt"
+          pip-compile requirements.txt \
+            --generate-hashes \
+            --reuse-hashes \
+            --no-upgrade \
+            --no-header \
+            --no-annotate \
+            --index-url https://pypi.org/simple \
+            --extra-index-url https://download.pytorch.org/whl/cpu \
+            --output-file "${RUNNER_TEMP}/requirements.lock.regenerated.txt"
+
+      - name: Fail if requirements.lock.txt is stale
+        run: |
+          set -euo pipefail
+          if cmp -s requirements.lock.txt "${RUNNER_TEMP}/requirements.lock.regenerated.txt"; then
+            echo "requirements.lock.txt matches the lock regenerated from requirements.txt"
+            exit 0
+          fi
+          echo "::error::requirements.lock.txt is out of date with requirements.txt. Regenerate it with pip-tools==7.4.1 on Linux/Python 3.11 (see docs/CLEAN_CLONE_SETUP.md) and commit the result."
+          git diff --no-index -- requirements.lock.txt "${RUNNER_TEMP}/requirements.lock.regenerated.txt" || true
+          exit 1

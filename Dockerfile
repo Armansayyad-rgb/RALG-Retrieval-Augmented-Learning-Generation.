@@ -12,15 +12,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 ARG TORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
+ARG PYPI_INDEX_URL=https://pypi.org/simple
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements.lock.txt .
 
-# Install the CPU PyTorch wheel explicitly first. The later requirements
-# install sees the satisfied torch requirement and keeps this build CPU-only.
-RUN pip install --no-cache-dir --index-url ${TORCH_INDEX_URL} "torch==2.7.1"
-RUN pip install --no-cache-dir -r requirements.txt
+# Authoritative Linux install path: every dependency version comes from the
+# committed lock file (regenerated with pip-tools==7.4.1 from requirements.txt).
+# PyPI stays the primary index and the CPU PyTorch wheel index is the extra
+# index, matching the lock generation contract. Hashes are enforced explicitly
+# so the image only installs the exact locked wheels.
+RUN pip install --no-cache-dir --require-hashes \
+        --index-url ${PYPI_INDEX_URL} \
+        --extra-index-url ${TORCH_INDEX_URL} \
+        -r requirements.lock.txt
 
 COPY . .
 
