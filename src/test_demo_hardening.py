@@ -1,6 +1,6 @@
-"""Buyer-demo hardening regression tests.
+"""Demonstration-environment hardening regression tests.
 
-Covers: module-path resolution without externally-set PYTHONPATH, bounded
+Covers module-path resolution without externally-set PYTHONPATH, bounded
 port fallback selection, preflight port reporting, checkpoint requirement
 accuracy, non-overlapping review-summary categories, and Stage 5 artifact
 immutability guarantees for the Stage 6 evaluator.
@@ -8,8 +8,8 @@ immutability guarantees for the Stage 6 evaluator.
 These tests never spawn a WebUI/Gradio server. Port checks bind short-lived
 listener sockets that are always closed in finally blocks; the one test that
 invokes the evaluator writes to a temp output path only. Any manual launcher
-test must clean up the FULL process tree (PowerShell parent AND its child
-python/Gradio listener), not just the parent PID.
+test must clean up the full process tree (PowerShell parent and child
+Python/Gradio listener), not just the parent PID.
 """
 
 import csv
@@ -28,7 +28,7 @@ for entry in (str(PROJECT_ROOT), str(PROJECT_ROOT / "scripts")):
     if entry not in sys.path:
         sys.path.insert(0, entry)
 
-import buyer_demo_preflight as preflight  # noqa: E402
+import demo_preflight as preflight  # noqa: E402
 import stage5_ingest_reviews as ingest_mod  # noqa: E402
 import stage6_evaluator as evaluator_mod  # noqa: E402
 
@@ -48,7 +48,6 @@ def _occupy(port: int):
 
 class ModulePathTests(unittest.TestCase):
     def test_webui_unimportable_from_root_without_pythonpath(self):
-        """Reproduces failure #1: bare `python -c 'import webui.config'` must fail."""
         env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
         proc = subprocess.run(
             [sys.executable, "-c", "import webui.config"],
@@ -58,10 +57,9 @@ class ModulePathTests(unittest.TestCase):
         self.assertIn("No module named", proc.stderr)
 
     def test_launcher_provides_module_path_itself(self):
-        """The launcher sets PYTHONPATH=<root>\\src so buyers need no manual step."""
-        script = (PROJECT_ROOT / "scripts" / "run_buyer_demo.ps1").read_text(encoding="utf-8")
+        """The launcher sets PYTHONPATH=<root>\\src so no manual step is required."""
+        script = (PROJECT_ROOT / "scripts" / "run_demo.ps1").read_text(encoding="utf-8")
         self.assertIn("$env:PYTHONPATH = (Join-Path $ProjectRoot \"src\")", script)
-        # ...and that path makes webui importable for the interpreter.
         env = dict(os.environ)
         env["PYTHONPATH"] = str(PROJECT_ROOT / "src")
         proc = subprocess.run(
@@ -72,7 +70,7 @@ class ModulePathTests(unittest.TestCase):
         self.assertTrue(proc.stdout.strip())
 
     def test_launcher_reads_selected_port_from_preflight(self):
-        script = (PROJECT_ROOT / "scripts" / "run_buyer_demo.ps1").read_text(encoding="utf-8")
+        script = (PROJECT_ROOT / "scripts" / "run_demo.ps1").read_text(encoding="utf-8")
         self.assertIn("selected_port", script)
         self.assertIn("$env:WEBUI_PORT = [string]$preflight.selected_port", script)
         self.assertIn("webui_url", script)
@@ -80,7 +78,7 @@ class ModulePathTests(unittest.TestCase):
 
 class PortSelectionTests(unittest.TestCase):
     def test_prefers_requested_port_when_free(self):
-        base = self._free_port()  # bound then released -> free again
+        base = self._free_port()
         self.assertEqual(preflight.select_port(preferred=base, range_end=base), base)
 
     def test_falls_back_to_next_bounded_port(self):
@@ -106,9 +104,7 @@ class PortSelectionTests(unittest.TestCase):
         occupier = _occupy(base)
         try:
             preflight.select_port(preferred=base, range_end=base + 3)
-            # The occupying listener must still be alive and accepting.
-            self.assertTrue(occ := occupier.getsockname()[1] == base)
-            self.assertTrue(occ)
+            self.assertEqual(occupier.getsockname()[1], base)
         finally:
             occupier.close()
 
@@ -127,7 +123,6 @@ class PortSelectionTests(unittest.TestCase):
 
 class CheckpointRequirementTests(unittest.TestCase):
     def test_embedding_model_not_required_for_runtime(self):
-        """embedding_model.pt is offline index-build-only (runtime_architecture says so)."""
         self.assertNotIn(
             "checkpoints/embedding_model.pt", preflight.REQUIRED_FILES,
             "embedding_model.pt must not be mandatory: runtime loads the prebuilt index",
@@ -187,7 +182,6 @@ class ReviewSummaryCategoryTests(unittest.TestCase):
             summary["accepted"] + summary["rejected"]
             + summary["ambiguous"] + summary["invalid_case"]
         )
-        # Non-overlapping: rejected counts EXPLICIT rejects only.
         self.assertEqual(summary["accepted"], 1)
         self.assertEqual(summary["rejected"], 1)
         self.assertEqual(summary["ambiguous"], 1)

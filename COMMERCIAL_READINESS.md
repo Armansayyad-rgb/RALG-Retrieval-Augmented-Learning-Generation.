@@ -19,7 +19,7 @@ Current `master` includes:
 - frozen holdout integrity tooling and preserved blind-result evidence;
 - explicit security/deployment limitations.
 
-These are engineering checkpoints, not customer adoption, revenue, production-SLA, safety-certification, or acquisition-value guarantees.
+These are engineering checkpoints, not customer adoption, revenue, production-SLA, safety-certification, or transaction-value guarantees.
 
 ## Strongest current blind evidence
 
@@ -43,7 +43,7 @@ The two false-support failures were analyzed only after the blind run. A general
 
 ### Evidence boundary
 
-Holdout V2 is strong internal independent evidence, but its source notes were authored validation material derived from public documentation. It is not third-party or acquisition-grade external validation.
+Holdout V2 is strong internal independent evidence, but its source notes were authored validation material derived from public documentation. It is not third-party or external validation.
 
 ## Current development reliability evidence
 
@@ -77,15 +77,15 @@ This benchmark is development/regression evidence, not an untouched independent 
 
 1. **Authoritative-source blind validation** — stronger evidence should use authoritative upstream technical documents with frozen provenance, benchmark, evaluator, and contamination controls.
 2. **External/customer validation** — no customer production deployment, revenue, or third-party benchmark authoring is claimed.
-3. **Security boundary** — no built-in production auth/authorization, TLS termination, tenant isolation, or production-grade rate limiting.
+3. **Security boundary** — deployment controls must match the documented single-tenant security profile.
 4. **Multi-process lifecycle safety** — process-local mutation locking means the validated deployment profile is single application worker unless external coordination is added.
-5. **Container qualification** — Compose configuration exists, but a current full end-to-end production-container qualification remains a separate diligence item.
+5. **Container qualification** — Compose configuration exists, but a current full end-to-end production-container qualification remains a separate technical-review item.
 6. **Large-corpus/concurrency qualification** — larger-scale and broader operational qualification should be reported separately from retrieval quality.
 7. **Dependency/IP diligence** — third-party dependency, model, dataset, and document-source rights require a maintained inventory and human/legal review where necessary.
 8. **Model/checkpoint distribution** — required private/local model assets must have explicit ownership and redistribution status.
-9. **Acquisition-readiness checklist** — all items below must have repo evidence; unmarked items require external legal/provenance review.
+9. **Readiness checklist** — all items below must have repository evidence; unmarked items require external legal/provenance review.
 
-### Acquisition-Readiness Checklist
+### Technical and Commercial Readiness Checklist
 
 | Category | Item | Evidence / Reference | Status |
 |---|---|---|---|
@@ -97,29 +97,29 @@ This benchmark is development/regression evidence, not an untouched independent 
 | Complete | Holdout V2 blind result preserved | `evaluation/results/holdout_v2_blind_once.json` immutable; SHA-256: `f6925b819a2bdd1cc718898a168bc2dafb701fb85e9169e709b8c7766be0798f` | |
 | Complete | Holdout V1 historical preserved | `evaluation/holdout_v1/` unchanged; not rerun after fix | |
 | Complete | Claims-to-evidence matrix | `docs/CLAIMS_EVIDENCE_MATRIX.md` with VERIFIED/PRELIMINARY/NOT YET VALIDATED labels | |
-| Complete | Security boundary documented | `SECURITY.md`: local/trusted environment; no auth/TLS/tenant isolation by design | |
+| Complete | Security boundary documented | `SECURITY.md` | |
 | Complete | Reproduction steps documented | `README.md` local Python and Docker commands; `PORTABILITY_READINESS.md` | |
-| Complete | Docker lifecycle validated | `docs/ACQUISITION_DILIGENCE_FINAL_REPORT.md` §26–32: 19/19 PASS (on branching commit) | |
-| Complete | Test suite passes | 118/118 PASS across regression, hardening, API, traceability, etc. | |
+| Complete | Docker lifecycle validation evidence | `docs/ACQUISITION_DILIGENCE_FINAL_REPORT.md` §26–32: 19/19 PASS on its recorded branching commit | |
+| Complete | Regression coverage | Repository test suites cover regression, hardening, API, traceability, persistence, and related contracts | |
 | Incomplete | Independent Stage 5 human review | Stage 5 cases auto-generated, unreviewed; human review pending (see `docs/STAGE6_HUMAN_REVIEW_GUIDE.md`) | |
-| Incomplete | Full Docker end-to-end qualification | Lifecycle evidence exists on branching commit; not yet run against current master | |
-| Incomplete | Large-scale scale validation | 250k/500k chunk scale tests deferred (tested +5k on RTX 3050; see `RESOURCE_VALIDATION.md` §D) | |
-| Incomplete | Multi-tenant deployment profile | No auth/TLS/tenant isolation implemented; documented as local/trusted only (see `SECURITY.md`) | |
-| Incomplete | Optional polish LLM integration | Qwen2.5-1.5B-Instruct downloadable but failed to load; core pipeline works without it (see `THIRD_PARTY_NOTICES.md` §2) | |
-| Incomplete | PyPDF2 migration to pypdf | Deprecated dependency; should migrate for continued security support (see `SECURITY.md` §35) | |
-| Blocked / External | IETF RFC redistribution permissions | 50 RFCs confirmed permitted per IETF Trust; license version verification needed for commercial use (see `THIRD_PARTY_NOTICES.md` §3) | |
-| Blocked / External | Model checkpoint redistribution rights | `checkpoints/v2/reasoning_model_v1.pt` not in Git; download/source ownership must be confirmed externally | |
-| Blocked / External | Qwen2.5-1.5B-Instruct license terms | Apache 2.0 license; optional dependency; redistribution status confirmed per HuggingFace source | |
-| Blocked / External | Holdout V3 source license compliance | 7 upstream sources with documented licenses (Public Domain, CC BY 4.0, LGPL-2.1+, Apache 2.0, BSD 3-Clause); all pinned with specific commits/revisions (see `THIRD_PARTY_NOTICES.md` §6) | |
-| Blocked / External | Commercial redistribution permission | RALG Source-Available Non-Commercial License v1.0 explicitly restricts commercial use without written permission (see `LICENSE`) | |
-| Legal-Review-Needed | Prior version license grants | Earlier versions distributed under earlier licenses; prior grants remain effective per Section 8 of LICENSE; buyer should evaluate which commits/assets are exclusive | |
-| Legal-Review-Needed | Source-available license scope | Not OSI-approved open source; commercial redistribution requires prior written permission from copyright holder | |
-| Legal-Review-Needed | Data rights for commercial use | WikiText-2 CC BY-SA version ambiguity (noted as needing verification before commercial deployment); IETF Trust rights confirmed for evaluation use | |
-| Legal-Review-Needed | Model checkpoint ownership | Custom models (reasoning_model_v1.pt, instruction_model_v4.pt, embedding_model.pt) owned by repository copyright holder; not committed to Git; redistribution status governed by repo license | |
+| Incomplete | Full Docker end-to-end qualification | Lifecycle evidence exists on an earlier branching commit; current-master qualification is tracked separately | |
+| Incomplete | Large-scale validation | Higher-scale qualification remains separate from current retrieval evidence | |
+| Incomplete | Multi-tenant deployment profile | Current documented profile is single-tenant/trusted-environment oriented | |
+| Incomplete | Optional polish LLM integration | Optional model path is separate from the core runtime | |
+| Incomplete | PyPDF2 migration to pypdf | Dependency modernization is a separate maintenance item | |
+| External review | IETF RFC redistribution permissions | See `THIRD_PARTY_NOTICES.md` and source manifests | |
+| External review | Model checkpoint redistribution rights | `checkpoints/v2/reasoning_model_v1.pt` is not committed; provenance/redistribution must be confirmed before distribution | |
+| External review | Qwen2.5-1.5B-Instruct license terms | Apache 2.0; optional dependency; see third-party notices | |
+| External review | Holdout V3 source license compliance | Upstream source licenses/revisions are documented in third-party notices and manifests | |
+| External review | Commercial redistribution permission | RALG Source-Available Non-Commercial License v1.0 restricts commercial use without written permission | |
+| Legal review | Prior version license grants | Earlier versions distributed under earlier licenses; prior grants remain effective per Section 8 of LICENSE | |
+| Legal review | Source-available license scope | Not OSI-approved open source; commercial redistribution requires permission from the copyright holder | |
+| Legal review | Data rights for commercial use | Dataset/source-license ambiguities require verification before commercial distribution | |
+| Legal review | Model checkpoint ownership | Custom checkpoint provenance and redistribution status must be documented before distribution | |
 
 ## Technical diligence priorities
 
-Before a serious strategic, licensing, pilot, or buyer diligence process, be able to provide:
+Before a serious strategic, licensing, pilot, or technical diligence process, be able to provide:
 
 - a clean release/evaluation commit or tag;
 - architecture and runtime-path documentation;
@@ -150,14 +150,14 @@ See [Technical Diligence Status](docs/TECHNICAL_DILIGENCE_STATUS.md).
 
 ## Security/deployment boundary
 
-Treat the current system as trusted-environment software unless deployment controls are provided externally. Do not present the default service as safe for direct public-internet exposure.
+Treat the current system according to the deployment profile documented in `SECURITY.md`. Do not infer public-internet or multi-tenant guarantees beyond that documented boundary.
 
 ## Keep private
 
 Do not store in the public repository:
 
 - valuation or minimum-price targets;
-- acquisition strategy or buyer lists;
+- transaction strategy or prospect lists;
 - negotiation notes;
 - private customer/prospect data;
 - proprietary customer documents;

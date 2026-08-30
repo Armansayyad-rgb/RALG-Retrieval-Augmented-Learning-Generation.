@@ -1,4 +1,4 @@
-# Buyer Demo Guide
+# Demonstration Guide
 
 **Goal:** in ~15 minutes, see RALG Engine do the three things it is built for:
 grounded answering with evidence, provenance, and visible abstention on
@@ -18,13 +18,13 @@ must already be present locally (see Preflight).
 | Model bundle | `checkpoints\v2\reasoning_model_v1.pt`, `checkpoints\embedding_model.pt`, `data\tokenizer_v2.json` present locally |
 | Network | localhost only |
 
-The demo never downloads models, mutates real runtime uploads, or sends data
+The demonstration never downloads models, mutates real runtime uploads, or sends data
 off-machine.
 
 ## 2. One-command start
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
+powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1
 ```
 
 The script runs preflight checks (Python version, required files, checkpoint
@@ -37,10 +37,10 @@ processes, and fails clearly if the whole allowed range is busy.
 Run only the checks:
 
 ```powershell
-python scripts\buyer_demo_preflight.py --docker
+python scripts\demo_preflight.py --docker
 ```
 
-## 3. Demo walkthrough
+## 3. Demonstration walkthrough
 
 ### Step 1 — Ingest a technical document
 
@@ -120,17 +120,17 @@ uvicorn src.api_server:app --host 127.0.0.1 --port 8000
 # endpoints: GET /health, GET /ready, GET /stats, GET /documents, DELETE /documents/{document_id}, POST /ingest, POST /query
 ```
 
-Same behavior; useful when the buyer wants to script the walkthrough.
+Same behavior; useful when an evaluator wants to script the walkthrough.
 
-## 5. Deterministic buyer-demo scenario
+## 5. Deterministic demonstration scenario
 
-This section describes a reproducible technical proof path a buyer can follow
+This section describes a reproducible technical verification path an evaluator can follow
 from a clean state. All commands are documented; no paid APIs, cloud services,
 or auto-downloaded models are required. The checkpoint bundle must be present
 locally under `checkpoints/v2/` (see Prerequisites). If the checkpoint is absent,
-the demo runs in extractive/lookup mode only (no generative polishing).
+the demonstration runs in extractive/lookup mode only (no generative polishing).
 
-### Prerequisite: demo knowledge base document
+### Prerequisite: demonstration knowledge base document
 
 The scenario uses `data/technical_docs_sample.txt` as the ingested technical
 document. This file contains 82 lines of SOP-style technical notes across
@@ -149,7 +149,7 @@ in the repository and does not require separate rights or downloads.
 #### Step 1 — Start the service
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
+powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1
 ```
 
 The script runs preflight checks (Python version, required files, checkpoint
@@ -253,7 +253,7 @@ the local data volume.
 
 - Multi-user or internet-facing deployment (no auth/TLS by design — local /
   trusted-network component only)
-- Scale beyond single-tenant corpora (single-doc demo; scale tests deferred)
+- Scale beyond single-tenant corpora (single-doc demonstration; scale tests deferred)
 - Independent human validation of benchmark claims (Stage 6 review pending)
 - Production SLA or multi-tenant security guarantees
 
@@ -262,36 +262,36 @@ the local data volume.
 | Symptom | Fix |
 |---|---|
 | Launcher stopped but port still listening | The Gradio server is a child Python process of the PowerShell launcher. Stop it with `Get-Process python | Where-Object Path -like '*RALG*' | Stop-Process` (targets only this repo's Python; never kill Docker/Desktop processes) |
-| Preflight fails on missing checkpoint | Place the external model bundle under `checkpoints/v2` as documented; the demo runs in extractive mode without it |
+| Preflight fails on missing checkpoint | Place the external model bundle under `checkpoints/v2` as documented; the demonstration runs in extractive mode without it |
 | WebUI port busy | The launcher auto-falls-back to 7861-7870 and prints the actual URL; no action needed unless the whole range is busy |
 | Pipeline init error | Verify `data/tokenizer_v2.json` exists; check `logs/` for details |
 | Docker restart leaves container unhealthy | Wait up to 90 s (health timeout), then check `docker logs ralg-engine` |
 
 ### Evidence boundaries (important)
 
-- This demo uses internally authored technical SOP text (`data/technical_docs_sample.txt`).
+- This demonstration uses internally authored technical SOP text (`data/technical_docs_sample.txt`).
 - Answers are grounded in the retrieved evidence spans from the uploaded document.
 - Abstention behavior is verified internally; the false-support rate is 0% in the
-  development regression suite (100% unsupported rejection), but this demo
+  development regression suite (100% unsupported rejection), but this demonstration
   scenario is not an independent holdout validation.
 - Holdout V2 (70-case blind evaluation at `evaluation/results/holdout_v2_blind_once.json`)
-  is separate, frozen independent evidence. This demo does not replicate or
+  is separate, frozen independent evidence. This demonstration does not replicate or
   replace that holdout.
-- Claims about "100% accurate" are NOT made. The demo demonstrates product
+- Claims about "100% accurate" are NOT made. The demonstration shows product
   behavior (grounded answering, provenance, abstention) under controlled conditions.
 
 ## 6 — Release candidate checklist
 
-Use this checklist to verify buyer-demo release readiness. Tick each item before
-considering the demo a release candidate.
+Use this checklist to verify demonstration release readiness. Tick each item before
+considering the demonstration a release candidate.
 
 ### Repository state
 
 - [ ] Working tree is clean (`git status` — no uncommitted changes)
 - [ ] No logs, caches, or temporary debug files in the repo
 - [ ] No secrets or machine-specific absolute paths committed
-- [ ] Exact commit SHA identified (e.g. `af1ce24`)
-- [ ] Exact branch recorded (e.g. `release/buyer-demo-repro-v1` or other)
+- [ ] Exact commit SHA identified
+- [ ] Exact branch recorded
 - [ ] PR created and under review (not merged)
 
 ### Dependency install
@@ -301,13 +301,13 @@ considering the demo a release candidate.
 - [ ] `pip install -r requirements.txt` completed without errors
 - [ ] Optional: `pip install -r requirements-polish.txt` if Qwen polish LLM is desired
 - [ ] Tokenizer `data/tokenizer_v2.json` present and readable **(required)** — the core pipeline requires this
-- [ ] Checkpoint bundle `checkpoints/v2/reasoning_model_v1.pt` placed (external, license-governed) — **optional**; the demo runs in extractive/lookup mode without it; generative/polish answers require it
+- [ ] Checkpoint bundle `checkpoints/v2/reasoning_model_v1.pt` placed (external, license-governed) — **optional**; the demonstration runs in extractive/lookup mode without it; generative/polish answers require it
 
 ### Preflight
 
-- [ ] `python scripts\buyer_demo_preflight.py` passes all checks (or documented exceptions noted)
+- [ ] `python scripts\demo_preflight.py` passes all checks (or documented exceptions noted)
 - [ ] Port 7860-7870 availability confirmed or fallback noted
-- [ ] Docker optional: `scripts\buyer_demo_preflight.py --docker` reports expected state
+- [ ] Docker optional: `scripts\demo_preflight.py --docker` reports expected state
 - [ ] No unexpected failures in preflight output
 
 ### Tests
@@ -319,7 +319,7 @@ considering the demo a release candidate.
 
 ### API startup
 
-- [ ] Service started via `powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1`
+- [ ] Service started via `powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1`
 - [ ] `/health` returns `{"status":"ok"}`
 - [ ] `/ready` returns `{"ready":true, ...}` when the model/checkpoint is present and initialization is healthy (extractive-only mode without the checkpoint may correctly return `503`)
 - [ ] Readiness probe completes within 30 seconds
@@ -329,14 +329,14 @@ considering the demo a release candidate.
 - [ ] `curl http://127.0.0.1:8000/health` → `{"status":"ok"}`
 - [ ] `curl http://127.0.0.1:8000/ready` → `{"ready":true, ...}` when the model/checkpoint is present and initialization is healthy (extractive-only mode without the checkpoint may correctly return `503`)
 
-### Demo execution
+### Demonstration execution
 
 - [ ] Ingest a technical document (via WebUI or API)
 - [ ] Ask a supported question → grounded answer with cited sources
 - [ ] Ask an unsupported question → visible abstention (no fabricated support)
 - [ ] Inspect evidence/provenance trace for accepted answer
 - [ ] Try document-scoped query via scope dropdown
-- [ ] Restart demo (Docker or process restart) → document persistence verified
+- [ ] Restart service (Docker or process restart) → document persistence verified
 
 ### Result / evidence inspection
 
@@ -347,23 +347,23 @@ considering the demo a release candidate.
 ### No secrets
 
 - [ ] No API keys, passwords, or bearer tokens in repo or environment
-- [ ] No valuation/buyer strategy data or private buyer information in repo
+- [ ] No private commercial strategy data or customer information in repo
 - [ ] Config env vars are generic (no machine-specific paths)
 
 ### Documentation consistency
 
-- [ ] `docs/BUYER_DEMO_GUIDE.md` section 5 (deterministic scenario) reviewed and consistent with behavior
+- [ ] `docs/DEMO_GUIDE.md` section 5 (deterministic scenario) reviewed and consistent with behavior
 - [ ] `README.md` quick-start section canonical and up to date
 - [ ] `CLAIMS_EVIDENCE_MATRIX.md` status labels are correct (VERIFIED/PRELIMINARY/NOT YET VALIDATED)
 - [ ] `THIRD_PARTY_NOTICES.md` third-party attribution is complete and pinned
-- [ ] No wording describes the buyer demo as "independent validation"
+- [ ] No wording describes the demonstration as "independent validation"
 - [ ] No claim of "100% accurate" or production SLA or multi-tenant security
-- [ ] Evidence boundaries clearly distinguished: demo behavior vs. development benchmark vs. historical blind evidence
+- [ ] Evidence boundaries clearly distinguish demonstration behavior, development benchmarks, and historical blind evidence
 
 ### Final sign-off
 
 - [ ] `git diff --check` — 0 whitespace issues
 - [ ] `git status` — clean working tree, only expected changes
-- [ ] `python scripts\buyer_demo_preflight.py` passes or failures are documented
+- [ ] `python scripts\demo_preflight.py` passes or failures are documented
 - [ ] PR target identified; do not merge until all above items are addressed
-- [ ] Cleanup: no runtime processes left running (use Ctrl+C or taskkill on python.exe if needed); no stray data files in repo directories
+- [ ] Cleanup: no runtime processes left running; no stray data files in repo directories

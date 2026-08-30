@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Preflight checks and port selection for the RALG buyer demo.
+"""Preflight checks and port selection for the RALG demonstration environment.
 
-Verifies the local environment can run the existing WebUI/API demo path
+Verifies the local environment can run the existing WebUI/API demonstration path
 without downloading anything, mutating runtime data, or requiring network
 services beyond localhost. Also selects the actual WebUI port so the
 launcher and the checks agree on one bounded, verified choice.
 
 Checks:
 - Python version (must be exactly 3.11)
-- Required source modules and demo assets exist
+- Required source modules and demonstration assets exist
 - Checkpoint/tokenizer assets documented (external, not in Git; see README)
 - Bounded port selection: 7860 first, then 7861-7870; never arbitrary ports
 - Docker availability is reported optionally (--docker), never required
@@ -17,7 +17,7 @@ Checks:
 Note on checkpoints: ``checkpoints/v2/reasoning_model_v1.pt`` is external to
 Git and governed by the RALG Source-Available Non-Commercial License v1.0.
 It is not auto-downloaded. Place the checkpoint bundle under
-``checkpoints/v2/`` before running the demo if model-backed answers are
+``checkpoints/v2/`` before running the demonstration if model-backed answers are
 required. The core pipeline can run extractive/lookup answers without it.
 
 Note on tokenizer: ``data/tokenizer_v2.json`` is tracked in Git and always
@@ -40,7 +40,7 @@ REQUIRED_FILES = [
     "src/webui/app.py",
     "src/api_server.py",
     "data/tokenizer_v2.json",
-    "docs/BUYER_DEMO_GUIDE.md",
+    "docs/DEMO_GUIDE.md",
 ]
 
 RECOMMENDED_FILES = [
@@ -50,7 +50,7 @@ RECOMMENDED_FILES = [
 
 PREFERRED_PORT = 7860
 PORT_RANGE_START = 7860
-PORT_RANGE_END = 7870  # allowed fallback window: 7861-7870
+PORT_RANGE_END = 7870
 
 
 def check_python() -> dict:
@@ -66,12 +66,7 @@ def check_python() -> dict:
                       "Python 3.12 is not currently supported; use Python 3.11.")
     else:
         action = None
-    return {
-        "name": "python_version",
-        "pass": ok,
-        "detail": detail,
-        "action": action,
-    }
+    return {"name": "python_version", "pass": ok, "detail": detail, "action": action}
 
 
 def check_files(root: Path = ROOT) -> list[dict]:
@@ -82,8 +77,7 @@ def check_files(root: Path = ROOT) -> list[dict]:
             "name": f"file_exists:{rel}",
             "pass": path.is_file(),
             "detail": str(path),
-            "action": None if path.is_file()
-            else f"Missing required file. Verify the repository checkout provides {rel}.",
+            "action": None if path.is_file() else f"Missing required file. Verify the repository checkout provides {rel}.",
         })
     for rel in RECOMMENDED_FILES:
         path = root / rel
@@ -91,10 +85,7 @@ def check_files(root: Path = ROOT) -> list[dict]:
             "name": f"file_present:{rel}",
             "pass": path.is_file(),
             "detail": str(path),
-            "action": None if path.is_file()
-            else f"Recommended file not found: {rel}. "
-                  "Not required for extractive operation; see README for "
-                  "checkpoint licensing details.",
+            "action": None if path.is_file() else f"Recommended file not found: {rel}. Not required for extractive operation; see README for checkpoint licensing details.",
         })
     return results
 
@@ -102,29 +93,17 @@ def check_files(root: Path = ROOT) -> list[dict]:
 def check_docker() -> dict:
     docker = shutil.which("docker")
     if docker is None:
-        return {"name": "docker_available", "pass": True, "detail": "not installed (optional)",
-                "action": None}
+        return {"name": "docker_available", "pass": True, "detail": "not installed (optional)", "action": None}
     try:
-        proc = subprocess.run([docker, "info", "--format", "{{.ServerVersion}}"],
-                              capture_output=True, text=True, timeout=30)
+        proc = subprocess.run([docker, "info", "--format", "{{.ServerVersion}}"], capture_output=True, text=True, timeout=30)
         running = proc.returncode == 0
     except (OSError, subprocess.TimeoutExpired):
         running = False
-    return {
-        "name": "docker_available",
-        "pass": True,  # optional check; never fails preflight
-        "detail": "daemon reachable" if running else "installed but daemon not reachable",
-        "action": None,
-    }
+    return {"name": "docker_available", "pass": True, "detail": "daemon reachable" if running else "installed but daemon not reachable", "action": None}
 
 
 def port_available(port: int, host: str = "127.0.0.1") -> bool:
-    """True iff we can bind a listener socket on the port right now.
-
-    Uses an exclusive bind on Windows so a port already held by another
-    process (e.g. com.docker.backend) is correctly reported as unavailable;
-    SO_REUSEADDR would allow a silent double-bind there.
-    """
+    """Return whether a listener socket can bind to the port now."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         if sys.platform == "win32":
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
@@ -137,7 +116,7 @@ def port_available(port: int, host: str = "127.0.0.1") -> bool:
 
 def select_port(preferred: int = PREFERRED_PORT, range_start: int = PORT_RANGE_START,
                 range_end: int = PORT_RANGE_END) -> int | None:
-    """First available port in the bounded allowed window, else None."""
+    """Return the first available port in the bounded window, or None."""
     for port in range(preferred, range_end + 1):
         if port_available(port):
             return port
@@ -149,16 +128,10 @@ def check_webui_port() -> dict:
     return {
         "name": "webui_port_available",
         "pass": selected is not None,
-        "detail": (
-            f"selected {selected} (tried {PORT_RANGE_START}-{PORT_RANGE_END})"
-            if selected is not None
-            else f"no available port in allowed range {PORT_RANGE_START}-{PORT_RANGE_END}"
-        ),
+        "detail": f"selected {selected} (tried {PORT_RANGE_START}-{PORT_RANGE_END})" if selected is not None else f"no available port in allowed range {PORT_RANGE_START}-{PORT_RANGE_END}",
         "selected_port": selected,
         "webui_url": f"http://127.0.0.1:{selected}" if selected is not None else None,
-        "action": None if selected is not None
-        else f"Free one of ports {PORT_RANGE_START}-{PORT_RANGE_END} on 127.0.0.1 "
-             "(this tool never terminates other processes), then re-run.",
+        "action": None if selected is not None else f"Free one of ports {PORT_RANGE_START}-{PORT_RANGE_END} on 127.0.0.1 (this tool never terminates other processes), then re-run.",
     }
 
 
@@ -173,7 +146,7 @@ def main() -> int:
     failures = [result for result in results if not result["pass"]]
     port_result = next(result for result in results if result["name"] == "webui_port_available")
     report = {
-        "preflight": "buyer_demo",
+        "preflight": "demo",
         "checks": results,
         "failures": len(failures),
         "selected_port": port_result.get("selected_port"),

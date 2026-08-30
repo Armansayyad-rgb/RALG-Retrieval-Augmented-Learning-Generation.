@@ -1,18 +1,15 @@
-# RALG Engine - buyer demo launcher (Windows PowerShell)
-# Usage:  powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
+# RALG Engine - demonstration launcher (Windows PowerShell)
+# Usage: powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1
 #
 # Runs preflight checks (including bounded port selection), then launches the
 # FastAPI API server and Gradio WebUI. Downloads nothing; overwrites nothing;
-# never terminates other processes. Fail fast on errors, clearly separated
-# stages, sensible timeout/retry for readiness, proper exit codes.
-# Child processes tracked via Start-Job; Ctrl+C terminates only our jobs.
+# never terminates other processes. Fails fast on errors, uses bounded readiness
+# retries, and tracks child processes for cleanup.
 
-# ---- Run-time guards ----
 $ErrorActionPreference = "Stop"
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $ProjectRoot
 
-# ---- Stage 1: Python discovery ----
 Write-Host "--- Stage 1: Python discovery ---"
 $pyCandidates = @(
     (Join-Path $ProjectRoot ".venv\Scripts\python.exe"),
@@ -38,12 +35,10 @@ if (-not $py) {
     exit 1
 }
 
-# Make src importable for both api_server and webui
 $env:PYTHONPATH = (Join-Path $ProjectRoot "src")
 
-# ---- Stage 2: Preflight + port selection ----
 Write-Host "--- Stage 2: Preflight + port selection ---"
-$preflightJson = & $py scripts\buyer_demo_preflight.py --docker | Out-String
+$preflightJson = & $py scripts\demo_preflight.py --docker | Out-String
 $preflight = $preflightJson | ConvertFrom-Json
 Write-Host $preflightJson
 if (-not $preflight.pass) {
@@ -64,7 +59,6 @@ if ([int]$env:WEBUI_PORT -ne 7860) {
     Write-Host " NOTE: default port 7860 was occupied; using allowed fallback port $($env:WEBUI_PORT)."
 }
 
-# ---- Stage 3: Launch FastAPI API server ----
 Write-Host "--- Stage 3: Launch FastAPI API server ---"
 Write-Host "Starting FastAPI on 127.0.0.1:8000 (background job)..."
 $apiJob = Start-Job {
@@ -72,15 +66,13 @@ $apiJob = Start-Job {
 }
 Write-Host "FastAPI API server background job started (Job ID: $($apiJob.Id))"
 
-# ---- Stage 4: Launch Gradio WebUI ----
 Write-Host "--- Stage 4: Launch Gradio WebUI ---"
 Write-Host "Starting Gradio WebUI on 127.0.0.1:$env:WEBUI_PORT (background)..."
 $webuiJob = Start-Job {
     & $py -m webui_bootstrap
 }
-Write-Host "Gradi WebUI background job started (Job ID: $($webuiJob.Id))"
+Write-Host "Gradio WebUI background job started (Job ID: $($webuiJob.Id))"
 
-# ---- Stage 5: Readiness probe AFTER launch ----
 Write-Host "--- Stage 5: Readiness probe ---"
 Write-Host "Probing FastAPI /ready on 127.0.0.1:8000 (up to 30s timeout)..."
 $maxRetries = 30
@@ -102,24 +94,20 @@ if (-not $ready) {
     Write-Host "Service ready after $retryCount retry(s)."
 }
 
-# ---- Stage 6: Status and Ctrl+C cleanup ----
+Write-Host "--- Stage 6: Status and Ctrl+C cleanup ---"
 Write-Host ""
 Write-Host "Both services are running."
 Write-Host "  API (FastAPI):      http://127.0.0.1:8000  (common demo endpoints: /health, /ready, /ingest, /query)"
 Write-Host "  WebUI (Gradio):     http://127.0.0.1:$env:WEBUI_PORT"
 Write-Host "Press Ctrl+C to stop the services and exit."
 
-# Ctrl+C handler: terminate only our background jobs
 function Ctrl+C {
     Write-Host ""
     Write-Host "Ctrl+C received. Stopping background jobs only..."
     Get-Job | Stop-Job -Force | Out-Null
-    # Re-register so PowerShell can exit cleanly
     return
 }
 
-# Wait for Ctrl+C -- the Ctrl+C function above will intercept and exit
-# The loop below just keeps the script alive; Ctrl+C will jump to the function
 do {
     Start-Sleep -Seconds 1
 } while ($true -and (-not $LastCtrlCTime))
