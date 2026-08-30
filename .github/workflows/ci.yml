@@ -120,7 +120,7 @@ jobs:
 
       - name: Install pip-tools
         run: |
-          python -m pip install "pip-tools==7.4.1"
+          python -m pip install "pip==23.3.1" "pip-tools==7.4.1"
 
       - name: Regenerate the Linux dependency lock into a temporary file
         run: |
