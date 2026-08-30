@@ -1,21 +1,27 @@
-# Prototype 1 Release Artifacts
+# Release Artifacts
 
-Release identity: **Prototype 1 RC1 (`0.1.0-rc1`)**.
+Historical release identity: **Prototype 1 RC1 (`0.1.0-rc1`)**. Current release preparation must distinguish runtime requirements from redistribution clearance.
 
-| Artifact | Classification | SHA-256 / source |
+| Artifact | Runtime / repository role | Distribution classification |
 |---|---|---|
-| `data/tokenizer_v2.json` | Required external/local artifact | `D6C21CD45CEDB1D78AC476C0B3635A26C2A7C147C033E85E5151016C9D4E21DE` |
-| `checkpoints/v2/reasoning_model_v1.pt` | Required external/local artifact; not tracked in Git | `E32AC5BE88E249C19E74355A8A3C352B62BF57CB03C0E6860BCA8C6198F4EFA3` |
-| `data/wikitext_v2.txt` | Configured tracked knowledge artifact | `E543F070C75D1D636CE3936F69094A785A53E794024A876D108E40161958D01B` |
-| `data/knowledge_extra_v1.txt` | Configured tracked knowledge artifact | `C61FCFF405EE84EAE9A818993787EF04FBA9ED537901EDC63D1995367B7A49CA` |
-| `data/runtime_uploads/` | Generated runtime persistence | Created by ingestion; not a release input |
-| `logs/` | Generated validation output | Optional, ignored/generated |
+| `data/tokenizer_v2.json` | Active tokenizer artifact | Project-generated; upstream-data license review required before commercial redistribution |
+| `checkpoints/v2/reasoning_model_v1.pt` | Optional/local model-backed answer artifact; not tracked in Git | **PROVENANCE INCOMPLETE — EXCLUDE FROM COMMERCIAL DISTRIBUTION** until training lineage is reconstructed |
+| `data/wikitext_v2.txt` | Tracked knowledge/training artifact | Third-party CC BY-SA material; exact license version must be verified and obligations preserved |
+| `data/knowledge_extra_v1.txt` | Project-authored tracked knowledge artifact | Governed by repository license |
+| `data/train.txt` | Historical training/development material; not required by active production runtime | **PROVENANCE INCOMPLETE — EXCLUDE FROM COMMERCIAL DISTRIBUTION** |
+| `data/runtime_uploads/` | Generated runtime persistence | User-provided runtime data; not a release input and not redistributed by default |
+| `logs/` | Generated operational/validation output | Generated/local; not a release input |
 
-Validated environment: Windows, Python 3.11, Torch 2.7.1+cu128, CUDA 12.8,
-NVIDIA GeForce RTX 3050 Laptop GPU (6 GB). Configuration may override model,
-tokenizer, data, and upload locations through the documented environment
-variables.
+## Release-package rule
 
-`requirements.txt` was installed to completion in a disposable Python 3.11
-environment. The pinned stable `tokenizers==0.23.1` is resolvable and
-compatible with the validated runtime.
+A commercial, diligence, or transaction package must not assume that every tracked or locally available artifact is cleared for redistribution. The release manifest must explicitly exclude unresolved assets and preserve all required third-party notices.
+
+Canonical provenance controls:
+
+- `docs/IP_PROVENANCE_AND_RELEASE_BOUNDARIES.md`
+- `docs/DATA_RIGHTS_INVENTORY.md`
+- `THIRD_PARTY_NOTICES.md`
+
+Frozen Holdout V1/V2/V3 artifacts are evidence records and must not be modified, rerun, or reformatted to improve presentation during release preparation.
+
+The supported deployment target is Python 3.11. Dependency reproducibility for the current deployment profile is defined by `requirements.lock.txt`; developer installation remains documented separately in the repository setup instructions.
