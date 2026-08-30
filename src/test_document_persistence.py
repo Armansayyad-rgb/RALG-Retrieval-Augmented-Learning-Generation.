@@ -152,10 +152,10 @@ class DocumentPersistenceTests(unittest.TestCase):
                 result = api_server.delete_document("doc-1")
         self.assertTrue(result.deleted)
         self.assertNotIn("/", str(result.model_dump()))
-        with self.assertRaises(api_server.HTTPException) as error:
-            with patch.object(api_server, "get_pipeline", return_value={"uploaded_docs": [], "chunks": []}):
-                api_server.delete_document("missing")
-        self.assertEqual(error.exception.status_code, 404)
+        with patch.object(api_server, "get_pipeline", return_value={"uploaded_docs": [], "chunks": []}):
+            result = api_server.delete_document("missing")
+        self.assertEqual(result.status_code, 404)
+        self.assertEqual(json.loads(result.body), {"error": "Document not found."})
 
     def test_query_is_serialized_with_ingest(self):
         with tempfile.TemporaryDirectory() as directory:
