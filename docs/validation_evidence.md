@@ -8,7 +8,7 @@ The current repository state is suitable for controlled technical evaluation in 
 
 Current high-value checkpoints include:
 
-- Prototype 1 RC1 preserved at tag `0.1.0-rc1`;
+- Prototype 1 RC1 preserved as a historical milestone at tag `0.1.0-rc1`;
 - unified grounded API/WebUI execution;
 - document-scoped retrieval and safe invalid-scope behavior;
 - persistent runtime document lifecycle with provenance and restart recovery;
@@ -74,7 +74,7 @@ The failures were diagnosed after the blind evaluation. A generalized calculatio
 
 ### Claim boundary
 
-Holdout V2 is a strong internal independent holdout, but its source notes were authored validation material derived from public documentation. It is not third-party or acquisition-grade external validation.
+Holdout V2 is a strong internal independent holdout, but its source notes were authored validation material derived from public documentation. It is not third-party or external validation.
 
 ## Reliability benchmark — current development evidence
 
@@ -145,12 +145,12 @@ Runtime ingestion, stable document IDs, provenance, listing, deletion, restart r
 - `RESOURCE_VALIDATION.md` — resource/runtime methodology and measurements;
 - `RELIABILITY_BENCHMARK.md` — reliability-oriented development evidence.
 
-## Release, portability, and diligence evidence
+## Release, portability, and technical-review evidence
 
 - `PROTOTYPE1_RELEASE_CANDIDATE.md` — historical RC1 report;
 - `RELEASE_ARTIFACTS.md` — release artifact classification;
 - `PORTABILITY_READINESS.md` — portability/readiness evidence;
-- `docs/TECHNICAL_DILIGENCE_STATUS.md` — buyer/pilot-facing diligence inventory;
+- `docs/TECHNICAL_DILIGENCE_STATUS.md` — technical-review inventory;
 - `THIRD_PARTY_NOTICES.md` — third-party attribution and provenance notes.
 
 ## Commercial / pilot framing
@@ -158,7 +158,7 @@ Runtime ingestion, stable document IDs, provenance, listing, deletion, restart r
 - `PILOT_READINESS.md` — controlled pilot release gates;
 - `COMMERCIAL_READINESS.md` — current public readiness framing;
 - `CUSTOMER_DEMO.md` — local demonstration flow;
-- `docs/BUYER_DEMO_GUIDE.md` — buyer-demo guidance where applicable.
+- `docs/DEMO_GUIDE.md` — deterministic demonstration guidance.
 
 ## Interpretation rules
 
