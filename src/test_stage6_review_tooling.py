@@ -3,7 +3,7 @@
 Covers reviewer schema validation, duplicate/unknown case rejection, invalid
 label rejection, partial-ingestion guard, deterministic pilot selection,
 review freeze integrity, human-approval filtering for the Stage 6 evaluator,
-buyer-demo preflight file checks, and inter-reviewer agreement statistics.
+demonstration preflight file checks, and inter-reviewer agreement statistics.
 """
 
 import csv
@@ -23,7 +23,7 @@ import stage5_ingest_reviews as ingest_mod  # noqa: E402
 import stage5_review_pack  # noqa: E402
 import stage6_review_agreement as agreement_mod  # noqa: E402
 import stage6_evaluator as evaluator_mod  # noqa: E402
-import buyer_demo_preflight as preflight_mod  # noqa: E402
+import demo_preflight as preflight_mod  # noqa: E402
 
 
 REVIEW_FIELDS = ingest_mod.FIELDS
@@ -91,10 +91,7 @@ class IngestionGuardTests(unittest.TestCase):
             ingest_mod.read_reviews(bad, "reviewer_a")
 
     def test_duplicate_case_submission_is_rejected(self):
-        write_csv(self.review_csv, [
-            review_row("s5_case_001"),
-            review_row("s5_case_001"),
-        ])
+        write_csv(self.review_csv, [review_row("s5_case_001"), review_row("s5_case_001")])
         with self.assertRaisesRegex(ValueError, "duplicate reviewer submission"):
             ingest_mod.read_reviews(self.review_csv, "reviewer_a")
 
@@ -123,8 +120,7 @@ class IngestionGuardTests(unittest.TestCase):
     def test_partial_ingestion_allowed_explicitly_and_reported(self):
         write_csv(self.review_csv, [review_row("s5_case_001")])
         output = self.root / "partial.jsonl"
-        result = ingest_mod.ingest(self.root, self.review_csv, "reviewer_a",
-                                   output, allow_partial=True)
+        result = ingest_mod.ingest(self.root, self.review_csv, "reviewer_a", output, allow_partial=True)
         self.assertTrue(result["partial"])
         self.assertEqual(result["submitted"], 1)
 
@@ -138,14 +134,12 @@ class IngestionGuardTests(unittest.TestCase):
         result = ingest_mod.ingest(self.root, self.review_csv, "reviewer_a", output)
         self.assertTrue(result["pass"] if "pass" in result else True)
         self.assertEqual(result["accepted"], 1)
-        self.assertEqual(result["rejected"], 0)  # no explicit-reject row in this fixture
+        self.assertEqual(result["rejected"], 0)
         self.assertEqual(result["ambiguous"], 1)
         self.assertEqual(result["invalid_case"], 1)
         self.assertEqual(result["remaining_unreviewed"], 0)
-        # Categories are disjoint and cover the submission exactly.
         self.assertEqual(
-            result["accepted"] + result["rejected"]
-            + result["ambiguous"] + result["invalid_case"],
+            result["accepted"] + result["rejected"] + result["ambiguous"] + result["invalid_case"],
             result["submitted"],
         )
         rows = {
@@ -154,7 +148,6 @@ class IngestionGuardTests(unittest.TestCase):
         }
         self.assertEqual(rows["s5_case_001"]["reviewer_status"], "accepted")
         self.assertEqual(rows["s5_case_002"]["review_outcome"], "ambiguous")
-        # Original fixture untouched
         original = (self.root / "evaluation" / "stage5_review_queue.jsonl").read_text(encoding="utf-8")
         self.assertNotIn("review_outcome", original)
 
@@ -174,8 +167,7 @@ class FreezeIntegrityTests(unittest.TestCase):
             {"case_id": "s5_case_001", "reviewer_status": "accepted", "reviewer_id": "a"},
             {"case_id": "s5_case_002", "reviewer_status": "unreviewed"},
         ]
-        reviewed_path.write_text(
-            "\n".join(json.dumps(case) for case in cases) + "\n", encoding="utf-8")
+        reviewed_path.write_text("\n".join(json.dumps(case) for case in cases) + "\n", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "cannot freeze"):
             ingest_mod.freeze(self.root, reviewed_path)
 
@@ -189,8 +181,7 @@ class FreezeIntegrityTests(unittest.TestCase):
             {"case_id": "s5_case_002", "category": "unsupported", "evidence_document_ids": [],
              "evidence_spans": [], "reviewer_status": "rejected", "reviewer_id": "a"},
         ]
-        reviewed_path.write_text(
-            "\n".join(json.dumps(case) for case in cases) + "\n", encoding="utf-8")
+        reviewed_path.write_text("\n".join(json.dumps(case) for case in cases) + "\n", encoding="utf-8")
         manifest = ingest_mod.freeze(self.root, reviewed_path)
         final = self.root / "evaluation" / "stage5_final_benchmark.jsonl"
         lines = [json.loads(line) for line in final.read_text(encoding="utf-8").splitlines()]
@@ -271,25 +262,19 @@ class AgreementMetricTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             shared = [
-                {"case_id": "s5_case_001", "reviewer_id": "a", "review_outcome": "accept",
-                 "review": {"reviewer_notes": "ok"}},
-                {"case_id": "s5_case_002", "reviewer_id": "a", "review_outcome": "reject",
-                 "review": {"reviewer_notes": "bad span"}},
-                {"case_id": "s5_case_003", "reviewer_id": "a", "review_outcome": "accept",
-                 "review": {"reviewer_notes": ""}},
+                {"case_id": "s5_case_001", "reviewer_id": "a", "review_outcome": "accept", "review": {"reviewer_notes": "ok"}},
+                {"case_id": "s5_case_002", "reviewer_id": "a", "review_outcome": "reject", "review": {"reviewer_notes": "bad span"}},
+                {"case_id": "s5_case_003", "reviewer_id": "a", "review_outcome": "accept", "review": {"reviewer_notes": ""}},
             ]
             other = [
-                dict(case, reviewer_id="b", review_outcome=(
-                    "reject" if case["case_id"] == "s5_case_003" else case["review_outcome"]))
+                dict(case, reviewer_id="b", review_outcome=("reject" if case["case_id"] == "s5_case_003" else case["review_outcome"]))
                 for case in shared
             ]
             path_a = root / "a.jsonl"
             path_b = root / "b.jsonl"
             for path, rows in ((path_a, shared), (path_b, other)):
                 path.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
-            sys_argv = ["stage6_review_agreement.py",
-                        "--reviewer-a", str(path_a), "--reviewer-b", str(path_b),
-                        "--disagreements", str(root / "dis.jsonl")]
+            sys_argv = ["stage6_review_agreement.py", "--reviewer-a", str(path_a), "--reviewer-b", str(path_b), "--disagreements", str(root / "dis.jsonl")]
             from unittest.mock import patch
             with patch("sys.argv", sys_argv):
                 exit_code = agreement_mod.main()
@@ -305,22 +290,19 @@ class EvaluatorFilteringTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             reviewer_rows = {
-                "r1": [("s5_case_001", "accept"), ("s5_case_002", "accept"),
-                       ("s5_case_003", "reject"), ("s5_case_004", "ambiguous")],
-                "r2": [("s5_case_001", "accept"), ("s5_case_002", "reject"),
-                       ("s5_case_003", "reject"), ("s5_case_004", "accept")],
+                "r1": [("s5_case_001", "accept"), ("s5_case_002", "accept"), ("s5_case_003", "reject"), ("s5_case_004", "ambiguous")],
+                "r2": [("s5_case_001", "accept"), ("s5_case_002", "reject"), ("s5_case_003", "reject"), ("s5_case_004", "accept")],
             }
             paths = []
             for reviewer, decisions in reviewer_rows.items():
                 path = root / f"{reviewer}.jsonl"
                 path.write_text("\n".join(
-                    json.dumps({"case_id": cid, "reviewer_id": reviewer,
-                                "review_outcome": outcome})
-                    for cid, outcome in decisions) + "\n", encoding="utf-8")
+                    json.dumps({"case_id": cid, "reviewer_id": reviewer, "review_outcome": outcome})
+                    for cid, outcome in decisions
+                ) + "\n", encoding="utf-8")
                 paths.append(path)
             approved, summary = evaluator_mod.approval_map(paths)
-            self.assertEqual(approved, {"s5_case_001": True, "s5_case_002": False,
-                                        "s5_case_003": False, "s5_case_004": False})
+            self.assertEqual(approved, {"s5_case_001": True, "s5_case_002": False, "s5_case_003": False, "s5_case_004": False})
             self.assertEqual(summary["approved"], 1)
             self.assertEqual(summary["ambiguous"], 1)
 
@@ -336,7 +318,7 @@ class EvaluatorFilteringTests(unittest.TestCase):
         self.assertEqual(default_output.name, "stage6_human_review_results.json")
 
 
-class BuyerDemoPreflightTests(unittest.TestCase):
+class DemoPreflightTests(unittest.TestCase):
     def test_missing_required_files_are_flagged(self):
         with tempfile.TemporaryDirectory() as tmp:
             results = preflight_mod.check_files(Path(tmp))
