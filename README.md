@@ -21,7 +21,7 @@ The project is deliberately not positioned as a general-purpose chatbot. Its cor
 
 ## Current state
 
-Prototype 1 RC1 is preserved at tag `0.1.0-rc1`. Current `master` contains substantial post-RC hardening across:
+Prototype 1 RC1 is preserved as a historical release milestone at tag `0.1.0-rc1`. Current `master` contains subsequent engineering work across:
 
 - unified API/WebUI grounded execution;
 - document-scoped retrieval;
@@ -31,7 +31,7 @@ Prototype 1 RC1 is preserved at tag `0.1.0-rc1`. Current `master` contains subst
 - conflict-aware evidence handling;
 - retrieval performance and reproducibility work;
 - portability and third-party attribution cleanup;
-- buyer-demo and technical-diligence tooling;
+- deterministic demonstration and technical-review tooling;
 - frozen independent holdout methodology and immutable blind-result preservation.
 
 RALG remains a controlled technical-evaluation system rather than a hardened public SaaS deployment.
@@ -68,7 +68,7 @@ evaluation/results/holdout_v2_blind_once.json
 
 Two false-support failures were diagnosed only **after** the blind run and led to a generalized calculation-support gate fix plus new development regressions. The original V2 result was not rerun or rewritten after that fix.
 
-**Important evidence boundary:** Holdout V2 is strong internal independent evidence, but its seven source notes were authored validation material derived from public technical documentation. It should not be represented as third-party or acquisition-grade external validation.
+**Important evidence boundary:** Holdout V2 is strong internal independent evidence, but its seven source notes were authored validation material derived from public technical documentation. It should not be represented as third-party or external validation.
 
 ## Reliability development benchmark
 
@@ -133,26 +133,25 @@ Document scope is threaded end-to-end through the API and runtime retrieval path
 - Docker / Docker Compose configuration;
 - benchmark, regression, persistence, provenance, portability, performance, and integrity tooling.
 
-## Quick start (canonical path for technical buyer)
+## Quick start
 
-The following gets a buyer to a running demo with minimal commands. All paths
+The following starts the local technical demonstration with minimal commands. All paths
 are repository-root-relative; no machine-specific absolute paths are encoded.
 
 ### 1. OS assumption
 
-Windows 10/11 with PowerShell 5.1+ (the provided `run_buyer_demo.ps1` and
-`buyer_demo_preflight.py` are Windows-native; Linux/macOS users can adapt the
+Windows 10/11 with PowerShell 5.1+ (the provided `run_demo.ps1` and
+`demo_preflight.py` are Windows-native; Linux/macOS users can adapt the
 PowerShell logic to bash or run the Python preflight directly).
 
 ### 2. Python version
 
-Python **3.11** is required. The preflight check (`scripts/buyer_demo_preflight.py`)
+Python **3.11** is required. The preflight check (`scripts/demo_preflight.py`)
 validates this and reports `[FAIL] python_version` if the installed version is
 not exactly 3.11. If a different Python version is installed, create a venv with
 Python 3.11 before proceeding.
 
 ```powershell
-# Verify Python version
 python --version
 # Expected: 3.11.x
 ```
@@ -171,7 +170,7 @@ python -m pip install -r requirements.txt
 The checkpoint bundle `checkpoints/v2/reasoning_model_v1.pt` is **external to
 Git** and governed by the RALG Source-Available Non-Commercial License v1.0.
 It is not auto-downloaded. Place the checkpoint under `checkpoints/v2/` before
-running the demo if model-backed (generative) answers are required. The core
+running the demonstration if model-backed (generative) answers are required. The core
 pipeline supports extractive/lookup answers without it.
 
 The tokenizer `data/tokenizer_v2.json` is tracked in Git and always required.
@@ -187,13 +186,12 @@ a failure.
 
 The default Docker image is CPU-only (`python:3.11-slim` with CPU PyTorch).
 GPU execution is supported if CUDA is available and the appropriate PyTorch
-wheel is installed, but the buyer-demo workflow is validated on CPU.
+wheel is installed, but the demonstration workflow is validated on CPU.
 
 ### 7. Startup command
 
 ```powershell
-# From the repository root
-powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
+powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1
 ```
 
 This script:
@@ -206,10 +204,10 @@ This script:
 
 If preflight fails, the script prints actionable messages and exits with code 1.
 
-### 8. Demo command
+### 8. Demonstration workflow
 
 After the service starts, open the WebUI URL printed by the launcher (selected from 127.0.0.1:7860-7870) in a browser and follow
-the deterministic buyer-demo scenario (Section 5 of `docs/BUYER_DEMO_GUIDE.md`):
+the deterministic demonstration scenario (Section 5 of `docs/DEMO_GUIDE.md`):
 
 - Ingest `data/technical_docs_sample.txt` (or a subset via the WebUI or API)
 - Ask a supported question → verify grounded answer with cited sources
@@ -243,16 +241,14 @@ the deterministic buyer-demo scenario (Section 5 of `docs/BUYER_DEMO_GUIDE.md`):
 ### Canonical path summary
 
 ```powershell
-# 1. Create venv and install deps
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 
-# 2. Place checkpoint (external, license-governed)
-#    - checkpoints/v2/reasoning_model_v1.pt  (RALG Source-Available license)
+# Place checkpoint if model-backed answers are required:
+# checkpoints/v2/reasoning_model_v1.pt
 
-# 3. Start the demo
-powershell -ExecutionPolicy Bypass -File scripts\run_buyer_demo.ps1
+powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1
 
-# 4. Follow the deterministic scenario (Section 5 of BUYER_DEMO_GUIDE.md)
+# Follow Section 5 of docs/DEMO_GUIDE.md
 ```
