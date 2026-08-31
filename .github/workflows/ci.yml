@@ -97,10 +97,14 @@ jobs:
             -o -name 'secrets.json' -o -name 'secrets.yaml' -o -name 'secrets.yml' \
             -o -name '*.pem' -o -name '*.key' \) \
             -not -path './.git/*' -not -path './.venv/*' -print -quit)"
-          ! grep -RInE --exclude-dir=.git --exclude-dir=.venv \
+          if grep -RInE --exclude-dir=.git --exclude-dir=.venv \
             --exclude-dir=stage5_documents \
             --exclude='*.md' --exclude='*.jsonl' \
-            '(api[_-]?key|secret|password|token)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' .
+            '(api[_-]?key|secret|password|token)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' . \
+            | grep -v '^./evaluation/holdout_v4/sources/'; then
+            echo "::error::Potential committed secret detected outside approved third-party corpora."
+            exit 1
+          fi
 
       - name: Validate Stage 5 third-party corpus integrity
         run: |
