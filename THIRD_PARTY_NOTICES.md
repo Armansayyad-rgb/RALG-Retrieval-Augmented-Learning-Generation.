@@ -126,6 +126,16 @@ The exact canonical URLs, revisions, hashes, and acquisition records are maintai
 
 **Current distribution classification:** `PROVENANCE INCOMPLETE — EXCLUDE FROM COMMERCIAL DISTRIBUTION` until provenance and rights are resolved.
 
+## 9. Holdout V4 authoritative-source corpus
+
+Holdout V4 uses 12 commit-pinned third-party technical documents under `evaluation/holdout_v4/sources/`. The exact upstream repositories, pinned commits, canonical URLs, acquisition timestamps, raw and normalized hashes, and project-owner source-license review status are recorded in `evaluation/holdout_v4/sources_manifest.jsonl`.
+
+The corpus includes material from Git, Linux, Docker Docs, Prometheus, GitHub Docs, Ansible Documentation, curl, RabbitMQ, Grafana, CPython, Node.js, and The Rust Programming Language Book. These source files remain third-party artifacts under their respective upstream licenses and are not relicensed under the RALG product license.
+
+The source-specific attribution, normalization/change disclosure, license basis, notice requirements, and redistribution boundaries are documented in `evaluation/holdout_v4/THIRD_PARTY_NOTICES.md`. Supporting review evidence is in `evaluation/holdout_v4/LICENSE_REVIEW_EVIDENCE.md` and `evaluation/holdout_v4/LICENSE_REDISTRIBUTION_REVIEW.md`.
+
+Project-owner approval was recorded on 2026-08-31 as `APPROVED_WITH_OBLIGATIONS`. This is an engineering/compliance decision, not independent legal advice or third-party legal review. Preserve applicable complete upstream license texts, copyright/permission notices, NOTICE material, attribution, source-availability obligations, and the deterministic normalization/change disclosure when redistributing the V4 corpus.
+
 ---
 
-*Last reviewed: 2026-08-30*
+*Last reviewed: 2026-08-31*
