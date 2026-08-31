@@ -1,0 +1,8 @@
+{
+  "benchmark_sha256": "49afb621ad0f0ed9e568a70fc089e6e99f60b83af33acca9a4e6c19142bf8515",
+  "exact_overlaps": [],
+  "near_overlaps": [],
+  "prior_files_scanned": 13,
+  "schema_version": "holdout_v4_contamination_v1",
+  "status": "PASS"
+}
