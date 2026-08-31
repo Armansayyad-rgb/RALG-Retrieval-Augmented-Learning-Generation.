@@ -1,6 +1,6 @@
 {
   "schema_version": "holdout_v4_source_specs_v1",
-  "selection_status": "pre_freeze_selected_not_yet_acquired",
+  "selection_status": "pre_freeze_selected_and_acquired",
   "requirements": {
     "minimum_domains": 10,
     "minimum_documents": 12,
