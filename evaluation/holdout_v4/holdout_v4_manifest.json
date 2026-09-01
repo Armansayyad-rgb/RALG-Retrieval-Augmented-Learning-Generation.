@@ -1,10 +1,10 @@
 {
   "artifacts": {
     "evaluation/holdout_v4/check_contamination.py": "8c00fb2b3b917bd5fa44d6d9be1ef6b9c34ec05c2ff87b72a4276c24862c33cd",
-    "evaluation/holdout_v4/contamination_report.json": "c4a41a95333c06ea3b5d5115ff4fbcef9b7d3d6a7789e5fa1eef66d0406f2811",
-    "evaluation/holdout_v4/holdout_v4_benchmark.jsonl": "e38a09a7a8090610aa95d16f6ebe4534f52ded9e5a0ac07f6892453c66b4a339",
+    "evaluation/holdout_v4/contamination_report.json": "dd6b273dfd3eeb5d07f8ae761b38c3c9aa2a932ada5c0fad4ab6523539e1c0e5",
+    "evaluation/holdout_v4/holdout_v4_benchmark.jsonl": "1c483b7d5c9956ff3989e3ca618dab8b3781dd961860b57fc88cf7b92d4c9899",
     "evaluation/holdout_v4/pre_freeze_validate.py": "1111156fecaac69d1abbbcacf530336ee443845e7c3bd9a413dddeac97db83b3",
-    "evaluation/holdout_v4/pre_run_review.jsonl": "b3221ade7e67d4aa18df659d4ea1a75e2fa5d41c0adb2c5be46f5970266699ba",
+    "evaluation/holdout_v4/pre_run_review.jsonl": "3ab50cf8475a7368ecef6dca3454e2da6af1745dc5560ee23ad3f1a99f12931d",
     "evaluation/holdout_v4/sources_manifest.jsonl": "c340c266f539b255e04533ee671093f5fb92c79e3ffb0a83ed0064875c5e6891",
     "src/holdout_v4_eval.py": "527aa9ccf187af21046d74d8de87414a0d22118ca17a74abdc5b4b427aa52105"
   },
@@ -19,6 +19,6 @@
   "official_result_path": "evaluation/results/holdout_v4_blind_once.json",
   "official_run_completed": false,
   "status": "single_shot_blind_evaluation_no_tuning_afterwards",
-  "target_code_commit_sha": "61e8458bf8f17e8870198b2ea36a099ce0dabccf",
+  "target_code_commit_sha": "e9509f40833181b610257b03755cfe4c1db90cc7",
   "total_cases": 160
 }
