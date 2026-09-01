@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import pathlib
 import subprocess
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 V4 = ROOT / "evaluation" / "holdout_v4"
@@ -19,22 +21,54 @@ ARTIFACTS = [
 ]
 
 
-def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def get_target_commit_sha() -> str:
+    env_sha = os.environ.get("FREEZE_TARGET_COMMIT_SHA", "").strip()
+    if not env_sha:
+        sys.stderr.write(
+            "FREEZE_TARGET_COMMIT_SHA is required for deterministic V4 freeze manifest generation\n"
+        )
+        raise SystemExit(1)
+    canonical = subprocess.check_output(
+        ["git", "rev-parse", "--verify", f"{env_sha}^{{commit}}"],
+        cwd=ROOT,
+        text=True,
+    ).strip()
+    if not canonical:
+        sys.stderr.write(
+            f"FREEZE_TARGET_COMMIT_SHA does not resolve to a Git commit: {env_sha}\n"
+        )
+        raise SystemExit(1)
+    return canonical
 
 
-def git_head():
-    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+def canonical_blob_sha(path: pathlib.Path, target_sha: str) -> str:
+    rel = str(path.relative_to(ROOT)).replace("\\", "/")
+    try:
+        content = subprocess.check_output(
+            ["git", "show", f"{target_sha}:{rel}"],
+            cwd=ROOT,
+        )
+    except subprocess.CalledProcessError:
+        sys.stderr.write(
+            f"artifact not found in target commit {target_sha}: {rel}\n"
+        )
+        raise SystemExit(1)
+    return hashlib.sha256(content).hexdigest()
 
 
-def main():
-    missing = [p for p in ARTIFACTS if not p.exists()]
-    if missing:
-        raise SystemExit("missing freeze artifacts: " + ", ".join(str(p.relative_to(ROOT)) for p in missing))
+def main() -> None:
+    target_sha = get_target_commit_sha()
+    print(f"Using target_code_commit_sha: {target_sha}")
+
+    artifacts = {
+        str(p.relative_to(ROOT)).replace("\\", "/"): canonical_blob_sha(p, target_sha)
+        for p in ARTIFACTS
+    }
+
     manifest = {
         "benchmark_version": "holdout_v4.0.0",
         "status": "single_shot_blind_evaluation_no_tuning_afterwards",
-        "target_code_commit_sha": git_head(),
+        "target_code_commit_sha": target_sha,
         "total_cases": 160,
         "denominators": {
             "primary_answer_supported": 100,
@@ -43,7 +77,7 @@ def main():
             "rejection": 45,
             "retrieval_supported": 115,
         },
-        "artifacts": {str(p.relative_to(ROOT)).replace('\\','/'): sha(p) for p in ARTIFACTS},
+        "artifacts": artifacts,
         "official_result_path": "evaluation/results/holdout_v4_blind_once.json",
         "official_run_completed": False,
     }

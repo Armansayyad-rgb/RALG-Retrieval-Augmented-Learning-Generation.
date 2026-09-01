@@ -11,6 +11,8 @@
 *.toml text eol=lf
 *.txt text eol=lf
 
+evaluation/holdout_v4/sources/raw/*.raw -text -diff
+
 evaluation/results/holdout_v3_blind_once.json -text -diff
 
 *.bat text eol=crlf
