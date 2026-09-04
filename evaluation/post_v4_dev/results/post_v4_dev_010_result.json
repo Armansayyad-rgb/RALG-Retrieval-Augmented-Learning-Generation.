@@ -1,0 +1,320 @@
+{
+  "case_id": "post_v4_dev_010",
+  "category": "B",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "pump_controller_manual",
+    "battery_monitor_manual"
+  ],
+  "source_evidence": "",
+  "latency_ms": 116.68,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "Paraphrased: What temperature extremes can the PC-350 handle while operating?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+        "chunk_index": 73474,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.418509935421,
+        "lexical_score": 55.34422821704017,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "Warm , humid air penetrates the city , higher solar radiation and frequent synoptic weather disturbances from the west occur during the end of the winter . As such , the end of winter is usually characterized by heavy storms with lightning . This is popularly known as the Santa Rosa Storm , around August 30 . Based on 107 years of weather observations ( 1906 \u2013 2012 ) from the central observatory , 58 years have seen stormy weather occurring on days close to August 30 , although not all of these have led to heavy precipitation . = = Extremes = = = = = Temperature = = = According to the central observatory , which has one of the most reliable and oldest records in South America , the highest temperature in Buenos Aires , 43 . 3 \u00b0 C ( 109 . 9 \u00b0 F ) , was recorded on 29 January 1957 while the lowest temperature recorded is \u2212 5 . 4 \u00b0 C ( 22 . 3 \u00b0 F ) on 9 July 1918 .",
+        "chunk_index": 13294,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.284679919072,
+        "lexical_score": 30.296533653426728,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+        "chunk_index": 73470,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.246044228628,
+        "lexical_score": 39.322511425425006,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "Specimens planted in partially shaded locations tend to spread or flop , although this behavior can be controlled somewhat by pinching young shoots or by providing a strong - standing accompaniment that the plant can drape itself around for support . Flowers bloom only on new growth . Plants trimmed to 15 \u2013 61 cm ( 5 . 9 \u2013 24 . 0 in ) in early spring provide the best subsequent growth and flowering . Tolerant of both heat and cold , it is grown in North America in United States Department of Agriculture hardiness zones three through nine , although some cultivars may be better suited than others to extremes of temperature . It is successfully grown from the southwestern United States , north and east across much of the country , and across the Canadian border into Ontario and Quebec . In the coldest of these areas , it may require considerable protection to survive the winter .",
+        "chunk_index": 63533,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.297150047895,
+        "lexical_score": 22.07448051879828,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The island 's lush vegetation , a product of its mild climate and frequent rainfall , earns it the sobriquet the Emerald Isle . Overall , Ireland has a mild but changeable oceanic climate with few extremes . The climate is typically insular and is temperate avoiding the extremes in temperature of many other areas in the world at similar latitudes . This is a result of the moderating moist winds which ordinarily prevail from the South - Western Atlantic . Precipitation falls throughout the year but is light overall , particularly in the east . The west tends to be wetter on average and prone to Atlantic storms , especially in the late autumn and winter months . These occasionally bring destructive winds and higher total rainfall to these areas , as well as sometimes snow and hail .",
+        "chunk_index": 2637,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.247640589003,
+        "lexical_score": 23.58507034526761,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical potential at disconnect before removing panels.\n- Recover refrigerant per EPA regulations before opening refrigerant circuit.\n- Wear appropriate PPE when working with refrigerants, electrical components, and moving parts.\n- Never bypass safety controls or temperature limiters.\n\n2. NORMAL OPERATION\n--------------------\n- System provides heating when heating mode is selected and thermostat calls for heat.\n- System provides cooling when cooling mode is selected and thermostat calls for cool.\n- Normal supply air temperature range: 55-75\u00b0F cooling, 90-120\u00b0F heating.\n- Fan operates at variable speed: 0-100% depending on demand.\n- Air filter should be checked monthly and replaced when dirty.\n\n3. STARTUP SEQUENCE (HEATING)\n------------------------------\na. Confirm thermostat is set to HEAT mode and temperature is above current room temperature.\nb. Verify gas supply is on (for gas-fired units) or electrical connections are secure (for electric units).\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. System should initiate ignition sequence after 30-second pre-purge.\ng. Verify flame is established and burners are operating normally.\nh. Monitor supply air temperature rises to normal range within 5 minutes.\ni. Fan will begin blowing heated air once heat exchanger reaches safe temperature.\n\n4. STARTUP SEQUENCE (COOLING)\n-------------------------------\na. Confirm thermostat is set to COOL mode and temperature is below current room temperature.\nb. Verify electrical connections are secure and power is supplied to compressor.\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. Compressor should start after thermostat call for cool.\ng. Verify condenser fan is operating.\nh. Check that supply air temperature drops to normal range within 5 minutes.\ni. System will cycle on and off to maintain setpoint.\n\n5. INSPECTION PHASE\n--------------------\n- Check air filter condition and airflow - replace if dirty.\n- Inspect supply and return registers for obstructions.\n- Check thermostat calibration and operation.\n- Inspect evaporator coil for frost or ice formation (cooling mode).\n- Inspect heat exchanger for cracks or damage (heating mode).\n- Verify refrigerant lines for leaks (trace with detector solution).\n- Check blower motor and fan for unusual noise or vibration.\n- Inspect ductwork for leaks, loose connections, or damage.\n- Verify safety controls are functional (limit switches, pressure controls).\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: System will not start (heating)\n- Cause: Thermostat not calling for heat - check settings.\n- Cause: No gas supply (gas units) - verify gas valve is open.\n- Cause: Electrical fault - check voltage at disconnect, fuses, circuit breaker.\n- Cause: Flame failure - reset after safety lockout, inspect burner.\n- Cause: Limit switch tripped - reset after addressing root cause.\n\nPROBLEM: System will not start (cooling)\n- Cause: Thermostat not calling for cool - check settings.\n- Cause: Compressor protection trip - reset thermal overload.\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: Refrigerant low - system may have leak, require recharge.\n- Cause: High-pressure switch tripped - reset after addressing cause.\n\nPROBLEM: Insufficient heating\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n- Cause: Gas pressure too low - adjust gas valve, check supply.\n- Cause: Heat exchanger restricted - clean or replace.\n- Cause: Duct leaks - seal ductwork, insulate as needed.\n\nPROBLEM: Insufficient cooling\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Dirty evaporator coil - clean coil.\n- Cause: Dirty condenser coil - clean outdoor unit coil.\n- Cause: Refrigerant low - system has leak, locate and repair, recharge.\n- Cause: High outdoor temperature - system may not meet load demand.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n\nPROBLEM: Short cycling (frequent on/off)\n- Cause: Oversized system for space - may require load calculation.\n- Cause: Dirty filter - restrict airflow, replace filter.\n- Cause: Thermostat located near heat source - relocate thermostat.\n- Cause: Low refrigerant - system has leak, locate and repair, recharge.\n- Cause: High static pressure in ductwork - redesign duct system.\n\nPROBLEM: compressor will not start\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: compressor protection trip - reset thermal overload after cooling.\n- Cause: capacitor failure - replace capacitor.\n- Cause: contactor failure - replace contactor.\n- Cause: thermostat not calling - check settings and wiring.\n\n7. REFRIGERANT SERVICE\n------------------------\n- Recover refrigerant: Use certified recovery machine per EPA Section 608.\n- Leak detection: Electronic leak detector or trace with Nitrogen soap solution.\n- Recharge: Add only specified refrigerant type and amount per nameplate.\n- Never mix refrigerant types.\n- Document all refrigerant additions and removals per regulatory requirements.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check thermostat operation, listen for unusual noises, verify airflow.\n- Every 250 hours: Check air filter, inspect visual condition of unit.\n- Every 500 hours: Clean or replace air filter, inspect evaporator/condenser coils.\n- Every 1000 hours: Check refrigerant pressure, test safety controls, lubricate motors.\n- Every 2000 hours: Clean burners (gas units), inspect heat exchanger, check belt tension.\n- Annual: Full combustion analysis (gas units), refrigerant charge verification, complete safety inspection.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.\n- Electrical fire: Cut power at disconnect, call fire department, do not use water on electrical.\n- Gas leak (gas units): Evacuate area, ventilate, do not operate electrical switches, call gas company.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: HVAC-400 Maintenance Controller\n- Capacity: 2-ton to 20-ton variable capacity\n- Voltage: 208/240V single-phase or 208/3-phase\n- Refrigerant: R-410A (or approved alternate)\n- Airflow range: 400-2000 CFM\n- Temperature range: -10\u00b0F to 120\u00b0F ambient\n- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)\n- Connection: Standard HVAC plug-in connections\n- Motor: ECM variable-speed blower motor\n- Compressor: Scroll type, 2-20 HP",
+        "chunk_index": 73472,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.196534769736,
+        "lexical_score": 35.73862955033477,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "The ship served her entire career with the Baltic Fleet and was later assigned to the Mine ( Torpedo ) Training Detachment . Charodeika was reclassified as a coast - defense ironclad on 13 February 1892 and remained in service until 31 March 1907 when she was turned over to the Port of Kronstadt for disposal . The ship was stricken from the Navy List on 7 April and was finally scrapped in 1911 \u2013 12 . = No. 82 Wing RAAF = No. 82 Wing is the strike and reconnaissance wing of the Royal Australian Air Force ( RAAF ) . It is headquartered at RAAF Base Amberley , Queensland . Coming under the control of Air Combat Group , the wing operates F / A - 18F Super Hornet multirole fighters and Pilatus PC - 9 forward air control aircraft . Its units include Nos. 1 and 6 Squadrons , operating the Super Hornet , and No. 4 Squadron , operating the PC - 9 . Formed in August 1944 , No.",
+        "chunk_index": 66345,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.206571400733,
+        "lexical_score": 25.552325946247215,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "At the northwestern periphery of the town the drift consists of recently blown sand . Farther to the east and bordering the River Mersey is recent alluvium . Elsewhere the drift consists of till . = = = Climate = = = Being close to the west coast and the Irish Sea , the climate is generally temperate with few extremes of temperature or weather . The mean average temperature in the years 1971 to 2000 was 9 . 4 to 9 . 7 \u00b0 C , which was slightly above the average for the United Kingdom as was the average amount of annual sunshine at 1 , 391 to 1 , 470 hours . The average annual rainfall was 741 to 870 mm , which was slightly below the average for the UK . The average number of days in the year when snow is on the ground is 0 to 6 , which is low for the United Kingdom . The average number of days of air frost is 2 to 39 , which is also low .",
+        "chunk_index": 19894,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.247640589003,
+        "lexical_score": 21.135079960585834,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The player flies their ship around a two - dimensional scale model of the solar system with no objectives other than to attempt to land on various planets and moons . The player can move and turn the ship , and adjust the overall speed by adjusting the scale of the simulation . The ship is affected by the single strongest gravitational pull of the astronomical bodies . The game was developed at Bell Labs , and was ported during 1969 from the Multics operating system to the GECOS operating system on the GE 635 computer , and then to the PDP - 7 minicomputer . While porting the game to the PDP - 7 , Thompson developed ideas for his own operating system , which later formed the core of the Unix operating system . Space Travel never spread beyond Bell Labs or had an effect on future games , leaving its primary legacy as part of the original push for the development of Unix .",
+        "chunk_index": 45305,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.182919601397,
+        "lexical_score": 24.597282337609172,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "The town 's climate is generally temperate , with few extremes of temperature or weather . The mean temperature is slightly above average for the United Kingdom ; whereas both annual rainfall and average hours of sunshine are slightly below the average for the UK . Along with Sale , Stretford and Urmston , Altrincham is one of the four major urban areas in Trafford . The Altrincham area , as defined by Trafford Council , comprises the south of Trafford . In addition to the town of Altrincham , it includes the villages of Timperley , Bowdon , Hale and Hale Barns . The Broadheath area of the town was a light industrial centre until the 1970s and is now a retail park . The most densely populated part of the town is around the town centre , with the less populated areas and more green space further from the centre of town in villages such as Bowdon and Hale .",
+        "chunk_index": 34585,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.247640589003,
+        "lexical_score": 21.135079960585834,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The same publication in 1990 said that whether the cables are worth it depends on the application and the user 's willingness to pay a premium . Whether someone can hear the difference varies from person to person . Many reporters and audiophiles have done double - blind a / b listening tests and are unable to hear the difference . The New York Times and PC World have reported not hearing a difference in the sound , while USA Today said Monster had \" a slight edge . \" According to PC Magazine , Monster is \" often accused of selling over - priced cables that you can buy elsewhere for a fraction of the price . \" Gizmodo tested Monster - branded HDMI cables and compared them to generic cables using a Digital Serial Analyzer . They found that the cables performed relatively equally over a short distance of 6 feet ( 1 .",
+        "chunk_index": 20884,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.196786311556,
+        "lexical_score": 23.599640222869844,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "As the position of a star on the HR diagram shows its approximate luminosity , this relation can be used to estimate its radius . The mass , radius and luminosity of a star are closely interlinked , and their respective values can be approximated by three relations . First is the Stefan \u2013 Boltzmann law , which relates the luminosity L , the radius R and the surface temperature Teff . Second is the mass \u2013 luminosity relation , which relates the luminosity L and the mass M. Finally , the relationship between M and R is close to linear . The ratio of M to R increases by a factor of only three over 2 . 5 orders of magnitude of M. This relation is roughly proportional to the star 's inner temperature TI , and its extremely slow increase reflects the fact that the rate of energy generation in the core strongly depends on this temperature , whereas it has to fit the mass \u2013 luminosity relation .",
+        "chunk_index": 40809,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.149747284785,
+        "lexical_score": 25.852853326084524,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "XP can be lost in some circumstances , such as encounters with creatures that drain life energy , or by use of certain magical powers that come with an XP cost . Hit points ( HP ) are a measure of a character 's vitality and health and are determined by the class , level and constitution of each character . They can be temporarily lost when a character sustains wounds in combat or otherwise comes to harm , and loss of HP is the most common way for a character to die in the game . Death can also result from the loss of key ability scores or character levels . When a PC dies , it is often possible for the dead character to be resurrected through magic , although some penalties may be imposed as a result . If resurrection is not possible or not desired , the player may instead create a new PC to resume playing the game .",
+        "chunk_index": 31696,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.159746981487,
+        "lexical_score": 24.2504315970872,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "An example of this is Messier 3 ( M3 ) , which has an overall visible dimension of about 18 arc minutes , but a half - mass radius of only 1 . 12 arc minutes . Almost all globular clusters have a half - light radius of less than 10 pc , although there are well - established globular clusters with very large radii ( i.e. NGC 2419 ( Rh = 18 pc ) and Palomar 14 ( Rh = 25 pc ) ) . Finally the tidal radius , or Hill sphere , is the distance from the center of the globular cluster at which the external gravitation of the galaxy has more influence over the stars in the cluster than does the cluster itself . This is the distance at which the individual stars belonging to a cluster can be separated away by the galaxy . The tidal radius of M3 is about 40 arc minutes , or about 113 pc at the distance of 10 . 4 kpc .",
+        "chunk_index": 47108,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.159746981487,
+        "lexical_score": 23.832060832814992,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "If the temperature gradient is strong enough , temperature advection will increase , driving more vertical motion . This increases the overall strength of the system . Shearwise updrafts are the most important factor in determining cyclonic growth and strength . = = = Modes of development = = = The surface low could have a variety of causes for forming . Topography can force a surface low when dense low - level high pressure system ridges in east of a north - south mountain barrier . Mesoscale convective systems can spawn surface lows which are initially warm core . The disturbance can grow into a wave - like formation along the front and the low will be positioned at the crest . Around the low , flow will become cyclonic , by definition .",
+        "chunk_index": 40163,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.149747284785,
+        "lexical_score": 23.208372009206734,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "It is within the photosphere that sun spots , regions of lower than average temperature , appear . Above the level of the photosphere is the stellar atmosphere . In a main sequence star such as the Sun , the lowest level of the atmosphere , just above the photosphere , is the thin chromosphere region , where spicules appear and stellar flares begin . Above this is the transition region , where the temperature rapidly increases within a distance of only 100 km ( 62 mi ) . Beyond this is the corona , a volume of super - heated plasma that can extend outward to several million kilometres . The existence of a corona appears to be dependent on a convective zone in the outer layers of the star . Despite its high temperature , and the corona emits very little light , due to its low gas density . The corona region of the Sun is normally only visible during a solar eclipse .",
+        "chunk_index": 13094,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.149747284785,
+        "lexical_score": 22.268971450994293,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "4 \u00b0 C ( 13 . 3 \u00b0 F ) in January to a summer peak of 17 . 7 \u00b0 C ( 63 . 9 \u00b0 F ) in July . With average maximum of 23 . 1 \u00b0 C ( 73 . 6 \u00b0 F ) in July , and minimum of \u2212 14 . 8 \u00b0 C ( 5 . 4 \u00b0 F ) in January . Annually , temperatures can exceed 30 \u00b0 C ( 86 \u00b0 F ) for an average of four to five days anytime from late April to mid - September and fall below \u2212 20 \u00b0 C ( \u2212 4 \u00b0 F ) for an average of 28 days . The highest temperature recorded within the City of Edmonton was 37 . 2 \u00b0 C ( 99 . 0 \u00b0 F ) , on June 29 , 1937 . On July 2 , 2013 , a record high humidex of 43 was recorded , due to an unusually humid day with a temperature of 33 . 9 \u00b0 C ( 93 . 0 \u00b0 F ) and a record high dew point of 23 \u00b0 C ( 73 . 4 \u00b0 F ) . The lowest overall temperature ever recorded in Edmonton was \u2212 49 . 4 \u00b0 C ( \u2212 56 . 9 \u00b0 F ) , on January 19 and 21 , 1886 . On January 26 , 1972 , the temperature was recorded at \u2212 48 .",
+        "chunk_index": 61474,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.149747284785,
+        "lexical_score": 22.268971450994293,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      },
+      {
+        "chunk": "The related \" 400 , 000 - year - problem \" refers to the absence of a 400 , 000 - year periodicity due to orbital eccentricity in the geological temperature record over the past 1 . 2 million years . = = Recognition of the 100 , 000 - year cycle = = The geologic temperature record can be reconstructed from sedimentary evidence . Perhaps the most useful indicator of past climate is the fractionation of oxygen isotopes , denoted \u03b418O . This fractionation is controlled mainly by the amount of water locked up in ice and the absolute temperature of the planet , and has allowed a timescale of marine isotope stages to be constructed . By the late 1990s , \u03b418O records of air ( in the Vostok ice core ) and marine sediments was available and was compared with estimates of insolation , which should affect both temperature and ice volume .",
+        "chunk_index": 64632,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.149747284785,
+        "lexical_score": 22.268971450994293,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The faintest red dwarfs in the cluster were magnitude 26 , while a 28th magnitude white dwarf was also discovered . These faint stars are so dim that their light is as bright as a birthday candle on the Moon when viewed from the Earth . = = Classification = = The current stellar classification system originated in the early 20th century , when stars were classified from A to Q based on the strength of the hydrogen line . It thought that the hydrogen line strength was a simple linear function of temperature . Rather , it was more complicated ; it strengthened with increasing temperature , it peaked near 9000 K , and then declined at greater temperatures . When the classifications were reordered by temperature , it more closely resembled the modern scheme .",
+        "chunk_index": 13085,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.137277155962,
+        "lexical_score": 21.618180076776937,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+        "chunk_index": 73471,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.096370812435,
+        "lexical_score": 23.080309961646066,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Paraphrased: What temperature extremes can the PC-350 handle while operating?"
+        ]
+      }
+    ],
+    "context": "TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft\n= = Extremes = = = = = Temperature = = = According to the central observatory , which has one of the most reliable and oldest records in South America , the highest temperature in Buenos Aires , 43 .\n9 \u00b0 F ) , was recorded on 29 January 1957 while the lowest temperature recorded is \u2212 5 .\nTolerant of both heat and cold , it is grown in North America in United States Department of Agriculture hardiness zones three through nine , although some cultivars may be better suited than others to extremes of temperature .\nThe climate is typically insular and is temperate avoiding the extremes in temperature of many other areas in the world at similar latitudes ."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73474,
+      "preview": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before rem",
+      "evidence": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+      "score": 55.344,
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 13294,
+      "preview": "Warm , humid air penetrates the city , higher solar radiation and frequent synoptic weather disturbances from the west occur during the end of the winter . As such , the end of winter is usually characterized by heavy storms with lightning ",
+      "evidence": "Warm , humid air penetrates the city , higher solar radiation and frequent synoptic weather disturbances from the west occur during the end of the winter . As such , the end of winter is usually characterized by heavy storms with lightning . This is popularly known as the Santa Rosa Storm , around August 30 . Based on 107 years of weather observations ( 1906 \u2013 2012 ) from the central observatory , 58 years have seen stormy weather occurring on days close to August 30 , although not all of these have led to heavy precipitation . = = Extremes = = = = = Temperature = = = According to the central observatory , which has one of the most reliable and oldest records in South America , the highest temperature in Buenos Aires , 43 . 3 \u00b0 C ( 109 . 9 \u00b0 F ) , was recorded on 29 January 1957 while the lowest temperature recorded is \u2212 5 . 4 \u00b0 C ( 22 . 3 \u00b0 F ) on 9 July 1918 .",
+      "score": 30.297
+    },
+    {
+      "rank": 3,
+      "id": 73470,
+      "preview": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal ",
+      "evidence": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+      "score": 39.323,
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 4,
+      "id": 63533,
+      "preview": "Specimens planted in partially shaded locations tend to spread or flop , although this behavior can be controlled somewhat by pinching young shoots or by providing a strong - standing accompaniment that the plant can drape itself around for",
+      "evidence": "Specimens planted in partially shaded locations tend to spread or flop , although this behavior can be controlled somewhat by pinching young shoots or by providing a strong - standing accompaniment that the plant can drape itself around for support . Flowers bloom only on new growth . Plants trimmed to 15 \u2013 61 cm ( 5 . 9 \u2013 24 . 0 in ) in early spring provide the best subsequent growth and flowering . Tolerant of both heat and cold , it is grown in North America in United States Department of Agriculture hardiness zones three through nine , although some cultivars may be better suited than others to extremes of temperature . It is successfully grown from the southwestern United States , north and east across much of the country , and across the Canadian border into Ontario and Quebec . In the coldest of these areas , it may require considerable protection to survive the winter .",
+      "score": 22.074
+    },
+    {
+      "rank": 5,
+      "id": 2637,
+      "preview": "The island 's lush vegetation , a product of its mild climate and frequent rainfall , earns it the sobriquet the Emerald Isle . Overall , Ireland has a mild but changeable oceanic climate with few extremes . The climate is typically insular",
+      "evidence": "The island 's lush vegetation , a product of its mild climate and frequent rainfall , earns it the sobriquet the Emerald Isle . Overall , Ireland has a mild but changeable oceanic climate with few extremes . The climate is typically insular and is temperate avoiding the extremes in temperature of many other areas in the world at similar latitudes . This is a result of the moderating moist winds which ordinarily prevail from the South - Western Atlantic . Precipitation falls throughout the year but is light overall , particularly in the east . The west tends to be wetter on average and prone to Atlantic storms , especially in the late autumn and winter months . These occasionally bring destructive winds and higher total rainfall to these areas , as well as sometimes snow and hail .",
+      "score": 23.585
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    },
+    {
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

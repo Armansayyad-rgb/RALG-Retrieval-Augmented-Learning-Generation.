@@ -1,0 +1,47 @@
+{
+  "case_id": "post_v4_dev_030",
+  "category": "F",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [],
+  "source_evidence": "",
+  "latency_ms": 11.75,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": false,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": false,
+  "hit_at_3": false,
+  "hit_at_5": false,
+  "recall_at_5": 0.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "What safety steps require lockout-tagout before opening electrical panels?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.744700865629,
+        "lexical_score": 130.55761389616893,
+        "origin": "full_question"
+      }
+    ],
+    "context": "GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\nLOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\nMACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening."
+  },
+  "sources": [],
+  "provenance": [],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

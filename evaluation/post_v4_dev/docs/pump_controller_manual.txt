@@ -1,0 +1,101 @@
+Pump Controller Operation Manual
+================================
+
+1. SAFETY PRECAUTIONS
+----------------------
+- Always perform lockout-tagout before servicing the pump motor.
+- Verify zero electrical potential at the disconnect before removing panels.
+- Wear appropriate PPE when working with pressurized systems.
+- Never bypass safety interlocks or emergency stop controls.
+
+2. NORMAL OPERATION
+-------------------
+- The pump motor starts when the green START button is pressed.
+- Motor runs until the red STOP button is pressed or an fault is detected.
+- Normal operating pressure range: 20-50 PSI.
+- Flow rate: 0-100 GPM depending on impeller size.
+
+3. STARTUP SEQUENCE
+-------------------
+a. Confirm all safety guards are in place.
+b. Verify lubrication oil level is between MIN and MAX marks on sight glass.
+c. Confirm discharge valve is open before motor start.
+d. Press GREEN START button to begin pump operation.
+e. Monitor pressure gauge to confirm pressure builds within normal range.
+f. Listen for unusual noises indicating cavitation or misalignment.
+
+4. INSPECTION PHASE
+-------------------
+- Check pump housing for leaks, cracks, or damage.
+- Inspect mechanical seals for wear or fluid seepage.
+- Verify bearing temperature is within normal range (below 80°C).
+- Inspect coupling alignment between motor and pump shaft.
+- Check foundation bolts for tightness.
+- Verify alignment laser reading is within tolerance.
+
+5. LUBRICATION
+--------------
+- Oil type: ISO VG 32 synthetic compressor oil.
+- Oil level: Must be between MIN and MAX marks on sight glass.
+- Lubrication interval: Every 500 operating hours.
+- Oil change interval: Every 2000 operating hours or annually.
+- Before adding oil, clean the fill port and surrounding area.
+- After oil change, prime the lubrication system and check for leaks.
+
+6. TROUBLESHOOTING
+------------------
+PROBLEM: Pump will not start
+- Cause: Power not supplied - check voltage at disconnect, verify fuses.
+- Cause: Emergency stop activated - reset E-stop station.
+- Cause: Motor protection trip - reset thermal overload relay.
+- Cause: Control circuit fault - inspect wiring and control relays.
+
+PROBLEM: Low pressure output
+- Cause: Discharge valve partially closed - open valve fully.
+- Cause: Worn impeller - inspect and replace if necessary.
+- Cause: Air leak in suction line - tighten fittings, check seals.
+- Cause: Clogged filter - clean or replace filter element.
+
+PROBLEM: Excessive vibration
+- Cause: Misalignment between motor and pump - realign using laser tool.
+- Cause: Unbalanced impeller - inspect and rebalance or replace.
+- Cause: Worn bearings - replace bearings.
+- Cause: Loose foundation bolts - tighten and re-level unit.
+
+PROBLEM: Oil discoloration or contamination
+- Cause: Oil decomposition from overheating - replace oil.
+- Cause: Water ingress - inspect seals, fix leaks, replace oil.
+- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.
+
+7. SHUTDOWN SEQUENCE
+---------------------
+a. Gradually reduce load if pump is under load.
+b. Press RED STOP button to stop motor.
+c. Close discharge valve after motor stops.
+d. Allow pump to cool if recently under load.
+e. Lockout-tagout for any subsequent maintenance.
+
+8. MAINTENANCE SCHEDULE
+------------------------
+- Daily: Visual inspection for leaks, unusual noises, vibration.
+- Every 500 hours: Check oil level, inspect filters, check bearing temperature.
+- Every 2000 hours: Oil change, detailed inspection of seals and bearings.
+- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.
+- Annual: Full safety inspection, certification of interlocks and E-stops.
+
+9. EMERGENCY PROCEDURES
+------------------------
+- Pump overpressure: Immediately press E-stop, isolate power.
+- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.
+- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.
+
+10. TECHNICAL SPECIFICATIONS
+----------------------------
+- Model: PC-350 Industrial Pump Controller
+- Motor power: 15 HP, 3-phase, 230/460V
+- Operating temperature: -20°C to 40°C
+- Protection class: IP55
+- Connection: NEMA 4X enclosure
+- Flow range: 5-100 GPM
+- Pressure range: 20-50 PSI
+- Material: Cast iron housing, stainless steel shaft

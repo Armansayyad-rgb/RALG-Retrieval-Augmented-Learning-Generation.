@@ -1,0 +1,275 @@
+{
+  "case_id": "post_v4_dev_044",
+  "category": "I",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "conveyor_controller_manual",
+    "machine_safety_procedures"
+  ],
+  "source_evidence": "",
+  "latency_ms": 35.06,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": true,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "What is the gear ratio for the WC-200 conveyor drive system?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+        "chunk_index": 73471,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.677947534659,
+        "lexical_score": 74.07163975931694,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.379398100456,
+        "lexical_score": 52.641914070481945,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "From his horological treatise , Su Song states : The chain drive ( lit. celestial ladder ) is 19 . 5 ft long ( 5 . 9 m ) . The system is as follows : an iron chain with its links joined together to form an endless circuit hangs down from the upper chain - wheel which is concealed by the tortoise - and - cloud ( column supporting the armillary sphere centrally ) , and passes also round the lower chain - wheel which is mounted on the main driving - shaft . Whenever one link moves , it moves forward one tooth of the diurnal motion gear - ring and rotates the Component of the Three Arrangers of Time , thus following the motion of the heavens . In addition , the motion gear rings and the upper drive wheel both had 600 teeth , which by Su 's mathematical precision carefully calculated measured units of the day in a division of 1 / 600 .",
+        "chunk_index": 30534,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.321022726096,
+        "lexical_score": 29.788208535673036,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "It was used in the clockworks for coupling the main drive shaft to the armillary sphere gearbox ( rotating three small pinions ) , as seen in Needham 's Fig . 410 and Fig . 652 . This belonged to the uppermost end of the main vertical transmission shaft , incorporating right angle gears and oblique gears connected by a short idling shaft . The toothed ring gear called the diurnal motion gear ring was fit around the shell of the armillary sphere along the declination parallel near the southern pole . Although the ancient Greek Philo of Byzantium ( 3rd century BC ) featured a sort of endless belt for his magazine arcuballista , which did not transmit continuous power , the influential source for Su Song 's chain drive is most likely the continuously - driven chain pump known in China since the Han Dynasty ( 202 BC \u2013 220 AD ) .",
+        "chunk_index": 30533,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.263715673195,
+        "lexical_score": 25.61844945890924,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "As a result , the combined DM & E / IC & E system makes up the largest Class II railroad ( by route - miles ) in the United States ; it is also the eighth largest system of all American railroads and the only system with direct rail connections with all Class I railroads in North America . In its first twenty years of operations , the railroad 's revenues had increased more than tenfold , from $ 22 million in 1987 to $ 258 million in 2006 , with $ 290 million projected in 2007 and $ 340 million for 2008 . Its operating ratio ( the ratio of operating expenses to revenues ) declined to 70 . 2 % in 2006 and was projected to improve further to 67 . 6 % in 2007 . Its traffic was a mix of agricultural , coal , and industrial products , and ethanol shipments were projected to exceed one billion gallons in 2008 .",
+        "chunk_index": 17605,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.227303340603,
+        "lexical_score": 26.40371468876773,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "When the U.S. route system was formed in 1926 , the Pacific Highway became US 99 . In 1931 , an inland bypass via Lake Samish was added to State Road 1 and US 99 . The former route of US 99 on Chuckanut Drive became US 99 Alternate . US 99 became Primary State Highway 1 ( PSH 1 ) in 1937 and US 99 Alternate became the Chuckanut Drive branch of the main highway , running from Burlington to downtown Bellingham . A 1964 renumbering introduced a new system of sign routes that was scheduled to go into effect in 1970 . As originally planned , the Chuckanut Drive branch of PSH 1 \u2014 already US 99 Alternate \u2014 would be co - signed as SR 11 . In 1967 , Secondary State Highway 1F ( SSH 1F ) was established , connecting US 99 Alternate to US 99 via Fairhaven . During the same year , I - 5 replaced US 99 , leading to the removal of the US 99 Alternate designation from what would become SR 11 .",
+        "chunk_index": 48244,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.231088762418,
+        "lexical_score": 25.37857148379507,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The Times has since moved to The New York Times Building on nearby Eighth Avenue . After leaving One Times Square , the Times still maintained ownership of the tower . On November 6 , 1928 , an electronic news ticker known as the Motograph News Bulletin ( colloquially known as the \" zipper \" ) was introduced near the base of the building . The zipper originally consisted of 14 , 800 light bulbs , with the display controlled by a chain conveyor system inside the building ; individual letter elements ( a form of movable type ) were loaded into frames to spell out news headlines . As the frames moved along the conveyor , the letters themselves triggered electrical contacts which lit the external bulbs ( the zipper has since been upgraded to use modern LED technology ) . The first headline displayed on the zipper announced Herbert Hoover 's victory in that day 's presidential election .",
+        "chunk_index": 25092,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.247596235096,
+        "lexical_score": 22.798443763503375,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Turn 10 has cited the vehicle 's exaggerated four wheel steering system , fictional futuristic technology and excessive height as reasons for its exclusion , stating \" One , it 's got some technology that 's built into Halo that would have been a big investment for us to then build into the game only to support one vehicle . [ ... ] Technically we don 't support that because no real world cars in our game do . \" = = = Top Gear content = = = Turn 10 has entered a multiple year partnership with the BBC 's Top Gear . The content provided by the BBC 's BAFTA award - winning television show Top Gear , also includes narration from presenter Jeremy Clarkson during the virtual showroom ( Autovista ) navigation . The game features the Top Gear test track at Dunsfold Aerodrome , near the village of Cranleigh , UK . The first in - game demo in Autovista was revealed at E3 2011 .",
+        "chunk_index": 43497,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.210933982491,
+        "lexical_score": 25.55837993486018,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The water cannot come from the troposphere because the cold tropopause acts like a cold trap , effectively preventing water from rising to the stratosphere ( see Vertical structure above ) . Earth- and spacecraft - based measurements have led to improved knowledge of the isotopic ratios in Jupiter 's atmosphere . As of July 2003 , the accepted value for the deuterium abundance is 2 . 25 \u00b1 0 . 35 \u00d7 10 \u2212 5 , which probably represents the primordial value in the protosolar nebula that gave birth to the Solar System . The ratio of nitrogen isotopes in the Jovian atmosphere , 15N to 14N , is 2 . 3 \u00d7 10 \u2212 3 , a third lower than that in the Earth 's atmosphere ( 3 . 5 \u00d7 10 \u2212 3 ) . The latter discovery is especially significant since the previous theories of Solar System formation considered the terrestrial value for the ratio of nitrogen isotopes to be primordial .",
+        "chunk_index": 72902,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.227303340603,
+        "lexical_score": 22.23395561200394,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The address system is mostly numbered , with streets running south to north and avenues running east to west . In built - up areas built since the 1950s , local streets and major roadways generally do not conform to the grid system . Major roadways include Kingsway , Yellowhead Trail ( Highway 16 ) , Whitemud Drive and Anthony Henday Drive , and the city is connected to other communities elsewhere in Alberta , British Columbia , and Saskatchewan via the Yellowhead Highway to the west and east and the Queen Elizabeth II Highway ( Alberta Highway 2 ) to the south . = = = = Trail system = = = = There is an extensive multi - use trail system for bicycles and pedestrians throughout the city ; however , most of this is within the river valley parkland system .",
+        "chunk_index": 61528,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.200006930005,
+        "lexical_score": 23.86864611713637,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "From the modem , a cable runs to a dual - port connector , which connects into a telephone line . The Mega Modem also came packaged with a cartridge which allowed for access to the Meganet game library , and approximately six titles were available at launch . It was capable of connection speeds of up to 1200bit / s . Though the service had also been advertised in North America under the name \" Tele - Genesis \" in publications such as Electronic Gaming Monthly , it was never released for the region . As another way of attempting to expand the audience for the Mega Drive in Japan , Sega introduced the Mega Anser , a system designed for use with Nagoya Bank in Japan , in 1990 . Packaged as an all - in - one system including a Mega Drive , Mega Modem , Mega Anser cartridge and keypad , the system allowed for transactions such as balance inquiries , transfers , and loan information .",
+        "chunk_index": 65602,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.179705833588,
+        "lexical_score": 23.86864611713637,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+        "chunk_index": 73470,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.183871384587,
+        "lexical_score": 22.440898735557816,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "= = History = = Older Macintoshes dating from 1983 until 1998 utilized a basic bootloader ; the bootloader was solely a ROM chip varying in sizes up to 4 megabytes ( MB ) , which contained both the computer code to boot the computer and to run the Mac OS operating system . This was known as the Macintosh Toolbox , or the Old World ROM , and differs greatly from design the modern Macintosh which generally use a hard drive of large capacity to store the operating system . This bootloader was used in all Macintosh computers until mid - 1998 . With the advent of the iMac series of Macintoshes , the firmware was updated . The ROM was reduced in size to 1 MB , called BootROM , and the remainder of the ROM was moved to the file Mac OS ROM in the Mac OS System Folder ; stored on the hard drive .",
+        "chunk_index": 63919,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.16884927271,
+        "lexical_score": 23.86864611713637,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "It is regarded as one of the greatest and most important games of all time , and is often seen as the game which helped popularize the stealth genre . The commercial success of the title prompted the release of an expanded version for the PlayStation and PC , titled Metal Gear Solid : Integral ; and a remake , Metal Gear Solid : The Twin Snakes was later released for the GameCube . The game has also spawned numerous sequels , prequels and spin - offs , including several games , a radio drama , comics , and novels . = = Gameplay = = Despite a transition to 3D , the gameplay of Metal Gear Solid remains similar to its 2D MSX2 predecessor Metal Gear 2 : Solid Snake . The player must navigate the protagonist , Solid Snake , through the game 's areas without being detected by enemies .",
+        "chunk_index": 26251,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.16307146513,
+        "lexical_score": 21.388620858096385,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The Japanese PlayStation version of Metal Gear Solid , as well as Integral , had been reissued twice : once under The Best range and second time as a PS one Books title . Likewise , the American and European versions of Metal Gear Solid were reissued under the \" Greatest Hits \" and \" Platinum \" ranges respectively . The game is included in the Japanese Metal Gear Solid : 20th Anniversary Collection set and in the American Essential Collection set . The original Metal Gear Solid was released on the PlayStation Store for download on the PlayStation 3 and PlayStation Portable in 2008 in Japan and in 2009 in North America and Europe .",
+        "chunk_index": 26269,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.16307146513,
+        "lexical_score": 21.388620858096385,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" Metal Gear Solid received an Excellence Award for Interactive Art at the 1998 Japan Media Arts Festival . = = = Retrospective = = = Metal Gear Solid is often recognized as one of the key titles involved in popularizing the stealth game genre . The idea of the player being unarmed and having to avoid being seen by enemies rather than fight them has been used in many games since . It is also sometimes acclaimed as being a film as much as a game due to the lengthy cut scenes and complicated storyline . GameTrailers claimed that Metal Gear Solid \" invented the stealth game \" and IGN called it \" the founder of the stealth genre \" . Entertainment Weekly said it \" broke new ground with ... movie - style production ... and stealth - driven gameplay .",
+        "chunk_index": 26280,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.16307146513,
+        "lexical_score": 21.388620858096385,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "= = Development = = Kojima initially planned the third Metal Gear game in 1994 , originally titled Metal Gear 3 , and to release it for the 3DO Interactive Multiplayer in 1994 . Conceptual artwork , by illustrator Yoji Shinkawa , of the characters Solid Snake , Meryl Silverburgh , who was also a character in the adventure game Policenauts , and the FOXHOUND team , were included in the Policenauts : Pilot Disk preceding the release of the full version of the 3DO game in 1995 . However , due to the discontinuation of the 3DO from the market , development of the game shifted to the PlayStation shortly after Policenauts was released . Kojima retitled the game Metal Gear Solid , choosing this over the working title Metal Gear 3 . This was due to the fact that he believed that the first two MSX2 games were not well known at the time due to their lack of worldwide releases .",
+        "chunk_index": 26262,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.142770368713,
+        "lexical_score": 21.388620858096385,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The game was directed , produced , and co - written by series creator Hideo Kojima , and serves as a sequel to the MSX2 video games Metal Gear and Metal Gear 2 : Solid Snake , which Kojima also wrote and directed . Metal Gear Solid follows Solid Snake , a soldier who infiltrates a nuclear weapons facility to neutralize the terrorist threat from FOXHOUND , a renegade special forces unit . Snake must liberate two hostages , the head of DARPA and the president of a major arms manufacturer , confront the terrorists , and stop them from launching a nuclear strike . Cinematic cutscenes were rendered using the in - game engine and graphics , and voice acting was used throughout the entire game . Metal Gear Solid was well received , shipping more than six million copies , and scoring an average of 94 / 100 on the aggregate website Metacritic .",
+        "chunk_index": 26250,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.131913807835,
+        "lexical_score": 21.388620858096385,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "While the content of VR Missions are virtually identical to the VR Disc , the unlocking requirements for the Ninja missions and the photoshoot mode were changed accordingly so that they no longer required save data from the main story mission . The VR Disc was also released in the PAL region as an expansion pack titled Metal Gear Solid : Special Missions on October 29 , 1999 . Unlike the Japanese and American versions , Special Missions requires a PAL copy of the original Metal Gear Solid in order to be played . This change was done since the original Metal Gear Solid was released in multiple languages in Europe and Special Missions determines the language it uses based on which version of the original game the player owns .",
+        "chunk_index": 26273,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.142770368713,
+        "lexical_score": 21.388620858096385,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "In addition to the main game , Integral includes a third disc of additional content called the \" VR Disc . \" The VR Disc features 300 VR training missions testing the player 's sneaking and fighting skills , as well as less conventional tests , such as murder mysteries , battling giant genome soldiers , and three missions where the player controls the Cyborg Ninja . Other content include preview trailers and a \" photoshoot \" mode where the player takes pictures of Mei Ling and Naomi . Completing all 300 missions will unlock a concept artwork of the Metal Gear RAY mech that would later appear in Metal Gear Solid 2 : Sons of Liberty . Famitsu magazine rated Metal Gear Solid : Integral a 34 out of 40 . The third disc from Integral was released as a stand - alone game in North America under the title of Metal Gear Solid : VR Missions on September 23 , 1999 .",
+        "chunk_index": 26272,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.131913807835,
+        "lexical_score": 21.388620858096385,
+        "origin": "full_question"
+      }
+    ],
+    "context": "SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\nIn addition , the motion gear rings and the upper drive wheel both had 600 teeth , which by Su 's mathematical precision carefully calculated measured units of the day in a division of 1 / 600 .\nTECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point\nThe zipper originally consisted of 14 , 800 light bulbs , with the display controlled by a chain conveyor system inside the building ; individual letter elements ( a form of movable type ) were loaded into frames to spell out news headlines ."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73471,
+      "preview": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical ener",
+      "evidence": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+      "score": 74.072,
+      "document_id": "conveyor_controller_manual",
+      "document_name": "dev_conveyor",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 73473,
+      "preview": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safet",
+      "evidence": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+      "score": 52.642,
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 3,
+      "id": 30534,
+      "preview": "From his horological treatise , Su Song states : The chain drive ( lit. celestial ladder ) is 19 . 5 ft long ( 5 . 9 m ) . The system is as follows : an iron chain with its links joined together to form an endless circuit hangs down from th",
+      "evidence": "From his horological treatise , Su Song states : The chain drive ( lit. celestial ladder ) is 19 . 5 ft long ( 5 . 9 m ) . The system is as follows : an iron chain with its links joined together to form an endless circuit hangs down from the upper chain - wheel which is concealed by the tortoise - and - cloud ( column supporting the armillary sphere centrally ) , and passes also round the lower chain - wheel which is mounted on the main driving - shaft . Whenever one link moves , it moves forward one tooth of the diurnal motion gear - ring and rotates the Component of the Three Arrangers of Time , thus following the motion of the heavens . In addition , the motion gear rings and the upper drive wheel both had 600 teeth , which by Su 's mathematical precision carefully calculated measured units of the day in a division of 1 / 600 .",
+      "score": 29.788
+    },
+    {
+      "rank": 4,
+      "id": 30533,
+      "preview": "It was used in the clockworks for coupling the main drive shaft to the armillary sphere gearbox ( rotating three small pinions ) , as seen in Needham 's Fig . 410 and Fig . 652 . This belonged to the uppermost end of the main vertical trans",
+      "evidence": "It was used in the clockworks for coupling the main drive shaft to the armillary sphere gearbox ( rotating three small pinions ) , as seen in Needham 's Fig . 410 and Fig . 652 . This belonged to the uppermost end of the main vertical transmission shaft , incorporating right angle gears and oblique gears connected by a short idling shaft . The toothed ring gear called the diurnal motion gear ring was fit around the shell of the armillary sphere along the declination parallel near the southern pole . Although the ancient Greek Philo of Byzantium ( 3rd century BC ) featured a sort of endless belt for his magazine arcuballista , which did not transmit continuous power , the influential source for Su Song 's chain drive is most likely the continuously - driven chain pump known in China since the Han Dynasty ( 202 BC \u2013 220 AD ) .",
+      "score": 25.618
+    },
+    {
+      "rank": 5,
+      "id": 17605,
+      "preview": "As a result , the combined DM & E / IC & E system makes up the largest Class II railroad ( by route - miles ) in the United States ; it is also the eighth largest system of all American railroads and the only system with direct rail connect",
+      "evidence": "As a result , the combined DM & E / IC & E system makes up the largest Class II railroad ( by route - miles ) in the United States ; it is also the eighth largest system of all American railroads and the only system with direct rail connections with all Class I railroads in North America . In its first twenty years of operations , the railroad 's revenues had increased more than tenfold , from $ 22 million in 1987 to $ 258 million in 2006 , with $ 290 million projected in 2007 and $ 340 million for 2008 . Its operating ratio ( the ratio of operating expenses to revenues ) declined to 70 . 2 % in 2006 and was projected to improve further to 67 . 6 % in 2007 . Its traffic was a mix of agricultural , coal , and industrial products , and ethanol shipments were projected to exceed one billion gallons in 2008 .",
+      "score": 26.404
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "conveyor_controller_manual",
+      "document_name": "dev_conveyor",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    },
+    {
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

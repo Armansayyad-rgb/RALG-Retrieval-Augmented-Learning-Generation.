@@ -1,0 +1,131 @@
+Fictional Machine Safety Procedures
+=====================================
+
+1. GENERAL SAFETY PRINCIPLES
+-----------------------------
+- Lockout-tagout (LOTO) must be performed before any maintenance activity.
+- Never bypass or disable safety interlocks or emergency stop controls.
+- All personnel must be trained on hazards before operating equipment.
+- Safety procedures apply to all equipment types regardless of size or capacity.
+- Emergency procedures must be posted at each workstation.
+
+2. LOCKOUT-TAGOUT (LOTO) PROCEDURE
+-------------------------------------
+STEP 1: PREPARATION
+- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).
+- Verify the authorized personnel and required equipment for the LOTO.
+- Review the equipment-specific LOTO procedure before beginning.
+
+STEP 2: SHUTDOWN
+- Stop the equipment using the normal shutdown procedure.
+- Allow moving parts to come to complete stop.
+- Disconnect process material from equipment.
+
+STEP 3: ISOLATION
+- Identify all energy isolation points (disconnect switches, valves, breakers).
+- Operate all isolation devices to isolate equipment from energy sources.
+- Verify isolation by attempting normal startup (equipment should not start).
+
+STEP 4: APPLICATION OF LOCKOUT DEVICES
+- Apply personal lockout device to each isolated energy point.
+- Each technician applies their own lock with personal key/code.
+- Verify each lock is properly seated and secured.
+
+STEP 5: APPLICATION OF TAGS
+- Apply personal tag with technician name, date, and reason.
+- Tags must be visible and legible.
+- Never remove another person's lock or tag without authorization.
+
+STEP 6: RELEASE OF STORED ENERGY
+- Release residual mechanical energy (springs, counterweights, gravity).
+- Drain hydraulic/pneumatic systems to zero pressure.
+- Allow capacitors to discharge (verify with meter).
+- Open bleed valves to relieve pneumatic/hydraulic pressure.
+
+STEP 7: VERIFICATION
+- Attempt normal equipment startup to verify isolation.
+- Verify all energy sources are zero or isolated.
+- Confirm no one is near the equipment before proceeding.
+
+3. EMERGENCY STOP (E-STOP) PROCEDURE
+---------------------------------------
+- Press E-STOP button immediately when hazard detected.
+- E-STOP must cut power to all moving functions immediately.
+- After E-STOP activation, confirm motion has ceased before approaching.
+- E-STOP reset must only be performed after hazard is resolved.
+- Only the person who activated E-STOP (or authorized rescue personnel) should reset.
+
+4. MACHINE-SPECIFIC SAFETY PROCEDURES
+---------------------------------------
+PROCEDURE A: PUMP MAINTENANCE
+- Perform LOTO on pump motor electrical supply.
+- Verify zero voltage at disconnect before removing panels.
+- Drain any fluid from pump housing before opening.
+- Support any suspended components before removal.
+
+PROCEDURE B: CONVEYOR MAINTENANCE
+- Perform LOTO on conveyor drive electrical supply.
+- Verify zero voltage at disconnect before entering conveyor zone.
+- Secure conveyor belt to prevent accidental movement.
+- Lock out all drive motors and associated control circuits.
+
+PROCEDURE C: HVAC UNIT MAINTENANCE
+- Perform LOTO on electrical supply and gas line (if gas-fired).
+- Recover refrigerant per EPA regulations before opening circuit.
+- Verify zero electrical potential and zero gas pressure.
+- Support access panels before removal.
+
+PROCEDURE D: BATTERY SYSTEM MAINTENANCE
+- Perform LOTO on charger and load circuits.
+- Verify zero voltage at battery terminals.
+- Remove conductive jewelry, use insulated tools.
+- Ensure adequate ventilation before beginning work.
+
+5. CONFINED SPACE ENTRY
+-------------------------
+- Test atmosphere for oxygen deficiency and toxic gases.
+- Verify forced ventilation is operating.
+- Attend observer must be stationed outside confined space.
+- Retrieval equipment must be available and functional.
+- Permit system must be completed before entry.
+
+6. HOT WORK PERMIT
+--------------------
+- Fire watch must be posted during and 30 minutes after hot work.
+- Fire extinguishing equipment must be immediately available.
+- Combustible materials must be removed from work area or protected.
+- Hot work permit must be completed and authorized before beginning.
+
+7. CHEMICAL HANDLING
+--------------------
+- Review Safety Data Sheet (SDS) before handling any chemical.
+- Use appropriate PPE per SDS recommendations.
+- Store chemicals in designated areas, properly labeled.
+- In case of spill, follow spill containment procedure.
+- Dispose of chemical waste per regulatory requirements.
+
+8. PERSONAL PROTECTIVE EQUIPMENT (PPE)
+----------------------------------------
+- Safety glasses with side shields must be worn at all times in work areas.
+- Steel-toed boots required where heavy objects may fall.
+- Hearing protection where noise levels exceed 85 dB(A).
+- Gloves appropriate for hazard (chemical, thermal, electrical).
+- Hard hats where overhead hazards exist.
+- Respiratory protection where airborne contaminants exceed PEL.
+
+9. INCIDENT REPORTING
+----------------------
+- All incidents, near-misses, and safety violations must be reported within 24 hours.
+- Supervisor must investigate all incidents within 48 hours.
+- Root cause analysis required for any recordable incident.
+- Corrective actions must be implemented and verified.
+- Incident reports must be retained for minimum 3 years.
+
+10. SAFETY TRAINING REQUIREMENTS
+----------------------------------
+- Initial safety training before first assignment.
+- Annual refresher training on all safety procedures.
+- Task-specific training before performing new procedures.
+- Emergency drill participation quarterly.
+- LOTO certification renewed annually.
+- Emergency response training semi-annually.

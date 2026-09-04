@@ -1,0 +1,136 @@
+HVAC Maintenance Controller Operation Manual
+============================================
+
+1. SAFETY PRECAUTIONS
+---------------------
+- Always perform lockout-tagout on electrical power before servicing HVAC units.
+- Verify zero electrical potential at disconnect before removing panels.
+- Recover refrigerant per EPA regulations before opening refrigerant circuit.
+- Wear appropriate PPE when working with refrigerants, electrical components, and moving parts.
+- Never bypass safety controls or temperature limiters.
+
+2. NORMAL OPERATION
+--------------------
+- System provides heating when heating mode is selected and thermostat calls for heat.
+- System provides cooling when cooling mode is selected and thermostat calls for cool.
+- Normal supply air temperature range: 55-75°F cooling, 90-120°F heating.
+- Fan operates at variable speed: 0-100% depending on demand.
+- Air filter should be checked monthly and replaced when dirty.
+
+3. STARTUP SEQUENCE (HEATING)
+------------------------------
+a. Confirm thermostat is set to HEAT mode and temperature is above current room temperature.
+b. Verify gas supply is on (for gas-fired units) or electrical connections are secure (for electric units).
+c. Inspect air filter - replace if dirty or restricted.
+d. Check that all access panels are secure and guards are in place.
+e. Set thermostat to desired temperature.
+f. System should initiate ignition sequence after 30-second pre-purge.
+g. Verify flame is established and burners are operating normally.
+h. Monitor supply air temperature rises to normal range within 5 minutes.
+i. Fan will begin blowing heated air once heat exchanger reaches safe temperature.
+
+4. STARTUP SEQUENCE (COOLING)
+-------------------------------
+a. Confirm thermostat is set to COOL mode and temperature is below current room temperature.
+b. Verify electrical connections are secure and power is supplied to compressor.
+c. Inspect air filter - replace if dirty or restricted.
+d. Check that all access panels are secure and guards are in place.
+e. Set thermostat to desired temperature.
+f. Compressor should start after thermostat call for cool.
+g. Verify condenser fan is operating.
+h. Check that supply air temperature drops to normal range within 5 minutes.
+i. System will cycle on and off to maintain setpoint.
+
+5. INSPECTION PHASE
+--------------------
+- Check air filter condition and airflow - replace if dirty.
+- Inspect supply and return registers for obstructions.
+- Check thermostat calibration and operation.
+- Inspect evaporator coil for frost or ice formation (cooling mode).
+- Inspect heat exchanger for cracks or damage (heating mode).
+- Verify refrigerant lines for leaks (trace with detector solution).
+- Check blower motor and fan for unusual noise or vibration.
+- Inspect ductwork for leaks, loose connections, or damage.
+- Verify safety controls are functional (limit switches, pressure controls).
+
+6. TROUBLESHOOTING
+------------------
+
+PROBLEM: System will not start (heating)
+- Cause: Thermostat not calling for heat - check settings.
+- Cause: No gas supply (gas units) - verify gas valve is open.
+- Cause: Electrical fault - check voltage at disconnect, fuses, circuit breaker.
+- Cause: Flame failure - reset after safety lockout, inspect burner.
+- Cause: Limit switch tripped - reset after addressing root cause.
+
+PROBLEM: System will not start (cooling)
+- Cause: Thermostat not calling for cool - check settings.
+- Cause: Compressor protection trip - reset thermal overload.
+- Cause: Electrical fault - check voltage, fuses, circuit breaker.
+- Cause: Refrigerant low - system may have leak, require recharge.
+- Cause: High-pressure switch tripped - reset after addressing cause.
+
+PROBLEM: Insufficient heating
+- Cause: Dirty air filter - restrict airflow, replace filter.
+- Cause: Thermostat not calibrated - recalibrate or replace.
+- Cause: Gas pressure too low - adjust gas valve, check supply.
+- Cause: Heat exchanger restricted - clean or replace.
+- Cause: Duct leaks - seal ductwork, insulate as needed.
+
+PROBLEM: Insufficient cooling
+- Cause: Dirty air filter - restrict airflow, replace filter.
+- Cause: Dirty evaporator coil - clean coil.
+- Cause: Dirty condenser coil - clean outdoor unit coil.
+- Cause: Refrigerant low - system has leak, locate and repair, recharge.
+- Cause: High outdoor temperature - system may not meet load demand.
+- Cause: Thermostat not calibrated - recalibrate or replace.
+
+PROBLEM: Short cycling (frequent on/off)
+- Cause: Oversized system for space - may require load calculation.
+- Cause: Dirty filter - restrict airflow, replace filter.
+- Cause: Thermostat located near heat source - relocate thermostat.
+- Cause: Low refrigerant - system has leak, locate and repair, recharge.
+- Cause: High static pressure in ductwork - redesign duct system.
+
+PROBLEM: compressor will not start
+- Cause: Electrical fault - check voltage, fuses, circuit breaker.
+- Cause: compressor protection trip - reset thermal overload after cooling.
+- Cause: capacitor failure - replace capacitor.
+- Cause: contactor failure - replace contactor.
+- Cause: thermostat not calling - check settings and wiring.
+
+7. REFRIGERANT SERVICE
+------------------------
+- Recover refrigerant: Use certified recovery machine per EPA Section 608.
+- Leak detection: Electronic leak detector or trace with Nitrogen soap solution.
+- Recharge: Add only specified refrigerant type and amount per nameplate.
+- Never mix refrigerant types.
+- Document all refrigerant additions and removals per regulatory requirements.
+
+8. MAINTENANCE SCHEDULE
+------------------------
+- Daily: Check thermostat operation, listen for unusual noises, verify airflow.
+- Every 250 hours: Check air filter, inspect visual condition of unit.
+- Every 500 hours: Clean or replace air filter, inspect evaporator/condenser coils.
+- Every 1000 hours: Check refrigerant pressure, test safety controls, lubricate motors.
+- Every 2000 hours: Clean burners (gas units), inspect heat exchanger, check belt tension.
+- Annual: Full combustion analysis (gas units), refrigerant charge verification, complete safety inspection.
+
+9. EMERGENCY PROCEDURES
+------------------------
+- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.
+- Electrical fire: Cut power at disconnect, call fire department, do not use water on electrical.
+- Gas leak (gas units): Evacuate area, ventilate, do not operate electrical switches, call gas company.
+
+10. TECHNICAL SPECIFICATIONS
+----------------------------
+- Model: HVAC-400 Maintenance Controller
+- Capacity: 2-ton to 20-ton variable capacity
+- Voltage: 208/240V single-phase or 208/3-phase
+- Refrigerant: R-410A (or approved alternate)
+- Airflow range: 400-2000 CFM
+- Temperature range: -10°F to 120°F ambient
+- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)
+- Connection: Standard HVAC plug-in connections
+- Motor: ECM variable-speed blower motor
+- Compressor: Scroll type, 2-20 HP

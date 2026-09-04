@@ -1,0 +1,389 @@
+{
+  "case_id": "post_v4_dev_018",
+  "category": "D",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "conveyor_controller_manual",
+    "machine_safety_procedures"
+  ],
+  "source_evidence": "",
+  "latency_ms": 194.82,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "Why does the WC-200 conveyor belt slip during operation?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+        "chunk_index": 73471,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.649277522644,
+        "lexical_score": 83.75720030567624,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.319967203315,
+        "lexical_score": 42.32637607054217,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "= = Programme = = The library is fully wheelchair - accessible , with multiple elevators . There are public use touchscreen computers , a dedicated computer lab , wireless internet , and conference and community rooms . An automatic conveyor belt system links the book drops to a dedicated sorting room . It handled 80 , 000 books in July 2015 . The library 's open design and central location enables it to host community events and festivals . In the first year of operation it has served as a venue for major annual Halifax events including Nocturne and The Word on the Street . It hosted the Duke of Edinburgh 's Award ceremony in November 2015 attended by Prince Edward . = = = Caf\u00e9s = = = The building houses two caf\u00e9 spaces , one at ground level and one on the fifth floor .",
+        "chunk_index": 24790,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.366855905106,
+        "lexical_score": 21.002386353421247,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Historically , the ratio of underground mining to open - pit mining has been approximately even , but as usable deposits close to the surface become scarcer , underground mining will probably increase . The Estonia underground mine at V\u00e4ike - Pungerja , operated by state owned Eesti Energia Kaevandused , is the largest oil shale mine in the world . The other underground mine , operated by privately owned Viru Keemia Grupp , is located at Ojamaa . Both mines use the room and pillar mining method . Oil shale mined at Ojamaa is transported to the processing plant by a unique 13 - kilometre ( 8 . 1 mi ) conveyor belt . Although there are similar conveyors in operation in other countries , the one at Ojamaa is an unusually challenging installation since its path contains many curves and sharp turns .",
+        "chunk_index": 43801,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.366855905106,
+        "lexical_score": 21.002386353421247,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Between 2005 and 2007 , PFA was used as an infill at four disused salt mines in Northwich in Cheshire . 1 , 100 , 000 tonnes was used in the project , which was to avoid a future risk of subsidence in the town . Ash was delivered by DB Schenker in ten trains a week , each carrying 1 , 100 tonnes . Following a trial in January 2010 , PFA is also transported to Waterford in Ireland by boat . One ship a month will transport 1 , 200 tonnes for the manufacture of construction materials . This will replace 480 lorry journeys annually and is deemed more environmentally friendly . The unsold PFA is sent by conveyor belt to the Barlow ash mound , which is used for disposal and temporary stockpile . Three conveyors feed the mound , with a total capacity of 750 tonnes an hour . FGD gypsum is disposed of on the mound if it is not of a high enough grade to be sold .",
+        "chunk_index": 48610,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.363650680195,
+        "lexical_score": 20.84487588360618,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+        "chunk_index": 73470,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.199469747454,
+        "lexical_score": 28.463196471817966,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "\" Meanwhile , as more and more Japanese units continued to slip past the operation restriction line , Tada was also coming under pressure from within the Army General Staff . Many of Tada 's colleagues and subordinates , including the powerful Chief of the General Staff Operations Division Sadamu Shimomura , had come around to Matsui 's viewpoint and wanted Tada to approve an attack on Nanking . On November 24 Tada finally relented and abolished the operation restriction line \" owing to circumstances beyond our control \" , and then several days later he reluctantly approved the operation to capture Nanking . Tada flew to Shanghai in person on December 1 to deliver the order , though by then his own armies in the field were already well on their way to Nanking .",
+        "chunk_index": 23069,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.221633842774,
+        "lexical_score": 23.065390779246204,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical potential at disconnect before removing panels.\n- Recover refrigerant per EPA regulations before opening refrigerant circuit.\n- Wear appropriate PPE when working with refrigerants, electrical components, and moving parts.\n- Never bypass safety controls or temperature limiters.\n\n2. NORMAL OPERATION\n--------------------\n- System provides heating when heating mode is selected and thermostat calls for heat.\n- System provides cooling when cooling mode is selected and thermostat calls for cool.\n- Normal supply air temperature range: 55-75\u00b0F cooling, 90-120\u00b0F heating.\n- Fan operates at variable speed: 0-100% depending on demand.\n- Air filter should be checked monthly and replaced when dirty.\n\n3. STARTUP SEQUENCE (HEATING)\n------------------------------\na. Confirm thermostat is set to HEAT mode and temperature is above current room temperature.\nb. Verify gas supply is on (for gas-fired units) or electrical connections are secure (for electric units).\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. System should initiate ignition sequence after 30-second pre-purge.\ng. Verify flame is established and burners are operating normally.\nh. Monitor supply air temperature rises to normal range within 5 minutes.\ni. Fan will begin blowing heated air once heat exchanger reaches safe temperature.\n\n4. STARTUP SEQUENCE (COOLING)\n-------------------------------\na. Confirm thermostat is set to COOL mode and temperature is below current room temperature.\nb. Verify electrical connections are secure and power is supplied to compressor.\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. Compressor should start after thermostat call for cool.\ng. Verify condenser fan is operating.\nh. Check that supply air temperature drops to normal range within 5 minutes.\ni. System will cycle on and off to maintain setpoint.\n\n5. INSPECTION PHASE\n--------------------\n- Check air filter condition and airflow - replace if dirty.\n- Inspect supply and return registers for obstructions.\n- Check thermostat calibration and operation.\n- Inspect evaporator coil for frost or ice formation (cooling mode).\n- Inspect heat exchanger for cracks or damage (heating mode).\n- Verify refrigerant lines for leaks (trace with detector solution).\n- Check blower motor and fan for unusual noise or vibration.\n- Inspect ductwork for leaks, loose connections, or damage.\n- Verify safety controls are functional (limit switches, pressure controls).\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: System will not start (heating)\n- Cause: Thermostat not calling for heat - check settings.\n- Cause: No gas supply (gas units) - verify gas valve is open.\n- Cause: Electrical fault - check voltage at disconnect, fuses, circuit breaker.\n- Cause: Flame failure - reset after safety lockout, inspect burner.\n- Cause: Limit switch tripped - reset after addressing root cause.\n\nPROBLEM: System will not start (cooling)\n- Cause: Thermostat not calling for cool - check settings.\n- Cause: Compressor protection trip - reset thermal overload.\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: Refrigerant low - system may have leak, require recharge.\n- Cause: High-pressure switch tripped - reset after addressing cause.\n\nPROBLEM: Insufficient heating\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n- Cause: Gas pressure too low - adjust gas valve, check supply.\n- Cause: Heat exchanger restricted - clean or replace.\n- Cause: Duct leaks - seal ductwork, insulate as needed.\n\nPROBLEM: Insufficient cooling\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Dirty evaporator coil - clean coil.\n- Cause: Dirty condenser coil - clean outdoor unit coil.\n- Cause: Refrigerant low - system has leak, locate and repair, recharge.\n- Cause: High outdoor temperature - system may not meet load demand.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n\nPROBLEM: Short cycling (frequent on/off)\n- Cause: Oversized system for space - may require load calculation.\n- Cause: Dirty filter - restrict airflow, replace filter.\n- Cause: Thermostat located near heat source - relocate thermostat.\n- Cause: Low refrigerant - system has leak, locate and repair, recharge.\n- Cause: High static pressure in ductwork - redesign duct system.\n\nPROBLEM: compressor will not start\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: compressor protection trip - reset thermal overload after cooling.\n- Cause: capacitor failure - replace capacitor.\n- Cause: contactor failure - replace contactor.\n- Cause: thermostat not calling - check settings and wiring.\n\n7. REFRIGERANT SERVICE\n------------------------\n- Recover refrigerant: Use certified recovery machine per EPA Section 608.\n- Leak detection: Electronic leak detector or trace with Nitrogen soap solution.\n- Recharge: Add only specified refrigerant type and amount per nameplate.\n- Never mix refrigerant types.\n- Document all refrigerant additions and removals per regulatory requirements.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check thermostat operation, listen for unusual noises, verify airflow.\n- Every 250 hours: Check air filter, inspect visual condition of unit.\n- Every 500 hours: Clean or replace air filter, inspect evaporator/condenser coils.\n- Every 1000 hours: Check refrigerant pressure, test safety controls, lubricate motors.\n- Every 2000 hours: Clean burners (gas units), inspect heat exchanger, check belt tension.\n- Annual: Full combustion analysis (gas units), refrigerant charge verification, complete safety inspection.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.\n- Electrical fire: Cut power at disconnect, call fire department, do not use water on electrical.\n- Gas leak (gas units): Evacuate area, ventilate, do not operate electrical switches, call gas company.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: HVAC-400 Maintenance Controller\n- Capacity: 2-ton to 20-ton variable capacity\n- Voltage: 208/240V single-phase or 208/3-phase\n- Refrigerant: R-410A (or approved alternate)\n- Airflow range: 400-2000 CFM\n- Temperature range: -10\u00b0F to 120\u00b0F ambient\n- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)\n- Connection: Standard HVAC plug-in connections\n- Motor: ECM variable-speed blower motor\n- Compressor: Scroll type, 2-20 HP",
+        "chunk_index": 73472,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.197116339909,
+        "lexical_score": 26.86630796021446,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "The belt armour was backed by 80 millimeters ( 3 . 1 in ) of teak . It extended almost the entire length of the ship , with only the very stern unprotected . At the stern , the belt terminated in a 200 - millimeter ( 7 . 9 in ) transverse bulkhead ; the forward 154 - millimeter ( 6 . 1 in ) transverse bulkhead connected the sides of the forward barbette to the belt . The main gun turrets had 340 millimeters ( 13 . 4 in ) of armor on their faces , 260 - millimeter ( 10 in ) sides , and roofs of three layers of 24 - millimeter ( 0 . 94 in ) mild - steel plates . Their barbettes were protected by 246 millimeters ( 9 . 7 in ) of armor which thinned to 66 millimeters ( 2 . 6 in ) below the upper protected deck . The secondary gun turrets had 225 - millimeter ( 8 . 9 in ) faces , 188 - millimeter ( 7 . 4 in ) sides , and a roof of three layers of 17 - millimeter ( 0 . 67 in ) plates .",
+        "chunk_index": 17769,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.193950326663,
+        "lexical_score": 24.728357610176303,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "The ship 's armament was radically revised during the 1903 \u2013 06 reconstruction . All of the old guns were removed and a battery of medium - caliber quick - firing ( QF ) guns manufactured by Krupp was installed . Three 150 mm ( 5 . 9 in ) SK L / 40 guns in single shielded mounts were placed forward , with one on the forecastle and the other two abreast of the conning tower . The central battery guns were replaced with six 120 mm ( 4 . 7 in ) SK L / 40 guns , with a seventh gun mounted on the stern . Six 57 mm ( 2 . 2 in ) and two 37 mm ( 1 . 5 in ) QF guns were also added . As built , the ship was protected with an iron armored belt that was 200 mm ( 8 in ) thick . The transverse bulkheads that connected both ends of the belt were 75 mm ( 3 in ) thick .",
+        "chunk_index": 20665,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.230249516258,
+        "lexical_score": 20.913882580669192,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Start - up and shutdown procedures with conveyor belts , though , are complicated and require time to carry out . Self - discharging ships use conveyor belts with load rates of around 1 , 000 tons per hour . Once the cargo is discharged , the crew begins to clean the holds . This is particularly important if the next cargo is of a different type . The immense size of cargo holds and the tendency of cargoes to be physically irritating add to the difficulty of cleaning the holds . When the holds are clean , the process of loading begins . It is crucial to keep the cargo level during loading in order to maintain stability . As the hold is filled , machines such as excavators and bulldozers are often used to keep the cargo in check . Leveling is particularly important when the hold is only partly full , since cargo is more likely to shift .",
+        "chunk_index": 59222,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.206038754792,
+        "lexical_score": 21.413121692202424,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "= = = Armor = = = The Danton - class ships were built with 6 , 725 metric tons ( 6 , 619 long tons ) of armor , 36 percent of their designed displacement and almost 1 , 200 metric tons ( 1 , 200 long tons ) more than their predecessors . Their waterline armored belt had a maximum thickness of 250 millimeters ( 9 . 8 in ) between the fore and aft turrets that reduced to 180 millimeters ( 7 . 1 in ) towards the bow and stern . The belt consisted of two strakes of armor , 4 . 5 meters ( 14 ft 9 in ) high , that covered the sides of the hull up to the main deck and extended 1 . 1 m ( 3 ft 7 in ) below the normal waterline . Most of the lower armor plates tapered to a thickness of 80 \u2013 100 millimeters ( 3 . 1 \u2013 3 . 9 in ) along their bottom edge and the upper plates tapered to 220 millimeters ( 8 . 7 in ) amidships and down to 140 millimeters ( 5 . 5 in ) at the ends of the ship .",
+        "chunk_index": 17768,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.193950326663,
+        "lexical_score": 23.06106708047278,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "Due to the increased frequency of cyclones which cut off from the main belt of the westerlies during the summer and fall , subtropical cyclones are significantly more frequent across the North Atlantic than the northwestern Pacific ocean . In the eastern half of the north Pacific ocean and north Indian ocean , the older subtropical cyclone definition term is still used , which requires a weak circulation forming underneath a mid to upper - tropospheric low which has cut off from the main belt of the westerlies during the cold season ( winter ) . In the case of the north Indian ocean , the formation of this type of vortex leads to the onset of monsoon rains during the wet season . In the southern hemisphere , subtropical cyclones are regularly observed across southern portions of the Mozambique Channel .",
+        "chunk_index": 37389,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.150266849784,
+        "lexical_score": 25.551135086328443,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "The strike - slip fault system in the region has two branches in Haiti , the Septentrional - Oriente fault in the north and the Enriquillo - Plantain Garden fault in the south ; both its location and focal mechanism suggested that the January 2010 quake was caused by a rupture of the Enriquillo - Plantain Garden fault , which had been locked for 250 years , gathering stress . However , a study published in May 2010 suggested that the rupture process may have involved slip on multiple blind thrust faults with only minor , deep , lateral slip along or near the main Enriquillo \u2013 Plantain Garden fault zone , suggesting that the event only partially relieved centuries of accumulated left - lateral strain on a small part of the plate - boundary system . The rupture was roughly 65 km ( 40 mi ) long with mean slip of 1 . 8 metres ( 5 ft 11 in ) .",
+        "chunk_index": 2814,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.138445951388,
+        "lexical_score": 27.393984562005105,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "Chariot manned torpedoes began to operate from Malta that month and from late December to January 1943 , four convoys , Quadrangle A , B , C and D , with pairs of merchantmen each , delivered 200 , 000 long tons ( 200 , 000 t ) of stores without loss and empty ships were retrieved from the island . = = Commemoration = = In recognition of their fortitude during the siege and air attacks during all of the Mediterranean campaign , Malta was awarded the George Cross in the months immediately preceding this operation . Vice - Admiral Syfret was appointed as a Knight Commander of the Order of the Bath for his \" bravery and dauntless resolution in fighting an important convoy through to Malta in the face of relentless attacks by day and night from enemy submarines , aircraft , and surface forces .",
+        "chunk_index": 42899,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.19950895912,
+        "lexical_score": 20.521248996540056,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The North Temperate Region is part of a latitudinal region easily observable from Earth , and thus has a superb record of observation . It also features the strongest prograde jet stream on the planet \u2014 a westerly current that forms the southern boundary of the North Temperate Belt ( NTB ) . The NTB fades roughly once a decade ( this was the case during the Voyager encounters ) , making the North Temperate Zone ( NTZ ) apparently merge into the North Tropical Zone ( NTropZ ) . Other times , the NTZ is divided by a narrow belt into northern and southern components . The North Tropical Region is composed of the NTropZ and the North Equatorial Belt ( NEB ) . The NTropZ is generally stable in coloration , changing in tint only in tandem with activity on the NTB 's southern jet stream . Like the NTZ , it too is sometimes divided by a narrow band , the NTropB .",
+        "chunk_index": 72908,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.150266849784,
+        "lexical_score": 22.581173110372717,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "Both New York and Texas entered service in 1914 and immediately served in the occupation of Veracruz , and service reinforcing the Royal Navy 's Grand Fleet in the North Sea during World War I , during which time New York is believed to have sunk a U - boat in an accidental collision . Both ships undertook numerous training exercises and overhauls during the interwar era , and joined the Neutrality Patrol at the beginning of World War II . Outmoded by more advanced battleships in service , both ships served primarily as convoy escorts and naval artillery during the war . New York supported Operation Torch in North Africa , undertook convoy patrols and training in the Atlantic , and supported the Battle of Iwo Jima and the Battle of Okinawa . Texas supported Operation Torch , Operation Overlord , the bombardment of Cherbourg , Operation Dragoon and the battles at Iwo Jima and Okinawa .",
+        "chunk_index": 55626,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.119526292646,
+        "lexical_score": 23.620706941633035,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "The primary effectiveness issue with using condoms to prevent STDs , however , is inconsistent use . Condoms may also be useful in treating potentially precancerous cervical changes . Exposure to human papillomavirus , even in individuals already infected with the virus , appears to increase the risk of precancerous changes . The use of condoms helps promote regression of these changes . In addition , researchers in the UK suggest that a hormone in semen can aggravate existing cervical cancer , condom use during sex can prevent exposure to the hormone . = = = Causes of failure = = = Condoms may slip off the penis after ejaculation , break due to improper application or physical damage ( such as tears caused when opening the package ) , or break or slip due to latex degradation ( typically from usage past the expiration date , improper storage , or exposure to oils ) .",
+        "chunk_index": 11643,
+        "full_question_rank": null,
+        "full_question_coverage": 0.174745140983,
+        "lexical_score": 28.566547600235964,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes",
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "The aircraft carrier Eagle and its escort from Gibraltar to the rendezvous became Force J , the carrier Indomitable and its escorts from Freetown were Force K ; during Operation Berserk , all the carriers and escorts became Force G , Force R was made up of the fleet refuelling vessels RFA Brown Ranger , RFA Dingledale , escorted by four corvettes and an ocean - going tug , RFA Abbeydale a Dale - class oiler and escorts were named Force W also for Operation Berserk , Force X formed the close escort to Malta , Force Z was made up of the heavy ships of Force F , that were to turn back to Gibraltar and Force Y was to conduct Operation Ascendant , a run from Malta to Gibraltar , by the two ships that had reached the island during Operation Harpoon and escorts , as Pedestal entered the Mediterranean .",
+        "chunk_index": 42847,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.119526292646,
+        "lexical_score": 20.83626993617019,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "= = = 21st century = = = In September 2000 , the SBS was involved in Operation Barras , a hostage rescue operation in Sierra Leone . In November 2001 the SBS had an extensive role in the invasion of Afghanistan and were involved in the Battle of Tora Bora . The SBS was used in vital phases of the invasion of Afghanistan . A small SBS contingent secured Bagram Airbase prior to the deployment of larger forces that would become the main staging area for allied forces during Operation Enduring Freedom . Members of the SBS helped quell an Afghan prison revolt during the Battle of Qala - i - Jangi near Mazar - i - Sharif , in November 2001 . In the invasion of Iraq in 2003 , M squadron was involved in a fierce firefight , which has since been commended by senior British officials .",
+        "chunk_index": 53797,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.119526292646,
+        "lexical_score": 20.83626993617019,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "As such it did not take part in the first two large - scale airborne operations conducted by the Allies , Operation Husky and Operation Neptune , only transferring to Britain after the end of Operation Overlord . When the division arrived in Britain , it came under the command of XVIII Airborne Corps , part of the First Allied Airborne Army , but was not chosen to participate in Operation Market Garden , the airborne landings in the Netherlands , as Allied planners believed it had arrived too late and could not be \" trained up \" in time for the operation . However , after the end of Operation Market Garden the division was shipped to France and then Belgium to fight in the Ardennes during the Battle of the Bulge . The 17th gained its first Medal of Honor during its time fighting in the Ardennes , and was then withdrawn to Luxembourg to prepare for an assault over the River Rhine .",
+        "chunk_index": 72685,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.119526292646,
+        "lexical_score": 20.83626993617019,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "500 \u2013 428 BC ) believed that they were caused by excess water near the surface crust of the earth bursting into the Earth 's hollows ; Democritus ( c . 460 \u2013 370 BC ) believed that the saturation of the Earth with water caused them ; Anaximenes ( c . 585 \u2013 c . 525 BC ) believed they were the result of massive pieces of the Earth falling into the cavernous hollows due to drying ; and Aristotle ( 384 \u2013 322 BC ) believed they were caused by instability of vapor ( pneuma ) caused by the drying of the moist Earth by the Sun 's rays . During the Han Dynasty , many learned scholars \u2014 including Zhang Heng \u2014 believed in the \" oracles of the winds \" . These oracles of the occult observed the direction , force , and timing of the winds , to speculate about the operation of the cosmos and to predict events on Earth . These ideas influenced Zhang Heng 's views on the cause of earthquakes .",
+        "chunk_index": 61779,
+        "full_question_rank": null,
+        "full_question_coverage": 0.119526292646,
+        "lexical_score": 30.066799958853593,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "Light forces were sent to recover the vessels , and III Squadron , which was in the North Sea en route to Wilhelmshaven , was ordered to cover them . During the operation , the British submarine J1 torpedoed both Grosser Kurf\u00fcrst and Kronprinz and caused moderate damage . For most of 1917 , Markgraf was occupied with guard duties in the North Sea , interrupted only by a refit period in January and periodic unit training in the Baltic . = = = Operation Albion = = = In early September 1917 , following the German conquest of the Russian port of Riga , the German navy decided to eliminate the Russian naval forces that still held the Gulf of Riga . The Admiralstab ( Navy High Command ) planned an operation to seize the Baltic island of \u00d6sel , and specifically the Russian gun batteries on the Sworbe Peninsula .",
+        "chunk_index": 777,
+        "full_question_rank": null,
+        "full_question_coverage": 0.119526292646,
+        "lexical_score": 22.7829099234771,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation caused by"
+        ]
+      },
+      {
+        "chunk": "The belt is separated in a number of volcanic zones by segments lacking recent volcanic activity ; in these segments , shallow subduction of the plates presumably displaces the asthenosphere away from these segments . The segments with active volcanism are the Northern Volcanic Zone ( NVZ ) , the Central Volcanic Zone ( CVZ ) , the Southern Volcanic Zone ( SVZ ) and the Austral Volcanic Zone ( AVZ ) . The \" Volcanoes of the World \" catalogue counts about 575 eruptions in the entire volcanic belt . Volcanic activity in the belt is usually linked to the dehydration of the subducting slabs , which causes water and other subducted components to be added to the overlying mantle . In the case of the CVZ , this addition generates magmas that are further modified by the thick crust in the area , forming andesites , dacites and rhyolites .",
+        "chunk_index": 43598,
+        "full_question_rank": null,
+        "full_question_coverage": 0.113967660189,
+        "lexical_score": 25.98285699167959,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes"
+        ]
+      },
+      {
+        "chunk": "= = Economy = = Historically , Altrincham was a market town and the two main areas of employment were agriculture and market trade . Although the town went into decline in the 15th century , it recovered and the annual fairs lasted until the mid - 19th century and the market still continues . During the Industrial Revolution , Altrincham grew as an industrial town , particularly the Broadheath area , which was developed into an industrial estate . In 1801 there were four cotton mills in Altrincham , part of its textile industry , although they had closed by the 1851 census . The decline of the textile industry in Altrincham mirrored the decline of the industry in the Trafford area as a result of a lack of investment and the development of more established industrial areas such as Manchester , Ashton - under - Lyne , and Oldham .",
+        "chunk_index": 34589,
+        "full_question_rank": null,
+        "full_question_coverage": 0.03633840126,
+        "lexical_score": 25.328236530377612,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes"
+        ]
+      },
+      {
+        "chunk": "= = = Post - industrial decline = = = During the early 20th century , improvements in regional transport infrastructure precipitated the decline of Salford 's existing industries , including those at the Salford Docks . Increased foreign competition began to undermine the competitiveness of local textile processing businesses . Rising unemployment during the Great Depression of the 1920s and ' 30s , and a significant economic decline in the decades following the Second World War contributed toward a fall in Salford 's population . By 1939 local coal mining had almost stopped , and cotton spinning had by 1971 ceased completely . Between 1921 and 1939 , the population of Salford decreased by 29 % , from 234 , 045 to 166 , 386 , far greater than the rate of decline within the whole of North West England .",
+        "chunk_index": 43243,
+        "full_question_rank": null,
+        "full_question_coverage": 0.03633840126,
+        "lexical_score": 24.112673535840457,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the WC-200 conveyor belt slip during operation decline causes"
+        ]
+      }
+    ],
+    "context": "TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point\n\" Meanwhile , as more and more Japanese units continued to slip past the operation restriction line , Tada was also coming under pressure from within the Army General Staff .\nNORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\nVerify no personnel are on the conveyor belt.\nPress GREEN START button to begin conveyor operation."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73471,
+      "preview": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical ener",
+      "evidence": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+      "score": 83.757,
+      "document_id": "conveyor_controller_manual",
+      "document_name": "dev_conveyor",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 73473,
+      "preview": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safet",
+      "evidence": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+      "score": 42.326,
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 3,
+      "id": 24790,
+      "preview": "= = Programme = = The library is fully wheelchair - accessible , with multiple elevators . There are public use touchscreen computers , a dedicated computer lab , wireless internet , and conference and community rooms . An automatic conveyo",
+      "evidence": "= = Programme = = The library is fully wheelchair - accessible , with multiple elevators . There are public use touchscreen computers , a dedicated computer lab , wireless internet , and conference and community rooms . An automatic conveyor belt system links the book drops to a dedicated sorting room . It handled 80 , 000 books in July 2015 . The library 's open design and central location enables it to host community events and festivals . In the first year of operation it has served as a venue for major annual Halifax events including Nocturne and The Word on the Street . It hosted the Duke of Edinburgh 's Award ceremony in November 2015 attended by Prince Edward . = = = Caf\u00e9s = = = The building houses two caf\u00e9 spaces , one at ground level and one on the fifth floor .",
+      "score": 21.002
+    },
+    {
+      "rank": 4,
+      "id": 43801,
+      "preview": "Historically , the ratio of underground mining to open - pit mining has been approximately even , but as usable deposits close to the surface become scarcer , underground mining will probably increase . The Estonia underground mine at V\u00e4ike",
+      "evidence": "Historically , the ratio of underground mining to open - pit mining has been approximately even , but as usable deposits close to the surface become scarcer , underground mining will probably increase . The Estonia underground mine at V\u00e4ike - Pungerja , operated by state owned Eesti Energia Kaevandused , is the largest oil shale mine in the world . The other underground mine , operated by privately owned Viru Keemia Grupp , is located at Ojamaa . Both mines use the room and pillar mining method . Oil shale mined at Ojamaa is transported to the processing plant by a unique 13 - kilometre ( 8 . 1 mi ) conveyor belt . Although there are similar conveyors in operation in other countries , the one at Ojamaa is an unusually challenging installation since its path contains many curves and sharp turns .",
+      "score": 21.002
+    },
+    {
+      "rank": 5,
+      "id": 48610,
+      "preview": "Between 2005 and 2007 , PFA was used as an infill at four disused salt mines in Northwich in Cheshire . 1 , 100 , 000 tonnes was used in the project , which was to avoid a future risk of subsidence in the town . Ash was delivered by DB Sche",
+      "evidence": "Between 2005 and 2007 , PFA was used as an infill at four disused salt mines in Northwich in Cheshire . 1 , 100 , 000 tonnes was used in the project , which was to avoid a future risk of subsidence in the town . Ash was delivered by DB Schenker in ten trains a week , each carrying 1 , 100 tonnes . Following a trial in January 2010 , PFA is also transported to Waterford in Ireland by boat . One ship a month will transport 1 , 200 tonnes for the manufacture of construction materials . This will replace 480 lorry journeys annually and is deemed more environmentally friendly . The unsold PFA is sent by conveyor belt to the Barlow ash mound , which is used for disposal and temporary stockpile . Three conveyors feed the mound , with a total capacity of 750 tonnes an hour . FGD gypsum is disposed of on the mound if it is not of a high enough grade to be sold .",
+      "score": 20.845
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "conveyor_controller_manual",
+      "document_name": "dev_conveyor",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    },
+    {
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

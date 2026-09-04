@@ -1,0 +1,253 @@
+{
+  "case_id": "post_v4_dev_002",
+  "category": "A",
+  "supported": true,
+  "answer": "- Flow rate: 0-100 GPM depending on impeller size",
+  "answer_type": "factual",
+  "retrieved_document_ids": [
+    "pump_controller_manual"
+  ],
+  "source_evidence": "",
+  "latency_ms": 22.58,
+  "runtime_error": null,
+  "gate_passed": true,
+  "gate_reasons": [],
+  "retrieval_success": true,
+  "support_gate_result": "accepted",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": true,
+  "retrieval_mismatch": null,
+  "question": "What is the flow rate for the PC-350 pump with the 3-inch impeller?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+        "chunk_index": 73474,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.846382981454,
+        "lexical_score": 94.49149515457981,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Writing for Edge , Neil Long compared burn cards to FIFA Ultimate Team 's power - ups . Whitehead of Eurogamer wrote that the game begins to drag after level 25 and slows into a grind , though its flow overall is effortlessly cool , like a \" first - person Crackdown \" . Edge wrote that Titanfall 's major issue was the Xbox One , which performed less admirably compared to the PC version . GameSpot 's Chris Watters acknowledged that the PC 's higher resolution was expected and that the Xbox 360 version had an even lower resolution , frame rate issues , and texture pop - in , though it still handled the game well . Peter Bright of Ars Technica wrote that the game 's visuals were \" lacking \" , with flat lighting and static environments . OXM 's Mikel Reparaz thought that the title should have been a launch release , where it would have been easier to overlook its sparse content .",
+        "chunk_index": 72565,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.342829632027,
+        "lexical_score": 25.33173381252548,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The ship 's 15 - inch gun turrets were modified to the Mark I ( N ) standard with their elevation increased to 30 \u00b0 . Twenty dual - purpose QF 4 . 5 - inch Mark III guns in twin BD Mark II mountings replaced all of the 4 - inch guns . Six of the gun turrets , three on each side , were abreast the forward funnel while the remaining four were mounted on abreast the main mast . The BD Mark II mounts had elevation limits of \u2212 5 \u00b0 to + 80 \u00b0 . The Mark III gun fired a 55 - pound ( 25 kg ) high explosive shell at a muzzle velocity of about 2 , 350 ft / s ( 720 m / s ) . Its rate of fire was 12 rounds per minute . They had a maximum effective ceiling of 41 , 000 ft ( 12 , 000 m ) . The guns were controlled by four dual - purpose Mark IV directors , two mounted on the rear of the bridge structure and the remaining two on the aft superstructure .",
+        "chunk_index": 53853,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.309770427117,
+        "lexical_score": 30.279376203708086,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "0 km ) of the Big Inch pipeline to be laid each day . But soon men were laying as much as 9 miles ( 14 km ) a day . In all , roughly 7 , 000 , 000 cubic yards ( 5 , 400 , 000 m3 ) of material were excavated . Oil began flowing through the Big Inch Line between Texas and Illinois on New Year 's Eve 1942 . Work on the Little Big Inch then began in 1943 . The first crude oil arrived at Phoenixville via the Big Inch on August 14 , 1943 , and the first refined product in the Little Big Inch arrived on March 2 , 1944 . The Big Inch carried up to 334 , 456 barrels of crude oil a day , the Little Big Inch 239 , 844 barrels of gasoline ; the lines were among the largest industrial consumers of electricity in the US , requiring 3 . 89 million kilowatt hours a day to pump the oil along the pipes .",
+        "chunk_index": 26639,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.275877040441,
+        "lexical_score": 25.6612769316552,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "62 of the original buildings from 1942 and 1943 remain , including pump - houses , offices , employee houses and garages . The best surviving examples of the original buildings are in Pennsylvania . A \" Big Inch pipeline \" construction playset was produced as a children 's toy in 1962 by the Marx company . = = List of pumping stations = = = = = Big Inch and northern Little Big Inch = = = Station No. 1 : Longview , Texas Station No. 2 : Atlanta , Texas Station No. 3 : Hope , Arkansas Station No. 4 : Donaldson , Arkansas Station No. 5 : Little Rock , Arkansas Station No. 6 : Bald Knob , Arkansas Station No. 7 : Egypt , Arkansas Station No. 8 : Fagus , Missouri Station No. 9 - a : Oran , Missouri Station No. 9 - b : Gale , Illinois Station No. 10 : Lick Creek , Illinois Station No. 11 : Norris City , Illinois Station No. 12 : Princeton , Indiana Station No.",
+        "chunk_index": 26648,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.275877040441,
+        "lexical_score": 25.6612769316552,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The torpedo tubes were located underneath the waterline and were loaded in a dedicated compartment . Full ammunition loads were 1 , 440 rounds for the 12 - inch guns ( 120 per gun ) , 3 , 600 rounds for the 6 - inch ( 300 ) , 5 , 600 rounds for the 4 - inch ( 350 ) , and 16 torpedoes manufactured by Whitehead . To assist the main battery with targeting during a battle , the two ships were equipped with two Barr & Stroud rangefinders that were located above the conning towers . Rivadavia and Moreno used Brown \u2013 Curtis geared steam turbines , powered by 18 Babcock & Wilcox boilers and connected to three propellers . With a total output of about 40 , 000 shaft horsepower ( 30 , 000 kW ) , the ships were designed to travel at a maximum speed of 22 . 5 knots ( 41 . 7 km / h ; 25 . 9 mph ) and may have been capable of slightly more .",
+        "chunk_index": 40156,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.277773149064,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The gun had a muzzle velocity of 1 , 579 ft / s ( 481 m / s ) and had a range of 3 , 200 yards ( 2 , 900 m ) at an elevation of 12 \u00b0 . The seven - inch ( 178 mm ) shell of the 110 - pounder Armstrong breech - loader weighed 107 \u2013 110 pounds ( 48 . 5 \u2013 49 . 9 kg ) . It had a muzzle velocity of 1 , 150 ft / s ( 350 m / s ) and , at an elevation of 11 . 25 \u00b0 , a maximum range of 4 , 000 yards ( 3 , 700 m ) . The 110 - pounder gun weighed 9 , 520 pounds ( 4 , 318 . 2 kg ) . All of the guns could fire both solid shot and explosive shells . Achilles was rearmed during her 1867 \u2013 68 refit with 22 seven - inch and eight 8 - inch ( 203 mm ) rifled muzzle - loading guns . The eight - inch guns and 18 seven - inch guns were mounted on the main deck and the remaining seven - inch guns replaced the 110 - pounders on the upper deck .",
+        "chunk_index": 18304,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.267912858431,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.217176618552,
+        "lexical_score": 28.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fame carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships mounted four 4 . 7 - inch ( 120 mm ) Mark IX guns in single mounts , designated ' A ' , ' B ' , ' X ' , and ' Y ' from front to rear . For anti - aircraft ( AA ) defence , they had two quadruple Mark I mounts for the 0 . 5 inch Vickers Mark III machine gun . The F class was fitted with two above - water quadruple torpedo tube mounts for 21 - inch ( 533 mm ) torpedoes . One depth charge rack and two throwers were fitted ; 20 depth charges were originally carried , but this increased to 38 shortly after the war began . = = = Wartime modifications = = = Fame had her rear torpedo tubes replaced by a 12 - pounder AA gun while under repair in mid - 1940 .",
+        "chunk_index": 43297,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.230971141435,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The turbines developed a total of 36 , 000 shaft horsepower ( 27 , 000 kW ) and gave a maximum speed of 35 . 5 knots ( 65 . 7 km / h ; 40 . 9 mph ) . Forester carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships mounted four 4 . 7 - inch ( 120 mm ) Mark IX guns in single mounts , designated ' A ' , ' B ' , ' X ' , and ' Y ' in sequence from front to rear . For anti - aircraft ( AA ) defence , they had two quadruple Mark I mounts for the 0 . 5 inch Vickers Mark III machine gun . The F class was fitted with two above - water quadruple torpedo tube mounts for 21 - inch ( 533 mm ) torpedoes .",
+        "chunk_index": 56144,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.230971141435,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Two longitudinal bulkheads were added between the upper and main decks that ran from the base of the conning tower to the end of the boiler rooms . The bulges were reworked and based on those used in the Queen Elizabeth - class battleships although crushing tubes were only used abreast the magazines . The rear triple 4 - inch gun mount was replaced . The flying - off platform on \" B \" turret was reinstated and a high - angle control position ( HACP ) was added to the fore - top . The pair of 3 - inch AA guns and her two single four - inch gun mounts were removed and replaced with four QF four - inch Mark V anti - aircraft guns . They had a maximum depression of -5 \u00b0 and a maximum elevation of 80 \u00b0 . They fired a 31 - pound ( 14 kg ) high explosive shell at a muzzle velocity of 2 , 387 ft / s ( 728 m / s ) at a rate of ten to fifteen rounds per minute .",
+        "chunk_index": 53845,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.242678462591,
+        "lexical_score": 23.449940510126297,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "7 km / h ; 40 . 9 mph ) . Escort carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships mounted four 45 - calibre 4 . 7 - inch ( 120 mm ) Mark IX guns in single mounts . For anti - aircraft ( AA ) defence , they had two quadruple Mark I mounts for the 0 . 5 inch Vickers Mark III machine gun . The E class was fitted with two above - water quadruple torpedo tube mounts for 21 - inch ( 533 mm ) torpedoes . One depth charge rail and two throwers were fitted ; 20 depth charges were originally carried , but this increased to 35 shortly after the war began .",
+        "chunk_index": 61973,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.230971141435,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "During Yamashiro 's modernization in the early 1930s , all six three - inch guns were removed and replaced with eight 40 - caliber 127 - millimeter dual - purpose guns , fitted on both sides of the fore and aft superstructures in four twin - gun mounts . When firing at surface targets , the guns had a range of 14 , 700 meters ( 16 , 100 yd ) ; they had a maximum ceiling of 9 , 440 meters ( 30 , 970 ft ) at their maximum elevation of + 90 degrees . Their maximum rate of fire was 14 rounds a minute , but their sustained rate of fire was around eight rounds per minute . The improvements made during the reconstruction increased Yamashiro 's draft by 1 meter ( 3 ft 3 in ) ; the two foremost six - inch guns were removed , as the same guns on her sister ship Fus\u014d had gotten soaked in high seas after that ship 's reconstruction .",
+        "chunk_index": 33558,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.242678462591,
+        "lexical_score": 23.01866751806226,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The engines were powered by 19 Yarrow water - tube boilers and six cylindrical boilers . The ship carried a maximum of 2 , 050 long tons ( 2 , 080 t ) of coal and an additional 600 long tons ( 610 t ) of fuel oil that was sprayed on the coal to increase its burn rate . At full capacity , she could steam for 7 , 960 nautical miles ( 14 , 740 km ; 9 , 160 mi ) at a speed of 10 knots ( 19 km / h ; 12 mph ) . Her main armament consisted of six BL 9 . 2 - inch ( 234 mm ) Mark X guns in single Mk V turrets distributed in two centerline turrets ( one each fore and one aft ) and four turrets disposed in the corners about the funnels . Her secondary armament of four BL 7 . 5 - inch ( 191 mm ) Mark II or Mark V guns in single Mk II turrets was carried amidships , between the wing 9 . 2 - inch guns .",
+        "chunk_index": 41824,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.195646552444,
+        "lexical_score": 23.449940510126297,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The pump is powered by a water wheel , cast at Cocking Foundry , which is 11 feet ( 3 . 4 m ) in diameter . There were two corn mills and a malt mill recorded on the site in 1534 . The mill was modernised in 1910 , when turbines replaced the wheels , and standby engines were installed in 1919 . It was destroyed by fire in 1923 , and a steel - framed concrete building replaced it . When it ceased to operate in 1972 , the building was demolished , but the beam pump , which was located beneath the building , was rescued and has been restored . The pump no longer performs its original function , but supplies a fountain near the visitor centre . Shopham Lock was another where the lock cut was built across a large meander to the north . The bridge at the tail of the lock is built from red and grey brick , and has a single , round - headed arch .",
+        "chunk_index": 16369,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.197226134769,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Atop the gravel were prefabricated modular buildings either flown to the site or trucked across the Dalton Highway . The standardized structures could house 28 people , and two typically were bolted together to create two \" wings \" . All were one - story , except at Valdez and at the pump station camps , where modules were laid atop one another because of space concerns . In addition to the gravel insulation , both buildings and utility conduits were raised above the ground to avoid heating permafrost . The camps housed from 250 people ( at each pump station ) to 3 , 500 people ( at Valdez ) . A typical pump station camp cost $ 6 million to build , while the typical mainline camps cost about $ 10 million to build . The camps had beds for 16 , 500 workers and were collectively referred to as \" Skinny City \" by workers .",
+        "chunk_index": 26934,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.188648292637,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "On the way , Marlborough and Fearless encountered the British submarines G3 and G5 ; the two submarines prepared to attack the ships but fortunately recognised them before they launched torpedoes . By 15 : 00 , eight destroyers from the Harwich Force had joined Marlborough and another pump had been lowered into the flooded boiler room . At around 23 : 30 , the pump was being moved to clean it when the roll of the ship threw the pump into the damaged bulkhead , knocking the shores loose . Water flooded into the ship and Marlborough 's captain ordered Fearless and the destroyers to prepare to come alongside , to rescue the crew if the flooding worsened at 00 : 47 on 2 June . A diver was sent into the boiler room at that time , and he was able to keep the pump clean , which slowly reduced the water level in the ship .",
+        "chunk_index": 3292,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.131985994375,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "As they were completed , the pump stations received hydrostatic testing , in which portions of pipe were filled with water and subjected to pressures in excess of the eventual operating conditions . Following this testing , the initial five pump stations were disconnected from the main pipeline and had oil run through them on a continuous loop . \" It 's very similar to your new automobile , \" one worker said . \" You drive it around for ten days so that any components that are going to fail are given time to fail . \" Work on additional pump stations , which would not be needed until the pipeline was brought to full capacity , was not pressed forward . At Valdez , construction was two - thirds complete by September as 4 , 200 workers hurried to complete the marine terminal .",
+        "chunk_index": 26963,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.151936478159,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" To take advantage of that \" top effectiveness \" , Moolin set an ambitious goal for 1976 construction : \" We 're expecting to have all of the line installed , insulated , and hydro - tested by November 1 , \" he said in January . That goal was ambitious , because most of the work that had been done to that point was on floodplains and flat terrain . Still left to tackle were difficult construction projects in Atigun Pass and Keystone Canyon . \" In some areas , we did eat our cake last year , \" Moolin said . Even though winter shut down all pipelaying on the right of way , work on the pump stations and in Valdez continued without stop . At Pump Station 1 , in Prudhoe Bay , temperatures reached lower than \u2212 70 \u00b0 F ( \u2212 57 \u00b0 C ) , but the work continued . Because the pump station was the origin point for the main pipeline , it also had to process the feeder lines coming from oil wells .",
+        "chunk_index": 26954,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.141846285008,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Not even bulldozers could traverse the grade without a team of two helping each up the grade in turn . A bulldozer had to be modified to carry 80 - foot ( 20 . 4 - meter ) sections of pipe up the grade , but even then , most of the sections and equipment had to be lifted by helicopter to the canyon rim . Similar techniques had to be used at nearby Thomson Pass , and both sections required the entire 1976 construction season to complete . = = = Pump stations and marine terminal = = = Work at the pump stations and marine terminal , which had not stopped during the winter , continued throughout the 1976 construction season . Pump Station 6 , just south of the Yukon River , had to be redesigned after excavation revealed ice - rich permafrost below the site . Five pump stations needed at startup ( when throughput was lower ) received their pumps , turbines , and piping .",
+        "chunk_index": 26962,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.131985994375,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      }
+    ],
+    "context": "- Flow rate: 0-100 GPM depending on impeller size.\nTECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft\nFull ammunition loads were 1 , 440 rounds for the 12 - inch guns ( 120 per gun ) , 3 , 600 rounds for the 6 - inch ( 300 ) , 5 , 600 rounds for the 4 - inch ( 350 ) , and 16 torpedoes manufactured by Whitehead .\nSAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\nNORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73474,
+      "preview": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before rem",
+      "evidence": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+      "score": 94.491,
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 72565,
+      "preview": "Writing for Edge , Neil Long compared burn cards to FIFA Ultimate Team 's power - ups . Whitehead of Eurogamer wrote that the game begins to drag after level 25 and slows into a grind , though its flow overall is effortlessly cool , like a ",
+      "evidence": "Writing for Edge , Neil Long compared burn cards to FIFA Ultimate Team 's power - ups . Whitehead of Eurogamer wrote that the game begins to drag after level 25 and slows into a grind , though its flow overall is effortlessly cool , like a \" first - person Crackdown \" . Edge wrote that Titanfall 's major issue was the Xbox One , which performed less admirably compared to the PC version . GameSpot 's Chris Watters acknowledged that the PC 's higher resolution was expected and that the Xbox 360 version had an even lower resolution , frame rate issues , and texture pop - in , though it still handled the game well . Peter Bright of Ars Technica wrote that the game 's visuals were \" lacking \" , with flat lighting and static environments . OXM 's Mikel Reparaz thought that the title should have been a launch release , where it would have been easier to overlook its sparse content .",
+      "score": 25.332
+    },
+    {
+      "rank": 3,
+      "id": 53853,
+      "preview": "The ship 's 15 - inch gun turrets were modified to the Mark I ( N ) standard with their elevation increased to 30 \u00b0 . Twenty dual - purpose QF 4 . 5 - inch Mark III guns in twin BD Mark II mountings replaced all of the 4 - inch guns . Six o",
+      "evidence": "The ship 's 15 - inch gun turrets were modified to the Mark I ( N ) standard with their elevation increased to 30 \u00b0 . Twenty dual - purpose QF 4 . 5 - inch Mark III guns in twin BD Mark II mountings replaced all of the 4 - inch guns . Six of the gun turrets , three on each side , were abreast the forward funnel while the remaining four were mounted on abreast the main mast . The BD Mark II mounts had elevation limits of \u2212 5 \u00b0 to + 80 \u00b0 . The Mark III gun fired a 55 - pound ( 25 kg ) high explosive shell at a muzzle velocity of about 2 , 350 ft / s ( 720 m / s ) . Its rate of fire was 12 rounds per minute . They had a maximum effective ceiling of 41 , 000 ft ( 12 , 000 m ) . The guns were controlled by four dual - purpose Mark IV directors , two mounted on the rear of the bridge structure and the remaining two on the aft superstructure .",
+      "score": 30.279
+    },
+    {
+      "rank": 4,
+      "id": 26639,
+      "preview": "0 km ) of the Big Inch pipeline to be laid each day . But soon men were laying as much as 9 miles ( 14 km ) a day . In all , roughly 7 , 000 , 000 cubic yards ( 5 , 400 , 000 m3 ) of material were excavated . Oil began flowing through the B",
+      "evidence": "0 km ) of the Big Inch pipeline to be laid each day . But soon men were laying as much as 9 miles ( 14 km ) a day . In all , roughly 7 , 000 , 000 cubic yards ( 5 , 400 , 000 m3 ) of material were excavated . Oil began flowing through the Big Inch Line between Texas and Illinois on New Year 's Eve 1942 . Work on the Little Big Inch then began in 1943 . The first crude oil arrived at Phoenixville via the Big Inch on August 14 , 1943 , and the first refined product in the Little Big Inch arrived on March 2 , 1944 . The Big Inch carried up to 334 , 456 barrels of crude oil a day , the Little Big Inch 239 , 844 barrels of gasoline ; the lines were among the largest industrial consumers of electricity in the US , requiring 3 . 89 million kilowatt hours a day to pump the oil along the pipes .",
+      "score": 25.661
+    },
+    {
+      "rank": 5,
+      "id": 26648,
+      "preview": "62 of the original buildings from 1942 and 1943 remain , including pump - houses , offices , employee houses and garages . The best surviving examples of the original buildings are in Pennsylvania . A \" Big Inch pipeline \" construction play",
+      "evidence": "62 of the original buildings from 1942 and 1943 remain , including pump - houses , offices , employee houses and garages . The best surviving examples of the original buildings are in Pennsylvania . A \" Big Inch pipeline \" construction playset was produced as a children 's toy in 1962 by the Marx company . = = List of pumping stations = = = = = Big Inch and northern Little Big Inch = = = Station No. 1 : Longview , Texas Station No. 2 : Atlanta , Texas Station No. 3 : Hope , Arkansas Station No. 4 : Donaldson , Arkansas Station No. 5 : Little Rock , Arkansas Station No. 6 : Bald Knob , Arkansas Station No. 7 : Egypt , Arkansas Station No. 8 : Fagus , Missouri Station No. 9 - a : Oran , Missouri Station No. 9 - b : Gale , Illinois Station No. 10 : Lick Creek , Illinois Station No. 11 : Norris City , Illinois Station No. 12 : Princeton , Indiana Station No.",
+      "score": 25.661
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": true,
+  "conflict": false,
+  "error": null
+}

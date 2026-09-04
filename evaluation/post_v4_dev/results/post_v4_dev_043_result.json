@@ -1,0 +1,301 @@
+{
+  "case_id": "post_v4_dev_043",
+  "category": "I",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "hvac_controller_manual"
+  ],
+  "source_evidence": "",
+  "latency_ms": 18.99,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": true,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "What is the optimal PCB layout for the HVAC-400 controller?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical potential at disconnect before removing panels.\n- Recover refrigerant per EPA regulations before opening refrigerant circuit.\n- Wear appropriate PPE when working with refrigerants, electrical components, and moving parts.\n- Never bypass safety controls or temperature limiters.\n\n2. NORMAL OPERATION\n--------------------\n- System provides heating when heating mode is selected and thermostat calls for heat.\n- System provides cooling when cooling mode is selected and thermostat calls for cool.\n- Normal supply air temperature range: 55-75\u00b0F cooling, 90-120\u00b0F heating.\n- Fan operates at variable speed: 0-100% depending on demand.\n- Air filter should be checked monthly and replaced when dirty.\n\n3. STARTUP SEQUENCE (HEATING)\n------------------------------\na. Confirm thermostat is set to HEAT mode and temperature is above current room temperature.\nb. Verify gas supply is on (for gas-fired units) or electrical connections are secure (for electric units).\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. System should initiate ignition sequence after 30-second pre-purge.\ng. Verify flame is established and burners are operating normally.\nh. Monitor supply air temperature rises to normal range within 5 minutes.\ni. Fan will begin blowing heated air once heat exchanger reaches safe temperature.\n\n4. STARTUP SEQUENCE (COOLING)\n-------------------------------\na. Confirm thermostat is set to COOL mode and temperature is below current room temperature.\nb. Verify electrical connections are secure and power is supplied to compressor.\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. Compressor should start after thermostat call for cool.\ng. Verify condenser fan is operating.\nh. Check that supply air temperature drops to normal range within 5 minutes.\ni. System will cycle on and off to maintain setpoint.\n\n5. INSPECTION PHASE\n--------------------\n- Check air filter condition and airflow - replace if dirty.\n- Inspect supply and return registers for obstructions.\n- Check thermostat calibration and operation.\n- Inspect evaporator coil for frost or ice formation (cooling mode).\n- Inspect heat exchanger for cracks or damage (heating mode).\n- Verify refrigerant lines for leaks (trace with detector solution).\n- Check blower motor and fan for unusual noise or vibration.\n- Inspect ductwork for leaks, loose connections, or damage.\n- Verify safety controls are functional (limit switches, pressure controls).\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: System will not start (heating)\n- Cause: Thermostat not calling for heat - check settings.\n- Cause: No gas supply (gas units) - verify gas valve is open.\n- Cause: Electrical fault - check voltage at disconnect, fuses, circuit breaker.\n- Cause: Flame failure - reset after safety lockout, inspect burner.\n- Cause: Limit switch tripped - reset after addressing root cause.\n\nPROBLEM: System will not start (cooling)\n- Cause: Thermostat not calling for cool - check settings.\n- Cause: Compressor protection trip - reset thermal overload.\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: Refrigerant low - system may have leak, require recharge.\n- Cause: High-pressure switch tripped - reset after addressing cause.\n\nPROBLEM: Insufficient heating\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n- Cause: Gas pressure too low - adjust gas valve, check supply.\n- Cause: Heat exchanger restricted - clean or replace.\n- Cause: Duct leaks - seal ductwork, insulate as needed.\n\nPROBLEM: Insufficient cooling\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Dirty evaporator coil - clean coil.\n- Cause: Dirty condenser coil - clean outdoor unit coil.\n- Cause: Refrigerant low - system has leak, locate and repair, recharge.\n- Cause: High outdoor temperature - system may not meet load demand.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n\nPROBLEM: Short cycling (frequent on/off)\n- Cause: Oversized system for space - may require load calculation.\n- Cause: Dirty filter - restrict airflow, replace filter.\n- Cause: Thermostat located near heat source - relocate thermostat.\n- Cause: Low refrigerant - system has leak, locate and repair, recharge.\n- Cause: High static pressure in ductwork - redesign duct system.\n\nPROBLEM: compressor will not start\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: compressor protection trip - reset thermal overload after cooling.\n- Cause: capacitor failure - replace capacitor.\n- Cause: contactor failure - replace contactor.\n- Cause: thermostat not calling - check settings and wiring.\n\n7. REFRIGERANT SERVICE\n------------------------\n- Recover refrigerant: Use certified recovery machine per EPA Section 608.\n- Leak detection: Electronic leak detector or trace with Nitrogen soap solution.\n- Recharge: Add only specified refrigerant type and amount per nameplate.\n- Never mix refrigerant types.\n- Document all refrigerant additions and removals per regulatory requirements.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check thermostat operation, listen for unusual noises, verify airflow.\n- Every 250 hours: Check air filter, inspect visual condition of unit.\n- Every 500 hours: Clean or replace air filter, inspect evaporator/condenser coils.\n- Every 1000 hours: Check refrigerant pressure, test safety controls, lubricate motors.\n- Every 2000 hours: Clean burners (gas units), inspect heat exchanger, check belt tension.\n- Annual: Full combustion analysis (gas units), refrigerant charge verification, complete safety inspection.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.\n- Electrical fire: Cut power at disconnect, call fire department, do not use water on electrical.\n- Gas leak (gas units): Evacuate area, ventilate, do not operate electrical switches, call gas company.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: HVAC-400 Maintenance Controller\n- Capacity: 2-ton to 20-ton variable capacity\n- Voltage: 208/240V single-phase or 208/3-phase\n- Refrigerant: R-410A (or approved alternate)\n- Airflow range: 400-2000 CFM\n- Temperature range: -10\u00b0F to 120\u00b0F ambient\n- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)\n- Connection: Standard HVAC plug-in connections\n- Motor: ECM variable-speed blower motor\n- Compressor: Scroll type, 2-20 HP",
+        "chunk_index": 73472,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.44453748538,
+        "lexical_score": 62.65494402735746,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "PCBs for new equipment were banned in 1981 and in 2000 for use in existing equipment in United Kingdom Legislation enacted in Canada between 1977 and 1985 essentially bans PCB use in transformers manufactured in or imported into the country after 1980 , the maximum allowable level of PCB contamination in existing mineral oil transformers being 50 ppm . Some transformers , instead of being liquid - filled , have their windings enclosed in sealed , pressurized tanks and cooled by nitrogen or sulfur hexafluoride gas . Experimental power transformers in the 500 \u2010 to \u2010 1 , 000 kVA range have been built with liquid nitrogen or helium cooled superconducting windings , which eliminates winding losses without affecting core losses .",
+        "chunk_index": 30172,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.210482957111,
+        "lexical_score": 21.636839480292128,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "Guitar Hero is notable because it comes packaged with a controller peripheral modeled after a black Gibson SG guitar . Rather than a typical gamepad , this guitar controller is the primary input for the game . Playing the game with the guitar controller simulates playing an actual guitar , except it uses five colored \" fret buttons \" and a \" strum bar \" instead of frets and strings . The development of Guitar Hero was inspired by Konami 's Guitar Freaks video game , which at the time , had not seen much exposure in the North American market ; RedOctane , already selling guitar - shaped controllers for imported copies of GuitarFreaks , approached Harmonix about creating a game to use an entirely new Guitar controller . The concept was to have the gameplay of Amplitude with the visuals of Karaoke Revolution , both of which had been developed by Harmonix .",
+        "chunk_index": 4377,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.157284720718,
+        "lexical_score": 22.08158104442209,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "Two Guitar Hero products that were announced but never released were a Red Hot Chili Peppers - themed title and a PlayStation Portable title that would have featured a drum component . = = Gameplay = = The core gameplay of the Guitar Hero games is a rhythm game similar to Konami 's Guitar Freaks and to a lesser extent Harmonix 's previous music games such as Frequency and Amplitude . The guitar controller is recommended for play , although a standard console controller can be used instead . However , the guitar controller has been required for play ever since the inclusion of drum and vocal parts in the series . The game supports toggling the handedness of the guitar , allowing both left - handed and right - handed players to utilize the guitar controller .",
+        "chunk_index": 4398,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.157284720718,
+        "lexical_score": 22.08158104442209,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "Such a configuration represents another periodic table anomaly , regardless of whether lawrencium is located in the f - block or the d - block , as the only potentially applicable p - block position has been reserved for ununtrium with its predicted electron configuration of [ Rn ] 5f146d107s27p1 . = = = Optimal form = = = The many different forms of periodic table have prompted the question of whether there is an optimal or definitive form of periodic table . The answer to this question is thought to depend on whether the chemical periodicity seen to occur among the elements has an underlying truth , effectively hard - wired into the universe , or if any such periodicity is instead the product of subjective human interpretation , contingent upon the circumstances , beliefs and predilections of human observers .",
+        "chunk_index": 55184,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.199535279565,
+        "lexical_score": 18.864250758052346,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "While Guitar Hero and Guitar Hero II are fully backward - compatible through the hardware PlayStation 2 emulation in the initial North American release of the console , it was impossible at launch to use the guitar controller to play either game . Kai Huang , of RedOctane , states that they are \" working on that with Sony right now \u2013 looking at how we can get all the PlayStation 2 guitars that are out there , and all the owners of them , to use them on the PlayStation 3 . \" Nyko , an accessories company , was poised to make a special PlayStation 2 controller adapter for the PlayStation 3 , but put the product on hold due to technical difficulties . Tac , another accessories company , also made a PlayStation 2 controller adapter for a PlayStation 3 game console so players could use their Guitar Hero guitar controllers that were made for the PlayStation 2 with a PlayStation 3 .",
+        "chunk_index": 4424,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.138284785235,
+        "lexical_score": 22.08158104442209,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "The peripheral also has other buttons in order to navigate the game 's menus . Music is displayed on screen through a series of notes , matching in color and position to the fret buttons , that scroll down the screen on a fret board . To hit or play a note , the player must hold down the fret button corresponding to the note shown and toggle the strum bar at the same time as that note passes a marked area on the screen . Faster series of notes may be played on the guitar controller using hammer - on and pull - off techniques where the player does not need to strum each note . The game supports toggling the handedness of the guitar , allowing both left - handed and right - handed players to utilize the guitar controller . A player using the standard controller simply presses the buttons that correspond with the displayed notes as outlined in the game 's manual .",
+        "chunk_index": 17197,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.147123990873,
+        "lexical_score": 22.08158104442209,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "Each battery - powered vehicle , or AGV , is made up of two platforms . Riders sit on the upper platform , which provides three degrees of freedom . A lower platform provides omnidirectional lateral movement . Unlike previous ride designs , the trackless system and the wheel and motor configurations allow movements diagonal to a rider 's perspective . The vehicles use a dead reckoning system developed by Frog AGV to navigate their way through the environment , allowing a vehicle to cross another 's path . Each vehicle features a built - in controller , which wirelessly communicates with a central ride - system controller . Movement commands are issued by the ride - system controller , and executed by the vehicles ' controllers . A specially - designed battery and charge system allow the vehicles to be quickly charged while docked at the loading and unloading platforms .",
+        "chunk_index": 28869,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.147123990873,
+        "lexical_score": 22.08158104442209,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "However , the May 2007 PlayStation 3 V1.80 system update has made the guitar controller compatible with generic PlayStation 2 controller to USB adapters when playing Guitar Hero and Guitar Hero II . In addition , Pelican Accessories has released a special controller adapter that supports both games , including the ability to switch the handedness of the guitar . = = = Patent litigation = = = Gibson Guitar Corporation , whose guitar likenesses have appeared in the Guitar Hero series from the first game to Guitar Hero Aerosmith , informed Activision on January 7 , 2008 , that it believed the games infringe its U.S. Patent 5 , 990 , 405 . Gibson claimed that this covers technology that simulates a concert performance via pre - recorded audio and a musical instrument .",
+        "chunk_index": 4425,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.128124055391,
+        "lexical_score": 22.08158104442209,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "The artist also cited Steve Ditko 's work on early issues of The Amazing Spider - Man as an influence , as well as Doctor Strange , where \" even at his most psychedelic [ he ] would still keep a pretty straight page layout \" . The cover of each issue serves as the first panel to the story . Gibbons said , \" The cover of the Watchmen is in the real world and looks quite real , but it 's starting to turn into a comic book , a portal to another dimension . \" The covers were designed as close - ups that focused on a single detail with no human elements present . The creators on occasion experimented with the layout of the issue contents . Gibbons drew issue five , titled \" Fearful Symmetry \" , so the first page mirrors the last ( in terms of frame disposition ) , with the following pages mirroring each other before the center - spread is ( broadly ) symmetrical in layout .",
+        "chunk_index": 14298,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.145592831271,
+        "lexical_score": 21.85419952631349,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "A Hello Kitty version , limited to 2000 units produced , was targeted at Japanese female gamers . Special editions were created for Seaman and Resident Evil Code : Veronica . Color variations were sold through a service called \" Dreamcast Direct \" in Japan . Toyota also offered special edition Dreamcast units at 160 of its dealers in Japan . In North America , a limited edition black Dreamcast was released with a Sega Sports logo on the lid , which included matching Sega Sports - branded black controllers and two games . = = = Accessories = = = The Dreamcast controller includes both an analog stick and a digital pad , four action buttons , and two analog triggers . The system has four ports for controller inputs , although it was bundled with only one controller .",
+        "chunk_index": 30311,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.138284785235,
+        "lexical_score": 22.08158104442209,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+        "chunk_index": 73471,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.157284720718,
+        "lexical_score": 19.721054029614727,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+        "chunk_index": 73474,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.157284720718,
+        "lexical_score": 19.721054029614727,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "They were one of the first steps in the fulfillment of the recently adopted Eight - Eight Fleet Program that required a fleet of eight dreadnoughts and armored cruisers . Their design was based on the Aki with a uniform 12 - inch ( 305 mm ) main - gun armament in the hexagonal layout used by the German dreadnoughts of the Nassau and Helgoland classes . The first iteration of the design had six twin - gun turrets , with two pairs of superfiring turrets fore and aft of the superstructure and the two other turrets amidships \" en echelon \" to maximize end - on fire . This layout was rejected as it exceeded the informal 20 , 000 long tons ( 20 , 321 t ) limit . The design was then revised with the turrets in the hexagonal layout using the same 45 - caliber 12 - inch guns used in the preceding battleships .",
+        "chunk_index": 61961,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.126592895789,
+        "lexical_score": 21.85419952631349,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "Work conducted by the CCC included fire suppression , fish habitat improvement , and construction of guard houses , fire lookouts , campgrounds , roads , and trails , among other facilities . = = Management = = Boise National Forest is managed by the U.S. Forest Service , an agency within the Department of Agriculture , as five units called ranger districts . The ranger districts are Cascade ( 400 , 000 acres or 1 , 600 square kilometers ) , Emmett ( 350 , 000 acres or 1 , 400 square kilometers ) , Idaho City ( 400 , 000 acres ) , Lowman ( 400 , 000 acres ) , and Mountain Home ( 650 , 000 acres or 2 , 600 square kilometers ) ; each has an office in their respective cities and is managed by a district ranger , while forest headquarters are located in the city of Boise . Congress proclaimed 2 , 648 , 273 acres ( 10 , 717 .",
+        "chunk_index": 7084,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.111104568718,
+        "lexical_score": 16.72209214687075,
+        "origin": "full_question",
+        "subquery_hits": [
+          "What is the optimal PCB layout for the HVAC-400 controller?"
+        ]
+      },
+      {
+        "chunk": "By far the most common events are the 100 metres hurdles for women , 110 m hurdles for men and 400 m hurdles for both sexes . The men 's 110 m has been featured at every modern Summer Olympics while the men 's 400 m was introduced in the second edition of the Games . Women 's initially competed in the 80 metres hurdles event , which entered the Olympic programme in 1932 . This was extended to the 100 m hurdles at the 1972 Olympics , but it was not until 1984 that a women 's 400 m hurdles event took place at the Olympics ( having been introduced at the 1983 World Championships in Athletics the previous year ) . Outside of the hurdles events , the steeplechase race is the other track and field event with obstacles . Just as the hurdling events , the steeplechase finds its origin in student competition in Oxford , England .",
+        "chunk_index": 9433,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.121265298563,
+        "lexical_score": 16.72209214687075,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "During trials , Derfflinger 's engines achieved 75 , 586 shp ( 56 , 364 kW ) , but a top speed of 25 . 5 knots ( 47 . 2 km / h ; 29 . 3 mph ) . L\u00fctzow 's engines reached 79 , 880 shp ( 59 , 570 kW ) and a top speed of 26 . 4 knots ( 48 . 9 km / h ; 30 . 4 mph ) . Hindenburg 's power plant was rated at 71 , 015 shp ( 52 , 956 kW ) at 290 rpm , for a top speed of 27 knots ( 50 km / h ; 31 mph ) . On trials she reached 94 , 467 shp ( 70 , 444 kW ) and 26 . 6 knots ( 49 . 3 km / h ; 30 . 6 mph ) . Derfflinger could carry 3 , 500 t ( 3 , 400 long tons ) of coal and 1 , 000 t ( 980 long tons ) of oil ; at a cruising speed of 14 knots ( 26 km / h ; 16 mph ) , she had a range of 5 , 600 nautical miles ( 10 , 400 km ; 6 , 400 mi ) . L\u00fctzow carried 3 , 700 t ( 3 , 600 long tons ) of coal and 1 , 000 tons of oil , though she had no advantage in range over her sister Derfflinger .",
+        "chunk_index": 7726,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.10222656893,
+        "lexical_score": 16.72209214687075,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "06 m ) in height ( each placed 10 yards ( 9 m ) apart ) , with the first and final hurdles 15 yards from the start and finish , respectively . French organisers adapted the race into metric ( adding 28 cm ) and the basics of this race , the men 's 110 metres hurdles , has remained largely unchanged . The origin of the 400 metres hurdles also lies in Oxford , where ( around 1860 ) a competition was held over 440 yards and twelve 1 . 06 m high wooden barriers were placed along the course . The modern regulations stem from the 1900 Summer Olympics : the distance was fixed to 400 m while ten 3 - foot ( 91 . 44 cm ) hurdles were placed 35 m apart on the track , with the first and final hurdles being 45 m and 40 m away from the start and finish , respectively . Women 's hurdles are slightly lower at 84 cm ( 2 ft 9 in ) for the 100 m event and 76 cm ( 2 ft 6 in ) for the 400 m event .",
+        "chunk_index": 9432,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.102265363081,
+        "lexical_score": 16.72209214687075,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Pistorius missed qualifying for the 2008 Summer Olympics in the 400 meter race , by 0 . 70 seconds . He qualified for the 2008 Summer Paralympics where he won gold medals in the 100 , 200 , and 400 meter sprints . In 2011 , Pistorius qualified for the 2012 Summer Olympics and competed in two events : he made the semi - final in the 400 metres race ; and his team came 8th in the final of the 4 \u00d7 400 metres relay race . Some athletes without a disability also compete at the Paralympics ; The sighted guides for athletes with a visual impairment are such a close and essential part of the competition that the athlete with visual impairment and the guide are considered a team , and both athletes are medal candidates . = = = = Funding = = = = There has been criticism for not providing equal funding to Paralympic athletes as compared to Olympic athletes .",
+        "chunk_index": 15880,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.102265363081,
+        "lexical_score": 16.72209214687075,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "It was not long before the attack had forced a wedge between the Australians on Baby 700 and those on 400 Plateau . The heavy Turkish fire onto Lone Pine forced the survivors to withdraw back to the western slope of 400 Plateau . At 14 : 25 Turkish artillery and small arms fire was so heavy that the Indian artillerymen were forced to push their guns back off the plateau by hand , and they reformed on the beach . Although in places there was a mixture of different companies and platoons dug in together , the Australians were deployed with the 8th Battalion in the south still centred on Bolton 's Ridge . North of them , covering the southern sector of 400 Plateau , were the mixed together 6th and 7th Battalions , both now commanded by Colonel Walter McNicoll of the 6th .",
+        "chunk_index": 11507,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.092104633236,
+        "lexical_score": 16.72209214687075,
+        "origin": "full_question"
+      }
+    ],
+    "context": "TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: HVAC-400 Maintenance Controller\n- Capacity: 2-ton to 20-ton variable capacity\n- Voltage: 208/240V single-phase or 208/3-phase\n- Refrigerant: R-410A (or approved alternate)\n- Airflow range: 400-2000 CFM\n- Temperature range: -10\u00b0F to 120\u00b0F ambient\n- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)\n- Connection: Standard HVAC plug-in connections\n- Motor: ECM variable-speed blower motor\n- Compressor: Scroll type, 2-20 HP\nHVAC Maintenance Controller Operation Manual\n============================================\n\n1.\nSAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\nEMERGENCY PROCEDURES\n------------------------\n- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.\nGuitar Hero is notable because it comes packaged with a controller peripheral modeled after a black Gibson SG guitar ."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73472,
+      "preview": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical",
+      "evidence": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical potential at disconnect before removing panels.\n- Recover refrigerant per EPA regulations before opening refrigerant circuit.\n- Wear appropriate PPE when working with refrigerants, electrical components, and moving parts.\n- Never bypass safety controls or temperature limiters.\n\n2. NORMAL OPERATION\n--------------------\n- System provides heating when heating mode is selected and thermostat calls for heat.\n- System provides cooling when cooling mode is selected and thermostat calls for cool.\n- Normal supply air temperature range: 55-75\u00b0F cooling, 90-120\u00b0F heating.\n- Fan operates at variable speed: 0-100% depending on demand.\n- Air filter should be checked monthly and replaced when dirty.\n\n3. STARTUP SEQUENCE (HEATING)\n------------------------------\na. Confirm thermostat is set to HEAT mode and temperature is above current room temperature.\nb. Verify gas supply is on (for gas-fired units) or electrical connections are secure (for electric units).\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. System should initiate ignition sequence after 30-second pre-purge.\ng. Verify flame is established and burners are operating normally.\nh. Monitor supply air temperature rises to normal range within 5 minutes.\ni. Fan will begin blowing heated air once heat exchanger reaches safe temperature.\n\n4. STARTUP SEQUENCE (COOLING)\n-------------------------------\na. Confirm thermostat is set to COOL mode and temperature is below current room temperature.\nb. Verify electrical connections are secure and power is supplied to compressor.\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. Compressor should start after thermostat call for cool.\ng. Verify condenser fan is operating.\nh. Check that supply air temperature drops to normal range within 5 minutes.\ni. System will cycle on and off to maintain setpoint.\n\n5. INSPECTION PHASE\n--------------------\n- Check air filter condition and airflow - replace if dirty.\n- Inspect supply and return registers for obstructions.\n- Check thermostat calibration and operation.\n- Inspect evaporator coil for frost or ice formation (cooling mode).\n- Inspect heat exchanger for cracks or damage (heating mode).\n- Verify refrigerant lines for leaks (trace with detector solution).\n- Check blower motor and fan for unusual noise or vibration.\n- Inspect ductwork for leaks, loose connections, or damage.\n- Verify safety controls are functional (limit switches, pressure controls).\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: System will not start (heating)\n- Cause: Thermostat not calling for heat - check settings.\n- Cause: No gas supply (gas units) - verify gas valve is open.\n- Cause: Electrical fault - check voltage at disconnect, fuses, circuit breaker.\n- Cause: Flame failure - reset after safety lockout, inspect burner.\n- Cause: Limit switch tripped - reset after addressing root cause.\n\nPROBLEM: System will not start (cooling)\n- Cause: Thermostat not calling for cool - check settings.\n- Cause: Compressor protection trip - reset thermal overload.\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: Refrigerant low - system may have leak, require recharge.\n- Cause: High-pressure switch tripped - reset after addressing cause.\n\nPROBLEM: Insufficient heating\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n- Cause: Gas pressure too low - adjust gas valve, check supply.\n- Cause: Heat exchanger restricted - clean or replace.\n- Cause: Duct leaks - seal ductwork, insulate as needed.\n\nPROBLEM: Insufficient cooling\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Dirty evaporator coil - clean coil.\n- Cause: Dirty condenser coil - clean outdoor unit coil.\n- Cause: Refrigerant low - system has leak, locate and repair, recharge.\n- Cause: High outdoor temperature - system may not meet load demand.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n\nPROBLEM: Short cycling (frequent on/off)\n- Cause: Oversized system for space - may require load calculation.\n- Cause: Dirty filter - restrict airflow, replace filter.\n- Cause: Thermostat located near heat source - relocate thermostat.\n- Cause: Low refrigerant - system has leak, locate and repair, recharge.\n- Cause: High static pressure in ductwork - redesign duct system.\n\nPROBLEM: compressor will not start\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: compressor protection trip - reset thermal overload after cooling.\n- Cause: capacitor failure - replace capacitor.\n- Cause: contactor failure - replace contactor.\n- Cause: thermostat not calling - check settings and wiring.\n\n7. REFRIGERANT SERVICE\n------------------------\n- Recover refrigerant: Use certified recovery machine per EPA Section 608.\n- Leak detection: Electronic leak detector or trace with Nitrogen soap solution.\n- Recharge: Add only specified refrigerant type and amount per nameplate.\n- Never mix refrigerant types.\n- Document all refrigerant additions and removals per regulatory requirements.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check thermostat operation, listen for unusual noises, verify airflow.\n- Every 250 hours: Check air filter, inspect visual condition of unit.\n- Every 500 hours: Clean or replace air filter, inspect evaporator/condenser coils.\n- Every 1000 hours: Check refrigerant pressure, test safety controls, lubricate motors.\n- Every 2000 hours: Clean burners (gas units), inspect heat exchanger, check belt tension.\n- Annual: Full combustion analysis (gas units), refrigerant charge verification, complete safety inspection.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.\n- Electrical fire: Cut power at disconnect, call fire department, do not use water on electrical.\n- Gas leak (gas units): Evacuate area, ventilate, do not operate electrical switches, call gas company.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: HVAC-400 Maintenance Controller\n- Capacity: 2-ton to 20-ton variable capacity\n- Voltage: 208/240V single-phase or 208/3-phase\n- Refrigerant: R-410A (or approved alternate)\n- Airflow range: 400-2000 CFM\n- Temperature range: -10\u00b0F to 120\u00b0F ambient\n- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)\n- Connection: Standard HVAC plug-in connections\n- Motor: ECM variable-speed blower motor\n- Compressor: Scroll type, 2-20 HP",
+      "score": 62.655,
+      "document_id": "hvac_controller_manual",
+      "document_name": "dev_hvac_con",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 30172,
+      "preview": "PCBs for new equipment were banned in 1981 and in 2000 for use in existing equipment in United Kingdom Legislation enacted in Canada between 1977 and 1985 essentially bans PCB use in transformers manufactured in or imported into the country",
+      "evidence": "PCBs for new equipment were banned in 1981 and in 2000 for use in existing equipment in United Kingdom Legislation enacted in Canada between 1977 and 1985 essentially bans PCB use in transformers manufactured in or imported into the country after 1980 , the maximum allowable level of PCB contamination in existing mineral oil transformers being 50 ppm . Some transformers , instead of being liquid - filled , have their windings enclosed in sealed , pressurized tanks and cooled by nitrogen or sulfur hexafluoride gas . Experimental power transformers in the 500 \u2010 to \u2010 1 , 000 kVA range have been built with liquid nitrogen or helium cooled superconducting windings , which eliminates winding losses without affecting core losses .",
+      "score": 21.637
+    },
+    {
+      "rank": 3,
+      "id": 4377,
+      "preview": "Guitar Hero is notable because it comes packaged with a controller peripheral modeled after a black Gibson SG guitar . Rather than a typical gamepad , this guitar controller is the primary input for the game . Playing the game with the guit",
+      "evidence": "Guitar Hero is notable because it comes packaged with a controller peripheral modeled after a black Gibson SG guitar . Rather than a typical gamepad , this guitar controller is the primary input for the game . Playing the game with the guitar controller simulates playing an actual guitar , except it uses five colored \" fret buttons \" and a \" strum bar \" instead of frets and strings . The development of Guitar Hero was inspired by Konami 's Guitar Freaks video game , which at the time , had not seen much exposure in the North American market ; RedOctane , already selling guitar - shaped controllers for imported copies of GuitarFreaks , approached Harmonix about creating a game to use an entirely new Guitar controller . The concept was to have the gameplay of Amplitude with the visuals of Karaoke Revolution , both of which had been developed by Harmonix .",
+      "score": 22.082
+    },
+    {
+      "rank": 4,
+      "id": 4398,
+      "preview": "Two Guitar Hero products that were announced but never released were a Red Hot Chili Peppers - themed title and a PlayStation Portable title that would have featured a drum component . = = Gameplay = = The core gameplay of the Guitar Hero g",
+      "evidence": "Two Guitar Hero products that were announced but never released were a Red Hot Chili Peppers - themed title and a PlayStation Portable title that would have featured a drum component . = = Gameplay = = The core gameplay of the Guitar Hero games is a rhythm game similar to Konami 's Guitar Freaks and to a lesser extent Harmonix 's previous music games such as Frequency and Amplitude . The guitar controller is recommended for play , although a standard console controller can be used instead . However , the guitar controller has been required for play ever since the inclusion of drum and vocal parts in the series . The game supports toggling the handedness of the guitar , allowing both left - handed and right - handed players to utilize the guitar controller .",
+      "score": 22.082
+    },
+    {
+      "rank": 5,
+      "id": 55184,
+      "preview": "Such a configuration represents another periodic table anomaly , regardless of whether lawrencium is located in the f - block or the d - block , as the only potentially applicable p - block position has been reserved for ununtrium with its ",
+      "evidence": "Such a configuration represents another periodic table anomaly , regardless of whether lawrencium is located in the f - block or the d - block , as the only potentially applicable p - block position has been reserved for ununtrium with its predicted electron configuration of [ Rn ] 5f146d107s27p1 . = = = Optimal form = = = The many different forms of periodic table have prompted the question of whether there is an optimal or definitive form of periodic table . The answer to this question is thought to depend on whether the chemical periodicity seen to occur among the elements has an underlying truth , effectively hard - wired into the universe , or if any such periodicity is instead the product of subjective human interpretation , contingent upon the circumstances , beliefs and predilections of human observers .",
+      "score": 18.864
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "hvac_controller_manual",
+      "document_name": "dev_hvac_con",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

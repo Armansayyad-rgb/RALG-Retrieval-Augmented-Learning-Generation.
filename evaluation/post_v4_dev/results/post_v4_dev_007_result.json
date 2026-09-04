@@ -1,0 +1,256 @@
+{
+  "case_id": "post_v4_dev_007",
+  "category": "B",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "pump_controller_manual"
+  ],
+  "source_evidence": "",
+  "latency_ms": 73.38,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "Paraphrased: What GPM can the PC-350 deliver with its 3-inch impeller?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+        "chunk_index": 73474,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.57078871961,
+        "lexical_score": 76.13666328302008,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The gun had a muzzle velocity of 1 , 579 ft / s ( 481 m / s ) and had a range of 3 , 200 yards ( 2 , 900 m ) at an elevation of 12 \u00b0 . The seven - inch ( 178 mm ) shell of the 110 - pounder Armstrong breech - loader weighed 107 \u2013 110 pounds ( 48 . 5 \u2013 49 . 9 kg ) . It had a muzzle velocity of 1 , 150 ft / s ( 350 m / s ) and , at an elevation of 11 . 25 \u00b0 , a maximum range of 4 , 000 yards ( 3 , 700 m ) . The 110 - pounder gun weighed 9 , 520 pounds ( 4 , 318 . 2 kg ) . All of the guns could fire both solid shot and explosive shells . Achilles was rearmed during her 1867 \u2013 68 refit with 22 seven - inch and eight 8 - inch ( 203 mm ) rifled muzzle - loading guns . The eight - inch guns and 18 seven - inch guns were mounted on the main deck and the remaining seven - inch guns replaced the 110 - pounders on the upper deck .",
+        "chunk_index": 18304,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.216919625493,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The ship 's 15 - inch gun turrets were modified to the Mark I ( N ) standard with their elevation increased to 30 \u00b0 . Twenty dual - purpose QF 4 . 5 - inch Mark III guns in twin BD Mark II mountings replaced all of the 4 - inch guns . Six of the gun turrets , three on each side , were abreast the forward funnel while the remaining four were mounted on abreast the main mast . The BD Mark II mounts had elevation limits of \u2212 5 \u00b0 to + 80 \u00b0 . The Mark III gun fired a 55 - pound ( 25 kg ) high explosive shell at a muzzle velocity of about 2 , 350 ft / s ( 720 m / s ) . Its rate of fire was 12 rounds per minute . They had a maximum effective ceiling of 41 , 000 ft ( 12 , 000 m ) . The guns were controlled by four dual - purpose Mark IV directors , two mounted on the rear of the bridge structure and the remaining two on the aft superstructure .",
+        "chunk_index": 53853,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.203433976131,
+        "lexical_score": 27.283898739685352,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The torpedo tubes were located underneath the waterline and were loaded in a dedicated compartment . Full ammunition loads were 1 , 440 rounds for the 12 - inch guns ( 120 per gun ) , 3 , 600 rounds for the 6 - inch ( 300 ) , 5 , 600 rounds for the 4 - inch ( 350 ) , and 16 torpedoes manufactured by Whitehead . To assist the main battery with targeting during a battle , the two ships were equipped with two Barr & Stroud rangefinders that were located above the conning towers . Rivadavia and Moreno used Brown \u2013 Curtis geared steam turbines , powered by 18 Babcock & Wilcox boilers and connected to three propellers . With a total output of about 40 , 000 shaft horsepower ( 30 , 000 kW ) , the ships were designed to travel at a maximum speed of 22 . 5 knots ( 41 . 7 km / h ; 25 . 9 mph ) and may have been capable of slightly more .",
+        "chunk_index": 40156,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.216919625493,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fame carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships mounted four 4 . 7 - inch ( 120 mm ) Mark IX guns in single mounts , designated ' A ' , ' B ' , ' X ' , and ' Y ' from front to rear . For anti - aircraft ( AA ) defence , they had two quadruple Mark I mounts for the 0 . 5 inch Vickers Mark III machine gun . The F class was fitted with two above - water quadruple torpedo tube mounts for 21 - inch ( 533 mm ) torpedoes . One depth charge rack and two throwers were fitted ; 20 depth charges were originally carried , but this increased to 38 shortly after the war began . = = = Wartime modifications = = = Fame had her rear torpedo tubes replaced by a 12 - pounder AA gun while under repair in mid - 1940 .",
+        "chunk_index": 43297,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.179025684804,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The turbines developed a total of 36 , 000 shaft horsepower ( 27 , 000 kW ) and gave a maximum speed of 35 . 5 knots ( 65 . 7 km / h ; 40 . 9 mph ) . Forester carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships mounted four 4 . 7 - inch ( 120 mm ) Mark IX guns in single mounts , designated ' A ' , ' B ' , ' X ' , and ' Y ' in sequence from front to rear . For anti - aircraft ( AA ) defence , they had two quadruple Mark I mounts for the 0 . 5 inch Vickers Mark III machine gun . The F class was fitted with two above - water quadruple torpedo tube mounts for 21 - inch ( 533 mm ) torpedoes .",
+        "chunk_index": 56144,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.179025684804,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "7 km / h ; 40 . 9 mph ) . Escort carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships mounted four 45 - calibre 4 . 7 - inch ( 120 mm ) Mark IX guns in single mounts . For anti - aircraft ( AA ) defence , they had two quadruple Mark I mounts for the 0 . 5 inch Vickers Mark III machine gun . The E class was fitted with two above - water quadruple torpedo tube mounts for 21 - inch ( 533 mm ) torpedoes . One depth charge rail and two throwers were fitted ; 20 depth charges were originally carried , but this increased to 35 shortly after the war began .",
+        "chunk_index": 61973,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.179025684804,
+        "lexical_score": 24.74034582022454,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Rewrite ranked first in terms of national sales of PC games in Japan in June 2011 . Rewrite would rank twice more in the top 50 highest selling PC games in Japan , at No. 14 in July and at No. 29 in August 2011 . According to public sales information published at Gamasutra , taken from the Japanese Amazon website , Rewrite was the number one top seller of PC games in Japan the day of its release . Rewrite premiered as the No. 1 game sold on Getchu.com , a major redistributor of visual novel and domestic anime products , during the month of its release , and at No. 30 in July . The game would go on to be the No. 8 game sold for the first half of 2011 , and at No. 11 for the whole year . In 2012 , Rewrite Harvest festa ! ranked three times in the top ten in national PC game pre - orders in Japan . The rankings were at No. 6 in April , No. 3 in May , and No. 1 in June . Harvest festa !",
+        "chunk_index": 62782,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.153280144121,
+        "lexical_score": 25.335284796646384,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Mole crickets stridulate like other crickets by scraping the rear edge of the left forewing , which forms a plectrum , against the lower surface of the right forewing , which has a ratchet - like series of asymmetric teeth : the more acute edges face backwards , as do those of the plectrum . The plectrum can move forwards with little resistance ; but moving it backwards makes it catch each tooth , setting up a vibration in both wings . The sound - producing stroke is the raising ( levation ) of the wings . The resulting song resembles the result of modulating a pure tone with a 66 Hertz wave to form regular chirps . In G. vineae , the wing levator muscle , which weighs 50 milligrams , can deliver 3 . 5 milliWatts of mechanical power ; G. gryllotalpa can deliver about 1 milliWatt . G.",
+        "chunk_index": 10650,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.181202771532,
+        "lexical_score": 24.667025683481633,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "An example of this is Messier 3 ( M3 ) , which has an overall visible dimension of about 18 arc minutes , but a half - mass radius of only 1 . 12 arc minutes . Almost all globular clusters have a half - light radius of less than 10 pc , although there are well - established globular clusters with very large radii ( i.e. NGC 2419 ( Rh = 18 pc ) and Palomar 14 ( Rh = 25 pc ) ) . Finally the tidal radius , or Hill sphere , is the distance from the center of the globular cluster at which the external gravitation of the galaxy has more influence over the stars in the cluster than does the cluster itself . This is the distance at which the individual stars belonging to a cluster can be separated away by the galaxy . The tidal radius of M3 is about 40 arc minutes , or about 113 pc at the distance of 10 . 4 kpc .",
+        "chunk_index": 47108,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.177901183089,
+        "lexical_score": 23.832060832814992,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "XP can be lost in some circumstances , such as encounters with creatures that drain life energy , or by use of certain magical powers that come with an XP cost . Hit points ( HP ) are a measure of a character 's vitality and health and are determined by the class , level and constitution of each character . They can be temporarily lost when a character sustains wounds in combat or otherwise comes to harm , and loss of HP is the most common way for a character to die in the game . Death can also result from the loss of key ability scores or character levels . When a PC dies , it is often possible for the dead character to be resurrected through magic , although some penalties may be imposed as a result . If resurrection is not possible or not desired , the player may instead create a new PC to resume playing the game .",
+        "chunk_index": 31696,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.1400072424,
+        "lexical_score": 24.2504315970872,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "According to John Riccitiello , CEO of Electronic Arts , the company is very satisfied with the sales of Origins ; more than 1 million DLC packs for the game were sold before the end of 2009 . In February 2010 , Electronic Arts announced that more than 3 . 2 million copies of the game had been sold . = = = Accolades = = = Origins gained recognition from several gaming publications for its achievements . The Academy of Interactive Arts & Sciences named it the \" Role - Playing / Massively Multiplayer Game of the Year 2009 \" . At the 2009 Spike Video Game Awards , Dragon Age : Origins received the Best PC Game and Best RPG awards . It was chosen as the PC Game of the Year , Best Xbox 360 RPG of the Year , Best Story of the Year , and Best PC Role - Playing Game of the Year by IGN .",
+        "chunk_index": 19422,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.161449818889,
+        "lexical_score": 22.791731877185573,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The first part to be constructed was the Big Inch , its initial leg running to an interim terminal at Norris City , where oil was to be off - loaded to the railroad network . Once this leg was complete , it was extended to its terminus at Phoenixville . When the Big Inch was complete , work began on the third phase of the project , the Little Big Inch . The first purchase order , for 137 , 500 short tons ( 124 , 700 t ) of 24 - inch - diameter pipe , was placed on July 2 , 1942 . To meet a construction deadline of January 1 , 1943 , the laying of pipe began on August 3 , 1942 , near Little Rock . Other pipeline crews began work immediately on segments elsewhere in Arkansas and Texas . By September 10 all eight pipelaying crews , each consisting of between 300 and 400 men , were in the field working . The schedule called for 5 miles ( 8 .",
+        "chunk_index": 26638,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.140942295679,
+        "lexical_score": 22.99801596556437,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" All three magazines concluded by praising the game despite its technical flaws , and PC Gamer summarized that , while \" Square apparently did only what was required to get its PlayStation game running under Windows , \" Final Fantasy VII is \" still a winner on the PC . \" Final Fantasy VII has received some negative criticism as well . Square 's announcement that it would be produced for Sony rather than Nintendo and that it would not be based on the Final Fantasy SGI demo was met with discontent among some gamers . Official U.S. PlayStation Magazine ( OPM ) and GameSpot questioned the game 's linear progression . OPM considered the game 's translation \" a bit muddy \" and felt the summon animations were \" repetitive . \" RPGamer cited its translation as \" packed with typos and other errors which further obscure what is already a very confusing plot .",
+        "chunk_index": 57021,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.16932459698,
+        "lexical_score": 21.129444730198937,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "In turn , the actual construction and operation of the pipelines would be carried out by the War Emergency Pipelines company ( WEP ) , a non - profit corporation backed by a consortium of the largest oil companies in the United States : Atlantic Refining , Cities Service Oil , Consolidated Oil , Gulf Oil , Pan American Petroleum and Transportation , Standard Oil , Tidewater Associated Oil , Shell Oil , Socony - Vacuum Oil , Sun Oil and the Texas Pipe Line Company . The WEP was led by W. Alton Jones and Burt Hull , both with extensive backgrounds in the industry , with Oscar Wolfe as its chief engineer . The company established its offices in Little Rock , Arkansas . = = Construction = = = = = Design and management = = = The Inch pipelines comprised two systems , the Big Inch pipeline and the Little Big Inch pipeline .",
+        "chunk_index": 26630,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.111218029758,
+        "lexical_score": 22.99801596556437,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" Game Informer called the writing and story \" on par with any fantasy novel . \" PC Gamer said it had \" some of the richest and most enjoyable dialogue since Planescape Torment , \" and an \" impressive storyline . \" GameSpot called the story \" engrossing , \" and said that \" the game is very well written , offering up a number of strong characters and serious themes . \" PC Zone noted that , \" thanks to the excellent NPCs , the battles have a lot more meaning , as there is a strong storyline behind the endless hacking and slashing . \" PC Format thought that \" IDII also suffers , like its predecessor , from a story irrevocably weakened by anonymous central characters \u2013 the six you create .",
+        "chunk_index": 18155,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.1235558782,
+        "lexical_score": 22.791731877185573,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Concurrent viewership numbers of professional Dota 2 matches have reached upwards of two million . = = = Awards and accolades = = = Following its first public showing in 2011 , Dota 2 won IGN 's People 's Choice Award . In December 2012 , PC Gamer listed Dota 2 as a nominee for the 2012 Game of the Year award , as well as the best electronic sports title of the year . The game won 2013 eSport of the year awards from PC Gamer and onGamers . GameTrailers awarded the game the award for Best PC Game of 2013 . For IGN 's Best of 2013 award series , Dota 2 won the awards for Best PC Strategy & Tactics Game , as well as Best PC Multiplayer Game . The game 's awards for IGN 's Best of 2013 won their People 's Choice Award counterparts , as well . Similarly , Game Informer recognized Dota 2 for the categories of Best PC Exclusive , Best Competitive Multiplayer and Best Strategy of 2013 .",
+        "chunk_index": 8241,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.115386203432,
+        "lexical_score": 22.791731877185573,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" In 2006 , PC Zone listed Bloodlines the seventh - best PC game which people were unlikely to have played , calling it the \" best buggy game ever released \" . In 2007 , the game was 80th on Computer & Video Games ' list of its top 100 games , and 86th on PC Gamer 's 2014 list of the same , moving to 63rd in PC Gamer 's 2015 edition . In 2011 , Rock , Paper , Shotgun called Bloodlines one of the most important PC games of all time ( \" it signposts a direction to a future of games that we were denied \" ) , listing it as one of the 122 Best PC Games Ever . Cinema Blend called it one of the most underappreciated games of the decade . In 2011 , Official Xbox Magazine called it one of the ten PC franchises it wanted on the Xbox 360 console . In 2013 , PC Gamer named it one of the 100 Best Horror Games on PC , and PCGamesN called it the seventh - best PC role - playing game .",
+        "chunk_index": 30407,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.115386203432,
+        "lexical_score": 22.791731877185573,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "This re - release featured smoother graphics , and also fixed translation and spelling errors , as well as gameplay - related glitches . However , the PC version suffered from diminished audio quality due to its use of the MIDI format and errors in the display of some FMVs when rendering in hardware mode on certain graphics chipsets . Since the original PC release of the game , fans have created hundreds of mods for the PC version of the game . The most prominent community being the Qhimm.com forum community , featuring various mods including game patches ( for better compatibility with modern Windows and graphics cards ) , PC - PS save game converter , save game editor , game trainers , character models , world map , cutscenes , music , and battle stages .",
+        "chunk_index": 57013,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.1235558782,
+        "lexical_score": 22.791731877185573,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Directly comparing the two versions , AllGame 's Brad Cook wrote that PC version 's handling is more difficult than the N64 version . He believed the PC 's \" choppy \" feel made it difficult to target enemies . In contrast to its opinion of the N64 version , IGN 's PC review was not enthusiastic about the game 's visuals . IGN staff remarked that Rogue Squadron 's \" graphics and special effects aren 't spectacular \" and that they had \" seen better graphics \" on the PC . = = = Sales = = = When Rogue Squadron was released in early December 1998 , the title 's Nintendo 64 incarnation was the second - highest - selling video game for the first half of the month ( behind Nintendo 's The Legend of Zelda : Ocarina of Time ) and the holiday season .",
+        "chunk_index": 31247,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.115386203432,
+        "lexical_score": 22.791731877185573,
+        "origin": "full_question"
+      }
+    ],
+    "context": "- Flow rate: 0-100 GPM depending on impeller size.\nTECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft\nFull ammunition loads were 1 , 440 rounds for the 12 - inch guns ( 120 per gun ) , 3 , 600 rounds for the 6 - inch ( 300 ) , 5 , 600 rounds for the 4 - inch ( 350 ) , and 16 torpedoes manufactured by Whitehead .\nvineae , the wing levator muscle , which weighs 50 milligrams , can deliver 3 .\ngryllotalpa can deliver about 1 milliWatt ."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73474,
+      "preview": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before rem",
+      "evidence": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+      "score": 76.137,
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 18304,
+      "preview": "The gun had a muzzle velocity of 1 , 579 ft / s ( 481 m / s ) and had a range of 3 , 200 yards ( 2 , 900 m ) at an elevation of 12 \u00b0 . The seven - inch ( 178 mm ) shell of the 110 - pounder Armstrong breech - loader weighed 107 \u2013 110 pounds",
+      "evidence": "The gun had a muzzle velocity of 1 , 579 ft / s ( 481 m / s ) and had a range of 3 , 200 yards ( 2 , 900 m ) at an elevation of 12 \u00b0 . The seven - inch ( 178 mm ) shell of the 110 - pounder Armstrong breech - loader weighed 107 \u2013 110 pounds ( 48 . 5 \u2013 49 . 9 kg ) . It had a muzzle velocity of 1 , 150 ft / s ( 350 m / s ) and , at an elevation of 11 . 25 \u00b0 , a maximum range of 4 , 000 yards ( 3 , 700 m ) . The 110 - pounder gun weighed 9 , 520 pounds ( 4 , 318 . 2 kg ) . All of the guns could fire both solid shot and explosive shells . Achilles was rearmed during her 1867 \u2013 68 refit with 22 seven - inch and eight 8 - inch ( 203 mm ) rifled muzzle - loading guns . The eight - inch guns and 18 seven - inch guns were mounted on the main deck and the remaining seven - inch guns replaced the 110 - pounders on the upper deck .",
+      "score": 24.74
+    },
+    {
+      "rank": 3,
+      "id": 53853,
+      "preview": "The ship 's 15 - inch gun turrets were modified to the Mark I ( N ) standard with their elevation increased to 30 \u00b0 . Twenty dual - purpose QF 4 . 5 - inch Mark III guns in twin BD Mark II mountings replaced all of the 4 - inch guns . Six o",
+      "evidence": "The ship 's 15 - inch gun turrets were modified to the Mark I ( N ) standard with their elevation increased to 30 \u00b0 . Twenty dual - purpose QF 4 . 5 - inch Mark III guns in twin BD Mark II mountings replaced all of the 4 - inch guns . Six of the gun turrets , three on each side , were abreast the forward funnel while the remaining four were mounted on abreast the main mast . The BD Mark II mounts had elevation limits of \u2212 5 \u00b0 to + 80 \u00b0 . The Mark III gun fired a 55 - pound ( 25 kg ) high explosive shell at a muzzle velocity of about 2 , 350 ft / s ( 720 m / s ) . Its rate of fire was 12 rounds per minute . They had a maximum effective ceiling of 41 , 000 ft ( 12 , 000 m ) . The guns were controlled by four dual - purpose Mark IV directors , two mounted on the rear of the bridge structure and the remaining two on the aft superstructure .",
+      "score": 27.284
+    },
+    {
+      "rank": 4,
+      "id": 40156,
+      "preview": "The torpedo tubes were located underneath the waterline and were loaded in a dedicated compartment . Full ammunition loads were 1 , 440 rounds for the 12 - inch guns ( 120 per gun ) , 3 , 600 rounds for the 6 - inch ( 300 ) , 5 , 600 rounds",
+      "evidence": "The torpedo tubes were located underneath the waterline and were loaded in a dedicated compartment . Full ammunition loads were 1 , 440 rounds for the 12 - inch guns ( 120 per gun ) , 3 , 600 rounds for the 6 - inch ( 300 ) , 5 , 600 rounds for the 4 - inch ( 350 ) , and 16 torpedoes manufactured by Whitehead . To assist the main battery with targeting during a battle , the two ships were equipped with two Barr & Stroud rangefinders that were located above the conning towers . Rivadavia and Moreno used Brown \u2013 Curtis geared steam turbines , powered by 18 Babcock & Wilcox boilers and connected to three propellers . With a total output of about 40 , 000 shaft horsepower ( 30 , 000 kW ) , the ships were designed to travel at a maximum speed of 22 . 5 knots ( 41 . 7 km / h ; 25 . 9 mph ) and may have been capable of slightly more .",
+      "score": 24.74
+    },
+    {
+      "rank": 5,
+      "id": 43297,
+      "preview": "Fame carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships ",
+      "evidence": "Fame carried a maximum of 470 long tons ( 480 t ) of fuel oil that gave her a range of 6 , 350 nautical miles ( 11 , 760 km ; 7 , 310 mi ) at 15 knots ( 28 km / h ; 17 mph ) . The ships ' complement was 145 officers and ratings . The ships mounted four 4 . 7 - inch ( 120 mm ) Mark IX guns in single mounts , designated ' A ' , ' B ' , ' X ' , and ' Y ' from front to rear . For anti - aircraft ( AA ) defence , they had two quadruple Mark I mounts for the 0 . 5 inch Vickers Mark III machine gun . The F class was fitted with two above - water quadruple torpedo tube mounts for 21 - inch ( 533 mm ) torpedoes . One depth charge rack and two throwers were fitted ; 20 depth charges were originally carried , but this increased to 38 shortly after the war began . = = = Wartime modifications = = = Fame had her rear torpedo tubes replaced by a 12 - pounder AA gun while under repair in mid - 1940 .",
+      "score": 24.74
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}
