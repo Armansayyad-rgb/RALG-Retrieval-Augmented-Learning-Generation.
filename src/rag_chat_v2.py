@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import hashlib
 import logging
@@ -1540,6 +1540,18 @@ def extract_factual_answer(question, context):
         ]
         if eligible:
             _, _, sentence = max(eligible)
+            # Generic predicate relevance check: prevent a factual answer
+            # from being accepted when the selected sentence identifies the
+            # subject but does not satisfy the requested question predicate/attribute.
+            # This prevents subject-identification-only sentences from being
+            # accepted for questions requesting a distinct factual attribute.
+            predicate_terms = _extract_question_predicate_terms(question)
+            if predicate_terms:
+                sentence_low = sentence.lower()
+                if not any(
+                    _contains_term(sentence_low, term) for term in predicate_terms
+                ):
+                    return None, False
             return sentence, True
 
     return None, False
@@ -5817,3 +5829,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
