@@ -770,7 +770,7 @@ PREDICATE_LEXICON = {
         "purpose of", "used for",
     ),
     "color": (
-        "color is", "colour is",
+        "color is", "colour is", "color", "colour",
     ),
 }
 
@@ -1002,6 +1002,463 @@ def _named_fact_anchors_match(question, candidate_sentence):
     )
 
 
+def _split_factual_attribute_list(attribute_text):
+    """Split a clear list of requested factual attributes."""
+    text = re.sub(r"\s+", " ", str(attribute_text or "")).strip()
+    if not text:
+        return []
+
+    protected = {
+        "research and development",
+        "health and safety",
+        "safety and compliance",
+        "terms and conditions",
+        "signal and noise",
+        "input and output",
+    }
+    lowered = text.lower()
+    if any(phrase in lowered for phrase in protected):
+        return []
+
+    if "," in text:
+        raw_parts = [
+            part.strip(" ,")
+            for part in re.split(r"\s*,\s*(?:and\s+)?", text)
+        ]
+    elif re.search(r"\bboth\b.+\band\b", lowered):
+        without_both = re.sub(
+            r"^\s*both\s+",
+            "",
+            text,
+            flags=re.IGNORECASE,
+        )
+        raw_parts = re.split(r"\s+\band\b\s+", without_both, maxsplit=1)
+    elif re.search(r"\s+\bplus\b\s+", lowered):
+        raw_parts = re.split(r"\s+\bplus\b\s+", text, maxsplit=1)
+    elif re.search(r"\s+\band\b\s+", lowered):
+        raw_parts = re.split(r"\s+\band\b\s+", text, maxsplit=1)
+    else:
+        return []
+
+    parts = [part.strip(" ,") for part in raw_parts if part.strip(" ,")]
+    if len(parts) < 2:
+        return []
+
+    ignored = {
+        "the", "a", "an", "and", "or", "plus", "both",
+    }
+    normalized = []
+    for part in parts:
+        terms = [
+            token
+            for token in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)?", part.lower())
+            if token not in ignored
+        ]
+        if not terms:
+            return []
+        normalized.append(part)
+
+    return normalized
+
+
+def _derive_multi_part_factual_questions(question):
+    """Return subquestions for clear multi-attribute factual requests."""
+    q = str(question or "").strip()
+
+    clause_match = re.match(
+        r"^\s*what\s+(.+?)\s+should\s+be\s+used\s+"
+        r"\bfor\b\s+(.+?),\s+and\s+what\s+"
+        r"(?:is|are|was|were)\s+(?:the\s+)?(.+?)\s*[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if clause_match:
+        first_attr, subject, second_attr = clause_match.groups()
+        first_attr = re.split(
+            r"\s+\band\b\s+",
+            first_attr.strip(),
+            maxsplit=1,
+            flags=re.IGNORECASE,
+        )[0]
+        return [
+            f"What is the {first_attr.strip()} for {subject.strip()}?",
+            f"What is the {second_attr.strip()}?",
+        ]
+
+    required_match = re.match(
+        r"^\s*what\s+(.+?)\s+are\s+required\s+before\s+"
+        r"(.+?)\s*[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if required_match:
+        attributes, subject = required_match.groups()
+        parts = _split_factual_attribute_list(attributes)
+        if len(parts) >= 2:
+            return [
+                f"What are the {part} before {subject.strip()}?"
+                for part in parts
+            ]
+
+    possessive_match = re.match(
+        r"^\s*what\s+(?:are|is)\s+(?:the\s+)?"
+        r"(.+?)\s+\bfor\b\s+(.+?)\s+and\s+its\s+"
+        r"(.+?)\s*[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if possessive_match:
+        first_attr, subject, second_attr = possessive_match.groups()
+        return [
+            f"What are the {first_attr.strip()} for {subject.strip()}?",
+            f"What is the {second_attr.strip()} for {subject.strip()}?",
+        ]
+
+    match = re.match(
+        r"^\s*(what|which)\s+"
+        r"(?:(?:is|are|was|were)\s+)?"
+        r"(?:the\s+)?"
+        r"(.+?)\s+"
+        r"\b(for|of|in|on|at)\b\s+"
+        r"(.+?)\s*[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return []
+
+    wh_word, attributes, relation, subject = match.groups()
+    attributes = re.sub(
+        r"^\s*both\s+",
+        "",
+        attributes,
+        flags=re.IGNORECASE,
+    ).strip()
+    subject = subject.strip()
+    if not subject:
+        return []
+
+    parts = _split_factual_attribute_list(attributes)
+    if len(parts) < 2:
+        return []
+
+    subquestions = []
+    for part in parts:
+        prefix = "What is" if wh_word.lower() == "what" else "Which is"
+        subquestions.append(
+            f"{prefix} the {part} {relation.lower()} {subject}?"
+        )
+
+    return subquestions
+
+
+def _section_blocks(context):
+    lines = str(context or "").splitlines()
+    blocks = []
+    current = None
+    for line in lines:
+        stripped = line.strip()
+        header = re.match(r"^\d+\.?\s+([A-Z][A-Z0-9() /-]+)$", stripped)
+        if header:
+            if current is not None:
+                blocks.append(current)
+            current = {
+                "header": header.group(1).strip(),
+                "lines": [],
+            }
+            continue
+        if current is not None:
+            if re.match(r"^-{3,}$", stripped):
+                continue
+            current["lines"].append(stripped)
+    if current is not None:
+        blocks.append(current)
+    return blocks
+
+
+def _content_terms(text):
+    ignored = {
+        "what", "which", "how", "is", "are", "was", "were", "the",
+        "a", "an", "for", "of", "in", "on", "at", "and", "or",
+        "its", "before", "after", "complete", "required", "apply",
+        "applies", "to", "both",
+    }
+    return [
+        token
+        for token in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)?", str(text).lower())
+        if token not in ignored and len(token) > 2
+    ]
+
+
+def _extract_section_answer(question, context):
+    q_terms = set(_content_terms(question))
+    section_markers = {
+        "procedure", "procedures", "precaution", "precautions",
+        "sequence", "steps", "inspection", "charging", "startup",
+        "safety", "refrigerant", "lubrication", "operation",
+    }
+    if not q_terms & section_markers:
+        return None
+
+    def _clean_items(block):
+        items = []
+        for line in block["lines"]:
+            clean = re.sub(
+                r"^(?:[-*]\s+|[a-z]\.\s+|STEP\s+\d+:\s*)",
+                "",
+                line.strip(),
+                flags=re.IGNORECASE,
+            ).strip()
+            if clean:
+                items.append(clean.rstrip("."))
+        return items
+
+    requested_entities = [
+        term for term in q_terms
+        if term not in section_markers
+        and term not in {"machine", "maintenance", "safety"}
+    ]
+    both_entities_requested = "both" in str(question or "").lower()
+
+    if both_entities_requested and requested_entities:
+        combined = []
+        for block in _section_blocks(context):
+            header = block["header"].lower()
+            header_terms = set(_content_terms(header))
+            if "general" in header_terms and "safety" in header_terms:
+                combined.extend(_clean_items(block))
+            elif "machine" in header and "specific" in header:
+                active = False
+                for item in _clean_items(block):
+                    proc = re.match(
+                        r"^PROCEDURE\s+[A-Z]:\s+(.+)$",
+                        item,
+                        flags=re.IGNORECASE,
+                    )
+                    if proc:
+                        proc_low = proc.group(1).lower()
+                        active = any(
+                            _contains_term(proc_low, entity)
+                            for entity in requested_entities
+                        )
+                        if active:
+                            combined.append(item)
+                        continue
+                    if active:
+                        combined.append(item)
+        if combined:
+            return "Safety Procedures: " + "; ".join(combined)
+
+    best = None
+    for block in _section_blocks(context):
+        header = block["header"].lower()
+        header_terms = set(_content_terms(header))
+        overlap = sum(
+            1 for term in q_terms
+            if _contains_term(header, term)
+            or any(_contains_term(term, header_term) for header_term in header_terms)
+        )
+        if overlap == 0:
+            continue
+        items = _clean_items(block)
+        if not items:
+            continue
+        score = overlap * 10 + len(items)
+        if best is None or score > best[0]:
+            best = (score, block["header"], items)
+
+    if best is None:
+        return None
+
+    _, header, items = best
+    return f"{header.title()}: " + "; ".join(items)
+
+
+def _extract_attribute_line_answer(question, context):
+    q_terms = _content_terms(question)
+    if not q_terms:
+        return None
+
+    candidates = []
+    for index, sentence in enumerate(_split_sentences(context)):
+        if sentence.isupper() and len(sentence.split()) <= 8:
+            continue
+        low = sentence.lower()
+        matched = [
+            term for term in q_terms
+            if _contains_term(low, term)
+        ]
+        if not matched:
+            continue
+        label_match = re.match(r"^\s*-?\s*([A-Za-z0-9 /()-]+):", sentence)
+        label_terms = (
+            set(_content_terms(label_match.group(1)))
+            if label_match else set()
+        )
+        label_answers_type = (
+            "type" in q_terms
+            and bool(label_terms)
+            and any(term in q_terms for term in label_terms)
+        )
+        if (
+            not label_answers_type
+            and not _predicate_answers_question(question, sentence, context)
+        ):
+            continue
+        candidates.append((len(matched), -index, sentence))
+
+    if not candidates:
+        return None
+
+    matched_count, _, sentence = max(candidates)
+    if matched_count < max(1, min(2, len(set(q_terms)))):
+        if not re.match(r"^\s*-?\s*([A-Za-z0-9 /()-]+):", sentence):
+            return None
+        if not any(
+            term in q_terms
+            for term in _content_terms(sentence.split(":", 1)[0])
+        ):
+            return None
+    return sentence
+
+
+def _question_requests_named_section(question):
+    terms = set(_content_terms(question))
+    return bool(terms & {
+        "procedure", "procedures", "precaution", "precautions",
+        "sequence", "steps", "inspection",
+    })
+
+
+def _question_identifiers(question):
+    return {
+        token.lower()
+        for token in re.findall(
+            r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
+            str(question or ""),
+            flags=re.IGNORECASE,
+        )
+    }
+
+
+def _context_has_question_identifiers(question, context):
+    identifiers = _question_identifiers(question)
+    if not identifiers:
+        return True
+    low = str(context or "").lower()
+    return all(_contains_term(low, identifier) for identifier in identifiers)
+
+
+def _extract_multi_part_subanswer(subquestion, context):
+    if _question_requests_named_section(subquestion):
+        answer = _extract_section_answer(subquestion, context)
+        if answer:
+            return answer
+
+    answer, supported = extract_factual_answer(
+        subquestion,
+        context,
+        _allow_multi_part=False,
+    )
+    if answer and supported:
+        return answer
+
+    return _extract_attribute_line_answer(subquestion, context)
+
+
+def _multi_part_subject_label(subquestions):
+    for subquestion in subquestions:
+        match = re.search(
+            r"\bfor\s+(.+?)\s*[?.]?\s*$",
+            subquestion,
+            flags=re.IGNORECASE,
+        )
+        if match:
+            return match.group(1).strip()
+    for subquestion in subquestions:
+        match = re.search(
+            r"\b([A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
+            subquestion,
+        )
+        if match:
+            return match.group(1).strip()
+    return None
+
+
+def _extract_multi_part_factual_answer(question, context):
+    subquestions = _derive_multi_part_factual_questions(question)
+    if len(subquestions) < 2:
+        return None, False
+
+    subanswers = []
+    for subquestion in subquestions:
+        answer = _extract_multi_part_subanswer(subquestion, context)
+        if not answer:
+            return None, False
+        subanswers.append(answer.rstrip(". "))
+
+    unique_answers = []
+    seen = set()
+    for answer in subanswers:
+        key = answer.casefold()
+        if key not in seen:
+            unique_answers.append(answer)
+            seen.add(key)
+
+    if len(unique_answers) != len(subquestions):
+        return None, False
+
+    composed = "; ".join(unique_answers) + "."
+    subject = _multi_part_subject_label(subquestions)
+    if subject and not _answer_addresses_question(question, composed):
+        composed = f"For {subject}, {composed}"
+    if not cheap_grounding_check(composed, context):
+        return None, False
+    return composed, True
+
+
+def _factual_answer_present_in_evidence(answer, evidence_text):
+    if not answer or not evidence_text:
+        return False
+
+    if answer.casefold() in evidence_text.casefold():
+        return True
+
+    parts = [
+        part.strip()
+        for part in str(answer).split(";")
+        if part.strip()
+    ]
+    if len(parts) < 2:
+        return False
+
+    evidence_low = evidence_text.casefold()
+    return all(part.rstrip(". ").casefold() in evidence_low for part in parts)
+
+
+def _filter_evidence_results_for_factual_answer(answer, evidence_results):
+    if not answer or not isinstance(evidence_results, list):
+        return evidence_results
+
+    parts = [
+        part.strip().rstrip(". ")
+        for part in str(answer).split(";")
+        if part.strip()
+    ]
+    if len(parts) < 2:
+        return evidence_results
+
+    filtered = []
+    for item in evidence_results:
+        if not isinstance(item, dict):
+            continue
+        chunk_low = str(item.get("chunk", "")).casefold()
+        if any(part.casefold() in chunk_low for part in parts):
+            filtered.append(item)
+
+    return filtered or evidence_results
+
+
 # --------------------------------------------------
 # SOP section extraction
 # --------------------------------------------------
@@ -1170,7 +1627,7 @@ def _extract_sop_section(question, chunk):
     return "; ".join(_items)
 
 
-def extract_factual_answer(question, context):
+def extract_factual_answer(question, context, *, _allow_multi_part=True):
     """
     Extract a factual answer from context for who/when/where/what/which questions.
     Uses simple pattern matching and extractor_v1 where possible.
@@ -1183,6 +1640,25 @@ def extract_factual_answer(question, context):
 
     if _has_false_required_safety_action(question):
         return None, False
+
+    if _allow_multi_part:
+        composed_answer, composed_supported = (
+            _extract_multi_part_factual_answer(question, context)
+        )
+        if composed_answer is not None and composed_supported:
+            return composed_answer, True
+        if _derive_multi_part_factual_questions(question):
+            return None, False
+
+    if _question_requests_named_section(question):
+        section_answer = _extract_section_answer(question, context)
+        if section_answer and _answer_addresses_question(
+            question,
+            section_answer,
+        ):
+            return section_answer, True
+        if _allow_multi_part:
+            return None, False
 
     # Try the existing extractor first
     extracted = extract_answer(question, context)
@@ -4586,10 +5062,50 @@ def _answer_question_impl(
             if not (
                 "sop" in _ev_low
                 or "standard operating procedure" in _ev_low
+                or "safety precautions" in _ev_low
+                or "startup sequence" in _ev_low
+                or "inspection phase" in _ev_low
                 or "lockout/tagout" in _ev_low
+                or "lockout-tagout" in _ev_low
                 or "before starting" in _ev_low
             ):
                 continue
+            if not _context_has_question_identifiers(question, _ev_chunk):
+                continue
+            if _question_requests_named_section(question):
+                _full_fa, _full_fs = extract_factual_answer(
+                    question,
+                    _ev_chunk,
+                )
+                if _full_fa and _full_fs:
+                    result["answer"] = _full_fa
+                    result["answer_type"] = "factual"
+                    result["supported"] = True
+                    result["confidence"] = (
+                        extraction_confidence(
+                            question, _ev_chunk, _full_fa,
+                        )
+                    )
+                    result["context"] = _ev_chunk
+                    result["evidence"] = {
+                        "kind": "hybrid",
+                        "results": [_ev_item],
+                        "context": _ev_chunk,
+                    }
+                    if verbose:
+                        print(
+                            "\nFactual answer"
+                            " (full section early):",
+                            _full_fa,
+                        )
+                    if not _answer_addresses_question(
+                        question, _full_fa,
+                    ):
+                        result = build_system_result(
+                            result,
+                        )
+                        return result
+                    return result
             _sec_ans = _extract_sop_section(
                 question, _ev_chunk,
             )
@@ -4613,6 +5129,11 @@ def _answer_question_impl(
                         )
                     )
                     result["context"] = _ev_chunk
+                    result["evidence"] = {
+                        "kind": "hybrid",
+                        "results": [_ev_item],
+                        "context": _ev_chunk,
+                    }
                     if verbose:
                         print(
                             "\nFactual answer"
@@ -4669,7 +5190,10 @@ def _answer_question_impl(
             )
             if (
                 not evidence_text
-                or factual_answer.casefold() not in evidence_text.casefold()
+                or not _factual_answer_present_in_evidence(
+                    factual_answer,
+                    evidence_text,
+                )
             ):
                 factual_answer, supported = None, False
 
@@ -4696,6 +5220,21 @@ def _answer_question_impl(
                 reasoning_context,
                 factual_answer,
             )
+
+            used_evidence_results = _filter_evidence_results_for_factual_answer(
+                factual_answer,
+                evidence_results,
+            )
+            if used_evidence_results is not evidence_results:
+                result["evidence"] = {
+                    "kind": "hybrid",
+                    "results": used_evidence_results,
+                    "context": "\n".join(
+                        str(item.get("chunk", ""))
+                        for item in used_evidence_results
+                        if isinstance(item, dict)
+                    ),
+                }
 
             result[
                 "multi_hop"
@@ -4764,10 +5303,16 @@ def _answer_question_impl(
             _is_procedural = (
                 "sop" in _chunk_low
                 or "standard operating procedure" in _chunk_low
+                or "safety precautions" in _chunk_low
+                or "startup sequence" in _chunk_low
+                or "inspection phase" in _chunk_low
                 or "lockout/tagout" in _chunk_low
+                or "lockout-tagout" in _chunk_low
                 or "before starting" in _chunk_low
             )
             if not _is_procedural:
+                continue
+            if not _context_has_question_identifiers(question, _chunk):
                 continue
 
             # Section-level extraction for SOP documents: identify
@@ -4783,7 +5328,8 @@ def _answer_question_impl(
                     _section_answer.casefold()
                     not in _chunk.casefold()
                 ):
-                    continue
+                    _section_answer = None
+            if _section_answer:
                 result["answer"] = _section_answer
                 result["answer_type"] = "factual"
                 result["supported"] = True
@@ -4794,6 +5340,11 @@ def _answer_question_impl(
                     )
                 )
                 result["context"] = _chunk
+                result["evidence"] = {
+                    "kind": "hybrid",
+                    "results": [_item],
+                    "context": _chunk,
+                }
                 if verbose:
                     print(
                         "\nFactual answer"
@@ -4822,6 +5373,11 @@ def _answer_question_impl(
                     )
                 )
                 result["context"] = _chunk
+                result["evidence"] = {
+                    "kind": "hybrid",
+                    "results": [_item],
+                    "context": _chunk,
+                }
                 if verbose:
                     print(
                         "\nFactual answer"
@@ -5829,4 +6385,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
