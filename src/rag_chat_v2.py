@@ -369,6 +369,8 @@ def _term_variants(term):
     if len(term) > 5 and term.endswith("ing"):
         variants.add(term[:-3])
         variants.add(term[:-3] + "e")
+    if len(term) > 4 and term.endswith("e"):
+        variants.add(term[:-1] + "ing")
     if len(term) > 3 and term.endswith("s") and not term.endswith("ss"):
         variants.add(term[:-1])
     return variants
@@ -943,6 +945,7 @@ def _anchor_entity_present(sentence, anchor, question):
     in_compound = 0
 
     for match in _PROPER_NOUN_PHRASE.finditer(sentence):
+        start_idx = match.start()
         tokens = [
             token.lower()
             for token in match.group(0).split()
@@ -954,8 +957,20 @@ def _anchor_entity_present(sentence, anchor, question):
         ]
         if anchor_low not in core:
             continue
+
+        # Sentence-start mitigation: If the compound starts at the beginning
+        # of the sentence and consists of [CapitalizedWord, Anchor],
+        # it's likely not a proper noun compound (e.g., "Confirm Power").
+        if start_idx == 0 and len(core) == 2:
+            # If the first word is a common verb/adjective, treat as standalone
+            # For now, we'll just treat all 2-word sentence-start compounds
+            # as standalone if the second word is our anchor.
+            if core[1] == anchor_low:
+                # This is a standalone occurrence (effectively)
+                continue
+
         in_compound += 1
-        if len(core) == 1 or " ".join(core) in question.lower():
+        if len(core) == 1 or all(word in question.lower() for word in core):
             in_matching_compound += 1
 
     standalone = total_occurrences - in_compound
@@ -1181,13 +1196,44 @@ def _content_terms(text):
         "what", "which", "how", "is", "are", "was", "were", "the",
         "a", "an", "for", "of", "in", "on", "at", "and", "or",
         "its", "before", "after", "complete", "required", "apply",
-        "applies", "to", "both",
+        "applies", "to", "both", "safely", "correctly",
     }
-    return [
-        token
-        for token in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)?", str(text).lower())
-        if token not in ignored and len(token) > 2
-    ]
+    tokens = re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)?", str(text).lower())
+    result = []
+    seen = set()
+    for token in tokens:
+        if token not in ignored and len(token) > 2 and token not in seen:
+            result.append(token)
+            seen.add(token)
+            # Also yield individual words from hyphenated compounds
+            # so that "short-cycle" produces "short" and "cycle" for
+            # matching against "short cycling" etc.
+            if '-' in token:
+                for word in token.split('-'):
+                    if word not in ignored and len(word) > 2 and word not in seen:
+                        result.append(word)
+                        seen.add(word)
+    return result
+
+
+# Generic terms that should NOT independently establish grounding for
+# consequence/effect or condition matching. A single overlap on one of
+# these words is insufficient to claim a semantic relation.
+# Includes both phenomenon terms (failure, damage) and subject/entity
+# terms (conveyor, valve, filter) that appear across many records.
+_GENERIC_OVERLAP_TERMS = frozenset({
+    'system', 'pressure', 'failure', 'motor', 'pump', 'battery',
+    'device', 'unit', 'component', 'part', 'section', 'area',
+    'issue', 'problem', 'condition', 'situation', 'state',
+    'result', 'effect', 'impact', 'damage', 'wear', 'loss',
+    'type', 'mode', 'level', 'rate', 'flow', 'power', 'heat',
+    'energy', 'force', 'load',
+    # Subject/entity terms that appear across many PROBLEM records
+    'conveyor', 'valve', 'filter', 'belt', 'refrigerant', 'coolant',
+    'thermostat', 'compressor', 'fan', 'sensor', 'controller',
+    'switch', 'relay', 'circuit', 'wire', 'cable', 'pipe', 'hose',
+    'tank', 'vessel', 'motor', 'pump', 'battery', 'hvac',
+})
 
 
 def _extract_section_answer(question, context):
@@ -1459,9 +1505,361 @@ def _filter_evidence_results_for_factual_answer(answer, evidence_results):
     return filtered or evidence_results
 
 
-# --------------------------------------------------
-# SOP section extraction
-# --------------------------------------------------
+def _normalize_term(term):
+    """Normalize common technical abbreviations."""
+    synonyms = {
+        "temperature": "temp",
+        "temp": "temp",
+    }
+    t = term.lower().strip()
+    return synonyms.get(t, t)
+
+
+def _is_grounded(sentence, term, question):
+    """Ensure mandatory subject grounding for conditional terms."""
+    if not term:
+        return True
+
+    # If the term is a single named identifier, use strict named matching
+    if re.fullmatch(r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b", term.strip(), re.IGNORECASE):
+        return _named_fact_anchors_match(question, sentence) is not False
+
+    # For phrases, ensure all key content terms are grounded
+    key_terms = _content_terms(term)
+    if not key_terms:
+        # Fallback to basic presence check if no content terms are found
+        return _contains_term(sentence.lower(), _normalize_term(term))
+
+    # Check that every key term is grounded in the sentence
+    # Use _contains_term for basic grounding, then apply the compound guard
+    # to ensure we aren't matching "Australia" to "Western Australia".
+    results = []
+    for kt in key_terms:
+        norm_kt = _normalize_term(kt)
+        # Basic presence check
+        if not _contains_term(sentence.lower(), norm_kt):
+            results.append(False)
+            continue
+
+        # Compound entity guard: only reject if the term occurs EXCLUSIVELY
+        # inside a compound that the question does not name.
+        if not _anchor_entity_present(sentence, norm_kt, question):
+            results.append(False)
+            continue
+
+        results.append(True)
+
+    success = all(results)
+    return success
+
+
+
+
+_TECHNICAL_STATES = {
+    "open": "closed", "closed": "open",
+    "active": "inactive", "inactive": "active",
+    "on": "off", "off": "on",
+    "enabled": "disabled", "disabled": "enabled",
+    "high": "low", "low": "high",
+    "increased": "decreased", "decreased": "increased",
+    "positive": "negative", "negative": "positive",
+}
+
+def _get_state_match(evidence_text, condition_text):
+    """Determine if the required state in evidence matches or contradicts the condition."""
+    ev_low = evidence_text.lower()
+    cond_low = condition_text.lower()
+
+    found_ev_state = None
+    for state in _TECHNICAL_STATES:
+        if _contains_term(ev_low, state):
+            found_ev_state = state
+            break
+
+    if not found_ev_state:
+        return "NO_MATCH"
+
+    # Find the state in the condition
+    found_cond_state = None
+    for state in _TECHNICAL_STATES:
+        if _contains_term(cond_low, state):
+            found_cond_state = state
+            break
+
+    if not found_cond_state:
+        return "NO_MATCH"
+
+    if found_ev_state == found_cond_state:
+        return "MATCH"
+
+    if _TECHNICAL_STATES.get(found_ev_state) == found_cond_state:
+        return "OPPOSITE"
+
+    return "NO_MATCH"
+
+
+def _extract_modality(text):
+    """Capture the first modal verb from the consequence."""
+    match = re.match(
+        r"^(?:can|should|will|may|must|is|are|do|does|could|would)\b",
+        text.strip(),
+        re.IGNORECASE,
+    )
+    return match.group(0) if match else None
+
+
+def _parse_conditional_question(question):
+    """Split a conditional question into its condition and consequence.
+    Returns (condition, consequence) or (None, None).
+    """
+    q = question.strip().lower()
+    marker_pattern = r"^(?:if|unless|provided that|given that|when)\b"
+    if re.match(marker_pattern, q) and "," in q:
+        condition, consequence = q.split(",", 1)
+        condition = re.sub(marker_pattern, "", condition).strip()
+        return condition, consequence.strip()
+    return None, None
+
+
+def _normalize_evidence_sentence(sentence):
+    """Normalize an imperative prerequisite sentence into declarative form.
+
+    Converts 'Confirm X is open before Y' to 'The manual requires X to be open before Y',
+    and 'Ensure X before Y' to 'The manual requires X before Y'.
+    Strips raw question marks and interrogative word order.
+    """
+    s = sentence.strip().rstrip('?').strip()
+
+    # Pattern: "Confirm SUBJECT is STATE before ACTION"
+    # -> "The manual requires SUBJECT to be STATE before ACTION"
+    m = re.match(
+        r"^(?:confirm|ensure|verify|check|inspect)\s+(.+?)\s+(is|are|was|were)\s+(.+?)\s+before\s+(.+)$",
+        s, re.IGNORECASE,
+    )
+    if m:
+        subject = m.group(1).strip()
+        verb = m.group(2).lower()
+        state = m.group(3).strip()
+        action = m.group(4).strip()
+        if not subject.lower().startswith(('the ', 'a ', 'an ')):
+            # Handle "all safety guards" -> "all the safety guards"
+            m_quant = re.match(r'^(all|each|every|both)\s+', subject, re.IGNORECASE)
+            if m_quant:
+                quant = m_quant.group(1)
+                rest = subject[m_quant.end():]
+                if not rest.lower().startswith(('the ', 'a ', 'an ')):
+                    subject = f"{quant} the {rest}"
+                else:
+                    subject = f"{quant} {rest}"
+            else:
+                subject = 'the ' + subject
+        return f"The manual requires {subject} to be {state} before {action}"
+
+    # Pattern: "Confirm SUBJECT before ACTION"
+    # -> "The manual requires SUBJECT before ACTION"
+    m = re.match(
+        r"^(?:confirm|ensure|verify|check|inspect)\s+(.+?)\s+before\s+(.+)$",
+        s, re.IGNORECASE,
+    )
+    if m:
+        subject = m.group(1).strip()
+        action = m.group(2).strip()
+        if not subject.lower().startswith(('the ', 'a ', 'an ')):
+            subject = 'the ' + subject
+        return f"The manual requires {subject} before {action}"
+
+    # Generic imperative prefix fallback
+    _imperative_prefixes = [
+        (r"^confirm\b", "The manual requires"),
+        (r"^ensure\b", "The manual requires"),
+        (r"^verify\b", "The manual requires"),
+    ]
+    for pattern, replacement in _imperative_prefixes:
+        new_s = re.sub(pattern, replacement, s, count=1, flags=re.IGNORECASE)
+        if new_s != s:
+            remainder = new_s[len(replacement):].strip()
+            if remainder:
+                if not remainder.lower().startswith(('the ', 'a ', 'an ')):
+                    remainder = 'the ' + remainder
+                return replacement + " " + remainder
+            return replacement
+
+    return s
+
+
+def _extract_conditional_answer(question, context):
+    """Extract an answer for conditional questions (Category H).
+    Handles Troubleshooting Cause/Effect and Procedural Prerequisites.
+    """
+    condition, consequence = _parse_conditional_question(question)
+    if not condition or not consequence:
+        return None, False
+
+    modal = _extract_modality(consequence)
+    consequence_core = re.sub(
+        r"^(?:can|should|will|may|must|is|are|do|does|could|would)\b",
+        "",
+        consequence,
+        flags=re.IGNORECASE,
+    ).strip()
+    consequence_core = consequence_core.rstrip('?').strip()
+
+    # ---- Type A: Troubleshooting Cause/Effect ----
+    # Parse each PROBLEM block into effect (header) and causes.
+    # The effect is grounded against the PROBLEM HEADER only.
+    # The condition is grounded against the CAUSE FIELD only.
+    # Both must come from the SAME parsed record.
+    for pb in re.finditer(
+        r"PROBLEM:\s*(.+?)(?=\nPROBLEM:|\n\d+\.|\Z)",
+        context,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        block_content = pb.group(0)
+        lines = block_content.strip().split('\n')
+        effect = lines[0].strip() if lines else ''
+        effect = re.sub(r'^PROBLEM:\s*', '', effect, flags=re.IGNORECASE).strip()
+
+        causes = []
+        for line in lines[1:]:
+            cause_match = re.match(r'\s*-\s*Cause:\s*(.+)', line, re.IGNORECASE)
+            if cause_match:
+                raw_cause = cause_match.group(1).strip()
+                # Strip remedy text after ' - ' to get clean cause
+                cause_part = raw_cause.split(' - ')[0].strip() if ' - ' in raw_cause else raw_cause
+                causes.append((cause_part, raw_cause))
+
+        if not effect or not causes:
+            continue
+
+        if not _consequence_grounded_in_problem(consequence_core, effect):
+            continue
+
+        for cause_part, raw_cause in causes:
+            if _condition_grounded_in_cause(condition, raw_cause):
+                return (
+                    f"Yes, the troubleshooting guidance identifies "
+                    f"{cause_part} as a cause of {effect}.",
+                    True,
+                )
+
+    # ---- Type B: Procedural Prerequisites ----
+    sentences = _split_sentences(context)
+    for s in sentences:
+        s_low = s.lower()
+        if any(marker in s_low for marker in {"confirm", "ensure", "prerequisite", "verify"}):
+            if "before" not in s_low:
+                continue
+
+            if not _action_grounded_in_sentence(consequence_core, s):
+                continue
+
+            cond_terms = _content_terms(condition)
+            subject_terms = [t for t in cond_terms if t not in _TECHNICAL_STATES]
+            if not subject_terms or not all(
+                _term_present_simple(t, s) for t in subject_terms
+            ):
+                continue
+
+            state_match = _get_state_match(s, condition)
+            normalized = _normalize_evidence_sentence(s)
+
+            if state_match == "MATCH":
+                return (
+                    f"Yes. {normalized}.",
+                    True,
+                )
+
+            if state_match == "OPPOSITE":
+                return (
+                    f"No. {normalized}.",
+                    True,
+                )
+
+    return None, False
+
+
+def _consequence_grounded_in_problem(consequence_core, problem_header):
+    """Check that the consequence is grounded in the PROBLEM HEADER only.
+
+    Requires at least one non-generic content term from the consequence to
+    match the header, preventing generic words like 'system', 'pressure',
+    or 'failure' from independently establishing effect equivalence.
+    """
+    if not consequence_core or not problem_header:
+        return False
+
+    conj_terms = _content_terms(consequence_core)
+    if not conj_terms:
+        return False
+
+    generic_matches = 0
+    for ct in conj_terms:
+        if _contains_term(problem_header.lower(), ct):
+            if ct in _GENERIC_OVERLAP_TERMS:
+                generic_matches += 1
+            else:
+                return True
+
+    # If all matching terms are generic, require at least 2 to match
+    return generic_matches >= 2
+
+
+def _condition_grounded_in_cause(condition, cause_text):
+    """Check that the condition is grounded in a CAUSE field.
+
+    Requires the distinguishing semantic concept/state to match, not merely
+    a generic shared noun. At least one non-generic content term from the
+    condition must appear in the cause text.
+    """
+    if not condition or not cause_text:
+        return False
+
+    cond_terms = _content_terms(condition)
+    if not cond_terms:
+        return False
+
+    generic_matches = 0
+    for ct in cond_terms:
+        if _contains_term(cause_text.lower(), ct):
+            if ct in _GENERIC_OVERLAP_TERMS:
+                generic_matches += 1
+            else:
+                return True
+
+    return generic_matches >= 2
+
+
+def _action_grounded_in_sentence(consequence_core, sentence):
+    """Check that the consequence action is grounded in a prerequisite sentence.
+
+    Verifies that key action-oriented terms from the consequence core appear
+    in the sentence, establishing the action relationship without requiring
+    every content term to be present (prerequisite sentences are general rules).
+    Uses _contains_term (word-boundary-aware) for matching so inflections
+    are handled correctly.
+    """
+    if not consequence_core or not sentence:
+        return False
+
+    conj_terms = _content_terms(consequence_core)
+    if not conj_terms:
+        return False
+
+    for ct in conj_terms:
+        if _contains_term(sentence.lower(), ct):
+            return True
+
+    return False
+
+
+def _term_present_simple(term, sentence):
+    """Simple term presence check without the compound-entity guard.
+
+    Used for prerequisite subject grounding where the sentence is a general
+    rule and strict compound anchoring is not appropriate.
+    """
+    return _contains_term(sentence.lower(), _normalize_term(term))
+
 
 # Section headers recognized in the compressor SOP and similar
 # procedural documents.
@@ -1635,6 +2033,12 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
     """
     if not context:
         return None, False
+
+    # Category H: Conditional Answer Extraction
+    if is_conditional_query(question):
+        cond_answer, cond_supported = _extract_conditional_answer(question, context)
+        if cond_answer and cond_supported:
+            return cond_answer, True
 
     q = question.strip().lower()
 
@@ -2053,6 +2457,7 @@ from retriever_hybrid import (
 
 from query_planner_v1 import (
     build_queries,
+    is_conditional_query,
 )
 
 from comparison_planner_v1 import (
