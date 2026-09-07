@@ -360,6 +360,10 @@ def _term_variants(term):
     "verify", "draining" vs "drain"). Variants only WIDEN boundary-safe
     matching to regular inflections; derived-but-different words
     ("press"/"pressure") still never match.
+
+    Controlled derivational pairs (slip/slippage, fail/failure) are
+    matched only when the root is >= 5 chars, avoiding short-root
+    false positives like press/pressure.
     """
     variants = {term}
     if len(term) > 4 and term.endswith("ied"):
@@ -373,6 +377,27 @@ def _term_variants(term):
         variants.add(term[:-1] + "ing")
     if len(term) > 3 and term.endswith("s") and not term.endswith("ss"):
         variants.add(term[:-1])
+    # Controlled derivational suffixes for common technical pairs.
+    # Only for roots >= 4 chars; "press" is excluded to avoid the
+    # press/pressure false positive.  Only -age is included, with
+    # consonant-doubling for short roots (slip -> slippage).
+    if (
+        len(term) >= 4
+        and term != "press"
+        and not term.endswith(("age", "ure", "tion", "ment", "ence", "ance"))
+    ):
+        # Consonant doubling: if root is <=5 chars and ends in a
+        # single consonant preceded by a vowel, double the final
+        # consonant before -age (slip -> slippage).
+        if len(term) <= 5 and re.match(r".*[aeiou][^aeiouwxy]$", term):
+            variants.add(term + term[-1] + "age")  # slip -> slippage
+        else:
+            variants.add(term + "age")
+    # -ing/-er pair: charging <-> charger, cooling <-> cooler
+    if term.endswith("ing") and len(term) > 6:
+        variants.add(term[:-3] + "er")   # charging -> charger
+    if term.endswith("er") and len(term) > 4:
+        variants.add(term[:-2] + "ing")  # charger -> charging
     return variants
 
 
@@ -1233,6 +1258,9 @@ _GENERIC_OVERLAP_TERMS = frozenset({
     'thermostat', 'compressor', 'fan', 'sensor', 'controller',
     'switch', 'relay', 'circuit', 'wire', 'cable', 'pipe', 'hose',
     'tank', 'vessel', 'motor', 'pump', 'battery', 'hvac',
+    # Contextual/temporal terms that describe WHEN a problem occurs,
+    # not a causal condition (used for condition-clause filtering)
+    'operation', 'running', 'startup', 'service', 'use',
 })
 
 
@@ -1687,6 +1715,269 @@ def _normalize_evidence_sentence(sentence):
     return s
 
 
+# ------------------------------------------------------------------
+# Shared PROBLEM-block parser (Category H + Category D causal)
+# ------------------------------------------------------------------
+
+_PROBLEM_BLOCK_RE = re.compile(
+    r"PROBLEM:\s*(.+?)(?=\nPROBLEM:|\n\d+\.|\Z)",
+    re.IGNORECASE | re.DOTALL,
+)
+
+_CAUSE_LINE_RE = re.compile(
+    r"\s*-\s*Cause:\s*(.+)",
+    re.IGNORECASE,
+)
+
+
+def _parse_problem_blocks(context):
+    """Parse PROBLEM blocks from context into (effect, causes) tuples.
+
+    Each element is a dict with:
+        - effect: str (cleaned PROBLEM header)
+        - causes: list of (cause_part, raw_cause) tuples
+
+    Reused by both Category H (conditional) and Category D (causal)
+    extraction to avoid divergent parsers.
+    """
+    blocks = []
+    for pb in _PROBLEM_BLOCK_RE.finditer(context):
+        block_content = pb.group(0)
+        lines = block_content.strip().split('\n')
+        effect = lines[0].strip() if lines else ''
+        effect = re.sub(r'^PROBLEM:\s*', '', effect, flags=re.IGNORECASE).strip()
+
+        causes = []
+        for line in lines[1:]:
+            cause_match = _CAUSE_LINE_RE.match(line)
+            if cause_match:
+                raw_cause = cause_match.group(1).strip()
+                cause_part = raw_cause.split(' - ')[0].strip() if ' - ' in raw_cause else raw_cause
+                causes.append((cause_part, raw_cause))
+
+        if effect and causes:
+            blocks.append({"effect": effect, "causes": causes})
+    return blocks
+
+
+def _extract_effect_from_causal_question(question):
+    """Extract the requested effect/problem from a causal 'why' question.
+
+    Handles forms like:
+        "Why does the X fail to start when Y?"
+        "Why does belt oscillation occur?"
+        "Why does the motor overheat during charging?"
+
+    Returns the effect text (lowercased) or None if not parseable.
+    The 'when/during/if' clause is stripped — it carries the CONDITION,
+    not the effect.
+    """
+    q = question.strip().rstrip('?.!')
+    q_lower = q.lower()
+
+    # Pattern: "Why does/do <subject> <effect> ..."
+    # Stop at when/during/if/after/under/at/while/because to exclude
+    # the condition clause from the effect text.
+    m = re.match(
+        r"why\s+(?:does|do|did)\s+(.+)",
+        q_lower,
+        flags=re.IGNORECASE,
+    )
+    if not m:
+        return None
+
+    rest = m.group(1).strip()
+
+    # Strip trailing condition clauses
+    rest = re.split(
+        r"\b(?:when|during|if|after|under|at|while|because)\b",
+        rest,
+        maxsplit=1,
+    )[0].strip()
+
+    # Strip trailing verb forms that are part of the question frame,
+    # not the effect name (e.g. "occur", "happen", "fail")
+    rest = re.sub(
+        r"\b(?:occur|occurs|occurring|happen|happens|happening)\s*$",
+        "",
+        rest,
+    ).strip()
+
+    # Strip common verbs that appear between subject and effect
+    # in question forms like "Why does X experience Y?"
+    rest = re.sub(
+        r"\b(?:experience|experiences|experiencing|show|shows|showing|"
+        r"have|has|having|display|displays|displaying)\b",
+        "",
+        rest,
+    ).strip()
+
+    # Remove leading articles/determiners
+    rest = re.sub(
+        r"^(?:the|a|an|this|that|my|our|your|its)\s+",
+        "",
+        rest,
+        flags=re.IGNORECASE,
+    ).strip()
+
+    if not rest:
+        return None
+
+    return rest
+
+
+def _is_causal_query(question):
+    """Detect whether a question is a direct causal 'why' question.
+
+    Returns True for forms like:
+        "Why does the motor fail to start?"
+        "Why does belt oscillation occur?"
+        "Why did the pump fail?"
+
+    Does NOT match:
+        "Why was X important?" (significance)
+        "If X, can Y?" (conditional/Category H)
+    """
+    q = question.strip().lower()
+
+    # Must start with "why"
+    if not re.match(r"^(?:why|explain why)\b", q):
+        return False
+
+    # Exclude significance questions
+    if re.search(r"\b(?:important|significant|matter)\b", q):
+        return False
+
+    # Exclude conditional forms caught by Category H
+    if is_conditional_query(question):
+        return False
+
+    return True
+
+
+def _extract_condition_from_causal_question(question):
+    """Extract the condition clause from a causal 'why' question.
+
+    Handles forms like:
+        "Why does X fail when Y is Z?"
+        "Why does X overheat during Y?"
+
+    Returns the condition text (lowercased) or None if no condition clause.
+    Generic temporal/contextual phrases ("during operation", "when running")
+    are NOT treated as conditions — they describe when the problem occurs,
+    not a causal condition that must be addressed by a cause.
+    """
+    q = question.strip().rstrip('?.!').lower()
+    m = re.search(
+        r"\b(?:when|during|if|after|under|while)\b\s+(.+)$",
+        q,
+    )
+    if m:
+        condition = m.group(1).strip()
+        # If the condition only contains generic/contextual terms
+        # (no specific entity or state), it's not a real causal
+        # condition.  E.g. "during operation" → not a condition;
+        # "the discharge valve is closed" → real condition.
+        cond_terms = _content_terms(condition)
+        # Filter out generic terms
+        non_generic = [t for t in cond_terms if t not in _GENERIC_OVERLAP_TERMS]
+        if not non_generic:
+            return None
+        return condition
+    return None
+
+
+def _extract_direct_causal_answer(question, context):
+    """Extract a grounded causal answer from PROBLEM blocks.
+
+    For direct 'why does X occur' questions whose evidence contains
+    explicit PROBLEM / Cause records.  Reuses the same PROBLEM block
+    parser and grounding logic as Category H (same-record enforcement,
+    non-generic concept matching).
+
+    When the question carries a condition clause ("when Y is Z"),
+    the matched PROBLEM block must contain a cause that addresses
+    that condition; otherwise abstain to prevent false grounding.
+
+    Returns (answer, supported) or (None, False) if not groundable.
+    """
+    if not question or not context:
+        return None, False
+
+    effect_text = _extract_effect_from_causal_question(question)
+    if not effect_text:
+        return None, False
+
+    # Extract the condition clause (e.g. "when the valve is closed")
+    # from the question.  If present, it must be addressed by at
+    # least one cause in the matched PROBLEM block.
+    condition_text = _extract_condition_from_causal_question(question)
+
+    blocks = _parse_problem_blocks(context)
+    if not blocks:
+        return None, False
+
+    # Two-pass matching:
+    #   Pass 1 — effect matches header AND condition (if any) is addressed.
+    #            This is the highest-confidence path (D017, D019).
+    #   Pass 2 — condition is addressed but effect doesn't match header.
+    #            The condition alone grounds us in the correct block
+    #            (D018, D020 where effect phrasing diverges from header).
+    # Pass 2 is only reached when Pass 1 finds nothing.
+    for block in blocks:
+        effect_header = block["effect"]
+
+        if not _consequence_grounded_in_problem(effect_text, effect_header):
+            continue
+
+        if condition_text:
+            condition_addressed = False
+            for _cause_part, raw_cause in block["causes"]:
+                if _condition_grounded_in_cause(condition_text, raw_cause):
+                    condition_addressed = True
+                    break
+            if not condition_addressed:
+                continue
+            # Return the cause that matches the condition, not just the
+            # first one — e.g. "Dirty filter" for "when air filter is
+            # dirty", not "Oversized system" which is the first cause.
+            cause_part = _cause_part
+        else:
+            cause_part, raw_cause = block["causes"][0]
+        answer = (
+            f"According to the troubleshooting guidance, "
+            f"{cause_part} is identified as a cause of {effect_header}."
+        )
+        return answer, True
+
+    # Pass 2: condition-only grounding (effect header didn't match).
+    # Require at least one content term from the effect to appear in
+    # the PROBLEM HEADER to prevent D016-style false matches where
+    # "fail to start" incorrectly grounds in "Low pressure output".
+    # Generic terms (belt, pressure) are allowed here since they still
+    # establish domain relevance; D016 fails because "fail"/"start"
+    # don't appear in any header.
+    if condition_text:
+        effect_terms = _content_terms(effect_text)
+        for block in blocks:
+            header_low = block["effect"].lower()
+            if not any(
+                _contains_term(header_low, t)
+                for t in effect_terms
+            ):
+                continue
+            for _cause_part, raw_cause in block["causes"]:
+                if _condition_grounded_in_cause(condition_text, raw_cause):
+                    effect_header = block["effect"]
+                    answer = (
+                        f"According to the troubleshooting guidance, "
+                        f"{_cause_part} is identified as a cause of {effect_header}."
+                    )
+                    return answer, True
+
+    return None, False
+
+
 def _extract_conditional_answer(question, context):
     """Extract an answer for conditional questions (Category H).
     Handles Troubleshooting Cause/Effect and Procedural Prerequisites.
@@ -1709,32 +2000,14 @@ def _extract_conditional_answer(question, context):
     # The effect is grounded against the PROBLEM HEADER only.
     # The condition is grounded against the CAUSE FIELD only.
     # Both must come from the SAME parsed record.
-    for pb in re.finditer(
-        r"PROBLEM:\s*(.+?)(?=\nPROBLEM:|\n\d+\.|\Z)",
-        context,
-        re.IGNORECASE | re.DOTALL,
-    ):
-        block_content = pb.group(0)
-        lines = block_content.strip().split('\n')
-        effect = lines[0].strip() if lines else ''
-        effect = re.sub(r'^PROBLEM:\s*', '', effect, flags=re.IGNORECASE).strip()
-
-        causes = []
-        for line in lines[1:]:
-            cause_match = re.match(r'\s*-\s*Cause:\s*(.+)', line, re.IGNORECASE)
-            if cause_match:
-                raw_cause = cause_match.group(1).strip()
-                # Strip remedy text after ' - ' to get clean cause
-                cause_part = raw_cause.split(' - ')[0].strip() if ' - ' in raw_cause else raw_cause
-                causes.append((cause_part, raw_cause))
-
-        if not effect or not causes:
-            continue
+    # Uses shared _parse_problem_blocks parser (Category H + D).
+    for block in _parse_problem_blocks(context):
+        effect = block["effect"]
 
         if not _consequence_grounded_in_problem(consequence_core, effect):
             continue
 
-        for cause_part, raw_cause in causes:
+        for cause_part, raw_cause in block["causes"]:
             if _condition_grounded_in_cause(condition, raw_cause):
                 return (
                     f"Yes, the troubleshooting guidance identifies "
@@ -1818,13 +2091,29 @@ def _condition_grounded_in_cause(condition, cause_text):
     if not cond_terms:
         return False
 
+    # Light semantic synonym map for common wear/age states that
+    # appear in condition clauses ("when it gets old") vs cause
+    # fields ("Belt worn or stretched").
+    _COND_SYNONYMS = {
+        "old": {"worn", "aged", "degraded"},
+        "worn": {"old", "aged", "degraded"},
+        "weakened": {"worn", "degraded"},
+    }
+
+    cause_low = cause_text.lower()
     generic_matches = 0
     for ct in cond_terms:
-        if _contains_term(cause_text.lower(), ct):
+        if _contains_term(cause_low, ct):
             if ct in _GENERIC_OVERLAP_TERMS:
                 generic_matches += 1
             else:
                 return True
+        # Check semantic synonyms for the condition term.
+        syns = _COND_SYNONYMS.get(ct)
+        if syns:
+            for syn in syns:
+                if _contains_term(cause_low, syn):
+                    return True
 
     return generic_matches >= 2
 
@@ -2039,6 +2328,12 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
         cond_answer, cond_supported = _extract_conditional_answer(question, context)
         if cond_answer and cond_supported:
             return cond_answer, True
+
+    # Category D: Direct causal extraction from PROBLEM blocks
+    if _is_causal_query(question):
+        causal_answer, causal_supported = _extract_direct_causal_answer(question, context)
+        if causal_answer and causal_supported:
+            return causal_answer, True
 
     q = question.strip().lower()
 
@@ -6031,6 +6326,56 @@ def _answer_question_impl(
 
     if intent == "cause":
 
+        # Category D: Direct causal extraction from PROBLEM blocks.
+        # Try structured PROBLEM-block grounding first (more conservative,
+        # reuses Category H machinery).  Falls through to the general
+        # causal synthesizer for free-text "because" / "due to" evidence.
+        # Use the ORIGINAL question (not the canonical form which may be
+        # mangled by build_canonical_question for non-decline patterns).
+        #
+        # The aggregated reasoning_context may drop PROBLEM blocks that
+        # are not sentence-matched to the query.  Always try the full
+        # best-result chunk (which preserves the complete document
+        # structure) and prefer it when it differs from the aggregated
+        # context, since it contains the full set of PROBLEM blocks.
+        direct_answer, direct_supported = _extract_direct_causal_answer(
+            question, reasoning_context,
+        )
+        best_chunk = (best_result or {}).get("chunk", "")
+        if best_chunk and best_chunk is not reasoning_context:
+            best_answer, best_supported = _extract_direct_causal_answer(
+                question, best_chunk,
+            )
+            # Prefer the full-chunk result when it succeeds, since the
+            # aggregated context may have matched a less-specific block.
+            if best_answer and best_supported:
+                direct_answer, direct_supported = best_answer, best_supported
+        if direct_answer and direct_supported:
+            result[
+                "answer_type"
+            ] = _display_type("causal")
+
+            result[
+                "answer"
+            ] = direct_answer
+
+            result[
+                "supported"
+            ] = True
+
+            logger.info(
+                "Answer generated (causal-direct): %s",
+                _safe_log_answer("causal-direct", direct_answer),
+            )
+
+            if verbose:
+                print(
+                    "\nCausal (direct PROBLEM-block):",
+                    direct_answer,
+                )
+
+            return result
+
         answer = synthesize_causal_answer(
             canonical_question,
             reasoning_context,
@@ -6265,6 +6610,43 @@ def _answer_question_impl(
     #
     # Keeps compatibility with existing behavior.
     # ==================================================
+
+    # Category D: Direct PROBLEM-block causal fallback.
+    direct_answer_fb, direct_supported_fb = _extract_direct_causal_answer(
+        question, reasoning_context,
+    )
+    best_chunk_fb = (best_result or {}).get("chunk", "")
+    if best_chunk_fb and best_chunk_fb is not reasoning_context:
+        best_fb, best_fb_sup = _extract_direct_causal_answer(
+            question, best_chunk_fb,
+        )
+        if best_fb and best_fb_sup:
+            direct_answer_fb, direct_supported_fb = best_fb, best_fb_sup
+    if direct_answer_fb and direct_supported_fb:
+        result[
+            "answer_type"
+        ] = _display_type("causal")
+
+        result[
+            "answer"
+        ] = direct_answer_fb
+
+        result[
+            "supported"
+        ] = True
+
+        logger.info(
+            "Answer generated (causal-direct-fallback): %s",
+            _safe_log_answer("causal-direct-fallback", direct_answer_fb),
+        )
+
+        if verbose:
+            print(
+                "\nCausal (direct PROBLEM-block fallback):",
+                direct_answer_fb,
+            )
+
+        return result
 
     causal_answer = (
         synthesize_causal_answer(
