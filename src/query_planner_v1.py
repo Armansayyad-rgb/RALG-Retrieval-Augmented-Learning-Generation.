@@ -1321,9 +1321,53 @@ def build_canonical_question(
     return None
 
 
-# --------------------------------------------------
-# Query generation
-# --------------------------------------------------
+def is_conditional_query(text):
+    text = normalize(
+        text
+    ).lower()
+
+    # --------------------------------------------------
+    # Strong indicators
+    # --------------------------------------------------
+    if (
+        "only when" in text
+        or "under condition" in text
+    ):
+        return True
+
+    # --------------------------------------------------
+    # Structural conditionals
+    #
+    # Marker: if, unless, provided that, given that, when
+    # Followed by: a comma and a modal verb
+    # --------------------------------------------------
+    marker_pattern = (
+        r"^(?:if|unless|provided that|given that|when)\b"
+    )
+
+    if re.match(
+        marker_pattern,
+        text,
+    ):
+        if "," in text:
+            _, consequence = text.split(
+                ",",
+                1,
+            )
+            consequence = consequence.strip()
+
+            # Check if consequence starts with a modal or auxiliary verb
+            # to avoid incidental markers like "If available, list X".
+            modal_pattern = (
+                r"^(?:can|should|will|may|must|is|are|do|does|could|would)\b"
+            )
+            if re.match(
+                modal_pattern,
+                consequence,
+            ):
+                return True
+
+    return False
 
 def build_queries(
     question,
@@ -1743,21 +1787,24 @@ def build_queries(
     # ==========================================
 
     else:
-        useful = [
-            word
-            for word in re.findall(
-                r"[a-z0-9']+",
-                subject.lower(),
-            )
-            if len(word) >= 3
-        ]
-
-        if useful:
-            queries.append(
-                " ".join(
-                    useful
+        if not is_conditional_query(
+            original_question
+        ):
+            useful = [
+                word
+                for word in re.findall(
+                    r"[a-z0-9']+",
+                    subject.lower(),
                 )
-            )
+                if len(word) >= 3
+            ]
+
+            if useful:
+                queries.append(
+                    " ".join(
+                        useful
+                    )
+                )
 
     # ==========================================
     # Deduplicate queries
