@@ -553,6 +553,17 @@ _GENERIC_ANSWER_TERMS = frozenset({
     "give", "tell", "show", "provide", "state",
 })
 
+# Procedural object nouns that should NOT serve as entity anchors.
+# These are common objects mentioned in procedural questions ("What
+# pre-start check is required for the pump START button?") where the
+# noun is part of the question's phrasing, not the true subject/entity.
+_PROCEDURAL_OBJECTS = frozenset({
+    "button", "switch", "gauge", "lever", "knob",
+    "dial", "indicator", "light", "lamp", "display", "screen",
+    "panel", "station", "port", "outlet", "inlet", "connection",
+    "terminal", "fuse", "relay", "circuit", "breaker",
+})
+
 
 _NAMED_PHRASE_IN_QUESTION = re.compile(
     r"\b(?:[A-Z0-9][A-Za-z0-9'-]*\s+){1,}"
@@ -841,6 +852,15 @@ PREDICATE_LEXICON = {
     "color": (
         "color is", "colour is", "color", "colour",
     ),
+    # procedural: pre-start / pre-operation checks
+    "pre-start": (
+        "before motor start", "before starting", "pre-start",
+        "pre-operation", "prior to start",
+    ),
+    "pre-start check": (
+        "before motor start", "before starting", "pre-start",
+        "confirm discharge", "verify discharge",
+    ),
 }
 
 # Controlled technical-concept aliases: single-word attribute synonyms
@@ -856,6 +876,9 @@ TECHNICAL_CONCEPT_ALIASES = {
     "specification": frozenset({"grade", "type"}),
     "grade": frozenset({"specification", "type"}),
     "type": frozenset({"specification", "grade"}),
+    "check": frozenset({"confirm", "verify", "inspection"}),
+    "confirm": frozenset({"check", "verify"}),
+    "verify": frozenset({"check", "confirm"}),
 }
 
 # Controlled technical phrase aliases: multi-word phrases that denote
@@ -871,6 +894,8 @@ TECHNICAL_PHRASE_ALIASES = {
     "lubricant type": frozenset({"oil type", "lubrication oil"}),
     "flow rate": frozenset({"gpm", "gallons per minute"}),
     "gpm": frozenset({"flow rate", "gallons per minute"}),
+    "pre-start check": frozenset({"before motor start", "pre-start inspection"}),
+    "pre-start inspection": frozenset({"before motor start", "pre-start check"}),
 }
 
 
@@ -1087,7 +1112,10 @@ def _named_fact_anchors_match(question, candidate_sentence):
     hyphenated/alphanumeric identifier.  Such questions need both that
     identifier and a requested attribute in the same evidence sentence.
     """
-    identifiers = {
+    _PROCEDURAL_PREFIXES = frozenset({
+        "pre", "post", "re", "de", "dis", "un", "non",
+    })
+    raw_identifiers = {
         token.lower()
         for token in re.findall(
             r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
@@ -1095,6 +1123,12 @@ def _named_fact_anchors_match(question, candidate_sentence):
             flags=re.IGNORECASE,
         )
     }
+    identifiers = set()
+    for _ident in raw_identifiers:
+        _parts = _ident.split("-", 1)
+        if len(_parts) == 2 and _parts[0] in _PROCEDURAL_PREFIXES:
+            continue
+        identifiers.add(_ident)
     if not identifiers:
         return None
 
@@ -1482,7 +1516,10 @@ def _question_requests_named_section(question):
 
 
 def _question_identifiers(question):
-    return {
+    _PROCEDURAL_PREFIXES = frozenset({
+        "pre", "post", "re", "de", "dis", "un", "non",
+    })
+    raw = {
         token.lower()
         for token in re.findall(
             r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
@@ -1490,6 +1527,13 @@ def _question_identifiers(question):
             flags=re.IGNORECASE,
         )
     }
+    filtered = set()
+    for ident in raw:
+        parts = ident.split("-", 1)
+        if len(parts) == 2 and parts[0] in _PROCEDURAL_PREFIXES:
+            continue
+        filtered.add(ident)
+    return filtered
 
 
 def _context_has_question_identifiers(question, context):
@@ -2689,7 +2733,10 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
     # treated as support.
     if q.startswith(("what ", "which ", "how ")):
         sentences = _split_sentences(context)
-        identifiers = {
+        _PROCEDURAL_PREFIXES = frozenset({
+            "pre", "post", "re", "de", "dis", "un", "non",
+        })
+        raw_identifiers = {
             token.lower()
             for token in re.findall(
                 r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
@@ -2697,6 +2744,12 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                 flags=re.IGNORECASE,
             )
         }
+        identifiers = set()
+        for _ident in raw_identifiers:
+            _parts = _ident.split("-", 1)
+            if len(_parts) == 2 and _parts[0] in _PROCEDURAL_PREFIXES:
+                continue
+            identifiers.add(_ident)
         ignored = {
             "what", "which", "how", "long", "is", "are", "was", "were",
             "the", "a", "an", "for", "of", "to", "in", "on", "at", "and",
@@ -2704,6 +2757,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
             "does", "did", "require", "requires", "required", "need",
             "needs",
         }
+        _is_proc_q = _procedural_query(question)
         terms = [
             token
             for token in re.findall(
@@ -2711,6 +2765,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
             )
             if token not in ignored
             and token not in identifiers
+            and (token not in _PROCEDURAL_OBJECTS if _is_proc_q else True)
             and len(token) > 2
         ]
         candidates = []
@@ -2816,6 +2871,7 @@ from retriever_v2 import (
     load_chunks as load_chunks_v2,
     build_index as build_index_v2,
     retrieve as retrieve_v2,
+    _procedural_query,
 )
 
 from retriever_v4 import (
