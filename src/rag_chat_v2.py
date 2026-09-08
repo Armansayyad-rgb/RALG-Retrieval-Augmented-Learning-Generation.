@@ -398,6 +398,13 @@ def _term_variants(term):
         variants.add(term[:-3] + "er")   # charging -> charger
     if term.endswith("er") and len(term) > 4:
         variants.add(term[:-2] + "ing")  # charger -> charging
+    # Controlled technical-concept aliases (single-word attribute synonyms
+    # that are genuinely equivalent in domain context).
+    concept = TECHNICAL_CONCEPT_ALIASES.get(term)
+    if concept:
+        expanded = concept - variants
+        if expanded:
+            variants.update(expanded)
     return variants
 
 
@@ -415,14 +422,49 @@ def _contains_term(haystack_lower, term):
     key = str(term)
     pattern = _TERM_PATTERN_CACHE.get(key)
     if pattern is None:
+        variants = _term_variants(key)
         alternatives = "|".join(
-            re.escape(variant) for variant in sorted(_term_variants(key))
+            re.escape(variant) for variant in sorted(variants)
         )
         pattern = re.compile(
             r"\b(?:" + alternatives + r")" + _INFLECTION_SUFFIX.pattern
         )
         _TERM_PATTERN_CACHE[key] = pattern
     return pattern.search(haystack_lower) is not None
+
+
+def _predicate_term_matches_evidence(term, candidate_low):
+    """Check if a question predicate term matches evidence, using concept aliases.
+
+    For single-word terms, delegates to _contains_term (which already
+    applies TECHNICAL_CONCEPT_ALIASES via _term_variants).
+
+    For multi-word terms, first checks literal containment, then
+    checks each word individually via _contains_term (to leverage
+    single-word aliases), and finally checks TECHNICAL_PHRASE_ALIASES
+    for phrase-level equivalence.
+    """
+    if " " not in term:
+        return _contains_term(candidate_low, term)
+    # Multi-word: check literal containment first.
+    if term in candidate_low:
+        return True
+    # Check if every word in the term appears in evidence (via
+    # _contains_term which applies single-word concept aliases).
+    words = term.split()
+    if all(_contains_term(candidate_low, w) for w in words):
+        return True
+    # Check phrase aliases: if the term has a phrase alias, check if
+    # any alias phrase is contained in evidence.
+    aliases = TECHNICAL_PHRASE_ALIASES.get(term, frozenset())
+    for alias in aliases:
+        if alias in candidate_low:
+            return True
+        # Also check each word of the alias via _contains_term.
+        alias_words = alias.split()
+        if all(_contains_term(candidate_low, w) for w in alias_words):
+            return True
+    return False
 
 
 def cheap_grounding_check(answer, context):
@@ -801,6 +843,36 @@ PREDICATE_LEXICON = {
     ),
 }
 
+# Controlled technical-concept aliases: single-word attribute synonyms
+# that are genuinely equivalent in the relevant domain context.  Used
+# only inside _term_variants to widen word-level matching; does NOT
+# bypass predicate gates, grounding, or support construction.
+TECHNICAL_CONCEPT_ALIASES = {
+    "band": frozenset({"range"}),
+    "range": frozenset({"band"}),
+    "lubricant": frozenset({"oil"}),
+    "oil": frozenset({"lubricant"}),
+    "fluid": frozenset({"oil", "lubricant"}),
+    "specification": frozenset({"grade", "type"}),
+    "grade": frozenset({"specification", "type"}),
+    "type": frozenset({"specification", "grade"}),
+}
+
+# Controlled technical phrase aliases: multi-word phrases that denote
+# the same attribute in technical documentation.  Used inside
+# _predicate_answers_question to widen predicate matching for multi-word
+# terms.  Each key maps to a set of equivalent phrases.  Phrase matching
+# uses word-boundary-aware containment via _contains_term for each word.
+TECHNICAL_PHRASE_ALIASES = {
+    "pressure range": frozenset({"pressure band"}),
+    "pressure band": frozenset({"pressure range"}),
+    "oil type": frozenset({"lubrication oil", "lubricant type"}),
+    "lubrication oil": frozenset({"oil type", "lubricant type"}),
+    "lubricant type": frozenset({"oil type", "lubrication oil"}),
+    "flow rate": frozenset({"gpm", "gallons per minute"}),
+    "gpm": frozenset({"flow rate", "gallons per minute"}),
+}
+
 
 def _extract_predicate(question):
     """Return the predicate vocabulary list for a question, or [].
@@ -837,6 +909,12 @@ def _extract_question_predicate_terms(question):
     ignored = {
         "what", "which", "is", "was", "are", "were", "the",
         "a", "an", "for", "of", "in", "on", "at", "and", "to",
+        # Technical modifiers: qualifiers that describe the attribute
+        # but are not core technical concepts.  These are often absent
+        # from evidence prose, so requiring them to match would block
+        # valid predicate alignment.
+        "allowable", "rated", "nominal", "typical", "standard",
+        "required", "recommended", "specified", "normal",
     }
     return [
         token
@@ -892,7 +970,7 @@ def _predicate_answers_question(
         predicate_terms = _extract_question_predicate_terms(question)
         if predicate_terms:
             return all(
-                _contains_term(candidate_sentence.lower(), term)
+                _predicate_term_matches_evidence(term, candidate_low)
                 for term in predicate_terms
             )
         # No recognizable predicate — nothing to gate.
@@ -906,8 +984,7 @@ def _predicate_answers_question(
     # question because "capital city" appears in a neighboring
     # sentence).
     if any(
-        (_contains_term(candidate_low, vocab) if " " not in vocab
-         else vocab in candidate_low)
+        _predicate_term_matches_evidence(vocab, candidate_low)
         for vocab in predicate_vocab
     ):
         return True
