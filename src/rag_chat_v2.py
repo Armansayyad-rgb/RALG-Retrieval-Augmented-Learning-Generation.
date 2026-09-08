@@ -565,10 +565,33 @@ _PROCEDURAL_OBJECTS = frozenset({
 })
 
 
+def _has_material_premises(question):
+    """Detect whether a question contains material premises, conflicts,
+    or qualifications that must be explicitly verified in the answer.
+    """
+    q = question.lower()
+    # Contrast/Conflict markers
+    if any(m in q for m in (" but ", " whereas ", " while ", " instead of ", " compared to ", " vs ", " versus ", " however ")):
+        return True
+    # Conditions/Qualifications
+    if any(m in q for m in (" unless ", " only when ", " except when ", " despite ", " provided that ", " given that ", " after ", " following ")):
+        return True
+    # Source-based contrast (e.g., "manual says X but schedule says Y")
+    if re.search(r"\b(manual|schedule|bulletin|specification|guide|source)\b.*?\b(but|however|yet)\b", q):
+        return True
+    # Alternative choices (e.g., "is it A or B?")
+    if re.search(r"\b(is|are)\b.*?\b(or)\b", q):
+        return True
+    # "under condition"
+    if "under condition" in q:
+        return True
+    return False
+
 _NAMED_PHRASE_IN_QUESTION = re.compile(
     r"\b(?:[A-Z0-9][A-Za-z0-9'-]*\s+){1,}"
     r"[A-Z0-9][A-Za-z0-9'-]*\b"
 )
+
 
 
 def _question_named_phrases(question):
@@ -617,6 +640,16 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
         t for t in re.findall(r"[a-z0-9]{3,}", q_lower)
         if t not in _GENERIC_ANSWER_TERMS
     ]
+
+    # For complex questions with material premises, use a broader term set
+    # (including 2-char terms) to capture values like "12V" or "46".
+    if _has_material_premises(question):
+        material_q_terms = [
+            t for t in re.findall(r"[a-z0-9]{2,}", q_lower)
+            if t not in _GENERIC_ANSWER_TERMS
+        ]
+    else:
+        material_q_terms = q_terms
 
     if not q_terms:
         return True
@@ -704,7 +737,7 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
     # least one term from outside that bigram.  This prevents
     # "compressor lockout" matching while "DNA replication" is
     # completely absent.
-    if len(q_terms) >= 2:
+    if len(q_terms) >= 2 and not _has_material_premises(question):
         for i in range(len(q_terms) - 1):
             bigram = {q_terms[i], q_terms[i + 1]}
             if all(_contains_term(a_lower, t) for t in bigram):
@@ -726,10 +759,20 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
     # to reject answers with zero topical overlap.
     # In SOP-lenient mode, skip this check — procedural steps are
     # grounded by the SOP extraction, not by term overlap.
-    matched = sum(1 for t in q_terms if _contains_term(a_lower, t))
-    if _sop_strict:
-        return matched >= 1
-    return True
+    # Use the broader term set for material premise questions.
+    target_terms = material_q_terms if _has_material_premises(question) else q_terms
+    matched = sum(1 for t in target_terms if _contains_term(a_lower, t))
+
+    # Preserve leniency only for simple procedural questions without material premises.
+    if not _sop_strict and not _has_material_premises(question):
+        return True
+
+    # For questions with material premises, require a higher match ratio (e.g. 60%)
+    # to ensure the answer addresses the material claims, not just a fragment.
+    if _has_material_premises(question):
+        return matched >= (len(target_terms) * 0.7)
+
+    return matched >= 1
 
 
 # ==================================================
