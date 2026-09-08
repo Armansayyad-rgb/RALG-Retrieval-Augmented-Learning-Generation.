@@ -594,7 +594,7 @@ def _question_named_phrases(question):
     return phrases
 
 
-def _answer_addresses_question(question, answer):
+def _answer_addresses_question(question, answer, *, _sop_strict=True):
     """Check whether the answer engages with the question's main subject.
 
     Extracts the question's primary subject (the core noun phrase) and
@@ -664,7 +664,12 @@ def _answer_addresses_question(question, answer):
         if enforce_for_subject and for_terms and not all(
             _contains_term(a_lower, t) for t in for_terms
         ):
-            return False
+            # In SOP-strict mode, always reject.  In lenient
+            # mode (procedural section answers), only reject
+            # when multiple entity terms are missing — a single
+            # entity term may not appear in procedural steps.
+            if _sop_strict or len(for_terms) >= 2:
+                return False
 
     # --- Restatement gate ---
     # If the answer's first sentence is just restating the question
@@ -719,8 +724,12 @@ def _answer_addresses_question(question, answer):
     # appear in the answer.  Cross-domain mashups are already
     # caught by the "for X" subject gate above; this only needs
     # to reject answers with zero topical overlap.
+    # In SOP-lenient mode, skip this check — procedural steps are
+    # grounded by the SOP extraction, not by term overlap.
     matched = sum(1 for t in q_terms if _contains_term(a_lower, t))
-    return matched >= 1
+    if _sop_strict:
+        return matched >= 1
+    return True
 
 
 # ==================================================
@@ -2301,8 +2310,22 @@ _SOP_SECTIONS = {
     "restart": [
         "restart",
         "restarting",
-        "start-up",
-        "startup",
+        "shut down",
+        "shutdown",
+    ],
+    "charging": [
+        "charging",
+        "charge",
+        "charger",
+    ],
+    "discharging": [
+        "discharging",
+        "discharge",
+    ],
+    "shutdown": [
+        "shutdown",
+        "shut down",
+        "stopping",
     ],
 }
 
@@ -2323,8 +2346,20 @@ _SOP_SECTION_HEADERS = {
     "restart": (
         "restart",
         "restarting",
-        "start-up",
-        "startup",
+        "shut down",
+        "shutdown",
+    ),
+    "charging": (
+        "charging",
+        "charge procedure",
+    ),
+    "discharging": (
+        "discharging",
+        "discharge procedure",
+    ),
+    "shutdown": (
+        "shutdown",
+        "shut down",
     ),
 }
 
@@ -2407,11 +2442,13 @@ def _extract_sop_section(question, chunk):
     _section_text = None
     for _part in parts:
         _part_stripped = _part.strip()
-        _header_low = _part_stripped[:120].lower()
+        # Match against the section header line only, not body
+        # content which may incidentally contain the keyword.
+        _first_line = _part_stripped.split("\n", 1)[0].lower()
         for _kw in _SOP_SECTION_HEADERS.get(
             _target_section, (_target_section,)
         ):
-            if _contains_term(_header_low, _kw):
+            if _contains_term(_first_line, _kw):
                 _section_text = _part_stripped
                 break
         if _section_text:
@@ -2420,14 +2457,32 @@ def _extract_sop_section(question, chunk):
     if not _section_text:
         return None
 
-    # Extract bullet items (lines starting with "-" or after
-    # section header text).
+    # Extract procedural items from the section.  Handles multiple
+    # formats found in technical documentation:
+    #   - dash-prefixed:   "- Connect charger"
+    #   - letter-prefixed: "a. Connect charger" / "a) Connect charger"
+    #   - number-prefixed: "1. Connect charger" / "1) Connect charger"
+    #   - STEP-labeled:    "STEP 1: Connect charger"
     _items = []
-    _lines = _re_sop.split(r"(?:^|\s)-\s+", _section_text)
-    for _line in _lines[1:]:
-        _l = _line.strip().rstrip(".")
-        if _l and not _l.upper() == _l:
-            _items.append(_l)
+    _item_re = _re_sop.compile(
+        r"^\s*(?:"
+        r"[-*]\s+"           # dash or asterisk bullet
+        r"|(?:[a-z])\.\s+"  # letter + dot (a. b. c.)
+        r"|(?:[a-z])\)\s+"  # letter + paren (a) b) c))
+        r"|(?:\d+)[.)]\s+"  # number + dot/paren (1. 2. 1) 2))
+        r"|STEP\s+\d+:\s*"  # STEP N:
+        r")",
+        _re_sop.IGNORECASE,
+    )
+    for _line in _section_text.splitlines():
+        _stripped = _line.strip()
+        if not _stripped:
+            continue
+        _m = _item_re.match(_stripped)
+        if _m:
+            _item_text = _stripped[_m.end():].strip().rstrip(".")
+            if _item_text and not _item_text.upper() == _item_text:
+                _items.append(_item_text)
 
     if not _items:
         return None
@@ -5892,18 +5947,70 @@ def _answer_question_impl(
             if not _ev_chunk or len(_ev_chunk) < 100:
                 continue
             _ev_low = _ev_chunk.lower()
-            if not (
-                "sop" in _ev_low
-                or "standard operating procedure" in _ev_low
-                or "safety precautions" in _ev_low
-                or "startup sequence" in _ev_low
-                or "inspection phase" in _ev_low
-                or "lockout/tagout" in _ev_low
-                or "lockout-tagout" in _ev_low
-                or "before starting" in _ev_low
-            ):
+            # Require actual SOP section headers with section numbers
+            # (dev docs have "1. SAFETY PRECAUTIONS" format).
+            # Prevents false matches on wikitext that mentions
+            # "safety precautions" in running prose.
+            _has_sop_header = bool(re.search(
+                r"(?:^|\n)\s*\d+\.?\s+"
+                r"(?:SAFETY PRECAUTIONS|STARTUP SEQUENCE"
+                r"|INSPECTION PHASE|SHUTDOWN SEQUENCE"
+                r"|LOCKOUT/TAGOUT|LOCKOUT-TAGOUT"
+                r"|BEFORE STARTING|BEFORE BEGINNING"
+                r"|STANDARD OPERATING PROCEDURE"
+                r"|CHARGING PROCEDURE|DISCHARGING PROCEDURE"
+                r"|MAINTENANCE SCHEDULE|EMERGENCY PROCEDURES"
+                r"|TROUBLESHOOTING|LUBRICATION"
+                r"|NORMAL OPERATION)"
+                r"[^\n]*\n",
+                _ev_chunk,
+                re.IGNORECASE,
+            ))
+            if not _has_sop_header:
                 continue
             if not _context_has_question_identifiers(question, _ev_chunk):
+                continue
+            # Entity grounding: the question's primary entity must
+            # appear in the document chunk.  Extract the entity
+            # from the "for X" pattern or from capitalized terms
+            # in the question.  This prevents cross-domain SOP
+            # matches where shared terms (bearing, compressor)
+            # cause a pump manual to answer an HVAC question.
+            _ENTITY_GENERIC = frozenset({
+                "the", "and", "for", "with", "from", "this",
+                "that", "are", "was", "were", "has", "have",
+                "maintenance", "repair", "service", "system",
+                "unit", "equipment", "device", "machine",
+                "required", "step", "steps", "procedure",
+                "procedures", "process", "task",
+                "what", "which", "how", "where", "when", "why",
+                "who", "whose",
+                "after", "before", "during", "under", "over",
+                "into", "onto", "upon", "about", "between",
+            })
+            _entity_terms = []
+            _for_m = re.search(
+                r"\bfor\s+([A-Z][\w\s-]+)", question,
+            )
+            if _for_m:
+                _entity_terms = [
+                    t.lower() for t in re.findall(
+                        r"[A-Za-z0-9]{3,}", _for_m.group(1),
+                    )
+                    if t.lower() not in _ENTITY_GENERIC
+                ]
+            if not _entity_terms:
+                _entity_terms = [
+                    t.lower() for t in re.findall(
+                        r"\b([A-Z][A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)\b",
+                        question,
+                    )
+                    if len(t) >= 3
+                    and t.lower() not in _ENTITY_GENERIC
+                ]
+            if _entity_terms and not all(
+                _contains_term(_ev_low, t) for t in _entity_terms
+            ):
                 continue
             if _question_requests_named_section(question):
                 _full_fa, _full_fs = extract_factual_answer(
@@ -5973,8 +6080,15 @@ def _answer_question_impl(
                             " (SOP section early):",
                             _sec_ans,
                         )
+                    # SOP section answers are grounded in the
+                    # document chunk.  Apply the subject gate only
+                    # for cross-domain questions (multiple entity
+                    # terms) to reject mashups like "bearing steps
+                    # for HVAC compressor" answered by generic
+                    # inspection steps.  Single-entity procedural
+                    # answers don't restate the entity name.
                     if not _answer_addresses_question(
-                        question, _sec_ans,
+                        question, _sec_ans, _sop_strict=False,
                     ):
                         result = build_system_result(
                             result,
