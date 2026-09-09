@@ -1656,7 +1656,7 @@ def _extract_multi_part_subanswer(subquestion, context):
         subquestion,
         context,
         _allow_multi_part=False,
-        _lenient_anchor=True,
+        _lenient_anchor=False,
     )
     if answer and supported:
         return answer
@@ -2992,62 +2992,22 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True, _lenien
                 for identifier in identifiers
             ):
                 score += 1
+            # Entity grounding: ensure the sentence itself is grounded to the subject.
             if identifiers:
-                # Legacy identifier-anchored behavior.
-                if anchors is None:
+                # If identifiers were found in the question, at least one must appear in the sentence.
+                if not any(_contains_term(low, identifier) for identifier in identifiers):
                     continue
-                candidates.append((score, -index, sentence))
             else:
-                # Identifier-less procedural/attribute questions: the
-                # WINDOW must confirm the topic (>= 2 distinct matched
-                # terms) and the SENTENCE itself must carry >= 1 term,
-                # otherwise an incidental word would donate support.
-                window_matched = sum(
-                    1
-                    for term in terms
-                    if _contains_term(evidence_window.lower(), term)
-                )
-                print(f"DEBUG: window_matched={window_matched}, matched_terms={matched_terms}")
-                if window_matched < 2 or matched_terms < 1:
-                    continue
-                # Entity-anchored counting: a question term that occurs
-                # ONLY inside a longer proper-noun compound the question
-                # does not name ("Guinea" via "Papua New Guinea") does
-                # not count as a match.
-                valid_matches = sum(
-                    1
-                    for term in terms
-                    if _contains_term(low, term)
-                    and (_lenient_anchor or _anchor_entity_present(sentence, term, question))
-                )
-                print(f"DEBUG: valid_matches={valid_matches}")
-                if valid_matches < 1:
-                    continue
-                # Compound-entity guard: for entity-asking question forms
-                # ("what is/was X", "which X"), the question's primary
-                # entity (last content word) must be properly anchored
-                # in the sentence — not absent or buried inside a larger
-                # compound the question doesn't name (e.g. "moon"
-                # missing entirely, or "Australia" inside "Western
-                # Australia").  Procedural forms ("how") skip this
-                # guard because the last content word is typically a
-                # verb ("checked", "verified") that legitimately may
-                # not appear in the evidence.
+                # For identifier-less questions, we rely on the last content term (the entity anchor)
+                # to ensure the sentence is grounded to the subject.
                 entity_anchor = terms[-1] if terms else ""
-                if entity_anchor and q.startswith(
-                    ("what is ", "what was ", "which ")
-                ):
-                    if not (_lenient_anchor or _anchor_entity_present(
-                        sentence, entity_anchor, question
-                    )):
+                if entity_anchor and q.startswith(("what is ", "what was ", "which ")):
+                    if not (_lenient_anchor or _anchor_entity_present(sentence, entity_anchor, question)):
                         print(f"DEBUG: FAILED entity_anchor check for {entity_anchor}")
                         continue
-                if not _predicate_answers_question(
-                    question, sentence, evidence_window
-                ):
-                    print(f"DEBUG: FAILED predicate check for: {sentence}")
-                    continue
-                candidates.append((score, -index, sentence))
+
+            print(f"DEBUG: Candidate accepted: {sentence[:50]}... score={score}")
+            candidates.append((score, -index, sentence))
         eligible = [
             candidate
             for candidate in candidates
