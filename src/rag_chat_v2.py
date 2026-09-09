@@ -3023,7 +3023,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True, _lenien
             predicate_terms = _extract_question_predicate_terms(question)
             if predicate_terms:
                 sentence_low = sentence.lower()
-                if not any(
+                if not all(
                     _contains_term(sentence_low, term) for term in predicate_terms
                 ):
                     return None, False
