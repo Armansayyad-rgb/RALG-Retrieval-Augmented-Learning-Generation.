@@ -1364,32 +1364,44 @@ def _derive_multi_part_factual_questions(question):
         q,
         flags=re.IGNORECASE,
     )
-    if not match:
-        return []
+    if match:
+        wh_word, attributes, relation, subject = match.groups()
+        attributes = re.sub(
+            r"^\s*both\s+",
+            "",
+            attributes,
+            flags=re.IGNORECASE,
+        ).strip()
+        subject = subject.strip()
+        if subject:
+            parts = _split_factual_attribute_list(attributes)
+            if len(parts) >= 2:
+                subquestions = []
+                for part in parts:
+                    prefix = "What is" if wh_word.lower() == "what" else "Which is"
+                    subquestions.append(
+                        f"{prefix} the {part} {relation.lower()} {subject}?"
+                    )
+                return subquestions
 
-    wh_word, attributes, relation, subject = match.groups()
-    attributes = re.sub(
-        r"^\s*both\s+",
-        "",
-        attributes,
-        flags=re.IGNORECASE,
-    ).strip()
-    subject = subject.strip()
-    if not subject:
-        return []
+    # Generic "X and Y" factual request (e.g. "PC-350 oil type and PC-350 pressure range")
+    if " and " in q.lower():
+        protected = {
+            "research and development",
+            "health and safety",
+            "safety and compliance",
+            "terms and conditions",
+            "signal and noise",
+            "input and output",
+        }
+        if not any(phrase in q.lower() for phrase in protected):
+            parts = re.split(r"\s+and\s+", q, maxsplit=1, flags=re.IGNORECASE)
+            if len(parts) == 2:
+                # Both parts must contain some content to be considered separate requests
+                if _content_terms(parts[0]) and _content_terms(parts[1]):
+                    return [p.strip() for p in parts]
 
-    parts = _split_factual_attribute_list(attributes)
-    if len(parts) < 2:
-        return []
-
-    subquestions = []
-    for part in parts:
-        prefix = "What is" if wh_word.lower() == "what" else "Which is"
-        subquestions.append(
-            f"{prefix} the {part} {relation.lower()} {subject}?"
-        )
-
-    return subquestions
+    return []
 
 
 def _section_blocks(context):
@@ -1644,6 +1656,7 @@ def _extract_multi_part_subanswer(subquestion, context):
         subquestion,
         context,
         _allow_multi_part=False,
+        _lenient_anchor=True,
     )
     if answer and supported:
         return answer
@@ -1651,22 +1664,24 @@ def _extract_multi_part_subanswer(subquestion, context):
     return _extract_attribute_line_answer(subquestion, context)
 
 
-def _multi_part_subject_label(subquestions):
-    for subquestion in subquestions:
-        match = re.search(
-            r"\bfor\s+(.+?)\s*[?.]?\s*$",
-            subquestion,
-            flags=re.IGNORECASE,
-        )
-        if match:
-            return match.group(1).strip()
-    for subquestion in subquestions:
-        match = re.search(
-            r"\b([A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
-            subquestion,
-        )
-        if match:
-            return match.group(1).strip()
+def _get_subject_for_question(question):
+    """Return the primary subject entity found in a question, or None."""
+    q = str(question or "").strip()
+    # 1. Look for "for <subject>" at the end of the question.
+    match = re.search(
+        r"\bfor\s+(.+?)\s*[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if match:
+        return match.group(1).strip()
+    # 2. Look for a named identifier.
+    match = re.search(
+        r"\b([A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
+        q,
+    )
+    if match:
+        return match.group(1).strip()
     return None
 
 
@@ -1676,10 +1691,10 @@ def _extract_multi_part_factual_answer(question, context):
         return None, False
 
     # To prevent false support from "unrelated domains" in the same chunk,
-    # each sub-answer must be independently grounded to the requested subject.
-    subject = _multi_part_subject_label(subquestions)
+    # each sub-answer must be independently grounded to its requested subject.
 
     subanswers = []
+    subjects = []
     for subquestion in subquestions:
         # 1. Extract sub-answer.
         # Each sub-question must be independently supported by the support gate.
@@ -1689,6 +1704,8 @@ def _extract_multi_part_factual_answer(question, context):
 
         # 2. Explicit Subject Grounding Check:
         # Ensure the subject is anchored to this specific sub-answer.
+        subject = _get_subject_for_question(subquestion)
+        subjects.append(subject)
         if subject:
             # Since _extract_multi_part_subanswer uses extract_factual_answer,
             # it already performs some grounding. However, we must ensure that
@@ -1720,8 +1737,13 @@ def _extract_multi_part_factual_answer(question, context):
         return None, False
 
     composed = "; ".join(unique_answers) + "."
-    if subject and not _answer_addresses_question(question, composed):
-        composed = f"For {subject}, {composed}"
+
+    # Use a common subject prefix if all sub-questions share the same subject.
+    if subjects and len(set(subjects)) == 1 and subjects[0]:
+        common_subject = subjects[0]
+        if not _answer_addresses_question(question, composed):
+            composed = f"For {common_subject}, {composed}"
+
     if not cheap_grounding_check(composed, context):
         return None, False
     return composed, True
@@ -2595,7 +2617,7 @@ def _extract_sop_section(question, chunk):
     return "; ".join(_items)
 
 
-def extract_factual_answer(question, context, *, _allow_multi_part=True):
+def extract_factual_answer(question, context, *, _allow_multi_part=True, _lenient_anchor=False):
     """
     Extract a factual answer from context for who/when/where/what/which questions.
     Uses simple pattern matching and extractor_v1 where possible.
@@ -2603,6 +2625,18 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
     """
     if not context:
         return None, False
+
+    # --- Multi-Part Lock-In ---
+    # If a question is identified as multi-part, it MUST be handled by
+    # _extract_multi_part_factual_answer. If that fails, we abstain
+    # entirely to prevent partial/incorrect support.
+    if _allow_multi_part:
+        is_multi = _derive_multi_part_factual_questions(question)
+        if is_multi:
+            composed_answer, composed_supported = _extract_multi_part_factual_answer(question, context)
+            if composed_answer is not None and composed_supported:
+                return composed_answer, True
+            return None, False
 
     # Category H: Conditional Answer Extraction
     if is_conditional_query(question):
@@ -2619,15 +2653,6 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
     q = question.strip().lower()
     if _has_false_required_safety_action(question):
         return None, False
-
-    if _allow_multi_part:
-        composed_answer, composed_supported = (
-            _extract_multi_part_factual_answer(question, context)
-        )
-        if composed_answer is not None and composed_supported:
-            return composed_answer, True
-        if _derive_multi_part_factual_questions(question):
-            return None, False
 
     if _question_requests_named_section(question):
         section_answer = _extract_section_answer(question, context)
@@ -2867,11 +2892,11 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                     _contains_term(low, w)
                     for w in subject_words
                 )
-                and _anchor_entity_present(
+                and (_lenient_anchor or _anchor_entity_present(
                     s,
                     subject_anchor,
                     question,
-                )
+                ))
             ):
                 print(f"DEBUG: Found candidate sentence: {s}")
                 if not _predicate_answers_question(
@@ -2879,7 +2904,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                 ):
                     print(f"DEBUG: FAILED predicate check for: {s}")
                     continue
-                if _named_fact_anchors_match(question, s) is False:
+                if not _lenient_anchor and _named_fact_anchors_match(question, s) is False:
                     print(f"DEBUG: FAILED anchor match for: {s}")
                     continue
                 return s, True
@@ -2994,7 +3019,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                     1
                     for term in terms
                     if _contains_term(low, term)
-                    and _anchor_entity_present(sentence, term, question)
+                    and (_lenient_anchor or _anchor_entity_present(sentence, term, question))
                 )
                 print(f"DEBUG: valid_matches={valid_matches}")
                 if valid_matches < 1:
@@ -3013,9 +3038,9 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                 if entity_anchor and q.startswith(
                     ("what is ", "what was ", "which ")
                 ):
-                    if not _anchor_entity_present(
+                    if not (_lenient_anchor or _anchor_entity_present(
                         sentence, entity_anchor, question
-                    ):
+                    )):
                         print(f"DEBUG: FAILED entity_anchor check for {entity_anchor}")
                         continue
                 if not _predicate_answers_question(
