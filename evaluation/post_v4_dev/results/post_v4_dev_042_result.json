@@ -1,0 +1,272 @@
+{
+  "case_id": "post_v4_dev_042",
+  "category": "I",
+  "supported": true,
+  "answer": "- Model: PC-350 Industrial Pump Controller",
+  "answer_type": "factual",
+  "retrieved_document_ids": [
+    "pump_controller_manual",
+    "machine_safety_procedures"
+  ],
+  "source_evidence": "",
+  "latency_ms": 32.95,
+  "runtime_error": null,
+  "gate_passed": true,
+  "gate_reasons": [],
+  "retrieval_success": true,
+  "support_gate_result": "accepted",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": true,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "What is the conjugate of the PC-350 pump impeller design?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+        "chunk_index": 73474,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.645037833145,
+        "lexical_score": 76.36462985664542,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.165635925541,
+        "lexical_score": 28.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The pump is powered by a water wheel , cast at Cocking Foundry , which is 11 feet ( 3 . 4 m ) in diameter . There were two corn mills and a malt mill recorded on the site in 1534 . The mill was modernised in 1910 , when turbines replaced the wheels , and standby engines were installed in 1919 . It was destroyed by fire in 1923 , and a steel - framed concrete building replaced it . When it ceased to operate in 1972 , the building was demolished , but the beam pump , which was located beneath the building , was rescued and has been restored . The pump no longer performs its original function , but supplies a fountain near the visitor centre . Shopham Lock was another where the lock cut was built across a large meander to the north . The bridge at the tail of the lock is built from red and grey brick , and has a single , round - headed arch .",
+        "chunk_index": 16369,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.165635925541,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "On the way , Marlborough and Fearless encountered the British submarines G3 and G5 ; the two submarines prepared to attack the ships but fortunately recognised them before they launched torpedoes . By 15 : 00 , eight destroyers from the Harwich Force had joined Marlborough and another pump had been lowered into the flooded boiler room . At around 23 : 30 , the pump was being moved to clean it when the roll of the ship threw the pump into the damaged bulkhead , knocking the shores loose . Water flooded into the ship and Marlborough 's captain ordered Fearless and the destroyers to prepare to come alongside , to rescue the crew if the flooding worsened at 00 : 47 on 2 June . A diver was sent into the boiler room at that time , and he was able to keep the pump clean , which slowly reduced the water level in the ship .",
+        "chunk_index": 3292,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.145414776285,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Atop the gravel were prefabricated modular buildings either flown to the site or trucked across the Dalton Highway . The standardized structures could house 28 people , and two typically were bolted together to create two \" wings \" . All were one - story , except at Valdez and at the pump station camps , where modules were laid atop one another because of space concerns . In addition to the gravel insulation , both buildings and utility conduits were raised above the ground to avoid heating permafrost . The camps housed from 250 people ( at each pump station ) to 3 , 500 people ( at Valdez ) . A typical pump station camp cost $ 6 million to build , while the typical mainline camps cost about $ 10 million to build . The camps had beds for 16 , 500 workers and were collectively referred to as \" Skinny City \" by workers .",
+        "chunk_index": 26934,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.145414776285,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" To take advantage of that \" top effectiveness \" , Moolin set an ambitious goal for 1976 construction : \" We 're expecting to have all of the line installed , insulated , and hydro - tested by November 1 , \" he said in January . That goal was ambitious , because most of the work that had been done to that point was on floodplains and flat terrain . Still left to tackle were difficult construction projects in Atigun Pass and Keystone Canyon . \" In some areas , we did eat our cake last year , \" Moolin said . Even though winter shut down all pipelaying on the right of way , work on the pump stations and in Valdez continued without stop . At Pump Station 1 , in Prudhoe Bay , temperatures reached lower than \u2212 70 \u00b0 F ( \u2212 57 \u00b0 C ) , but the work continued . Because the pump station was the origin point for the main pipeline , it also had to process the feeder lines coming from oil wells .",
+        "chunk_index": 26954,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.145414776285,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Not even bulldozers could traverse the grade without a team of two helping each up the grade in turn . A bulldozer had to be modified to carry 80 - foot ( 20 . 4 - meter ) sections of pipe up the grade , but even then , most of the sections and equipment had to be lifted by helicopter to the canyon rim . Similar techniques had to be used at nearby Thomson Pass , and both sections required the entire 1976 construction season to complete . = = = Pump stations and marine terminal = = = Work at the pump stations and marine terminal , which had not stopped during the winter , continued throughout the 1976 construction season . Pump Station 6 , just south of the Yukon River , had to be redesigned after excavation revealed ice - rich permafrost below the site . Five pump stations needed at startup ( when throughput was lower ) received their pumps , turbines , and piping .",
+        "chunk_index": 26962,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.145414776285,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "As they were completed , the pump stations received hydrostatic testing , in which portions of pipe were filled with water and subjected to pressures in excess of the eventual operating conditions . Following this testing , the initial five pump stations were disconnected from the main pipeline and had oil run through them on a continuous loop . \" It 's very similar to your new automobile , \" one worker said . \" You drive it around for ten days so that any components that are going to fail are given time to fail . \" Work on additional pump stations , which would not be needed until the pipeline was brought to full capacity , was not pressed forward . At Valdez , construction was two - thirds complete by September as 4 , 200 workers hurried to complete the marine terminal .",
+        "chunk_index": 26963,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.145414776285,
+        "lexical_score": 23.251100415037342,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" Game Informer called the writing and story \" on par with any fantasy novel . \" PC Gamer said it had \" some of the richest and most enjoyable dialogue since Planescape Torment , \" and an \" impressive storyline . \" GameSpot called the story \" engrossing , \" and said that \" the game is very well written , offering up a number of strong characters and serious themes . \" PC Zone noted that , \" thanks to the excellent NPCs , the battles have a lot more meaning , as there is a strong storyline behind the endless hacking and slashing . \" PC Format thought that \" IDII also suffers , like its predecessor , from a story irrevocably weakened by anonymous central characters \u2013 the six you create .",
+        "chunk_index": 18155,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.144117421463,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Concurrent viewership numbers of professional Dota 2 matches have reached upwards of two million . = = = Awards and accolades = = = Following its first public showing in 2011 , Dota 2 won IGN 's People 's Choice Award . In December 2012 , PC Gamer listed Dota 2 as a nominee for the 2012 Game of the Year award , as well as the best electronic sports title of the year . The game won 2013 eSport of the year awards from PC Gamer and onGamers . GameTrailers awarded the game the award for Best PC Game of 2013 . For IGN 's Best of 2013 award series , Dota 2 won the awards for Best PC Strategy & Tactics Game , as well as Best PC Multiplayer Game . The game 's awards for IGN 's Best of 2013 won their People 's Choice Award counterparts , as well . Similarly , Game Informer recognized Dota 2 for the categories of Best PC Exclusive , Best Competitive Multiplayer and Best Strategy of 2013 .",
+        "chunk_index": 8241,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "According to John Riccitiello , CEO of Electronic Arts , the company is very satisfied with the sales of Origins ; more than 1 million DLC packs for the game were sold before the end of 2009 . In February 2010 , Electronic Arts announced that more than 3 . 2 million copies of the game had been sold . = = = Accolades = = = Origins gained recognition from several gaming publications for its achievements . The Academy of Interactive Arts & Sciences named it the \" Role - Playing / Massively Multiplayer Game of the Year 2009 \" . At the 2009 Spike Video Game Awards , Dragon Age : Origins received the Best PC Game and Best RPG awards . It was chosen as the PC Game of the Year , Best Xbox 360 RPG of the Year , Best Story of the Year , and Best PC Role - Playing Game of the Year by IGN .",
+        "chunk_index": 19422,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.144117421463,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" Zur later said , \" I thought that we definitely met some high standards ; we compared our products to big budget films scores , \" and , \" in the end we were quite happy . \" The game features voice work from Gabrielle Carteris , Peter Stormare , and Grey DeLisle , among others . = = Reception = = Icewind Dale II reached sixth on the NPD PC games sales chart in the last week of August 2002 , and climbed to fourth during the first week of September . Icewind Dale II 's reception was generally positive . Game Informer hailed it as , \" one of the best RPGs ever released for the PC , \" and GameSpot called it , \" simply a great role - playing game . \" However , PC Format said , \" it 's uninspired and uninspiring , giving itself a narrow remit and fulfilling that unspectacularly . \" Certain reviewers compared Icewind Dale II to Neverwinter Nights .",
+        "chunk_index": 18150,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Some critics noted the absence of any narrative or backstory , but felt that the game ultimately didn 't need one , though GameSpot noted it as one of the game 's weaknesses . In his review of the PC version , IGN 's Daemon Hatfield stated that And Yet It Moves \" manages to make this quarter - century old genre [ 2D platformer ] feel new again . \" Hatfield praised the gameplay , which was \" challenging but avoids being frustrating \" , but felt there wasn 't enough content to warrant the $ 15 price , despite the additional game modes available . Hatfield scored the game 8 . 4 out of 10 . GameFocus scored the PC version 8 . 0 out of 10 , praising the gameplay , sound , controls , and use of physics . The review also stated that players are unlikely to experience motion sickness despite the frequent rotating of the game screen . GameSpot scored the PC version 7 .",
+        "chunk_index": 18862,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Directly comparing the two versions , AllGame 's Brad Cook wrote that PC version 's handling is more difficult than the N64 version . He believed the PC 's \" choppy \" feel made it difficult to target enemies . In contrast to its opinion of the N64 version , IGN 's PC review was not enthusiastic about the game 's visuals . IGN staff remarked that Rogue Squadron 's \" graphics and special effects aren 't spectacular \" and that they had \" seen better graphics \" on the PC . = = = Sales = = = When Rogue Squadron was released in early December 1998 , the title 's Nintendo 64 incarnation was the second - highest - selling video game for the first half of the month ( behind Nintendo 's The Legend of Zelda : Ocarina of Time ) and the holiday season .",
+        "chunk_index": 31247,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.144117421463,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "= = Releases = = The game was first released in Japan on March 10 , 1995 , then in North America on May 11 , 1995 and in Europe on August 30 , 1995 , on the Sega Saturn console . The next year , Panzer Dragoon was ported on PC . Identical to the Saturn version except with a higher resolution , this PC port was also included as an unlockable bonus in the Xbox game Panzer Dragoon Orta , released in 2002 . Aside from providing the source code , Team Andromeda had no involvement in the development of the PC version . The PlayStation 2 console saw the release of an updated version of the game in 2006 in Japan , as part of the Sega Ages 2500 collection . The port was handled by development studio Land Ho , and features both the original Saturn game and an \" arrange \" version with anti - aliasing filter , better texturing , and improved 3D models for the dragon and some enemies .",
+        "chunk_index": 18941,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "An example of this is Messier 3 ( M3 ) , which has an overall visible dimension of about 18 arc minutes , but a half - mass radius of only 1 . 12 arc minutes . Almost all globular clusters have a half - light radius of less than 10 pc , although there are well - established globular clusters with very large radii ( i.e. NGC 2419 ( Rh = 18 pc ) and Palomar 14 ( Rh = 25 pc ) ) . Finally the tidal radius , or Hill sphere , is the distance from the center of the globular cluster at which the external gravitation of the galaxy has more influence over the stars in the cluster than does the cluster itself . This is the distance at which the individual stars belonging to a cluster can be separated away by the galaxy . The tidal radius of M3 is about 40 arc minutes , or about 113 pc at the distance of 10 . 4 kpc .",
+        "chunk_index": 47108,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.144117421463,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Edge called DayZ the mod of the year . Wired UK 's Quitin Smith said it could be the most terrifying game of 2012 , and Rock Paper Shotgun 's Jim Rossignol called it the best game he had played so far in 2012 . PC Gamer stated the game was one of the most important things to happen to PC gaming in 2012 and included it in their 2012 list of the top five scariest PC games of all time . Metro called it one of the best games to ever to come out of PC modding and one of the single most impressive experiences available on the system . Eurogamer called it the best zombie game ever made and the break out phenomenon of PC gaming in 2012 . Kotaku called it possibly the greatest zombie game of all time and the most interesting PC game of 2012 . PC PowerPlay said DayZ was the most important thing to happen to PC gaming in 2012 .",
+        "chunk_index": 24247,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" In 2006 , PC Zone listed Bloodlines the seventh - best PC game which people were unlikely to have played , calling it the \" best buggy game ever released \" . In 2007 , the game was 80th on Computer & Video Games ' list of its top 100 games , and 86th on PC Gamer 's 2014 list of the same , moving to 63rd in PC Gamer 's 2015 edition . In 2011 , Rock , Paper , Shotgun called Bloodlines one of the most important PC games of all time ( \" it signposts a direction to a future of games that we were denied \" ) , listing it as one of the 122 Best PC Games Ever . Cinema Blend called it one of the most underappreciated games of the decade . In 2011 , Official Xbox Magazine called it one of the ten PC franchises it wanted on the Xbox 360 console . In 2013 , PC Gamer named it one of the 100 Best Horror Games on PC , and PCGamesN called it the seventh - best PC role - playing game .",
+        "chunk_index": 30407,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "= = = Ports and re - releases = = = Adventure has been ported to or re - released on several platforms : Atari Classics 10 - in - 1 TV Games ( Standalone hardware unit , 2003 ) Atari : 80 Classic Games in One ( PC , 2003 ) Atari Flashback ( Standalone hardware unit , 2004 ) Atari Anthology ( PlayStation 2 , Xbox , 2004 ) Atari Flashback 2 ( Standalone hardware unit , 2005 ) Game Room ( Xbox 360 , PC , 2010 ) Atari Greatest Hits ( Nintendo DS , iOS , 2010 ) Atari Flashback 3 ( Standalone hardware unit , 2011 ) Atari Flashback 4 ( Standalone hardware unit , 2012 ) Atari Vault ( PC , 2016 ) = Joshua Prawer = Joshua Prawer ( Hebrew : \u05d9\u05d4\u05d5\u05e9\u05e2 \u05e4\u05e8\u05b7\u05d0\u05d5\u05b6\u05d5\u05e8 ; November 22 , 1917 \u2013 April 30 , 1990 ) was a notable Israeli historian and a scholar of the Crusades and Kingdom of Jerusalem . His work often attempted to portray Crusader society as a forerunner to later European colonialist expansion .",
+        "chunk_index": 46134,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "This re - release featured smoother graphics , and also fixed translation and spelling errors , as well as gameplay - related glitches . However , the PC version suffered from diminished audio quality due to its use of the MIDI format and errors in the display of some FMVs when rendering in hardware mode on certain graphics chipsets . Since the original PC release of the game , fans have created hundreds of mods for the PC version of the game . The most prominent community being the Qhimm.com forum community , featuring various mods including game patches ( for better compatibility with modern Windows and graphics cards ) , PC - PS save game converter , save game editor , game trainers , character models , world map , cutscenes , music , and battle stages .",
+        "chunk_index": 57013,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.123896272208,
+        "lexical_score": 20.24817895772476,
+        "origin": "full_question"
+      }
+    ],
+    "context": "TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft\nSAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\nNORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Flow rate: 0-100 GPM depending on impeller size.\nPress GREEN START button to begin pump operation."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73474,
+      "preview": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before rem",
+      "evidence": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+      "score": 76.365,
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 73473,
+      "preview": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safet",
+      "evidence": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+      "score": 28.251,
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 3,
+      "id": 16369,
+      "preview": "The pump is powered by a water wheel , cast at Cocking Foundry , which is 11 feet ( 3 . 4 m ) in diameter . There were two corn mills and a malt mill recorded on the site in 1534 . The mill was modernised in 1910 , when turbines replaced th",
+      "evidence": "The pump is powered by a water wheel , cast at Cocking Foundry , which is 11 feet ( 3 . 4 m ) in diameter . There were two corn mills and a malt mill recorded on the site in 1534 . The mill was modernised in 1910 , when turbines replaced the wheels , and standby engines were installed in 1919 . It was destroyed by fire in 1923 , and a steel - framed concrete building replaced it . When it ceased to operate in 1972 , the building was demolished , but the beam pump , which was located beneath the building , was rescued and has been restored . The pump no longer performs its original function , but supplies a fountain near the visitor centre . Shopham Lock was another where the lock cut was built across a large meander to the north . The bridge at the tail of the lock is built from red and grey brick , and has a single , round - headed arch .",
+      "score": 23.251
+    },
+    {
+      "rank": 4,
+      "id": 3292,
+      "preview": "On the way , Marlborough and Fearless encountered the British submarines G3 and G5 ; the two submarines prepared to attack the ships but fortunately recognised them before they launched torpedoes . By 15 : 00 , eight destroyers from the Har",
+      "evidence": "On the way , Marlborough and Fearless encountered the British submarines G3 and G5 ; the two submarines prepared to attack the ships but fortunately recognised them before they launched torpedoes . By 15 : 00 , eight destroyers from the Harwich Force had joined Marlborough and another pump had been lowered into the flooded boiler room . At around 23 : 30 , the pump was being moved to clean it when the roll of the ship threw the pump into the damaged bulkhead , knocking the shores loose . Water flooded into the ship and Marlborough 's captain ordered Fearless and the destroyers to prepare to come alongside , to rescue the crew if the flooding worsened at 00 : 47 on 2 June . A diver was sent into the boiler room at that time , and he was able to keep the pump clean , which slowly reduced the water level in the ship .",
+      "score": 23.251
+    },
+    {
+      "rank": 5,
+      "id": 26934,
+      "preview": "Atop the gravel were prefabricated modular buildings either flown to the site or trucked across the Dalton Highway . The standardized structures could house 28 people , and two typically were bolted together to create two \" wings \" . All we",
+      "evidence": "Atop the gravel were prefabricated modular buildings either flown to the site or trucked across the Dalton Highway . The standardized structures could house 28 people , and two typically were bolted together to create two \" wings \" . All were one - story , except at Valdez and at the pump station camps , where modules were laid atop one another because of space concerns . In addition to the gravel insulation , both buildings and utility conduits were raised above the ground to avoid heating permafrost . The camps housed from 250 people ( at each pump station ) to 3 , 500 people ( at Valdez ) . A typical pump station camp cost $ 6 million to build , while the typical mainline camps cost about $ 10 million to build . The camps had beds for 16 , 500 workers and were collectively referred to as \" Skinny City \" by workers .",
+      "score": 23.251
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    },
+    {
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": true,
+  "conflict": false,
+  "error": null
+}

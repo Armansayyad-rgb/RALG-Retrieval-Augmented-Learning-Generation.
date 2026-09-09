@@ -1,0 +1,289 @@
+{
+  "artifact_type": "post_v4_dev_baseline_v1",
+  "baseline_before_production_remediation": true,
+  "baseline_status": "FROZEN",
+  "case_ids": {
+    "correct_rejections": [
+      "post_v4_dev_041",
+      "post_v4_dev_043",
+      "post_v4_dev_044",
+      "post_v4_dev_045",
+      "post_v4_dev_046",
+      "post_v4_dev_047",
+      "post_v4_dev_049",
+      "post_v4_dev_050",
+      "post_v4_dev_051",
+      "post_v4_dev_052",
+      "post_v4_dev_054",
+      "post_v4_dev_055"
+    ],
+    "false_support": [
+      "post_v4_dev_042",
+      "post_v4_dev_048",
+      "post_v4_dev_053"
+    ],
+    "gate_accepted": [
+      "post_v4_dev_001",
+      "post_v4_dev_002",
+      "post_v4_dev_005",
+      "post_v4_dev_014",
+      "post_v4_dev_023",
+      "post_v4_dev_024",
+      "post_v4_dev_026",
+      "post_v4_dev_027",
+      "post_v4_dev_028",
+      "post_v4_dev_029",
+      "post_v4_dev_031",
+      "post_v4_dev_033",
+      "post_v4_dev_035",
+      "post_v4_dev_042",
+      "post_v4_dev_048",
+      "post_v4_dev_053"
+    ],
+    "runtime_errors": [],
+    "supported_class_gate_accepted": [
+      "post_v4_dev_001",
+      "post_v4_dev_002",
+      "post_v4_dev_005",
+      "post_v4_dev_014",
+      "post_v4_dev_023",
+      "post_v4_dev_024",
+      "post_v4_dev_026",
+      "post_v4_dev_027",
+      "post_v4_dev_028",
+      "post_v4_dev_029",
+      "post_v4_dev_031",
+      "post_v4_dev_033",
+      "post_v4_dev_035"
+    ]
+  },
+  "development_suite_not_holdout": true,
+  "git": {
+    "branch": "development/post-v4-remediation-v1",
+    "head": "071c9b722d640e6d731a0c1e1406a32d23505a2a"
+  },
+  "hashes": {
+    "development_documents": {
+      "evaluation/post_v4_dev/docs/battery_monitor_manual.txt": "96c98a8f354ed12abc08aaeab81fba4c0033e3fc09206d4617c3756d69297c77",
+      "evaluation/post_v4_dev/docs/conveyor_controller_manual.txt": "04bc9c772dd64592cc00703ea63b960cdf15a1c2847cf85ba342f40f584855a2",
+      "evaluation/post_v4_dev/docs/hvac_controller_manual.txt": "fcb2c07b2a2d697f226f05e019a0519f38180480efd7c5e0a1e7095382631a5a",
+      "evaluation/post_v4_dev/docs/machine_safety_procedures.txt": "b3a495b094086ebda63cff99b72fcba40bb662928ef8f2aafe7467ec9b81a4a6",
+      "evaluation/post_v4_dev/docs/pump_controller_manual.txt": "a4fb596dda78a74cb79af606db977b0b4762de795d3e5e8ae17d6b128d7d6357"
+    },
+    "important_files": {
+      "evaluation/post_v4_dev/dev_cases.jsonl": "eb04c5e564239379b14c842a239105eee680a48239acb467784a277276594187",
+      "evaluation/post_v4_dev/run_diagnostic.py": "899d78f8e2de98ba638befd0473683a530289d905ddfb6debeb04bc507a2aedd",
+      "output.txt": "5b6076496d05f66655cc0d88044fff5df34404c14efafb95f94b125e59c12575"
+    },
+    "result_files": {
+      "post_v4_dev_001_result.json": "6de9470b29906c5d033f18ff360865219da9ccb07bb3dae36e4c2546d53e9008",
+      "post_v4_dev_002_result.json": "ff0ddb4e2b3966f2b2304cc72587b7d859f50dadb86ee0f173ad7e6fb4aa7224",
+      "post_v4_dev_003_result.json": "58bce8feb957cbfa968691eee0694398c8621de2f781864046ddf238294441b5",
+      "post_v4_dev_004_result.json": "d9ca30341659a3aa559a09f467ba43e6887a1df92dbf915cdb60023f2e42b8de",
+      "post_v4_dev_005_result.json": "337336f691251bc9d89d8966adbe48e4184a8a190f3f4852bd8022ca8e29145d",
+      "post_v4_dev_006_result.json": "94c6491a6596cc028a85a1b6e04cd3107fce75a13bd68717ba357aab8f11adc8",
+      "post_v4_dev_007_result.json": "2120afb6d946eb77c5ac65dd44ba51355896db4b729a02ecb1d93f8609169f59",
+      "post_v4_dev_008_result.json": "1726c1b7f2bfe116398a1e5d15f6c5f9b4350826a67654a3d895c3e1cd1766d7",
+      "post_v4_dev_009_result.json": "4698d1792e273e8502b0b11dffb3c39a058acc0b0b9123806ced75a1277fb9ed",
+      "post_v4_dev_010_result.json": "25f8b8ddc25057c72bfd6030d3f466bff70e95b8e47ef3dd39a5f82c10e4fc4d",
+      "post_v4_dev_011_result.json": "9c105bea81e1b01f754e18e2edce3400bd92557dc7c5344ffc95df515f536d93",
+      "post_v4_dev_012_result.json": "e398806658fdaf1e8289c449d0ae2e1311c78fffd4f0e270a13b43cfd7a3274d",
+      "post_v4_dev_013_result.json": "12d3d8dd54dfd411f8d3a9877e32027429e3f76afdf65a3e1c4653de3fef3f12",
+      "post_v4_dev_014_result.json": "9e4f091cda0932c79f98ee62da34275fe54720289ffdf0e57ddcf238f3ccd078",
+      "post_v4_dev_015_result.json": "6a9bb0c20999919491c38e0b3d5c0af3b62b6d7e184293a9a4db2a3202233c09",
+      "post_v4_dev_016_result.json": "6d455cd101e017b1a790fc0afc5985cfce342057cc1eb89a3f699d01c18d1442",
+      "post_v4_dev_017_result.json": "ab0f35372fdef5412b8faa5c51688e1415077515c0191c6207d51533d6da76ff",
+      "post_v4_dev_018_result.json": "e6e6a2cbb9d5086f19628d1049860123882cd9944a99e8de2ebcff7a3d9e1e46",
+      "post_v4_dev_019_result.json": "82ef85728375d731545f000df125860446e5fa4e6bfd8fe47503f6cc11132a42",
+      "post_v4_dev_020_result.json": "12d898fda4940c08dcae657c46ad04857ad1c2d0350f84eaac8b1dd277c05803",
+      "post_v4_dev_021_result.json": "31a9c75d90730661bd3c7b7d00a6cd1a8f57b0349298826c50586f0fd34ee43b",
+      "post_v4_dev_022_result.json": "5a437d4d8a920efeaf8e2467f0d929a46f84cdcb552e904326103423ec7e2206",
+      "post_v4_dev_023_result.json": "10821167674bb440ee51b5b90d06f603fa83231b537955000fdcfb5234ca3a1a",
+      "post_v4_dev_024_result.json": "a50f534a5eb2a514f3b5c812a63ffb3d4d89a24befbd44e747d206cdc55cae35",
+      "post_v4_dev_025_result.json": "879fac233157f7070b437ed7a8ddbc28c7536c835325bef1652e97bd0c9d7a2b",
+      "post_v4_dev_026_result.json": "5d1c8ad4f13ae4d7e04eef5334f3f7e56d323ebaf873fe73edf462a388d002a1",
+      "post_v4_dev_027_result.json": "d53688a69d7f29337aee1ff01f340d9cf3e6509080d6026ef552628582481e3e",
+      "post_v4_dev_028_result.json": "64f48294193a997792d5cdb05f367b3abe112e981905c47ab9034f1a8e5599d8",
+      "post_v4_dev_029_result.json": "466406be85dec970b086e1dd7808624f60491ae9aedc729f381c95813c92b77e",
+      "post_v4_dev_030_result.json": "3b4875a569c1d5ad6f4a1867c949b97a05769e3d9f187c262c94268bc99a5a86",
+      "post_v4_dev_031_result.json": "d09a7783bbb7fe6c22d27cd0cc3cc6df56c250c8bdddccc8eb1d3834a401d6c7",
+      "post_v4_dev_032_result.json": "58a8417bb8a51e19f222fcddc4e0bd550634762c4382dca46fb775b467e79acd",
+      "post_v4_dev_033_result.json": "403dd10183986b07e76e7a1ee685d8ba863510f1d37c0a8f2f737610fbc6c27a",
+      "post_v4_dev_034_result.json": "25be4cf3c6c423ddbd01d99c8dbe2e35a8bf9015b86cb95f3c420aedeec3b77b",
+      "post_v4_dev_035_result.json": "4faff222e17a47abdbf3a8420f5c4d8e239f3fb7bd9e8f870ee96dc7c89e9899",
+      "post_v4_dev_036_result.json": "92c4eb74eca164e2e20d59d848b1c3121d31176d543b8a58c02a5cd3015f2638",
+      "post_v4_dev_037_result.json": "2a2fc7a740dcfaaf254ea4fa561984a340fbd6c32511c31087a679bda7cb2e26",
+      "post_v4_dev_038_result.json": "58269c2c79d35c2a3dd01b3da0c1c2d39b3ccdccc1fa3a7c7f9de9ab24930766",
+      "post_v4_dev_039_result.json": "d3c1e9e50fd1facdb829bd0ebdc0f5c0b63dd0d74b5bcffaf1a86531917d3b45",
+      "post_v4_dev_040_result.json": "980176a7e12e6f46dc6ade54359ce021584cbd016cbef38499b920d3a702317e",
+      "post_v4_dev_041_result.json": "238b770b70f2d09550485929e2fcbcb4b03815ca262d9c1faab772413ee46189",
+      "post_v4_dev_042_result.json": "5a525afa2ee66e20977d2a5a2b2b1995ca73b0a92d7b3fbd9577011e3bf4bba6",
+      "post_v4_dev_043_result.json": "e3642fb2d01475b8310e00e932f2ae15940a5bac96bf9fd57d150d352023f4da",
+      "post_v4_dev_044_result.json": "e009a2a6d53f648087f1377be68327735004406b78cff21cd783d574175cd2ef",
+      "post_v4_dev_045_result.json": "571c5f8653ab3dfa20a27c896166992cdd75352a2aab6c1fe4e6bff7ad076e2b",
+      "post_v4_dev_046_result.json": "4f20f8d6be9eb4e9a9404a1765d12a7fc5208a588b07bc306ff5719ec491b0f1",
+      "post_v4_dev_047_result.json": "b4bea3387723dd722d9b0b2b3ec6ad5dd1df439f3e219b5c36a40f0984cb8a5c",
+      "post_v4_dev_048_result.json": "7df9edddc0eb8105c8f8cd8e7525163de4cf4429dbfd562f504d82289ba0da0e",
+      "post_v4_dev_049_result.json": "8bc9a11c6d850e633d0544af78f57d03dde082d8ac72edf58a880b90779bd75e",
+      "post_v4_dev_050_result.json": "2e665b7b84c03d23fb9fdcf3b8f7ff382a79641e8e33b67fd7e5bf1b2005fd14",
+      "post_v4_dev_051_result.json": "bc10b0c0589657cb770cd1e58b0b6ed2f37f4ac5c0ca25e00f3df1f65603f803",
+      "post_v4_dev_052_result.json": "5a3c9958d677fa7cb4e8e8dc09ed8bc79c18f610be20d146c44ad91ce04021e6",
+      "post_v4_dev_053_result.json": "1f39ca21d466295244abc0bd616f860d15f4cea0aaba509dd277905eb5e40010",
+      "post_v4_dev_054_result.json": "a833fa6a98f8d40b4f653d5887ef9fbe7a670eb6d5d38c240f982272c098a544",
+      "post_v4_dev_055_result.json": "076fce5b4b226e7723fb3cc568d24d0ac2645556554301146a8e93a11bcb7a07"
+    },
+    "result_files_aggregate_definition": "SHA256 over UTF-8 sorted lines '<filename> <individual_sha256>\\n'",
+    "result_files_aggregate_sha256": "ab2f1dac42aa9745eff958b0b848037099945e9cf70217a1764bc2cdd3f29f07"
+  },
+  "holdout_v4_rerun": false,
+  "holdout_v4_used_for_tuning": false,
+  "methodology": {
+    "category_counts": {
+      "A": 5,
+      "B": 5,
+      "C": 5,
+      "D": 5,
+      "E": 5,
+      "F": 5,
+      "G": 5,
+      "H": 5,
+      "I": 5,
+      "J": 5,
+      "K": 5
+    },
+    "dev_documents_injected_into_pipeline": true,
+    "execution_stack": [
+      "runtime_architecture.execute_runtime",
+      "rag_chat_v2.answer_question",
+      "webui.chat_handler.build_answer_contract",
+      "webui.chat_handler.collect_sources",
+      "runtime_architecture.unified_support_gate"
+    ],
+    "normal_upload_lifecycle_not_claimed": true,
+    "rejection_classes": "I-K",
+    "semantic_correctness_not_automatically_scored_for_supported_cases": true,
+    "supported_classes": "A-H",
+    "total_cases": 55
+  },
+  "metrics": {
+    "correct_rejection_count": 12,
+    "correct_rejection_rate": 0.8,
+    "false_support_count": 3,
+    "false_support_rate": 0.2,
+    "gate_accepted_count": 16,
+    "gate_accepted_rate": 0.2909090909090909,
+    "gate_rejected_count": 39,
+    "gate_rejected_rate": 0.7090909090909091,
+    "hit_at_1_count": 47,
+    "hit_at_1_rate": 0.8545454545454545,
+    "hit_at_3_count": 54,
+    "hit_at_3_rate": 0.9818181818181818,
+    "hit_at_5_count": 54,
+    "hit_at_5_rate": 0.9818181818181818,
+    "recall_at_5": 0.9818,
+    "rejection_cases": 15,
+    "retrieval_success_count": 54,
+    "retrieval_success_rate": 0.9818181818181818,
+    "runtime_errors": 0,
+    "supported_class_cases": 40,
+    "supported_class_gate_acceptance_rate": 0.325,
+    "supported_class_gate_accepted_count": 13,
+    "supported_class_gate_rejected_count": 27,
+    "total_cases": 55
+  },
+  "notes": [
+    "Earlier 0/55 runs were harness-invalid and excluded.",
+    "Earlier 4/55 run was harness-invalid and excluded.",
+    "This is the first production-stack-equivalent development baseline.",
+    "Gate acceptance is not semantic correctness.",
+    "A-H gate acceptance must not be reported as semantic accuracy.",
+    "I-K are the defined rejection classes.",
+    "The suite becomes development/tuning data after this frozen baseline.",
+    "Do not rerun or overwrite the 55 baseline result artifacts."
+  ],
+  "per_category": {
+    "A": {
+      "gate_accepted": 3,
+      "gate_rejected": 2,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "B": {
+      "gate_accepted": 0,
+      "gate_rejected": 5,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "C": {
+      "gate_accepted": 1,
+      "gate_rejected": 4,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "D": {
+      "gate_accepted": 0,
+      "gate_rejected": 5,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "E": {
+      "gate_accepted": 2,
+      "gate_rejected": 3,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "F": {
+      "gate_accepted": 4,
+      "gate_rejected": 1,
+      "n": 5,
+      "retrieval_success": 4,
+      "runtime_errors": 0
+    },
+    "G": {
+      "gate_accepted": 3,
+      "gate_rejected": 2,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "H": {
+      "gate_accepted": 0,
+      "gate_rejected": 5,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "I": {
+      "gate_accepted": 1,
+      "gate_rejected": 4,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "J": {
+      "gate_accepted": 1,
+      "gate_rejected": 4,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    },
+    "K": {
+      "gate_accepted": 1,
+      "gate_rejected": 4,
+      "n": 5,
+      "retrieval_success": 5,
+      "runtime_errors": 0
+    }
+  },
+  "production_src_modified_for_baseline": false,
+  "production_tuning_performed_before_baseline": false,
+  "supersedes_manifest_draft": {
+    "reason": "Draft incorrectly inferred rejection cases from absent/unused expected_behavior field, yielding 0/0. Correct definition is categories I-K per frozen suite design.",
+    "sha256": "3b526941a3fbe8501b211d2041f473a64bc482a942009250e848702f99a72bcf"
+  }
+}

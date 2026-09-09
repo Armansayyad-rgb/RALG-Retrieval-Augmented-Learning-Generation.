@@ -1,0 +1,400 @@
+{
+  "case_id": "post_v4_dev_017",
+  "category": "D",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "hvac_controller_manual",
+    "pump_controller_manual",
+    "battery_monitor_manual"
+  ],
+  "source_evidence": "",
+  "latency_ms": 113.9,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "Why does the HVAC-400 system short-cycle when the air filter is dirty?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical potential at disconnect before removing panels.\n- Recover refrigerant per EPA regulations before opening refrigerant circuit.\n- Wear appropriate PPE when working with refrigerants, electrical components, and moving parts.\n- Never bypass safety controls or temperature limiters.\n\n2. NORMAL OPERATION\n--------------------\n- System provides heating when heating mode is selected and thermostat calls for heat.\n- System provides cooling when cooling mode is selected and thermostat calls for cool.\n- Normal supply air temperature range: 55-75\u00b0F cooling, 90-120\u00b0F heating.\n- Fan operates at variable speed: 0-100% depending on demand.\n- Air filter should be checked monthly and replaced when dirty.\n\n3. STARTUP SEQUENCE (HEATING)\n------------------------------\na. Confirm thermostat is set to HEAT mode and temperature is above current room temperature.\nb. Verify gas supply is on (for gas-fired units) or electrical connections are secure (for electric units).\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. System should initiate ignition sequence after 30-second pre-purge.\ng. Verify flame is established and burners are operating normally.\nh. Monitor supply air temperature rises to normal range within 5 minutes.\ni. Fan will begin blowing heated air once heat exchanger reaches safe temperature.\n\n4. STARTUP SEQUENCE (COOLING)\n-------------------------------\na. Confirm thermostat is set to COOL mode and temperature is below current room temperature.\nb. Verify electrical connections are secure and power is supplied to compressor.\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. Compressor should start after thermostat call for cool.\ng. Verify condenser fan is operating.\nh. Check that supply air temperature drops to normal range within 5 minutes.\ni. System will cycle on and off to maintain setpoint.\n\n5. INSPECTION PHASE\n--------------------\n- Check air filter condition and airflow - replace if dirty.\n- Inspect supply and return registers for obstructions.\n- Check thermostat calibration and operation.\n- Inspect evaporator coil for frost or ice formation (cooling mode).\n- Inspect heat exchanger for cracks or damage (heating mode).\n- Verify refrigerant lines for leaks (trace with detector solution).\n- Check blower motor and fan for unusual noise or vibration.\n- Inspect ductwork for leaks, loose connections, or damage.\n- Verify safety controls are functional (limit switches, pressure controls).\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: System will not start (heating)\n- Cause: Thermostat not calling for heat - check settings.\n- Cause: No gas supply (gas units) - verify gas valve is open.\n- Cause: Electrical fault - check voltage at disconnect, fuses, circuit breaker.\n- Cause: Flame failure - reset after safety lockout, inspect burner.\n- Cause: Limit switch tripped - reset after addressing root cause.\n\nPROBLEM: System will not start (cooling)\n- Cause: Thermostat not calling for cool - check settings.\n- Cause: Compressor protection trip - reset thermal overload.\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: Refrigerant low - system may have leak, require recharge.\n- Cause: High-pressure switch tripped - reset after addressing cause.\n\nPROBLEM: Insufficient heating\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n- Cause: Gas pressure too low - adjust gas valve, check supply.\n- Cause: Heat exchanger restricted - clean or replace.\n- Cause: Duct leaks - seal ductwork, insulate as needed.\n\nPROBLEM: Insufficient cooling\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Dirty evaporator coil - clean coil.\n- Cause: Dirty condenser coil - clean outdoor unit coil.\n- Cause: Refrigerant low - system has leak, locate and repair, recharge.\n- Cause: High outdoor temperature - system may not meet load demand.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n\nPROBLEM: Short cycling (frequent on/off)\n- Cause: Oversized system for space - may require load calculation.\n- Cause: Dirty filter - restrict airflow, replace filter.\n- Cause: Thermostat located near heat source - relocate thermostat.\n- Cause: Low refrigerant - system has leak, locate and repair, recharge.\n- Cause: High static pressure in ductwork - redesign duct system.\n\nPROBLEM: compressor will not start\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: compressor protection trip - reset thermal overload after cooling.\n- Cause: capacitor failure - replace capacitor.\n- Cause: contactor failure - replace contactor.\n- Cause: thermostat not calling - check settings and wiring.\n\n7. REFRIGERANT SERVICE\n------------------------\n- Recover refrigerant: Use certified recovery machine per EPA Section 608.\n- Leak detection: Electronic leak detector or trace with Nitrogen soap solution.\n- Recharge: Add only specified refrigerant type and amount per nameplate.\n- Never mix refrigerant types.\n- Document all refrigerant additions and removals per regulatory requirements.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check thermostat operation, listen for unusual noises, verify airflow.\n- Every 250 hours: Check air filter, inspect visual condition of unit.\n- Every 500 hours: Clean or replace air filter, inspect evaporator/condenser coils.\n- Every 1000 hours: Check refrigerant pressure, test safety controls, lubricate motors.\n- Every 2000 hours: Clean burners (gas units), inspect heat exchanger, check belt tension.\n- Annual: Full combustion analysis (gas units), refrigerant charge verification, complete safety inspection.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.\n- Electrical fire: Cut power at disconnect, call fire department, do not use water on electrical.\n- Gas leak (gas units): Evacuate area, ventilate, do not operate electrical switches, call gas company.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: HVAC-400 Maintenance Controller\n- Capacity: 2-ton to 20-ton variable capacity\n- Voltage: 208/240V single-phase or 208/3-phase\n- Refrigerant: R-410A (or approved alternate)\n- Airflow range: 400-2000 CFM\n- Temperature range: -10\u00b0F to 120\u00b0F ambient\n- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)\n- Connection: Standard HVAC plug-in connections\n- Motor: ECM variable-speed blower motor\n- Compressor: Scroll type, 2-20 HP",
+        "chunk_index": 73472,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.841435784431,
+        "lexical_score": 131.1717076433179,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+        "chunk_index": 73474,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.30179483349,
+        "lexical_score": 42.41350247622558,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+        "chunk_index": 73470,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.268685621913,
+        "lexical_score": 43.53317006953001,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "The related \" 400 , 000 - year - problem \" refers to the absence of a 400 , 000 - year periodicity due to orbital eccentricity in the geological temperature record over the past 1 . 2 million years . = = Recognition of the 100 , 000 - year cycle = = The geologic temperature record can be reconstructed from sedimentary evidence . Perhaps the most useful indicator of past climate is the fractionation of oxygen isotopes , denoted \u03b418O . This fractionation is controlled mainly by the amount of water locked up in ice and the absolute temperature of the planet , and has allowed a timescale of marine isotope stages to be constructed . By the late 1990s , \u03b418O records of air ( in the Vostok ice core ) and marine sediments was available and was compared with estimates of insolation , which should affect both temperature and ice volume .",
+        "chunk_index": 64632,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.261851766753,
+        "lexical_score": 25.91835832315313,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Following the Kegworth accident , CFM56 engines fitted to a Dan - Air 737 - 400 and a British Midland 737 - 400 suffered fan blade failures under similar conditions ; neither incident resulted in a crash or injuries . After the second incident , the 737 - 400 fleet was grounded . At the time it was not mandatory to flight test new variants of existing engines , and certification testing failed to reveal vibration modes that the fan experienced during the regularly performed power climbs at high altitude . Analysis revealed that the fan was being subjected to high - cycle fatigue stresses worse than expected and also more severe than tested for certification ; these higher stresses caused the blade to fracture .",
+        "chunk_index": 67974,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.24455535071,
+        "lexical_score": 27.49238903877671,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "These warm air masses can bring sunny weather , particularly during the afternoon when they come from the north or northwest as a result of a trough located in central Argentina . On the other hand , warm air masses from Brazil bring humid conditions , featuring high humidity with high cloud cover that is typical of a warm front of a frontal system and typical of tropical maritime air . These warm air masses that are responsible for the high humidity and cloud cover are the warmest air masses , leading to the warmest temperatures . Nonetheless , these are short lived as the Chaco Low , which is responsible for bringing in warm and tropical air from the north is weaker in winter due to lower insolation , leading to the winds from the north being less intense and shorter lived . Towards the end of winter in August , there are important changes in the atmospheric circulation .",
+        "chunk_index": 13293,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.231526902374,
+        "lexical_score": 29.690157213613176,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.285046464616,
+        "lexical_score": 23.934794342359446,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The result is equal to or better than a result that was considered an achievement in its field at the time of discovery . One such problem set as a task for a genetic program was to design a crossover filter for woofer and tweeter loudspeakers . The output design was identical in topology to a design found in a patent of Zobel 's for a filter to separate multiplexed low and high frequencies on a transmission line . This was judged to be human - comparable , not only because of the patent , but also because the high - pass and low - pass sections were \" decomposed \" as in Zobel 's design , but not specifically required to be so in the programs parameters . Whether or not Zobel 's filter design would be good for a hi - fi system is another question .",
+        "chunk_index": 30238,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.208119680814,
+        "lexical_score": 32.87302563990529,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "Most subtropical cyclones form when a deep cold - core extratropical cyclone drops down into the subtropics . The system becomes blocked by a high latitude ridge , and eventually sheds its frontal boundaries as its source of cool and dry air from the high latitudes diverts away from the system . Temperature differences between the 500 hPa pressure level , or 5 , 900 meters ( 19 , 400 ft ) above ground level , and the sea surface temperatures initially exceed the dry adiabatic lapse rate , which causes an initial round of thunderstorms to form at a distance east of the center . Due to the initial cold temperatures aloft , sea surface temperatures usually need to reach at least 20 \u00b0 C ( 68 \u00b0 F ) for this initial round of thunderstorms .",
+        "chunk_index": 37390,
+        "full_question_rank": null,
+        "full_question_coverage": 0.235596758515,
+        "lexical_score": 28.47038751547739,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes"
+        ]
+      },
+      {
+        "chunk": "With this potentially being decreased to 15 g / kWh in the future . For comparison ( of weighted averages ) , a combined cycle gas - fired power plant emits some 400 \u2013 599 g / kWh , an oil - fired power plant 893 g / kWh , a coal - fired power plant 915 \u2013 994 g / kWh or with carbon capture and storage some 200 g / kWh , and a geothermal high - temp. power plant 91 \u2013 122 g / kWh . The life cycle emission intensity of hydro , wind and nuclear power are lower than solar 's as of 2011 as published by the IPCC , and discussed in the article Life - cycle greenhouse - gas emissions of energy sources . Similar to all energy sources were their total life cycle emissions primarily lay in the construction and transportation phase , the switch to low carbon power in the manufacturing and transportation of solar devices would further reduce carbon emissions .",
+        "chunk_index": 73420,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.182797994798,
+        "lexical_score": 24.772768112671983,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "Thus , processes that use carbon must obtain it from somewhere and dispose of it somewhere else . The paths of carbon in the environment form the carbon cycle . For example , photosynthetic plants draw carbon dioxide from the atmosphere ( or seawater ) and build it into biomass , as in the Calvin cycle , a process of carbon fixation . Some of this biomass is eaten by animals , while some carbon is exhaled by animals as carbon dioxide . The carbon cycle is considerably more complicated than this short loop ; for example , some carbon dioxide is dissolved in the oceans ; if bacteria do not consume it , dead plant or animal matter may become petroleum or coal , which releases carbon when burned . = = Compounds = = = = = Organic compounds = = = Carbon can form very long chains of interconnecting C - C bonds , a property that is called catenation .",
+        "chunk_index": 45910,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.21064593542,
+        "lexical_score": 23.606982255228296,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "These biochemicals can be joined together to make polymers such as DNA and proteins , essential macromolecules of life . = = = Amino acids and proteins = = = Proteins are made of amino acids arranged in a linear chain joined together by peptide bonds . Many proteins are enzymes that catalyze the chemical reactions in metabolism . Other proteins have structural or mechanical functions , such as those that form the cytoskeleton , a system of scaffolding that maintains the cell shape . Proteins are also important in cell signaling , immune responses , cell adhesion , active transport across membranes , and the cell cycle . Amino acids also contribute to cellular energy metabolism by providing a carbon source for entry into the citric acid cycle ( tricarboxylic acid cycle ) , especially when a primary source of energy , such as glucose , is scarce , or when cells undergo metabolic stress .",
+        "chunk_index": 22216,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.206275922442,
+        "lexical_score": 23.368496473812197,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "95 Armament Guns : 1 \u00d7 23 mm GSh - 23 - 2 twin - barrel cannon or 1x 30 mm GSh - 30 - 2 Hardpoints : 7 in total ( 4 \u00d7 under - wing , 2 \u00d7 wing - tip , 1 \u00d7 under - fuselage ( Joint Hardpoint ) ; pylon stations number 3 , 4 and 5 are wet - plumb capable ) with a capacity of 8 , 001 lb ( 3 , 629 kg ) for external fuel and ordnance Missiles : Air - to - air missiles : MAA - 1 Piranha ( Short - range ) AIM - 9L / M ( Short - range ) PL - 5EII ( Short - range ) PL - 9C ( Short - range ) PL - 12 / SD - 10 ( Beyond visual range ) Air - to - surface missiles : MAR - 1 ( Anti - radiation missile ) Ra 'ad ALCM ( Nuclear - capable Subsonic Cruise missile ) CM - 400AKG supersonic anti - shipping missile , export version of YJ - 12 C - 802A Anti - ship missile CM 102 supersonic Anti radiation missile GB - 6 Air - Launched Standoff Submunition Dispenser Precision Guided Weapon Bombs : Unguided bombs : Mk - 82 ( general purpose bomb ) Mk - 84 ( general purpose bomb ) Matra Durandal ( anti - runway bomb ) CBU - 100 / Mk - 20 Rockeye ( anti - armour cluster bomb ) Precision guided munitions ( PGM ) : GBU - 10 ( Laser - guided ) GBU - 12 ( Laser - guided ) LT - 2 ( Laser - guided ) H - 2 ( electro - optically guided ) H - 4 ( electro - optically guided ) LS - 6 ( satellite - guided glide bombs ) Satellite - guided bombs Others : Rocket Pods Countermeasures ( Flares , Chaff ) Up to 3 external drop tanks ( 2 \u00d7 under - wing 1 , 100 litres ( 240 imp gal ; 290 US gal ) , 1 \u00d7 under - fuselage 800 litres ( 180 imp gal ; 210 US gal ) ) for extended range / loitering time Avionics DEEC electronic warfare suite NRIET KLJ - 7 multi - mode fire - control radar Night vision goggles ( NVG ) compatible glass cockpit Externally mounted avionics pods : KG - 300G self - protection radar jamming pod WMD - 7 day / night targeting pod = Carbon = Carbon ( from Latin : carbo \" coal \" ) is a chemical element with symbol C and atomic number 6 .",
+        "chunk_index": 45887,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.141498787324,
+        "lexical_score": 26.336887853209177,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "Although much of Zobel 's work has been superseded by more modern filter designs , it remains the basis of filter theory and his papers are still referenced today . Zobel invented the m - derived filter and the constant - resistance filter , which remains in use . Zobel and Carson helped to establish the nature of noise in electric circuits , concluding that \u2014 contrary to mainstream belief \u2014 it is not even theoretically possible to filter out noise entirely and that noise will always be a limiting factor in what is possible to transmit . Thus , they anticipated the later work of Claude Shannon , who showed how the theoretical information rate of a channel is related to the noise of the channel . = = Life = = Otto Julius Zobel was born on October 20 , 1887 in Ripon , Wisconsin .",
+        "chunk_index": 30215,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.150044678424,
+        "lexical_score": 24.703266563141497,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "= = Innovations = = After Zobel arrived at the Engineering Department of AT & T he used his mathematical skills to further improve the design of electric wave filters . Carson and Zobel developed the mathematical method of analyzing the behavior of filters now known as the image method whereby the impedance and transmission parameters of each section are calculated as if it is part of an infinite chain of identical sections . = = = Wave filters = = = Zobel invented the m - derived ( or m - type ) filter section in 1920 , the distinguishing feature of this design being a pole of attenuation close to the filter cut - off frequency . The result of this design is a filter response which falls very rapidly past the cut - off frequency . To use a well known quaint engineer 's expression it \" goes off like the side of a house \" .",
+        "chunk_index": 30223,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.150044678424,
+        "lexical_score": 24.703266563141497,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "He was now using , in addition , m - type half sections at the ends of his composite filters to improve the impedance matching of the filter to the source and the load , a technique in which he held a patent . The difficulty that he was trying to overcome was that the image impedance techniques being used to design filter sections only gave the mathematically predicted response if they were terminated in their respective image impedances . Technically , this was easy to do within the filter as it could always be arranged that adjacent filter sections had matching image impedances ( one of the characteristics of m - type sections is that one side or the other of the m - type section will have an image impedance identical to the equivalent constant k section ) . However , the terminating impedances are a different story .",
+        "chunk_index": 30225,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.150044678424,
+        "lexical_score": 24.703266563141497,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "These are normally required to be resistive but the image impedance will be complex . Even worse , it is not even mathematically possible to construct a filter image impedance out of discrete components . The result of impedance mismatch is reflections and a degraded filter performance . Zobel found that a value of m = 0 . 6 for the end half sections , while not mathematically exact , gave a good match to resistive terminations in the pass - band . Around 1923 , Zobel 's filter designs were reaching the peak of their complexity . He now had a filter section to which he had doubly applied the m - derivation process resulting in filter sections which he called the mm ' -type . This had all the advantages of the previous m - type , but more so . An even faster transition into the stop - band and an even more constant characteristic impedance in the pass - band .",
+        "chunk_index": 30226,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.150044678424,
+        "lexical_score": 24.703266563141497,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "Glenrothes is home to an airfield , Fife Airport ( ICAO code EGPJ ) , which is used for general aviation with private light aircraft . Edinburgh Airport is the nearest international airport to Glenrothes , Dundee Airport operates daily flights to London , Birmingham and Belfast . A purposely designed pedestrian and cycle system was also created using a network of ring and radial routes throughout the town . This includes a near three mile continuous linear cycle path , called Boblingen Way , which extends across the length of Glenrothes , from Leslie in the west , to Woodside in the east . Glenrothes is connected to the National Cycle Network via Route 766 which runs north from Kirkcaldy to north of Glenrothes , linking to the wider network via Route 76 and Route 1 .",
+        "chunk_index": 36812,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.174358125678,
+        "lexical_score": 23.368496473812197,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "114 MCRU upgraded to the Westinghouse AN / TPS - 43 radar system , improving both its mobility and its tactical capabilities . It inaugurated the RAAF 's Tactical Air Defence System ( TADS , subsequently Tactical Air Defence Radar System or TADRS ) on 10 July 1985 . No. 114 MCRU was presented with a Squadron Standard on 23 May 1990 , becoming the only non - flying unit in the Air Force to receive such an honour . The standard displays battle honours for the Pacific ( 1943 \u2013 45 ) , New Britain ( 1943 ) , New Guinea ( 1943 \u2013 44 ) and Borneo ( 1945 ) . No. 114 MCRU was transferred to RAAF Base Tindal , Northern Territory , in May \u2013 June 1997 , and then to RAAF Base Darwin in December 1999 . The AN / TPS - 43 was retired in September 2005 , and replaced by the AN / TPS - 77 radar . In May 2007 , a detachment of 75 members of No.",
+        "chunk_index": 54530,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.119867674199,
+        "lexical_score": 25.62143050896087,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes",
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "The Dean takes them into a dark room . He reveals that they will not be permitted to leave the island now that they know the source of all the world 's dirty jokes . They are locked in a jail cell . As a diversion , Peter stabs Cleveland with a pencil . When the guard opens the door to investigate , the prisoners escape . They are recaptured by the Dean and his armed guards immediately . As they are about to be shot by the guards , an old man claims he has just written the world 's greatest dirty joke and then suddenly dies . Peter snatches a small piece of paper that the man dropped as he died , containing the joke . The prisoners escape with the joke on a small plane . As they fly over the secret enclave , it is destroyed in a fireball resulting from a burning drapery that Peter had set alight with a candle . Quagmire bemoans that they destroyed the source of all dirty jokes .",
+        "chunk_index": 49166,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.16599616775,
+        "lexical_score": 22.10529658294343,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Air Force \u2013 still its biggest customer . The first engines entered service in 1982 . Several fan blade failure incidents were experienced during the CFM56 's early service , including one failure that was a cause of the Kegworth air disaster , and some engine variants experienced problems caused by flight through rain and hail . Both these issues were resolved with engine modifications . As of June 2016 , as the most used high bypass turbofan , it achieved more than 800 million engine flight hours , and at a rate of one million flight hours every eight days it will achieve one billion flight hours by 2020 . It have more than 550 operators and more than 2 , 400 CFM56 - powered jet aircraft are in the air at any moment . It is known for its dependability : its average time on wing is 30 , 000 hours before a first shop visit , with the current fleet record at 50 , 000 hours .",
+        "chunk_index": 67933,
+        "full_question_rank": null,
+        "full_question_coverage": 0.162900375405,
+        "lexical_score": 27.417260987062818,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "This corresponds to a maximum in the pressure , usually around 10 am . Low on the mountain , between 2 , 400 m ( 7 , 874 ft ) and 3 , 900 m ( 12 , 795 ft ) , clouds begin to form over the western forest zone , due to moist air from Lake Victoria . The anabatic winds caused by warm rising air gradually bring these clouds to the summit region in the afternoon . Around 1500 there is a minimum in sunlight and a maximum in humidity causing the actual and perceived temperature to drop . At 1600 there is a minimum in the pressure . This daily cover of cloud protects the glaciers on the south - west of the mountain which would otherwise get direct sun every day , enhancing their melt . The upwelling cloud eventually reaches the dry easterly air streams and dissipates , leading to a clear sky by 5 pm . There is another maximum of temperature associated with this .",
+        "chunk_index": 68650,
+        "full_question_rank": null,
+        "full_question_coverage": 0.162900375405,
+        "lexical_score": 31.417260987062818,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "= = = Transmission line simulation = = = Zobel directed much of his effort in the 1920s to constructing networks which could simulate transmission lines . These networks were derived from filter sections , which themselves had been derived from transmission line theory and the filters were used on transmission line signals . In turn , these artificial lines were used to develop and test better filter sections . Zobel used a design technique based on his theoretical discovery that the impedance looking into the end of a filter chain was practically the same ( within the limits of component tolerances ) as the theoretical impedance of an infinite chain after only a small number of sections had been added to the chain . These \" image \" impedances have a mathematical characterization impossible to construct simply out of discrete components , and can only ever be approximated .",
+        "chunk_index": 30228,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.132748262381,
+        "lexical_score": 24.703266563141497,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes"
+        ]
+      },
+      {
+        "chunk": "Interaction with the island 's mountainous terrain caused substantial weakening , though Cimaron maintained typhoon status during its 12 \u2011 hour crossing . After emerging over the South China Sea on October 30 , the system initially maintained its west - northwest course . However , the following day , a weakness developed within the ridge previously steering the typhoon , and Cimaron briefly turned north before essentially stalling . During this time , the system reorganized somewhat and reached a secondary peak intensity with winds of 165 km / h ( 105 mph ) on November 2 . While executing a tight clockwise loop , increased wind shear and entrainment of dry air soon caused Cimaron to dramatically weaken . With a new ridge becoming established over China , the weakening system acquired a general southwestward track .",
+        "chunk_index": 26609,
+        "full_question_rank": null,
+        "full_question_coverage": 0.119867674199,
+        "lexical_score": 26.342148975387378,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty caused by"
+        ]
+      },
+      {
+        "chunk": "Short to intermediate - acting benzodiazepines are preferred in the elderly such as oxazepam and temazepam . The high potency benzodiazepines alprazolam and triazolam and long - acting benzodiazepines are not recommended in the elderly due to increased adverse effects . Nonbenzodiazepines such as zaleplon and zolpidem and low doses of sedating antidepressants are sometimes used as alternatives to benzodiazepines . Long - term use of benzodiazepines has been associated with increased risk of cognitive impairment , but its relationship with dementia remains inconclusive . The association of a past history of benzodiazepine use and cognitive decline is unclear , with some studies reporting a lower risk of cognitive decline in former users , some finding no association and some indicating an increased risk of cognitive decline .",
+        "chunk_index": 24994,
+        "full_question_rank": null,
+        "full_question_coverage": 0.079776747309,
+        "lexical_score": 26.952044383094666,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the HVAC-400 system short-cycle when the air filter is dirty decline causes"
+        ]
+      }
+    ],
+    "context": "- Air filter should be checked monthly and replaced when dirty.\nInspect air filter - replace if dirty or restricted.\nINSPECTION PHASE\n--------------------\n- Check air filter condition and airflow - replace if dirty.\nPROBLEM: Insufficient heating\n- Cause: Dirty air filter - restrict airflow, replace filter.\nPROBLEM: Insufficient cooling\n- Cause: Dirty air filter - restrict airflow, replace filter."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73472,
+      "preview": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical",
+      "evidence": "HVAC Maintenance Controller Operation Manual\n============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout on electrical power before servicing HVAC units.\n- Verify zero electrical potential at disconnect before removing panels.\n- Recover refrigerant per EPA regulations before opening refrigerant circuit.\n- Wear appropriate PPE when working with refrigerants, electrical components, and moving parts.\n- Never bypass safety controls or temperature limiters.\n\n2. NORMAL OPERATION\n--------------------\n- System provides heating when heating mode is selected and thermostat calls for heat.\n- System provides cooling when cooling mode is selected and thermostat calls for cool.\n- Normal supply air temperature range: 55-75\u00b0F cooling, 90-120\u00b0F heating.\n- Fan operates at variable speed: 0-100% depending on demand.\n- Air filter should be checked monthly and replaced when dirty.\n\n3. STARTUP SEQUENCE (HEATING)\n------------------------------\na. Confirm thermostat is set to HEAT mode and temperature is above current room temperature.\nb. Verify gas supply is on (for gas-fired units) or electrical connections are secure (for electric units).\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. System should initiate ignition sequence after 30-second pre-purge.\ng. Verify flame is established and burners are operating normally.\nh. Monitor supply air temperature rises to normal range within 5 minutes.\ni. Fan will begin blowing heated air once heat exchanger reaches safe temperature.\n\n4. STARTUP SEQUENCE (COOLING)\n-------------------------------\na. Confirm thermostat is set to COOL mode and temperature is below current room temperature.\nb. Verify electrical connections are secure and power is supplied to compressor.\nc. Inspect air filter - replace if dirty or restricted.\nd. Check that all access panels are secure and guards are in place.\ne. Set thermostat to desired temperature.\nf. Compressor should start after thermostat call for cool.\ng. Verify condenser fan is operating.\nh. Check that supply air temperature drops to normal range within 5 minutes.\ni. System will cycle on and off to maintain setpoint.\n\n5. INSPECTION PHASE\n--------------------\n- Check air filter condition and airflow - replace if dirty.\n- Inspect supply and return registers for obstructions.\n- Check thermostat calibration and operation.\n- Inspect evaporator coil for frost or ice formation (cooling mode).\n- Inspect heat exchanger for cracks or damage (heating mode).\n- Verify refrigerant lines for leaks (trace with detector solution).\n- Check blower motor and fan for unusual noise or vibration.\n- Inspect ductwork for leaks, loose connections, or damage.\n- Verify safety controls are functional (limit switches, pressure controls).\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: System will not start (heating)\n- Cause: Thermostat not calling for heat - check settings.\n- Cause: No gas supply (gas units) - verify gas valve is open.\n- Cause: Electrical fault - check voltage at disconnect, fuses, circuit breaker.\n- Cause: Flame failure - reset after safety lockout, inspect burner.\n- Cause: Limit switch tripped - reset after addressing root cause.\n\nPROBLEM: System will not start (cooling)\n- Cause: Thermostat not calling for cool - check settings.\n- Cause: Compressor protection trip - reset thermal overload.\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: Refrigerant low - system may have leak, require recharge.\n- Cause: High-pressure switch tripped - reset after addressing cause.\n\nPROBLEM: Insufficient heating\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n- Cause: Gas pressure too low - adjust gas valve, check supply.\n- Cause: Heat exchanger restricted - clean or replace.\n- Cause: Duct leaks - seal ductwork, insulate as needed.\n\nPROBLEM: Insufficient cooling\n- Cause: Dirty air filter - restrict airflow, replace filter.\n- Cause: Dirty evaporator coil - clean coil.\n- Cause: Dirty condenser coil - clean outdoor unit coil.\n- Cause: Refrigerant low - system has leak, locate and repair, recharge.\n- Cause: High outdoor temperature - system may not meet load demand.\n- Cause: Thermostat not calibrated - recalibrate or replace.\n\nPROBLEM: Short cycling (frequent on/off)\n- Cause: Oversized system for space - may require load calculation.\n- Cause: Dirty filter - restrict airflow, replace filter.\n- Cause: Thermostat located near heat source - relocate thermostat.\n- Cause: Low refrigerant - system has leak, locate and repair, recharge.\n- Cause: High static pressure in ductwork - redesign duct system.\n\nPROBLEM: compressor will not start\n- Cause: Electrical fault - check voltage, fuses, circuit breaker.\n- Cause: compressor protection trip - reset thermal overload after cooling.\n- Cause: capacitor failure - replace capacitor.\n- Cause: contactor failure - replace contactor.\n- Cause: thermostat not calling - check settings and wiring.\n\n7. REFRIGERANT SERVICE\n------------------------\n- Recover refrigerant: Use certified recovery machine per EPA Section 608.\n- Leak detection: Electronic leak detector or trace with Nitrogen soap solution.\n- Recharge: Add only specified refrigerant type and amount per nameplate.\n- Never mix refrigerant types.\n- Document all refrigerant additions and removals per regulatory requirements.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check thermostat operation, listen for unusual noises, verify airflow.\n- Every 250 hours: Check air filter, inspect visual condition of unit.\n- Every 500 hours: Clean or replace air filter, inspect evaporator/condenser coils.\n- Every 1000 hours: Check refrigerant pressure, test safety controls, lubricate motors.\n- Every 2000 hours: Clean burners (gas units), inspect heat exchanger, check belt tension.\n- Annual: Full combustion analysis (gas units), refrigerant charge verification, complete safety inspection.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Refrigerant leak: Evacuate area, ventilate, call qualified HVAC technician.\n- Electrical fire: Cut power at disconnect, call fire department, do not use water on electrical.\n- Gas leak (gas units): Evacuate area, ventilate, do not operate electrical switches, call gas company.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: HVAC-400 Maintenance Controller\n- Capacity: 2-ton to 20-ton variable capacity\n- Voltage: 208/240V single-phase or 208/3-phase\n- Refrigerant: R-410A (or approved alternate)\n- Airflow range: 400-2000 CFM\n- Temperature range: -10\u00b0F to 120\u00b0F ambient\n- Protection class: NEMA 1 (indoor), NEMA 3R (outdoor units)\n- Connection: Standard HVAC plug-in connections\n- Motor: ECM variable-speed blower motor\n- Compressor: Scroll type, 2-20 HP",
+      "score": 131.172,
+      "document_id": "hvac_controller_manual",
+      "document_name": "dev_hvac_con",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 73474,
+      "preview": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before rem",
+      "evidence": "Pump Controller Operation Manual\n================================\n\n1. SAFETY PRECAUTIONS\n----------------------\n- Always perform lockout-tagout before servicing the pump motor.\n- Verify zero electrical potential at the disconnect before removing panels.\n- Wear appropriate PPE when working with pressurized systems.\n- Never bypass safety interlocks or emergency stop controls.\n\n2. NORMAL OPERATION\n-------------------\n- The pump motor starts when the green START button is pressed.\n- Motor runs until the red STOP button is pressed or an fault is detected.\n- Normal operating pressure range: 20-50 PSI.\n- Flow rate: 0-100 GPM depending on impeller size.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place.\nb. Verify lubrication oil level is between MIN and MAX marks on sight glass.\nc. Confirm discharge valve is open before motor start.\nd. Press GREEN START button to begin pump operation.\ne. Monitor pressure gauge to confirm pressure builds within normal range.\nf. Listen for unusual noises indicating cavitation or misalignment.\n\n4. INSPECTION PHASE\n-------------------\n- Check pump housing for leaks, cracks, or damage.\n- Inspect mechanical seals for wear or fluid seepage.\n- Verify bearing temperature is within normal range (below 80\u00b0C).\n- Inspect coupling alignment between motor and pump shaft.\n- Check foundation bolts for tightness.\n- Verify alignment laser reading is within tolerance.\n\n5. LUBRICATION\n--------------\n- Oil type: ISO VG 32 synthetic compressor oil.\n- Oil level: Must be between MIN and MAX marks on sight glass.\n- Lubrication interval: Every 500 operating hours.\n- Oil change interval: Every 2000 operating hours or annually.\n- Before adding oil, clean the fill port and surrounding area.\n- After oil change, prime the lubrication system and check for leaks.\n\n6. TROUBLESHOOTING\n------------------\nPROBLEM: Pump will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n\nPROBLEM: Low pressure output\n- Cause: Discharge valve partially closed - open valve fully.\n- Cause: Worn impeller - inspect and replace if necessary.\n- Cause: Air leak in suction line - tighten fittings, check seals.\n- Cause: Clogged filter - clean or replace filter element.\n\nPROBLEM: Excessive vibration\n- Cause: Misalignment between motor and pump - realign using laser tool.\n- Cause: Unbalanced impeller - inspect and rebalance or replace.\n- Cause: Worn bearings - replace bearings.\n- Cause: Loose foundation bolts - tighten and re-level unit.\n\nPROBLEM: Oil discoloration or contamination\n- Cause: Oil decomposition from overheating - replace oil.\n- Cause: Water ingress - inspect seals, fix leaks, replace oil.\n- Cause: Foreign particles in oil - clean sumple, replace filter, flush system.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if pump is under load.\nb. Press RED STOP button to stop motor.\nc. Close discharge valve after motor stops.\nd. Allow pump to cool if recently under load.\ne. Lockout-tagout for any subsequent maintenance.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for leaks, unusual noises, vibration.\n- Every 500 hours: Check oil level, inspect filters, check bearing temperature.\n- Every 2000 hours: Oil change, detailed inspection of seals and bearings.\n- Every 5000 hours: Comprehensive overhaul, replace wear parts as needed.\n- Annual: Full safety inspection, certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Pump overpressure: Immediately press E-stop, isolate power.\n- Fire near pump: Evacuate area, call fire department, do not attempt extinguishment without qualified personnel.\n- Chemical spill: Contain spill, notify environmental safety, follow MSDS procedures.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: PC-350 Industrial Pump Controller\n- Motor power: 15 HP, 3-phase, 230/460V\n- Operating temperature: -20\u00b0C to 40\u00b0C\n- Protection class: IP55\n- Connection: NEMA 4X enclosure\n- Flow range: 5-100 GPM\n- Pressure range: 20-50 PSI\n- Material: Cast iron housing, stainless steel shaft",
+      "score": 42.414,
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 3,
+      "id": 73470,
+      "preview": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal ",
+      "evidence": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+      "score": 43.533,
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 4,
+      "id": 64632,
+      "preview": "The related \" 400 , 000 - year - problem \" refers to the absence of a 400 , 000 - year periodicity due to orbital eccentricity in the geological temperature record over the past 1 . 2 million years . = = Recognition of the 100 , 000 - year ",
+      "evidence": "The related \" 400 , 000 - year - problem \" refers to the absence of a 400 , 000 - year periodicity due to orbital eccentricity in the geological temperature record over the past 1 . 2 million years . = = Recognition of the 100 , 000 - year cycle = = The geologic temperature record can be reconstructed from sedimentary evidence . Perhaps the most useful indicator of past climate is the fractionation of oxygen isotopes , denoted \u03b418O . This fractionation is controlled mainly by the amount of water locked up in ice and the absolute temperature of the planet , and has allowed a timescale of marine isotope stages to be constructed . By the late 1990s , \u03b418O records of air ( in the Vostok ice core ) and marine sediments was available and was compared with estimates of insolation , which should affect both temperature and ice volume .",
+      "score": 25.918
+    },
+    {
+      "rank": 5,
+      "id": 67974,
+      "preview": "Following the Kegworth accident , CFM56 engines fitted to a Dan - Air 737 - 400 and a British Midland 737 - 400 suffered fan blade failures under similar conditions ; neither incident resulted in a crash or injuries . After the second incid",
+      "evidence": "Following the Kegworth accident , CFM56 engines fitted to a Dan - Air 737 - 400 and a British Midland 737 - 400 suffered fan blade failures under similar conditions ; neither incident resulted in a crash or injuries . After the second incident , the 737 - 400 fleet was grounded . At the time it was not mandatory to flight test new variants of existing engines , and certification testing failed to reveal vibration modes that the fan experienced during the regularly performed power climbs at high altitude . Analysis revealed that the fan was being subjected to high - cycle fatigue stresses worse than expected and also more severe than tested for certification ; these higher stresses caused the blade to fracture .",
+      "score": 27.492
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "hvac_controller_manual",
+      "document_name": "dev_hvac_con",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    },
+    {
+      "document_id": "pump_controller_manual",
+      "document_name": "dev_pump_con",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    },
+    {
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

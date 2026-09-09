@@ -1,0 +1,118 @@
+Warehouse Conveyor Controller Operation Manual
+==============================================
+
+1. SAFETY PRECAUTIONS
+---------------------
+- Always perform lockout-tagout before servicing conveyor drive system.
+- Verify zero mechanical energy stored in springs or counterweights before removing guards.
+- Wear appropriate PPE when working around moving conveyors.
+- Never bypass safety interlocks or emergency stop controls.
+- Ensure no personnel are on or near the conveyor before startup.
+
+2. NORMAL OPERATION
+--------------------
+- Conveyor starts when the green START button is pressed.
+- Stops when the red STOP button is pressed or an fault is detected.
+- Normal operating speed: 0-150 FPM (feet per minute).
+- Load capacity: 0-5000 lbs depending on belt type.
+- Belt tracking should be checked at startup and weekly.
+
+3. STARTUP SEQUENCE
+-------------------
+a. Confirm all safety guards are in place and secured.
+b. Verify no personnel are on the conveyor belt.
+c. Confirm drive is not in manual emergency stop mode.
+d. Press GREEN START button to begin conveyor operation.
+e. Monitor belt tracking - adjust tracking rollers if belt centers.
+f. Listen for unusual noises indicating bearing or drive issues.
+g. Verify belt moves smoothly without slippage.
+
+4. INSPECTION PHASE
+-------------------
+- Check belt surface for cuts, tears, or excessive wear.
+- Inspect belt tracking and centering - adjust idler rollers as needed.
+- Check drive belt tension - should have 1/2" deflection under firm push.
+- Inspect rollers and idlers for smooth rotation and no visible damage.
+- Verify safety edge sensors are functional (press to test).
+- Check motor housing for overheating signs.
+- Inspect chain drives for proper tension and lubrication.
+- Verify emergency stop buttons are functional at all control stations.
+
+5. LUBRICATION
+--------------
+- bearing lubrication: Every 250 operating hours.
+- Use: Lithium-based grease, NLGI Grade 2.
+- Apply to roller bearings at each bearing location.
+- Grease quantity: Until slightly excess appears at seal.
+- Conveyor chain: Apply chain lubricant every 500 operating hours.
+- Do not over-lubricate - excess attracts dust and debris.
+
+6. TROUBLESHOOTING
+------------------
+
+PROBLEM: Conveyor will not start
+- Cause: Power not supplied - check voltage at disconnect, verify fuses.
+- Cause: Emergency stop activated - reset E-stop at nearest station.
+- Cause: Motor protection trip - reset thermal overload relay.
+- Cause: Control circuit fault - inspect wiring and control relays.
+- Cause: Belt jam preventing motor start - clear obstruction.
+
+PROBLEM: Belt slippage
+- Cause: Drive belt too loose - tighten to 1/2" deflection.
+- Cause: Worn drive belt - replace with new belt.
+- Cause: Contaminated belt surface - clean with appropriate solvent.
+- Cause: Overloaded system - reduce load, verify capacity limits.
+
+PROBLEM: Belt tracking issues
+- Cause: Misaligned tracking rollers - adjust left/right rollers.
+- Cause: Uneven belt wear - rotate or replace belt.
+- Cause: Material build-up on rollers - clean roller surfaces.
+- Cause: Belt damaged or stretched - replace belt.
+
+PROBLEM: Unexpected stoppage
+- Cause: Emergency stop activated - reset E-stop.
+- Cause: Thermal overload trip - reset after cooling.
+- Cause: Power fluctuation - check supply voltage.
+- Cause: Sensor fault - inspect safety edges and limit switches.
+
+PROBLEM: Unusual noise
+- Cause: Bearing failure - replace bearings.
+- Cause: Loose chain or belt tension - adjust tension.
+- Cause: Foreign object in conveyor path - remove obstruction.
+- Cause: Motor mounting loose - tighten mounting bolts.
+
+7. SHUTDOWN SEQUENCE
+---------------------
+a. Gradually reduce load if conveyor is under load.
+b. Press RED STOP button to stop motor.
+c. Allow belt to come to complete stop.
+d. Lockout-tagout for any subsequent maintenance.
+e. Remove any remaining material from belt.
+
+8. MAINTENANCE SCHEDULE
+------------------------
+- Daily: Visual inspection for wear, tracking, unusual noises.
+- Every 250 hours: Lubricate bearings, check belt tension.
+- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.
+- Every 1000 hours: Replace drive belt, lubricate chain.
+- Every 2000 hours: Comprehensive inspection of all rollers and idlers.
+- Annual: Full safety certification of interlocks and E-stops.
+
+9. EMERGENCY PROCEDURES
+------------------------
+- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.
+- Fire near conveyor: Evacuate area, call fire department.
+- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.
+
+10. TECHNICAL SPECIFICATIONS
+----------------------------
+- Model: WC-200 Warehouse Conveyor Controller
+- Motor power: 5 HP, single-phase, 120/240V
+- Belt speed: 0-150 FPM variable
+- Load capacity: 5000 lbs maximum
+- Belt width: 24 inches
+- Power supply: 120V AC, 60 Hz
+- Protection class: IP54
+- Connection: NEMA 12 enclosure
+- Roller spacing: 3 feet on center
+- Emergency stop stations: At each end and mid-point

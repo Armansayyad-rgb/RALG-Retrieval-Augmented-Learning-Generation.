@@ -1,0 +1,370 @@
+{
+  "case_id": "post_v4_dev_019",
+  "category": "D",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "battery_monitor_manual"
+  ],
+  "source_evidence": "",
+  "latency_ms": 154.79,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "Why does the BMU-100 battery overheat during charging?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+        "chunk_index": 73470,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.596991131157,
+        "lexical_score": 75.93889039937547,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "In a V2G system it would also be expected that battery electric ( BEVs ) and plug - in hybrids ( PHEVs ) would have the capability to communicate automatically with the power grid to sell demand response services by either delivering electricity into the grid or by throttling their charging rate . = = Disadvantages = = = = = Cost of batteries and cost of ownership = = = Cost of batteries As of 2015 , plug - in electric vehicles are significantly more expensive as compared to conventional internal combustion engine vehicles and hybrid electric vehicles due to the additional cost of their lithium - ion battery pack . According to a 2010 study by the National Research Council , the cost of a lithium - ion battery pack was about US $ 1 , 700 / kWh of usable energy , and considering that a PHEV - 10 requires about 2 .",
+        "chunk_index": 41356,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.258392551668,
+        "lexical_score": 30.52237500481002,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "was the electric car built with switchable battery technology sold for the Better Place network . The robotic battery - switching operation was completed in about five minutes . After implementing the first modern commercial deployment of the battery swapping model in Israel and Denmark , Better Place filed for bankruptcy in Israel in May 2013 . The company 's financial difficulties were caused by the high investment required to develop the charging and swapping infrastructure , about US $ 850 million in private capital , and a market penetration significantly lower than originally predicted by Shai Agassi . Less than 1 , 000 Fluence Z.E. cars were deployed in Israel and around 400 units in Denmark . Tesla Motors designed its Model S to allow fast battery swapping . In June 2013 , Tesla announced their goal to deploy a battery swapping station in each of its supercharging stations .",
+        "chunk_index": 41367,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.258392551668,
+        "lexical_score": 30.52237500481002,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "= = = = Battery swapping = = = = A different approach to resolve the problems of range anxiety and lack of recharging infrastructure for electric vehicles was developed by Better Place . Its business model considers that electric cars are built and sold separately from the battery pack . As customers are not allowed to purchase battery packs , they must lease them from Better Place which will deploy a network of battery swapping stations thus expanding EVs range and allowing long distance trips . Subscribed users pay a per - distance fee to cover battery pack leasing , charging and swap infrastructure , the cost of sustainable electricity , and other costs . Better Place signed agreement for deployment in Australia , Denmark , Israel , Canada , California , and Hawaii . The Renault Fluence Z.E.",
+        "chunk_index": 41366,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.258392551668,
+        "lexical_score": 26.52237500481002,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "\u00c2s\u00e2r - \u0131 Tevfik was a 4 , 600 - metric - ton ( 4 , 500 - long - ton ; 5 , 100 - short - ton ) barbette ship armed with a main battery of eight 220 - millimeter ( 8 . 7 in ) guns in a central battery . In 1903 \u2013 1906 , the ship was extensively rebuilt in Germany and a new battery of 150 mm ( 5 . 9 in ) and 120 mm ( 4 . 7 in ) quick - firing guns replaced the older weapons . \u00c2s\u00e2r - \u0131 Tevfik served in the Ottoman fleet for more than four decades . During this period , she saw action in two major wars , the Russo - Turkish War of 1877 \u2013 88 and the First Balkan War in 1913 . During the first conflict , she was torpedoed by a Russian torpedo boat but was only slightly damaged . She took part in the abortive Battle of Elli against the Greek Navy in December 1912 during the First Balkan War .",
+        "chunk_index": 20661,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.219446599726,
+        "lexical_score": 31.267436301484725,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "= = Early years = = Percy Phillips was born in March 1896 , in Warrington , Lancashire . He was a veteran of the First World War , and left the British Army ( Loyal North Lancashire Regiment ) at the rank of Corporal in 1918 , since he was wounded before the war ended . After the war , he started selling bicycles and motorbikes in a small shop in Brunswick Street , in the Kensington Fields area of Liverpool . He began selling and recharging batteries in 1925 , opening a shop in the front room of his family 's three - storey Georgian terraced house , called Phillips \u2019 Battery Charging Depot , and had to install large accumulators in the cellar . Phillips ran the business for 30 years , even during WWII , but due to a decline in demand for batteries in the early 1950s ( most people having electricity by then ) he started selling household electrical goods .",
+        "chunk_index": 19196,
+        "full_question_rank": null,
+        "full_question_coverage": 0.296356244196,
+        "lexical_score": 27.1011846648542,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes"
+        ]
+      },
+      {
+        "chunk": "Some local private firms such as Google and Adobe Systems have also deployed charging infrastructure . In Google 's case , its Mountain View campus has 100 available charging stations for its share - use fleet of converted plug - ins available to its employees . Solar panels are used to generate the electricity , and this pilot program is being monitored on a daily basis and performance results are published on the RechargeIT website . As of December 2013 , Estonia is the first and only country that had deployed an EV charging network with nationwide coverage , with 165 fast chargers available along highways at a minimum distance of between 40 to 60 km ( 25 to 37 mi ) , and a higher density in urban areas .",
+        "chunk_index": 41364,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.218807318514,
+        "lexical_score": 28.159887177184732,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "This company was tasked to provide covering fire for the 9th Battalion 's approach to and withdrawal from the battery . The assault had to be completed and the battalion clear of the position by 05 : 00 , when the Royal Navy cruiser HMS Arethusa would open fire on the battery in an attempt to destroy it with naval gunfire . = = = Battery = = = The Merville Battery was composed of four 6 - foot - thick ( 1 . 8 m ) steel - reinforced concrete gun casemates , built by the Todt Organisation . Each was designed to protect First World War - vintage Czech M.14 / 19 100 mm guns . Other buildings on the site included a command bunker , a building to accommodate the men , and ammunition magazines . During a visit on 6 March 1944 , to inspect the defences , Field Marshal Erwin Rommel ordered the builders to work faster , and by May 1944 , the last two casemates were completed .",
+        "chunk_index": 5610,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.219446599726,
+        "lexical_score": 25.69856229055904,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "The battery was defended by a 20 mm anti - aircraft gun and several machine guns in 15 gun positions , all enclosed in an area 700 by 500 yards ( 640 by 460 m ) surrounded by two barbed wire obstacles 15 feet ( 4 . 6 m ) thick by 5 feet ( 1 . 5 m ) high , which also acted as the exterior border for a 100 - yard - deep ( 91 m ) minefield . Another obstacle was an anti - tank ditch covering any approach from the nearby coast . The original commander of the battery , Hauptmann Wolter , was killed during a Royal Air Force bombing raid on 19 May 1944 . He was replaced by Oberleutnant Raimund Steiner , who commanded 50 engineers and 80 artillerymen from the 1st Battery , Artillery Regiment 1716 , part of the 716th Static Infantry Division . The battery had a complement of some one hundred men in all .",
+        "chunk_index": 5611,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.219446599726,
+        "lexical_score": 25.69856229055904,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "The G2 comes with either 16 or 32 GB of non - expandable storage , and includes a non - removable 3000 mAh battery . The Verizon Wireless model of the G2 offers support for Qi wireless charging . Unlike the models released in other countries , South Korean models of the G2 have a removable back cover , a MicroSD card slot for expanded storage , and a removable 2610 mAh battery . = = = Software = = = The G2 ships with Android 4 . 2 . 2 \" Jelly Bean \" with a custom interface and software . It contains a number of features that are designed to \" learn \" from users by predicting future actions , and allow for flexibility and customization .",
+        "chunk_index": 45800,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.258392551668,
+        "lexical_score": 20.328928077948227,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The wires that electronically fired the rockets also allowed a member of the crew , holding a cruciform and positioned on an overhead gantry , to \" fly \" the model over the set . By far the most unwieldy model was Thunderbird 2 , which Meddings remembered as being \" awful \" to fly . A combination of unreliable rockets and weak wiring frequently caused problems : should the former be slow to ignite , the current quickly caused the latter to overheat and snap , potentially damaging the model and even setting fire to the set . Conditions above the studio floor were often dangerous due to the heat and smoke . Although many of the exhaust sound effects used in the series were drawn from an audio library , some were specially recorded during a Red Arrows display at RAF Little Rissington in Gloucestershire .",
+        "chunk_index": 12659,
+        "full_question_rank": null,
+        "full_question_coverage": 0.25688475709,
+        "lexical_score": 27.35269280360019,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "5 L / 100 km ) equivalent from 78 mpg - US ( 3 . 0 L / 100 km ) in the 2012 study . States with dirtier generation that rely heavily on coal still lag , such as Colorado , where the average BEV only achieves the same emissions as a 34 mpg - US ( 6 . 9 L / 100 km ; 41 mpg - imp ) gasoline - powered car . The author of the 2014 analysis noted that the benefits are not distributed evenly across the U.S. because electric car adoptions is concentrated in the states with cleaner power . In November 2015 the Union of Concerned Scientists published a new report comparing two battery electric vehicles ( BEVs ) with similar gasoline vehicles by examining their global warming emissions over their full life - cycle , cradle - to - grave analysis .",
+        "chunk_index": 41346,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.181482907198,
+        "lexical_score": 23.19480044039423,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Since the band is part of the Corps , it has its own unit commander , a Cadet Colonel . Due to necessity for military functions , the Band Commander is accorded the privilege of the first file in bugle rank ( the lead rank of the band ) . During formal military ceremonies , the commander carries a sabre instead of a bugle , as do all other commanders . Subordinate to the Band Commander are the commanders of the Artillery and Infantry bands , each a Cadet Lieutenant Colonel ; and the unit commanders of A - Battery , B - Battery , C - Battery , A - Company , B - Company , and C - Company . The Batteries are called the Artillery Band and the Companies the Infantry Band . The two bands perform together for halftime shows , but are often split for minor performances such as local parades and functions where the entire band is not needed .",
+        "chunk_index": 38753,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.148518267564,
+        "lexical_score": 25.364777786048226,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "Batteries used for grid - storage also stabilize the electrical grid by leveling out peak loads , and play an important role in a smart grid , as they can charge during periods of low demand and feed their stored energy into the grid when demand is high . Common battery technologies used in today 's PV systems include , the valve regulated lead - acid battery \u2013 a modified version of the conventional lead \u2013 acid battery , nickel \u2013 cadmium and lithium - ion batteries . Lead - acid batteries are currently the predominant technology used in small - scale , residential PV systems , due to their high reliability , low self discharge and investment and maintenance costs , despite shorter lifetime and lower energy density .",
+        "chunk_index": 73432,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.148518267564,
+        "lexical_score": 25.364777786048226,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "Electrical outlets or charging stations near their places of residence , in commercial or public parking lots , streets and workplaces are required for these potential users to gain the full advantage of PHEVs , and in the case of EVs , to avoid the fear of the batteries running out energy before reaching their destination , commonly called range anxiety . Even house dwellers might need to charge at the office or to take advantage of opportunity charging at shopping centers . However , this infrastructure is not in place and it will require investments by both the private and public sectors . Several cities in California and Oregon , and particularly San Francisco and other cities in the San Francisco Bay Area and Silicon Valley , already have deployed public charging stations and have expansion plans to attend both plug - ins and all - electric cars .",
+        "chunk_index": 41363,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.147878986352,
+        "lexical_score": 23.82610267267392,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "The Roon - class ships carried 380 shells for the main battery , 1 , 600 rounds for the 15 cm guns , and 2 , 100 shells for the 8 . 8 cm guns . The planned conversion for Roon to a seaplane carrier called for six 15 cm L / 45 guns and six 8 . 8 cm Flak guns , with 2 , 400 rounds , though this was never carried out . = = = Armor = = = Roon and Yorck were protected by Krupp cemented steel armor . At the waterline , their armored belt was 100 mm ( 3 . 9 in ) thick amidships where the ships ' vitals were located . This was decreased slightly to 80 mm ( 3 . 1 in ) on either end of the central section of the belt . The belt was backed by 55 mm ( 2 . 2 in ) of teak planking . At the casemate deck the side armor was also 100 mm thick . The armored deck ranged in thickness from 40 \u2013 60 mm ( 1 . 6 \u2013 2 . 4 in ) and was connected to the belt by sloped armor that was 40 \u2013 50 mm ( 1 . 6 \u2013 2 .",
+        "chunk_index": 38091,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.181482907198,
+        "lexical_score": 19.19480044039423,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Markets for these flame - retardant applications include children 's clothing , toys , aircraft and automobile seat covers . It is also used in the fiberglass composites industry as an additive to polyester resins for such items as light aircraft engine covers . The resin will burn while a flame is held to it but will extinguish itself as soon as the flame is removed . = = = Alloys = = = Antimony forms a highly useful alloy with lead , increasing its hardness and mechanical strength . For most applications involving lead , varying amounts of antimony are used as alloying metal . In lead \u2013 acid batteries , this addition improves the charging characteristics and reduces generation of unwanted hydrogen during charging .",
+        "chunk_index": 1115,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.18584267888,
+        "lexical_score": 18.668505453912122,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "= Battle of Merville Gun Battery = The Battle of Merville Gun Battery occurred on 6 June 1944 , as part of Operation Tonga , part of the Normandy landings , during the Second World War . Allied intelligence believed the Merville Gun Battery was composed of heavy - calibre guns that could threaten the British landings at Sword Beach , only 8 miles ( 13 km ) away . The 9th Parachute Battalion , part of the 3rd Parachute Brigade attached to 6th Airborne Division , was given the objective of destroying the battery . However , when the battalion arrived over Normandy , their parachute descent was dispersed over a large area , so instead of over 600 men , only 150 with no heavy weapons or equipment arrived at the battalion assembly point .",
+        "chunk_index": 5606,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.148518267564,
+        "lexical_score": 21.364777786048226,
+        "origin": "full_question",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes",
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "The study estimated global lithium reserves at 39 million tons , and total demand for lithium during the 90 - year period analyzed at 12 - 20 million tons , depending on the scenarios regarding economic growth and recycling rates . A 2016 study by Bloomberg New Energy Finance ( BNEF ) found that availability of lithium and other finite materials used in the battery packs will not be a limiting factor for the adoption of electric vehicles . BNEF estimated that battery packs will require less than 1 % of the known reserves of lithium , nickel , manganese , and copper through 2030 , and 4 % of the world \u2019 s cobalt . After 2030 , the study states that new battery chemistries will probably shift to other source materials , making packs lighter , smaller , and cheaper .",
+        "chunk_index": 41386,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.148518267564,
+        "lexical_score": 21.364777786048226,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The rebates are available to the first 10 , 000 applicants who qualify . Quebec offers rebates of up to CA $ 8 , 500 ( US $ 8 , 485 ) from January 1 , 2012 , for the purchase of new plug - in electric vehicles equipped with a minimum of 4 kWh battery , and new hybrid electric vehicles are eligible for a CA $ 1 , 000 rebate . All - electric vehicles with high - capacity battery packs are eligible for the full C $ 8 , 000 rebate , and incentives are reduced for low - range electric cars and plug - in hybrids . = = Production plug - in electric vehicles available = = During the 1990s several highway - capable plug - in electric cars were produced in limited quantities , all were battery electric vehicles , and they were available through leasing mainly in California . Popular models included the General Motors EV1 and the Toyota RAV4 EV .",
+        "chunk_index": 41404,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.148518267564,
+        "lexical_score": 21.364777786048226,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The defenders were alerted by the explosions , and opened fire , inflicting heavy casualties ; only four attackers survived to reach Casemate Four , which they disabled by firing into apertures and throwing grenades into air vents . The other casemates were cleared with fragmentation and white phosphorus grenades , as the crews had neglected to lock the doors leading into the battery . During the bombing raid , the battery 's guns had been moved inside the casemates and the steel doors left open for ventilation . During the battle , 22 Germans were killed and a similar number made prisoners of war . The rest of the garrison escaped undetected by hiding in the underground bunkers . Steiner was not present during the bombing , but at a command bunker in Franceville - Plage .",
+        "chunk_index": 5616,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.148518267564,
+        "lexical_score": 20.740204870112116,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.148518267564,
+        "lexical_score": 20.17133085918643,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "The storm caused seven deaths in Texas and 17 in Louisiana ( most resulting from the crash of a helicopter evacuating workers from an offshore platform ) . Allen spawned several tornadoes in Texas . One tornado caused $ 100 million in damage when it hit Austin , Texas , making it the costliest tropical cyclone - spawned tornado in recorded history . Overall , however , the storm caused limited damage in the United States due to its suddenly diminished power and because its highest tides and winds hit a sparsely - populated portion of the Texas coast . Allen dumped 10 inches ( 250 mm ) to 20 inches ( 510 mm ) of rain in south Texas , ending a summer - long drought during the Heat Wave of 1980 .",
+        "chunk_index": 41752,
+        "full_question_rank": null,
+        "full_question_coverage": 0.108933034411,
+        "lexical_score": 29.311452488282903,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "= = = Mozambique = = = About 130 , 000 homes suffered damage and 130 schools were leveled by the intense tropical cyclone in Mozambique . In all , a total of ten people were killed by the storm and nearly 100 others were injured . Combined with an earlier flood , Favio caused $ 71 million ( 2007 USD ) in infrastructural damage . About 64 , 000 people moved to tents during the storm , and 33 , 000 people were displaced during the storm . Cyclone Favio destroyed 277 , 000 ha ( 684 , 480 acres ) of crops , primarily in Vilanculos , Inhassoro , Govuro , and Masinga districts in Inhambane Province . Overall , 160 , 000 people were affected by the storm . Favio damaged the court in the resort town of Vilanculos in Southern Mozambique . Uprooted trees caused by the cyclone also blocked roads , cutting off access for rescuers to some homes . Power was also cut off to the city .",
+        "chunk_index": 59025,
+        "full_question_rank": null,
+        "full_question_coverage": 0.108933034411,
+        "lexical_score": 23.364812500975997,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging caused by"
+        ]
+      },
+      {
+        "chunk": "= = Economy = = Historically , Altrincham was a market town and the two main areas of employment were agriculture and market trade . Although the town went into decline in the 15th century , it recovered and the annual fairs lasted until the mid - 19th century and the market still continues . During the Industrial Revolution , Altrincham grew as an industrial town , particularly the Broadheath area , which was developed into an industrial estate . In 1801 there were four cotton mills in Altrincham , part of its textile industry , although they had closed by the 1851 census . The decline of the textile industry in Altrincham mirrored the decline of the industry in the Trafford area as a result of a lack of investment and the development of more established industrial areas such as Manchester , Ashton - under - Lyne , and Oldham .",
+        "chunk_index": 34589,
+        "full_question_rank": null,
+        "full_question_coverage": 0.038004702249,
+        "lexical_score": 25.328236530377612,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes"
+        ]
+      },
+      {
+        "chunk": "= = = Post - industrial decline = = = During the early 20th century , improvements in regional transport infrastructure precipitated the decline of Salford 's existing industries , including those at the Salford Docks . Increased foreign competition began to undermine the competitiveness of local textile processing businesses . Rising unemployment during the Great Depression of the 1920s and ' 30s , and a significant economic decline in the decades following the Second World War contributed toward a fall in Salford 's population . By 1939 local coal mining had almost stopped , and cotton spinning had by 1971 ceased completely . Between 1921 and 1939 , the population of Salford decreased by 29 % , from 234 , 045 to 166 , 386 , far greater than the rate of decline within the whole of North West England .",
+        "chunk_index": 43243,
+        "full_question_rank": null,
+        "full_question_coverage": 0.038004702249,
+        "lexical_score": 24.112673535840457,
+        "origin": "subquery",
+        "subquery_hits": [
+          "Why does the BMU-100 battery overheat during charging decline causes"
+        ]
+      }
+    ],
+    "context": "TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\nCHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\nSubscribed users pay a per - distance fee to cover battery pack leasing , charging and swap infrastructure , the cost of sustainable electricity , and other costs .\n\u00c2s\u00e2r - \u0131 Tevfik was a 4 , 600 - metric - ton ( 4 , 500 - long - ton ; 5 , 100 - short - ton ) barbette ship armed with a main battery of eight 220 - millimeter ( 8 ."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73470,
+      "preview": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal ",
+      "evidence": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+      "score": 75.939,
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 41356,
+      "preview": "In a V2G system it would also be expected that battery electric ( BEVs ) and plug - in hybrids ( PHEVs ) would have the capability to communicate automatically with the power grid to sell demand response services by either delivering electr",
+      "evidence": "In a V2G system it would also be expected that battery electric ( BEVs ) and plug - in hybrids ( PHEVs ) would have the capability to communicate automatically with the power grid to sell demand response services by either delivering electricity into the grid or by throttling their charging rate . = = Disadvantages = = = = = Cost of batteries and cost of ownership = = = Cost of batteries As of 2015 , plug - in electric vehicles are significantly more expensive as compared to conventional internal combustion engine vehicles and hybrid electric vehicles due to the additional cost of their lithium - ion battery pack . According to a 2010 study by the National Research Council , the cost of a lithium - ion battery pack was about US $ 1 , 700 / kWh of usable energy , and considering that a PHEV - 10 requires about 2 .",
+      "score": 30.522
+    },
+    {
+      "rank": 3,
+      "id": 41367,
+      "preview": "was the electric car built with switchable battery technology sold for the Better Place network . The robotic battery - switching operation was completed in about five minutes . After implementing the first modern commercial deployment of t",
+      "evidence": "was the electric car built with switchable battery technology sold for the Better Place network . The robotic battery - switching operation was completed in about five minutes . After implementing the first modern commercial deployment of the battery swapping model in Israel and Denmark , Better Place filed for bankruptcy in Israel in May 2013 . The company 's financial difficulties were caused by the high investment required to develop the charging and swapping infrastructure , about US $ 850 million in private capital , and a market penetration significantly lower than originally predicted by Shai Agassi . Less than 1 , 000 Fluence Z.E. cars were deployed in Israel and around 400 units in Denmark . Tesla Motors designed its Model S to allow fast battery swapping . In June 2013 , Tesla announced their goal to deploy a battery swapping station in each of its supercharging stations .",
+      "score": 30.522
+    },
+    {
+      "rank": 4,
+      "id": 41366,
+      "preview": "= = = = Battery swapping = = = = A different approach to resolve the problems of range anxiety and lack of recharging infrastructure for electric vehicles was developed by Better Place . Its business model considers that electric cars are b",
+      "evidence": "= = = = Battery swapping = = = = A different approach to resolve the problems of range anxiety and lack of recharging infrastructure for electric vehicles was developed by Better Place . Its business model considers that electric cars are built and sold separately from the battery pack . As customers are not allowed to purchase battery packs , they must lease them from Better Place which will deploy a network of battery swapping stations thus expanding EVs range and allowing long distance trips . Subscribed users pay a per - distance fee to cover battery pack leasing , charging and swap infrastructure , the cost of sustainable electricity , and other costs . Better Place signed agreement for deployment in Australia , Denmark , Israel , Canada , California , and Hawaii . The Renault Fluence Z.E.",
+      "score": 26.522
+    },
+    {
+      "rank": 5,
+      "id": 20661,
+      "preview": "\u00c2s\u00e2r - \u0131 Tevfik was a 4 , 600 - metric - ton ( 4 , 500 - long - ton ; 5 , 100 - short - ton ) barbette ship armed with a main battery of eight 220 - millimeter ( 8 . 7 in ) guns in a central battery . In 1903 \u2013 1906 , the ship was extensive",
+      "evidence": "\u00c2s\u00e2r - \u0131 Tevfik was a 4 , 600 - metric - ton ( 4 , 500 - long - ton ; 5 , 100 - short - ton ) barbette ship armed with a main battery of eight 220 - millimeter ( 8 . 7 in ) guns in a central battery . In 1903 \u2013 1906 , the ship was extensively rebuilt in Germany and a new battery of 150 mm ( 5 . 9 in ) and 120 mm ( 4 . 7 in ) quick - firing guns replaced the older weapons . \u00c2s\u00e2r - \u0131 Tevfik served in the Ottoman fleet for more than four decades . During this period , she saw action in two major wars , the Russo - Turkish War of 1877 \u2013 88 and the First Balkan War in 1913 . During the first conflict , she was torpedoed by a Russian torpedo boat but was only slightly damaged . She took part in the abortive Battle of Elli against the Greek Navy in December 1912 during the First Balkan War .",
+      "score": 31.267
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

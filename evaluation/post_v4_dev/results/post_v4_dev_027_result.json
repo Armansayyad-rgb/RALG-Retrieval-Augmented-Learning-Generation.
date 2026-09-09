@@ -1,0 +1,73 @@
+{
+  "case_id": "post_v4_dev_027",
+  "category": "F",
+  "supported": true,
+  "answer": "- Belt speed: 0-150 FPM variable",
+  "answer_type": "factual",
+  "retrieved_document_ids": [
+    "conveyor_controller_manual"
+  ],
+  "source_evidence": "",
+  "latency_ms": 10.62,
+  "runtime_error": null,
+  "gate_passed": true,
+  "gate_reasons": [],
+  "retrieval_success": true,
+  "support_gate_result": "accepted",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": true,
+  "retrieval_mismatch": null,
+  "question": "What is the belt speed range for the WC-200 conveyor?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+        "chunk_index": 73471,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.8357618266,
+        "lexical_score": 79.18841498574379,
+        "origin": "full_question"
+      }
+    ],
+    "context": "TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point\nVerify no personnel are on the conveyor belt.\nSAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Ensure no personnel are on or near the conveyor before startup.\nNORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73471,
+      "preview": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical ener",
+      "evidence": "Warehouse Conveyor Controller Operation Manual\n==============================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always perform lockout-tagout before servicing conveyor drive system.\n- Verify zero mechanical energy stored in springs or counterweights before removing guards.\n- Wear appropriate PPE when working around moving conveyors.\n- Never bypass safety interlocks or emergency stop controls.\n- Ensure no personnel are on or near the conveyor before startup.\n\n2. NORMAL OPERATION\n--------------------\n- Conveyor starts when the green START button is pressed.\n- Stops when the red STOP button is pressed or an fault is detected.\n- Normal operating speed: 0-150 FPM (feet per minute).\n- Load capacity: 0-5000 lbs depending on belt type.\n- Belt tracking should be checked at startup and weekly.\n\n3. STARTUP SEQUENCE\n-------------------\na. Confirm all safety guards are in place and secured.\nb. Verify no personnel are on the conveyor belt.\nc. Confirm drive is not in manual emergency stop mode.\nd. Press GREEN START button to begin conveyor operation.\ne. Monitor belt tracking - adjust tracking rollers if belt centers.\nf. Listen for unusual noises indicating bearing or drive issues.\ng. Verify belt moves smoothly without slippage.\n\n4. INSPECTION PHASE\n-------------------\n- Check belt surface for cuts, tears, or excessive wear.\n- Inspect belt tracking and centering - adjust idler rollers as needed.\n- Check drive belt tension - should have 1/2\" deflection under firm push.\n- Inspect rollers and idlers for smooth rotation and no visible damage.\n- Verify safety edge sensors are functional (press to test).\n- Check motor housing for overheating signs.\n- Inspect chain drives for proper tension and lubrication.\n- Verify emergency stop buttons are functional at all control stations.\n\n5. LUBRICATION\n--------------\n- bearing lubrication: Every 250 operating hours.\n- Use: Lithium-based grease, NLGI Grade 2.\n- Apply to roller bearings at each bearing location.\n- Grease quantity: Until slightly excess appears at seal.\n- Conveyor chain: Apply chain lubricant every 500 operating hours.\n- Do not over-lubricate - excess attracts dust and debris.\n\n6. TROUBLESHOOTING\n------------------\n\nPROBLEM: Conveyor will not start\n- Cause: Power not supplied - check voltage at disconnect, verify fuses.\n- Cause: Emergency stop activated - reset E-stop at nearest station.\n- Cause: Motor protection trip - reset thermal overload relay.\n- Cause: Control circuit fault - inspect wiring and control relays.\n- Cause: Belt jam preventing motor start - clear obstruction.\n\nPROBLEM: Belt slippage\n- Cause: Drive belt too loose - tighten to 1/2\" deflection.\n- Cause: Worn drive belt - replace with new belt.\n- Cause: Contaminated belt surface - clean with appropriate solvent.\n- Cause: Overloaded system - reduce load, verify capacity limits.\n\nPROBLEM: Belt tracking issues\n- Cause: Misaligned tracking rollers - adjust left/right rollers.\n- Cause: Uneven belt wear - rotate or replace belt.\n- Cause: Material build-up on rollers - clean roller surfaces.\n- Cause: Belt damaged or stretched - replace belt.\n\nPROBLEM: Unexpected stoppage\n- Cause: Emergency stop activated - reset E-stop.\n- Cause: Thermal overload trip - reset after cooling.\n- Cause: Power fluctuation - check supply voltage.\n- Cause: Sensor fault - inspect safety edges and limit switches.\n\nPROBLEM: Unusual noise\n- Cause: Bearing failure - replace bearings.\n- Cause: Loose chain or belt tension - adjust tension.\n- Cause: Foreign object in conveyor path - remove obstruction.\n- Cause: Motor mounting loose - tighten mounting bolts.\n\n7. SHUTDOWN SEQUENCE\n---------------------\na. Gradually reduce load if conveyor is under load.\nb. Press RED STOP button to stop motor.\nc. Allow belt to come to complete stop.\nd. Lockout-tagout for any subsequent maintenance.\ne. Remove any remaining material from belt.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Visual inspection for wear, tracking, unusual noises.\n- Every 250 hours: Lubricate bearings, check belt tension.\n- Every 500 hours: Inspect belt surface, clean rollers, test E-stops.\n- Every 1000 hours: Replace drive belt, lubricate chain.\n- Every 2000 hours: Comprehensive inspection of all rollers and idlers.\n- Annual: Full safety certification of interlocks and E-stops.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Person on conveyor: Immediately press E-stop, do not attempt rescue until motion stops.\n- Fire near conveyor: Evacuate area, call fire department.\n- Material spill: Stop conveyor, contain spill, clean per warehouse protocols.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: WC-200 Warehouse Conveyor Controller\n- Motor power: 5 HP, single-phase, 120/240V\n- Belt speed: 0-150 FPM variable\n- Load capacity: 5000 lbs maximum\n- Belt width: 24 inches\n- Power supply: 120V AC, 60 Hz\n- Protection class: IP54\n- Connection: NEMA 12 enclosure\n- Roller spacing: 3 feet on center\n- Emergency stop stations: At each end and mid-point",
+      "score": 79.188,
+      "document_id": "conveyor_controller_manual",
+      "document_name": "dev_conveyor",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "conveyor_controller_manual",
+      "document_name": "dev_conveyor",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": true,
+  "conflict": false,
+  "error": null
+}

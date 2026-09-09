@@ -1,0 +1,275 @@
+{
+  "case_id": "post_v4_dev_039",
+  "category": "H",
+  "supported": false,
+  "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+  "answer_type": "system",
+  "retrieved_document_ids": [
+    "battery_monitor_manual",
+    "machine_safety_procedures"
+  ],
+  "source_evidence": "",
+  "latency_ms": 189.09,
+  "runtime_error": null,
+  "gate_passed": false,
+  "gate_reasons": [
+    "raw_unsupported",
+    "not_traceable"
+  ],
+  "retrieval_success": true,
+  "support_gate_result": "rejected",
+  "semantic_review_needed": null,
+  "hit_at_1": true,
+  "hit_at_3": true,
+  "hit_at_5": true,
+  "recall_at_5": 1.0,
+  "correct_rejection": false,
+  "false_support": false,
+  "correct_support": false,
+  "retrieval_mismatch": null,
+  "question": "If the battery is not properly ventilated, can it overheat during charging?",
+  "evidence": {
+    "kind": "hybrid",
+    "results": [
+      {
+        "chunk": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+        "chunk_index": 73470,
+        "full_question_rank": 1,
+        "full_question_coverage": 0.642243019923,
+        "lexical_score": 88.5137873256362,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+        "chunk_index": 73473,
+        "full_question_rank": 2,
+        "full_question_coverage": 0.378416993662,
+        "lexical_score": 40.83873329714352,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Intubation , one method to secure the airway , may be used to bypass a disruption in the airway in order to send air to the lungs . If necessary , a tube can be placed into the uninjured bronchus , and a single lung can be ventilated . If there is a penetrating injury to the neck through which air is escaping , the trachea may be intubated through the wound . Multiple unsuccessful attempts at conventional ( direct ) laryngoscopy may threaten the airway , so alternative techniques to visualize the airway , such as fiberoptic or video laryngoscopy , may be employed to facilitate tracheal intubation . If the upper trachea is injured , an incision can be made in the trachea ( tracheotomy ) or the cricothyroid membrane ( cricothyrotomy , or cricothyroidotomy ) in order to ensure an open airway .",
+        "chunk_index": 25667,
+        "full_question_rank": 5,
+        "full_question_coverage": 0.32624098154,
+        "lexical_score": 32.63393494977679,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Obedience classes are also recommended to potential owners , as Jack Russells can be stubborn at times and aggressive towards other animals and humans if not properly socialized . Despite their small size , these dogs are not recommended for the condominium or apartment dweller unless the owner is ready to take on the daunting task of providing the dog with the necessary amount of exercise and stimulation . They have a tremendous amount of energy for their size , a fact which can sometimes lead to trouble involving larger animals . They may seem never to tire and will still be energetic after their owner has called it a day . While socialised members of the breed are friendly towards children , they will not tolerate abuse even if it is unintentional . = = Health = = The breed has a reputation for being healthy with a long lifespan .",
+        "chunk_index": 52673,
+        "full_question_rank": 4,
+        "full_question_coverage": 0.30614892115,
+        "lexical_score": 33.07615989521105,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Sinclair 's tests showed that it could cope under power with a maximum slope of 1 in 12 ( 8 % ) and could manage a 1 in 7 ( 14 % ) slope using the pedals . As the speed of the motor reduces , the current flow through its windings increases , drawing up to 140 amps at stall speed . This would very quickly burn the motor out if sustained , so the motor 's load is constantly monitored by the C5 's electronics . If it stalls under full load the electronics disable the motor after 4 seconds , while if it is under heavy load ( around 80 or 90 amps ) it trips after two or three minutes . A heat - sensitive resistor inside the motor warns the driver if the vehicle is beginning to overheat and disconnects the motor after a short time , and a third line of defence is provided by a metallic strip mounted on the motor .",
+        "chunk_index": 52736,
+        "full_question_rank": 11,
+        "full_question_coverage": 0.307471110244,
+        "lexical_score": 28.225650804302916,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "= = = = Battery swapping = = = = A different approach to resolve the problems of range anxiety and lack of recharging infrastructure for electric vehicles was developed by Better Place . Its business model considers that electric cars are built and sold separately from the battery pack . As customers are not allowed to purchase battery packs , they must lease them from Better Place which will deploy a network of battery swapping stations thus expanding EVs range and allowing long distance trips . Subscribed users pay a per - distance fee to cover battery pack leasing , charging and swap infrastructure , the cost of sustainable electricity , and other costs . Better Place signed agreement for deployment in Australia , Denmark , Israel , Canada , California , and Hawaii . The Renault Fluence Z.E.",
+        "chunk_index": 41366,
+        "full_question_rank": 8,
+        "full_question_coverage": 0.279358808246,
+        "lexical_score": 28.951662223607364,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "In a V2G system it would also be expected that battery electric ( BEVs ) and plug - in hybrids ( PHEVs ) would have the capability to communicate automatically with the power grid to sell demand response services by either delivering electricity into the grid or by throttling their charging rate . = = Disadvantages = = = = = Cost of batteries and cost of ownership = = = Cost of batteries As of 2015 , plug - in electric vehicles are significantly more expensive as compared to conventional internal combustion engine vehicles and hybrid electric vehicles due to the additional cost of their lithium - ion battery pack . According to a 2010 study by the National Research Council , the cost of a lithium - ion battery pack was about US $ 1 , 700 / kWh of usable energy , and considering that a PHEV - 10 requires about 2 .",
+        "chunk_index": 41356,
+        "full_question_rank": 9,
+        "full_question_coverage": 0.26812490694,
+        "lexical_score": 28.40577977122231,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\" In April 2014 the European Parliament approved legislation that requires the mandatory use of the AVAS for all new electric and hybrid electric vehicles and car manufacturers have to comply within 5 years . = = = Risks of battery fire = = = Lithium - ion batteries may suffer thermal runaway and cell rupture if overheated or overcharged , and in extreme cases this can lead to combustion . To reduce these risks , lithium - ion battery packs contain fail - safe circuitry that shuts down the battery when its voltage is outside the safe range . When handled improperly , or if manufactured defectively , some rechargeable batteries can experience thermal runaway resulting in overheating . Especially prone to thermal runaway are lithium - ion batteries . Reports of exploding cellphones have been reported in newspapers .",
+        "chunk_index": 41378,
+        "full_question_rank": 3,
+        "full_question_coverage": 0.237642830856,
+        "lexical_score": 33.39432765907797,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Although players can choose to act immediately , an ability will become more powerful the longer that the player charges the attack . However , the greater the amount of time one charges attacks , the longer the charging character must wait before the next turn . As a result of this , players can choose to charge up an ability so that the ability triggers shortly before an enemy acts , or can instead aim for the \" sweet spot \" , a special red area on the charging bar , indicating a charge that allows for less time until the next attack , as well as a smaller mana cost . Overall , deciding on the correct amount of charge and letting go of the button at precisely that time can greatly influence the effectiveness of each character 's attacks during combat .",
+        "chunk_index": 27728,
+        "full_question_rank": 7,
+        "full_question_coverage": 0.232942312998,
+        "lexical_score": 29.420151079182816,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "A plug - in hybrid operates as an all - electric vehicle or BEV when operating in charge - depleting mode , but it switches to charge - sustaining mode after the battery has reached its minimum state of charge ( SOC ) threshold , exhausting the vehicle 's all - electric range ( AER ) . = = = Plug - in hybrid electric vehicles = = = A plug - in hybrid electric vehicle ( PHEV or PHV ) , also known as a plug - in hybrid , is a hybrid electric vehicle with rechargeable batteries that can be restored to full charge by connecting a plug to an external electric power source . A plug - in hybrid shares the characteristics of both a conventional hybrid electric vehicle and an all - electric vehicle : it uses a gasoline engine and an electric motor for propulsion , but a PHEV has a larger battery pack that can be recharged , allowing operation in all - electric mode until the battery is depleted .",
+        "chunk_index": 41320,
+        "full_question_rank": 6,
+        "full_question_coverage": 0.197723798641,
+        "lexical_score": 29.514914063590425,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "In the book Therapeutic Uses of Rap and Hip - Hop , Susan Hadley and George Yancy discuss that \" Can 't Hold Us Down \" is a hip hop song that \" encourages young women to be proud , strong , and empowered to be all that they can be \" . At the song 's first verse , Aguilera sings \" Call me a bitch ' cause I speak what 's on my mind / Guess it 's easier for you to swallow if I sat and smiled \" ; she later rejects that all women \" should be seen , not heard \" and encourages them to \" shout louder \" during the chorus . Aguilera comments on the double standard with the lyrics \" The guy gets all the glory the more he can score / While the girl can do the same and yet you call her a whore \" . Lil ' Kim shares a similar sentiment during her verse in the bridge , questioning why a man is able to give a woman \" some sex or sex her raw \" while \" if the girl do the same and then she 's a whore \" .",
+        "chunk_index": 30468,
+        "full_question_rank": 10,
+        "full_question_coverage": 0.215058346865,
+        "lexical_score": 28.27943474971815,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "was the electric car built with switchable battery technology sold for the Better Place network . The robotic battery - switching operation was completed in about five minutes . After implementing the first modern commercial deployment of the battery swapping model in Israel and Denmark , Better Place filed for bankruptcy in Israel in May 2013 . The company 's financial difficulties were caused by the high investment required to develop the charging and swapping infrastructure , about US $ 850 million in private capital , and a market penetration significantly lower than originally predicted by Shai Agassi . Less than 1 , 000 Fluence Z.E. cars were deployed in Israel and around 400 units in Denmark . Tesla Motors designed its Model S to allow fast battery swapping . In June 2013 , Tesla announced their goal to deploy a battery swapping station in each of its supercharging stations .",
+        "chunk_index": 41367,
+        "full_question_rank": 18,
+        "full_question_coverage": 0.249945078059,
+        "lexical_score": 26.52237500481002,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Electrical outlets or charging stations near their places of residence , in commercial or public parking lots , streets and workplaces are required for these potential users to gain the full advantage of PHEVs , and in the case of EVs , to avoid the fear of the batteries running out energy before reaching their destination , commonly called range anxiety . Even house dwellers might need to charge at the office or to take advantage of opportunity charging at shopping centers . However , this infrastructure is not in place and it will require investments by both the private and public sectors . Several cities in California and Oregon , and particularly San Francisco and other cities in the San Francisco Bay Area and Silicon Valley , already have deployed public charging stations and have expansion plans to attend both plug - ins and all - electric cars .",
+        "chunk_index": 41363,
+        "full_question_rank": 12,
+        "full_question_coverage": 0.210066437424,
+        "lexical_score": 28.138794657883555,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "When the REVA NXR 's batteries are running low or are fully depleted , the driver is able to send an SMS to REVive and unlock a hidden reserve in the battery pack . REVA has not provided details on how the system will work . The Fisker Karma uses solar panel in the roof to recharge the 12 - volt lead - acid accessory battery . The Nissan Leaf SL trim also has a small solar panel at the rear of the roof / spoiler that can trickle charge the auxiliary 12 - volt lead - acid battery . = = = Potential overload of the electrical grid = = = The existing electrical grid , and local transformers in particular , may not have enough capacity to handle the additional power load that might be required in certain areas with high plug - in electric car concentrations .",
+        "chunk_index": 41369,
+        "full_question_rank": 16,
+        "full_question_coverage": 0.208957699946,
+        "lexical_score": 27.022797093270302,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Thus identities like <formula> and <formula> are only true as functional identities ( including at x = 0 ) if 00 = 1 . In differential calculus , the power rule <formula> is not valid for n = 1 at x = 0 unless 00 = 1 . = = = Continuous exponents = = = Limits involving algebraic operations can often be evaluated by replacing subexpressions by their limits ; if the resulting expression does not determine the original limit , the expression is known as an indeterminate form . In fact , when f ( t ) and g ( t ) are real - valued functions both approaching 0 ( as t approaches a real number or \u00b1 \u221e ) , with f ( t ) > 0 , the function f ( t ) g ( t ) need not approach 1 ; depending on f and g , the limit of f ( t ) g ( t ) can be any nonnegative real number or + \u221e , or it can diverge .",
+        "chunk_index": 17142,
+        "full_question_rank": 14,
+        "full_question_coverage": 0.178335778699,
+        "lexical_score": 27.56913517638715,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "Examples of functions that are not entire include the square root , the logarithm , the trigonometric function tangent , and its inverse , arctan . For these functions the Taylor series do not converge if x is far from b . That is , the Taylor series diverges at x if the distance between x and b is larger than the radius of convergence . The Taylor series can be used to calculate the value of an entire function at every point , if the value of the function , and of all of its derivatives , are known at a single point . Uses of the Taylor series for analytic functions include : The partial sums ( the Taylor polynomials ) of the series can be used as approximations of the entire function . These approximations are good if sufficiently many terms are included . Differentiation and integration of power series can be performed term by term and is hence particularly easy .",
+        "chunk_index": 18692,
+        "full_question_rank": 15,
+        "full_question_coverage": 0.160155949817,
+        "lexical_score": 27.07955475533358,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "It is only defined on functions : <formula> Because the output of D is a function , the output of D can be evaluated at a point . For instance , when D is applied to the squaring function , x \u21a6 x2 , D outputs the doubling function x \u21a6 2x , which we named f ( x ) . This output function can then be evaluated to get f ( 1 ) = 2 , f ( 2 ) = 4 , and so on . = = = Higher derivatives = = = Let f be a differentiable function , and let f \u2032 ( x ) be its derivative . The derivative of f \u2032 ( x ) ( if it has one ) is written f \u2032 \u2032 ( x ) and is called the second derivative of f . Similarly , the derivative of a second derivative , if it exists , is written f \u2032 \u2032 \u2032 ( x ) and is called the third derivative of f . Continuing this process , one can define , if it exists , the nth derivative as the derivative of the ( n - 1 ) th derivative .",
+        "chunk_index": 51419,
+        "full_question_rank": 13,
+        "full_question_coverage": 0.148922048512,
+        "lexical_score": 27.871194616975764,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "If h is negative , then a + h is on the low part of the step , so the secant line from a to a + h is very steep , and as h tends to zero the slope tends to infinity . If h is positive , then a + h is on the high part of the step , so the secant line from a to a + h has slope zero . Consequently , the secant lines do not approach any single slope , so the limit of the difference quotient does not exist . However , even if a function is continuous at a point , it may not be differentiable there . For example , the absolute value function y = | x | is continuous at x = 0 , but it is not differentiable there . If h is positive , then the slope of the secant line from 0 to h is one , whereas if h is negative , then the slope of the secant line from 0 to h is negative one . This can be seen graphically as a \" kink \" or a \" cusp \" in the graph at x = 0 .",
+        "chunk_index": 51415,
+        "full_question_rank": 19,
+        "full_question_coverage": 0.178335778699,
+        "lexical_score": 26.107887756775042,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "\u00c2s\u00e2r - \u0131 Tevfik was a 4 , 600 - metric - ton ( 4 , 500 - long - ton ; 5 , 100 - short - ton ) barbette ship armed with a main battery of eight 220 - millimeter ( 8 . 7 in ) guns in a central battery . In 1903 \u2013 1906 , the ship was extensively rebuilt in Germany and a new battery of 150 mm ( 5 . 9 in ) and 120 mm ( 4 . 7 in ) quick - firing guns replaced the older weapons . \u00c2s\u00e2r - \u0131 Tevfik served in the Ottoman fleet for more than four decades . During this period , she saw action in two major wars , the Russo - Turkish War of 1877 \u2013 88 and the First Balkan War in 1913 . During the first conflict , she was torpedoed by a Russian torpedo boat but was only slightly damaged . She took part in the abortive Battle of Elli against the Greek Navy in December 1912 during the First Balkan War .",
+        "chunk_index": 20661,
+        "full_question_rank": 17,
+        "full_question_coverage": 0.143662848406,
+        "lexical_score": 26.933651796973912,
+        "origin": "full_question"
+      },
+      {
+        "chunk": "If found , these features can be compared with known features in the spectrum of various chemical compounds found in experiments where that compound is located on Earth . A very common atomic element in space is hydrogen . The spectrum of originally featureless light shone through hydrogen will show a signature spectrum specific to hydrogen that has features at regular intervals . If restricted to absorption lines it would look similar to the illustration ( top right ) . If the same pattern of intervals is seen in an observed spectrum from a distant source but occurring at shifted wavelengths , it can be identified as hydrogen too . If the same spectral line is identified in both spectra \u2014 but at different wavelengths \u2014 then the redshift can be calculated using the table below . Determining the redshift of an object in this way requires a frequency- or wavelength - range .",
+        "chunk_index": 16676,
+        "full_question_rank": 20,
+        "full_question_coverage": 0.148922048512,
+        "lexical_score": 25.987789850563473,
+        "origin": "full_question"
+      }
+    ],
+    "context": "- Work in well-ventilated areas - hydrogen gas may be present during charging.\nObedience classes are also recommended to potential owners , as Jack Russells can be stubborn at times and aggressive towards other animals and humans if not properly socialized .\n- Never short battery terminals - can cause sparks, heat, or explosion.\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\nCHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative)."
+  },
+  "sources": [
+    {
+      "rank": 1,
+      "id": 73470,
+      "preview": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal ",
+      "evidence": "Battery Monitoring Unit Operation Manual\n========================================\n\n1. SAFETY PRECAUTIONS\n---------------------\n- Always observe polarity when connecting or disconnecting battery terminals.\n- Remove watches, rings, and metal jewelry before working on battery systems.\n- Use insulated tools rated for electrical work.\n- Work in well-ventilated areas - hydrogen gas may be present during charging.\n- Never short battery terminals - can cause sparks, heat, or explosion.\n- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.\n- Verify charging system is disconnected before performing maintenance.\n\n2. NORMAL OPERATION\n--------------------\n- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)\n- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)\n- Discharge cutoff: 10.5V (12V) or 21.0V (24V)\n- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)\n- Operating temperature range: -20\u00b0C to 50\u00b0C (performance degrades above 30\u00b0C)\n- State-of-health (SOH) threshold for replacement: <80% of rated capacity\n\n3. STARTUP SEQUENCE\n--------------------\na. Visually inspect battery for damage, cracks, or leakage.\nb. Verify battery is correctly polarized (positive/+ and negative/-).\nc. Confirm terminal connections are tight and free of corrosion.\nd. Check electrolyte levels (flooded types only) - add distilled water if low.\ne. Connect charger or load as appropriate.\nf. Monitor voltage and current during initial charge/discharge.\ng. Verify all monitoring readings are within normal range.\n\n4. INSPECTION PHASE\n--------------------\n- Check battery case for cracks, swelling, or distortion.\n- Inspect terminal connections for corrosion, looseness, or heat damage.\n- Clean terminals with baking soda solution if corrosion present.\n- Measure open-circuit voltage of each cell/unit.\n- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.\n- Inspect cables and connections for wear, overheating, or damage.\n- Verify battery monitoring system readings match measured values.\n- Check for abnormal heat during or after charge/discharge cycle.\n- Inspect vent caps for proper function (flooded types only).\n\n5. TROUBLESHOOTING\n------------------\n\nPROBLEM: Low voltage reading\n- Cause: Battery discharged - recharge fully and re-test.\n- Cause: Poor terminal connection - clean and tighten terminals.\n- Cause: Cell failure - individual cell voltage lower than others.\n- Cause: Battery beyond service life - replace battery.\n- Cause: Parasitic load drawing power - identify and disconnect.\n\nPROBLEM: Will not hold charge\n- Cause: Battery sulfation - attempt equalization charge (flooded types only).\n- Cause: Internal short cell - replace battery.\n- Cause: Charger not functioning - verify charger output, replace if needed.\n- Cause: Continuous parasitic load - identify and disconnect.\n\nPROBLEM: Overheating during charge\n- Cause: Charger voltage too high - adjust charger settings.\n- Cause: Battery cell short - replace battery.\n- Cause: Poor ventilation - improve airflow around battery.\n- Cause: High ambient temperature - reduce charge current, improve cooling.\n\nPROBLEM: High self-discharge\n- Cause: Battery self-discharge beyond specification - may need replacement.\n- Cause: Parasitic load from connected system - identify and disconnect.\n- Cause: Internal cell degradation - replace battery.\n\nPROBLEM: Monitoring system shows incorrect readings\n- Cause: Sensor calibration drift - recalibrate monitoring system.\n- Cause: Wiring fault - inspect connections, repair or replace wires.\n- Cause: Monitoring unit firmware outdated - update firmware.\n\n6. CHARGING PROCEDURE\n-----------------------\n- Connect charger to battery terminals (positive to positive, negative to negative).\n- Set charger to appropriate voltage and current for battery type and size.\n- Begin charging - monitor voltage and current.\n- Charge until voltage reaches absorption level and current drops to trickle level.\n- For flooded batteries: Equalize after full charge (controlled overcharge).\n- Disconnect charger: negative first, then positive.\n- Record voltage and charging time in maintenance log.\n\n7. DISCHARGING PROCEDURE\n-------------------------\n- Connect load to battery terminals (respect polarity).\n- Monitor voltage during discharge.\n- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).\n- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.\n- Disconnect load: negative first, then positive.\n\n8. MAINTENANCE SCHEDULE\n------------------------\n- Daily: Check voltage readings, inspect for visible issues.\n- Every 50 cycles: Equalize charge (flooded types only).\n- Every 100 cycles: Clean terminals, check connection tightness.\n- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.\n- Every 500 cycles: Full capacity test, verify SOH.\n- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.\n\n9. EMERGENCY PROCEDURES\n------------------------\n- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.\n- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.\n- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.\n- Battery explosion hazard: Evacuate area, ventilate, do not restart.\n\n10. TECHNICAL SPECIFICATIONS\n----------------------------\n- Model: BMU-100 Battery Monitoring Unit\n- System voltage: 12V or 24V configurable\n- Capacity range: 50-1000 Ah\n- Voltage measurement accuracy: \u00b10.1V\n- Current measurement accuracy: \u00b12% of reading\n- Temperature measurement: \u00b12\u00b0C\n- Sampling rate: 1 reading per second\n- Communication: Modbus RTU over RS-485, optional Bluetooth\n- Display: 2-line LCD with real-time voltage, current, temperature, SOH\n- Operating temperature: -20\u00b0C to 50\u00b0C (derating above 30\u00b0C)\n- Protection class: IP65\n- Connection: M8 circular connectors, screw terminals\n- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits\n- Certification: UL 1998, IEC 62933-1",
+      "score": 88.514,
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 2,
+      "id": 73473,
+      "preview": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safet",
+      "evidence": "Fictional Machine Safety Procedures\n=====================================\n\n1. GENERAL SAFETY PRINCIPLES\n-----------------------------\n- Lockout-tagout (LOTO) must be performed before any maintenance activity.\n- Never bypass or disable safety interlocks or emergency stop controls.\n- All personnel must be trained on hazards before operating equipment.\n- Safety procedures apply to all equipment types regardless of size or capacity.\n- Emergency procedures must be posted at each workstation.\n\n2. LOCKOUT-TAGOUT (LOTO) PROCEDURE\n-------------------------------------\nSTEP 1: PREPARATION\n- Identify all energy sources (electrical, pneumatic, hydraulic, mechanical, thermal).\n- Verify the authorized personnel and required equipment for the LOTO.\n- Review the equipment-specific LOTO procedure before beginning.\n\nSTEP 2: SHUTDOWN\n- Stop the equipment using the normal shutdown procedure.\n- Allow moving parts to come to complete stop.\n- Disconnect process material from equipment.\n\nSTEP 3: ISOLATION\n- Identify all energy isolation points (disconnect switches, valves, breakers).\n- Operate all isolation devices to isolate equipment from energy sources.\n- Verify isolation by attempting normal startup (equipment should not start).\n\nSTEP 4: APPLICATION OF LOCKOUT DEVICES\n- Apply personal lockout device to each isolated energy point.\n- Each technician applies their own lock with personal key/code.\n- Verify each lock is properly seated and secured.\n\nSTEP 5: APPLICATION OF TAGS\n- Apply personal tag with technician name, date, and reason.\n- Tags must be visible and legible.\n- Never remove another person's lock or tag without authorization.\n\nSTEP 6: RELEASE OF STORED ENERGY\n- Release residual mechanical energy (springs, counterweights, gravity).\n- Drain hydraulic/pneumatic systems to zero pressure.\n- Allow capacitors to discharge (verify with meter).\n- Open bleed valves to relieve pneumatic/hydraulic pressure.\n\nSTEP 7: VERIFICATION\n- Attempt normal equipment startup to verify isolation.\n- Verify all energy sources are zero or isolated.\n- Confirm no one is near the equipment before proceeding.\n\n3. EMERGENCY STOP (E-STOP) PROCEDURE\n---------------------------------------\n- Press E-STOP button immediately when hazard detected.\n- E-STOP must cut power to all moving functions immediately.\n- After E-STOP activation, confirm motion has ceased before approaching.\n- E-STOP reset must only be performed after hazard is resolved.\n- Only the person who activated E-STOP (or authorized rescue personnel) should reset.\n\n4. MACHINE-SPECIFIC SAFETY PROCEDURES\n---------------------------------------\nPROCEDURE A: PUMP MAINTENANCE\n- Perform LOTO on pump motor electrical supply.\n- Verify zero voltage at disconnect before removing panels.\n- Drain any fluid from pump housing before opening.\n- Support any suspended components before removal.\n\nPROCEDURE B: CONVEYOR MAINTENANCE\n- Perform LOTO on conveyor drive electrical supply.\n- Verify zero voltage at disconnect before entering conveyor zone.\n- Secure conveyor belt to prevent accidental movement.\n- Lock out all drive motors and associated control circuits.\n\nPROCEDURE C: HVAC UNIT MAINTENANCE\n- Perform LOTO on electrical supply and gas line (if gas-fired).\n- Recover refrigerant per EPA regulations before opening circuit.\n- Verify zero electrical potential and zero gas pressure.\n- Support access panels before removal.\n\nPROCEDURE D: BATTERY SYSTEM MAINTENANCE\n- Perform LOTO on charger and load circuits.\n- Verify zero voltage at battery terminals.\n- Remove conductive jewelry, use insulated tools.\n- Ensure adequate ventilation before beginning work.\n\n5. CONFINED SPACE ENTRY\n-------------------------\n- Test atmosphere for oxygen deficiency and toxic gases.\n- Verify forced ventilation is operating.\n- Attend observer must be stationed outside confined space.\n- Retrieval equipment must be available and functional.\n- Permit system must be completed before entry.\n\n6. HOT WORK PERMIT\n--------------------\n- Fire watch must be posted during and 30 minutes after hot work.\n- Fire extinguishing equipment must be immediately available.\n- Combustible materials must be removed from work area or protected.\n- Hot work permit must be completed and authorized before beginning.\n\n7. CHEMICAL HANDLING\n--------------------\n- Review Safety Data Sheet (SDS) before handling any chemical.\n- Use appropriate PPE per SDS recommendations.\n- Store chemicals in designated areas, properly labeled.\n- In case of spill, follow spill containment procedure.\n- Dispose of chemical waste per regulatory requirements.\n\n8. PERSONAL PROTECTIVE EQUIPMENT (PPE)\n----------------------------------------\n- Safety glasses with side shields must be worn at all times in work areas.\n- Steel-toed boots required where heavy objects may fall.\n- Hearing protection where noise levels exceed 85 dB(A).\n- Gloves appropriate for hazard (chemical, thermal, electrical).\n- Hard hats where overhead hazards exist.\n- Respiratory protection where airborne contaminants exceed PEL.\n\n9. INCIDENT REPORTING\n----------------------\n- All incidents, near-misses, and safety violations must be reported within 24 hours.\n- Supervisor must investigate all incidents within 48 hours.\n- Root cause analysis required for any recordable incident.\n- Corrective actions must be implemented and verified.\n- Incident reports must be retained for minimum 3 years.\n\n10. SAFETY TRAINING REQUIREMENTS\n----------------------------------\n- Initial safety training before first assignment.\n- Annual refresher training on all safety procedures.\n- Task-specific training before performing new procedures.\n- Emergency drill participation quarterly.\n- LOTO certification renewed annually.\n- Emergency response training semi-annually.",
+      "score": 40.839,
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "page_number": null,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "revision": null
+    },
+    {
+      "rank": 3,
+      "id": 25667,
+      "preview": "Intubation , one method to secure the airway , may be used to bypass a disruption in the airway in order to send air to the lungs . If necessary , a tube can be placed into the uninjured bronchus , and a single lung can be ventilated . If t",
+      "evidence": "Intubation , one method to secure the airway , may be used to bypass a disruption in the airway in order to send air to the lungs . If necessary , a tube can be placed into the uninjured bronchus , and a single lung can be ventilated . If there is a penetrating injury to the neck through which air is escaping , the trachea may be intubated through the wound . Multiple unsuccessful attempts at conventional ( direct ) laryngoscopy may threaten the airway , so alternative techniques to visualize the airway , such as fiberoptic or video laryngoscopy , may be employed to facilitate tracheal intubation . If the upper trachea is injured , an incision can be made in the trachea ( tracheotomy ) or the cricothyroid membrane ( cricothyrotomy , or cricothyroidotomy ) in order to ensure an open airway .",
+      "score": 32.634
+    },
+    {
+      "rank": 4,
+      "id": 52673,
+      "preview": "Obedience classes are also recommended to potential owners , as Jack Russells can be stubborn at times and aggressive towards other animals and humans if not properly socialized . Despite their small size , these dogs are not recommended fo",
+      "evidence": "Obedience classes are also recommended to potential owners , as Jack Russells can be stubborn at times and aggressive towards other animals and humans if not properly socialized . Despite their small size , these dogs are not recommended for the condominium or apartment dweller unless the owner is ready to take on the daunting task of providing the dog with the necessary amount of exercise and stimulation . They have a tremendous amount of energy for their size , a fact which can sometimes lead to trouble involving larger animals . They may seem never to tire and will still be energetic after their owner has called it a day . While socialised members of the breed are friendly towards children , they will not tolerate abuse even if it is unintentional . = = Health = = The breed has a reputation for being healthy with a long lifespan .",
+      "score": 33.076
+    },
+    {
+      "rank": 5,
+      "id": 52736,
+      "preview": "Sinclair 's tests showed that it could cope under power with a maximum slope of 1 in 12 ( 8 % ) and could manage a 1 in 7 ( 14 % ) slope using the pedals . As the speed of the motor reduces , the current flow through its windings increases ",
+      "evidence": "Sinclair 's tests showed that it could cope under power with a maximum slope of 1 in 12 ( 8 % ) and could manage a 1 in 7 ( 14 % ) slope using the pedals . As the speed of the motor reduces , the current flow through its windings increases , drawing up to 140 amps at stall speed . This would very quickly burn the motor out if sustained , so the motor 's load is constantly monitored by the C5 's electronics . If it stalls under full load the electronics disable the motor after 4 seconds , while if it is under heavy load ( around 80 or 90 amps ) it trips after two or three minutes . A heat - sensitive resistor inside the motor warns the driver if the vehicle is beginning to overheat and disconnects the motor after a short time , and a third line of defence is provided by a metallic strip mounted on the motor .",
+      "score": 28.226
+    }
+  ],
+  "provenance": [
+    {
+      "document_id": "battery_monitor_manual",
+      "document_name": "dev_battery_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    },
+    {
+      "document_id": "machine_safety_procedures",
+      "document_name": "dev_machine_",
+      "chunk_index": 0,
+      "source_type": "dev_upload",
+      "extension": ".txt",
+      "upload_timestamp": "2026-01-01T00:00:00.000Z",
+      "page_number": null,
+      "revision": null
+    }
+  ],
+  "traceable": false,
+  "conflict": false,
+  "error": null
+}

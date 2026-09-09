@@ -1,0 +1,126 @@
+Battery Monitoring Unit Operation Manual
+========================================
+
+1. SAFETY PRECAUTIONS
+---------------------
+- Always observe polarity when connecting or disconnecting battery terminals.
+- Remove watches, rings, and metal jewelry before working on battery systems.
+- Use insulated tools rated for electrical work.
+- Work in well-ventilated areas - hydrogen gas may be present during charging.
+- Never short battery terminals - can cause sparks, heat, or explosion.
+- Wear acid-resistant gloves and eye protection when handling lead-acid batteries.
+- Verify charging system is disconnected before performing maintenance.
+
+2. NORMAL OPERATION
+--------------------
+- Battery voltage (fully charged): 12.6-12.8V (12V system) or 25.2-25.6V (24V system)
+- Charge voltage: 14.4-14.8V (12V system) or 28.8-29.6V (24V system)
+- Discharge cutoff: 10.5V (12V) or 21.0V (24V)
+- Charge current: Limited by charger specification (typically 10-20% of Ah capacity)
+- Operating temperature range: -20°C to 50°C (performance degrades above 30°C)
+- State-of-health (SOH) threshold for replacement: <80% of rated capacity
+
+3. STARTUP SEQUENCE
+--------------------
+a. Visually inspect battery for damage, cracks, or leakage.
+b. Verify battery is correctly polarized (positive/+ and negative/-).
+c. Confirm terminal connections are tight and free of corrosion.
+d. Check electrolyte levels (flooded types only) - add distilled water if low.
+e. Connect charger or load as appropriate.
+f. Monitor voltage and current during initial charge/discharge.
+g. Verify all monitoring readings are within normal range.
+
+4. INSPECTION PHASE
+--------------------
+- Check battery case for cracks, swelling, or distortion.
+- Inspect terminal connections for corrosion, looseness, or heat damage.
+- Clean terminals with baking soda solution if corrosion present.
+- Measure open-circuit voltage of each cell/unit.
+- Measure specific gravity of electrolyte (flooded types only) - cells should be within 0.020 of each other.
+- Inspect cables and connections for wear, overheating, or damage.
+- Verify battery monitoring system readings match measured values.
+- Check for abnormal heat during or after charge/discharge cycle.
+- Inspect vent caps for proper function (flooded types only).
+
+5. TROUBLESHOOTING
+------------------
+
+PROBLEM: Low voltage reading
+- Cause: Battery discharged - recharge fully and re-test.
+- Cause: Poor terminal connection - clean and tighten terminals.
+- Cause: Cell failure - individual cell voltage lower than others.
+- Cause: Battery beyond service life - replace battery.
+- Cause: Parasitic load drawing power - identify and disconnect.
+
+PROBLEM: Will not hold charge
+- Cause: Battery sulfation - attempt equalization charge (flooded types only).
+- Cause: Internal short cell - replace battery.
+- Cause: Charger not functioning - verify charger output, replace if needed.
+- Cause: Continuous parasitic load - identify and disconnect.
+
+PROBLEM: Overheating during charge
+- Cause: Charger voltage too high - adjust charger settings.
+- Cause: Battery cell short - replace battery.
+- Cause: Poor ventilation - improve airflow around battery.
+- Cause: High ambient temperature - reduce charge current, improve cooling.
+
+PROBLEM: High self-discharge
+- Cause: Battery self-discharge beyond specification - may need replacement.
+- Cause: Parasitic load from connected system - identify and disconnect.
+- Cause: Internal cell degradation - replace battery.
+
+PROBLEM: Monitoring system shows incorrect readings
+- Cause: Sensor calibration drift - recalibrate monitoring system.
+- Cause: Wiring fault - inspect connections, repair or replace wires.
+- Cause: Monitoring unit firmware outdated - update firmware.
+
+6. CHARGING PROCEDURE
+-----------------------
+- Connect charger to battery terminals (positive to positive, negative to negative).
+- Set charger to appropriate voltage and current for battery type and size.
+- Begin charging - monitor voltage and current.
+- Charge until voltage reaches absorption level and current drops to trickle level.
+- For flooded batteries: Equalize after full charge (controlled overcharge).
+- Disconnect charger: negative first, then positive.
+- Record voltage and charging time in maintenance log.
+
+7. DISCHARGING PROCEDURE
+-------------------------
+- Connect load to battery terminals (respect polarity).
+- Monitor voltage during discharge.
+- Stop discharge when voltage reaches cutoff threshold (10.5V/21.0V).
+- For deep-cycle applications: Do not discharge below 50% State of Charge for longest life.
+- Disconnect load: negative first, then positive.
+
+8. MAINTENANCE SCHEDULE
+------------------------
+- Daily: Check voltage readings, inspect for visible issues.
+- Every 50 cycles: Equalize charge (flooded types only).
+- Every 100 cycles: Clean terminals, check connection tightness.
+- Every 200 cycles: Measure specific gravity (flooded types), check cell voltage balance.
+- Every 500 cycles: Full capacity test, verify SOH.
+- Annual: Comprehensive inspection, cleaning, testing per manufacturer spec.
+
+9. EMERGENCY PROCEDURES
+------------------------
+- Acid spill: Neutralize with baking soda solution, flush with water, dispose per hazardous waste regulations.
+- Battery fire: Use Class D fire extinguisher or abundant water - do not use CO2 or dry chemical.
+- Severe acid exposure: Flush with water for 15 minutes, seek medical attention.
+- Battery explosion hazard: Evacuate area, ventilate, do not restart.
+
+10. TECHNICAL SPECIFICATIONS
+----------------------------
+- Model: BMU-100 Battery Monitoring Unit
+- System voltage: 12V or 24V configurable
+- Capacity range: 50-1000 Ah
+- Voltage measurement accuracy: ±0.1V
+- Current measurement accuracy: ±2% of reading
+- Temperature measurement: ±2°C
+- Sampling rate: 1 reading per second
+- Communication: Modbus RTU over RS-485, optional Bluetooth
+- Display: 2-line LCD with real-time voltage, current, temperature, SOH
+- Operating temperature: -20°C to 50°C (derating above 30°C)
+- Protection class: IP65
+- Connection: M8 circular connectors, screw terminals
+- Alarm thresholds: Programmable, defaults at 20% SOH, voltage limits
+- Certification: UL 1998, IEC 62933-1

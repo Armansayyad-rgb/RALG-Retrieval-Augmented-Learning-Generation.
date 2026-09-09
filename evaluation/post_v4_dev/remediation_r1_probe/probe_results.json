@@ -1,0 +1,137 @@
+{
+  "probe_info": {
+    "task": "POST-V4 REMEDIATION #1",
+    "defect": "Production can retrieve the correct source document but select a sentence that does not answer the predicate of the question and still gate-accept it. Confirmed example: Question 'What is the normal operating pressure range for the PC-350 Industrial Pump Controller?' Production answer '-Model: PC-350 Industrial Pump Controller' supported=True gate_passed=True gate_reasons=[].",
+    "baseline_commit": "746ebe697ce032629666ed517eaff763cf59a6ea",
+    "fix_applied": "Added predicate relevance check in extract_factual_answer (src/rag_chat_v2.py:1541-1548) - after generic operational block selects eligible candidate, checks that answer contains at least one predicate-related term from the question using _extract_question_predicate_terms and _contains_term. Prevents model-name-only answers from being accepted as supported.",
+    "fix_description": "Smallest general production fix: added predicate alignment check in extract_factual_answer's generic operational block. When the question pattern matches _extract_question_predicate_terms, the selected answer must contain at least one predicate term from the question. If none match, return (None, False) to enforce abstention over irrelevant support."
+  },
+  "probe_cases": [
+    {
+      "case_id": "post_v4_dev_001",
+      "question": "What is the normal operating pressure range for the PC-350 Industrial Pump Controller?",
+      "expected_behavior": "supported",
+      "baseline": {
+        "supported": True,
+        "answer": "- Model: PC-350 Industrial Pump Controller",
+        "answer_type": "factual",
+        "gate_passed": True,
+        "gate_reasons": []
+      },
+      "after_fix": {
+        "supported": False,
+        "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+        "answer_type": "system",
+        "gate_passed": None,
+        "gate_reasons": []
+      },
+      "change": "support_status_flipped",
+      "detail": "Model-name-only answer correctly rejected. The predicate terms 'normal', 'operating', 'pressure', 'range' from _extract_question_predicate_terms are not present in the model-name answer '- Model: PC-350 Industrial Pump Controller'. This was the confirmed defect case."
+    },
+    {
+      "case_id": "post_v4_dev_002",
+      "question": "What is the flow rate for the PC-350 pump with the 3-inch impeller?",
+      "expected_behavior": "supported",
+      "baseline": {
+        "supported": True,
+        "answer": "- Flow rate: 0-100 GPM depending on impeller size...",
+        "answer_type": "factual",
+        "gate_passed": True,
+        "gate_reasons": []
+      },
+      "after_fix": {
+        "supported": True,
+        "answer": "- Flow rate: 0-100 GPM depending on impeller size...",
+        "answer_type": "factual",
+        "gate_passed": None,
+        "gate_reasons": []
+      },
+      "change": "no_change",
+      "detail": "Legitimate factual answer still passes. The answer contains flow-related terms that satisfy the predicate check."
+    },
+    {
+      "case_id": "post_v4_dev_005",
+      "question": "What is the operating temperature range for the PC-350 Industrial Pump Controller?",
+      "expected_behavior": "supported",
+      "baseline": {
+        "supported": True,
+        "answer": "- Model: PC-350 Industrial Pump Controller",
+        "answer_type": "factual",
+        "gate_passed": True,
+        "gate_reasons": []
+      },
+      "after_fix": {
+        "supported": False,
+        "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+        "answer_type": "system",
+        "gate_passed": None,
+        "gate_reasons": []
+      },
+      "change": "support_status_flipped",
+      "detail": "Second model-name-only case correctly rejected. Same pattern as post_v4_dev_001 - the operating temperature predicate terms are not in the model-name answer."
+    },
+    {
+      "case_id": "post_v4_dev_042",
+      "question": "What is the conjugate of the PC-350 pump impeller design?",
+      "expected_behavior": "unsupported",
+      "baseline": {
+        "supported": True,
+        "answer": "- Model: PC-350 Industrial Pump Controller",
+        "answer_type": "factual",
+        "gate_passed": True,
+        "gate_reasons": []
+      },
+      "after_fix": {
+        "supported": False,
+        "answer": "I couldn't find enough reliable evidence in the current knowledge base.",
+        "answer_type": "system",
+        "gate_passed": None,
+        "gate_reasons": []
+      },
+      "change": "improvement",
+      "detail": "False support case correctly rejected. Baseline had supported=True with expected_behavior=unsupported (false support). Fix correctly identifies that the impeller design conjugate predicate is not satisfied by the model-name-only answer."
+    },
+    {
+      "case_id": "post_v4_dev_048",
+      "question": "What oil check steps are needed for battery monitoring system maintenance?",
+      "expected_behavior": "unsupported",
+      "baseline": {
+        "supported": True,
+        "answer": "- Verify battery monitoring system readings match measured values...",
+        "answer_type": "factual",
+        "gate_passed": True,
+        "gate_reasons": []
+      },
+      "after_fix": {
+        "supported": True,
+        "answer": "- Verify battery monitoring system readings match measured values...",
+        "answer_type": "factual",
+        "gate_passed": None,
+        "gate_reasons": []
+      },
+      "change": "no_change",
+      "detail": "Question structure does not match _extract_question_predicate_terms pattern (different from 'what is X for Y' form). Predicate check not applied. The answer is a genuine battery monitoring statement but expected_behavior=unsupported indicates a separate issue outside this fix scope."
+    },
+    {
+      "case_id": "post_v4_dev_053",
+      "question": "What oil check steps are needed for battery monitoring system maintenance?",
+      "expected_behavior": "unsupported",
+      "baseline": {
+        "supported": True,
+        "answer": "- Verify battery monitoring system readings match measured values...",
+        "answer_type": "factual",
+        "gate_passed": True,
+        "gate_reasons": []
+      },
+      "after_fix": {
+        "supported": True,
+        "answer": "- Verify battery monitoring system readings match measured values...",
+        "answer_type": "factual",
+        "gate_passed": None,
+        "gate_reasons": []
+      },
+      "change": "no_change",
+      "detail": "Question structure does not match _extract_question_predicate_terms pattern (different from 'what is X for Y' form). Predicate check not applied. Same as post_v4_dev_048."
+    }
+  ]
+}
