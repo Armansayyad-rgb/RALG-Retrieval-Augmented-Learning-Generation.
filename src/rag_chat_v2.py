@@ -103,7 +103,6 @@ def has_multi_hop_followup(question):
     new model, dependency, or inference cost.
     """
     q = question.strip().lower()
-
     # Follow-up interrogatives / continuations that signal a SECOND
     # information need. Cheap substring match — no new model.
     followup_markers = (
@@ -654,6 +653,11 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
     if not q_terms:
         return True
 
+    # Pre-calculate restrictive terms used in multiple gates.
+    target_terms = material_q_terms if _has_material_premises(question) else q_terms
+    restrictive_terms = [t for t in target_terms if t not in _GENERIC_OVERLAP_TERMS]
+    matched_restrictive = sum(1 for t in restrictive_terms if _contains_term(a_lower, t))
+
     # Named entities in the question must not disappear from the
     # answer. This catches cross-concept mashups such as "Magna Carta
     # compressor maintenance" where the answer only discusses the
@@ -694,15 +698,30 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
             t for t in re.findall(r"[a-z0-9]{3,}", for_subject)
             if t not in _GENERIC_ANSWER_TERMS
         ]
-        if enforce_for_subject and for_terms and not all(
-            _contains_term(a_lower, t) for t in for_terms
-        ):
-            # In SOP-strict mode, always reject.  In lenient
-            # mode (procedural section answers), only reject
-            # when multiple entity terms are missing — a single
-            # entity term may not appear in procedural steps.
-            if _sop_strict or len(for_terms) >= 2:
-                return False
+        if enforce_for_subject and for_terms:
+            # If the answer looks like a list of procedures, enforce that the
+            # requested subject and predicate are in the same procedure block.
+            if "procedure" in a_lower and ":" in a_lower:
+                blocks = re.split(r"procedure\s+[a-z]:", a_lower)
+                # The first block is usually a header, skip it if it's short.
+                block_match = False
+                # Predicate terms are q_terms minus the subject terms.
+                predicate_terms = [t for t in q_terms if t not in for_terms]
+                for block in blocks:
+                    if not block.strip():
+                        continue
+                    # Block must contain all subject terms AND at least one restrictive predicate term.
+                    if all(_contains_term(block, t) for t in for_terms):
+                        if any(_contains_term(block, t) for t in predicate_terms if t not in _GENERIC_OVERLAP_TERMS):
+                            block_match = True
+                            break
+                if not block_match:
+                    return False
+            elif not all(
+                _contains_term(a_lower, t) for t in for_terms
+            ):
+                if _sop_strict or len(for_terms) >= 2:
+                    return False
 
     # --- Restatement gate ---
     # If the answer's first sentence is just restating the question
@@ -753,7 +772,7 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
                 ):
                     return True
 
-    # Fallback: at least one content term from the question must
+    # Fallback: at least one non-generic content term from the question must
     # appear in the answer.  Cross-domain mashups are already
     # caught by the "for X" subject gate above; this only needs
     # to reject answers with zero topical overlap.
@@ -761,18 +780,32 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
     # grounded by the SOP extraction, not by term overlap.
     # Use the broader term set for material premise questions.
     target_terms = material_q_terms if _has_material_premises(question) else q_terms
-    matched = sum(1 for t in target_terms if _contains_term(a_lower, t))
+    restrictive_terms = [t for t in target_terms if t not in _GENERIC_OVERLAP_TERMS]
+    matched_restrictive = sum(1 for t in restrictive_terms if _contains_term(a_lower, t))
 
     # Preserve leniency only for simple procedural questions without material premises.
     if not _sop_strict and not _has_material_premises(question):
-        return True
+        if len(restrictive_terms) < 2:
+            return True
 
     # For questions with material premises, require a higher match ratio (e.g. 60%)
     # to ensure the answer addresses the material claims, not just a fragment.
     if _has_material_premises(question):
+        matched = sum(1 for t in target_terms if _contains_term(a_lower, t))
         return matched >= (len(target_terms) * 0.7)
 
-    return matched >= 1
+    # If the answer is very short (e.g. just a value), the address gate is
+    # bypassed to avoid rejecting concise factual answers.
+    if len(a_lower.split()) <= 3 and not _has_material_premises(question):
+        return True
+
+    # If there are no restrictive terms, we fall back to simple term overlap.
+    if not restrictive_terms:
+        return sum(1 for t in target_terms if _contains_term(a_lower, t)) >= 1
+
+    # Fallback: at least one non-generic content term from the question must
+    # appear in the answer.
+    return matched_restrictive >= 1
 
 
 # ==================================================
@@ -939,8 +972,11 @@ TECHNICAL_CONCEPT_ALIASES = {
 # terms.  Each key maps to a set of equivalent phrases.  Phrase matching
 # uses word-boundary-aware containment via _contains_term for each word.
 TECHNICAL_PHRASE_ALIASES = {
-    "pressure range": frozenset({"pressure band"}),
-    "pressure band": frozenset({"pressure range"}),
+    "pressure range": frozenset({"pressure band", "pressure limits", "pressure span", "pressure window"}),
+    "pressure band": frozenset({"pressure range", "pressure limits", "pressure span", "pressure window"}),
+    "pressure limits": frozenset({"pressure range", "pressure band", "pressure span", "pressure window"}),
+    "pressure span": frozenset({"pressure range", "pressure band", "pressure limits", "pressure window"}),
+    "pressure window": frozenset({"pressure range", "pressure band", "pressure limits", "pressure span"}),
     "oil type": frozenset({"lubrication oil", "lubricant type"}),
     "lubrication oil": frozenset({"oil type", "lubricant type"}),
     "lubricant type": frozenset({"oil type", "lubrication oil"}),
@@ -974,10 +1010,11 @@ def _extract_predicate(question):
 
 def _extract_question_predicate_terms(question):
     """Return meaningful attribute terms from a factual question."""
+    q = question.lower()
     match = re.match(
         r"^\s*(?:what|which)\s+(?:is|was|are|were)\s+(?:the\s+)?"
         r"(.+?)\s+(?:for|of|in|on|at)\s+.+?[?.]?\s*$",
-        question,
+        q,
         flags=re.IGNORECASE,
     )
     if not match:
@@ -1424,6 +1461,7 @@ _GENERIC_OVERLAP_TERMS = frozenset({
     # Contextual/temporal terms that describe WHEN a problem occurs,
     # not a causal condition (used for condition-clause filtering)
     'operation', 'running', 'startup', 'service', 'use',
+    'monitoring',
 })
 
 
@@ -1637,11 +1675,37 @@ def _extract_multi_part_factual_answer(question, context):
     if len(subquestions) < 2:
         return None, False
 
+    # To prevent false support from "unrelated domains" in the same chunk,
+    # each sub-answer must be independently grounded to the requested subject.
+    subject = _multi_part_subject_label(subquestions)
+
     subanswers = []
     for subquestion in subquestions:
+        # 1. Extract sub-answer.
+        # Each sub-question must be independently supported by the support gate.
         answer = _extract_multi_part_subanswer(subquestion, context)
         if not answer:
             return None, False
+
+        # 2. Explicit Subject Grounding Check:
+        # Ensure the subject is anchored to this specific sub-answer.
+        if subject:
+            # Since _extract_multi_part_subanswer uses extract_factual_answer,
+            # it already performs some grounding. However, we must ensure that
+            # the subject is anchored to this specific sub-answer.
+            if not _anchor_entity_present(answer, subject, subquestion):
+                # The answer is likely a value (e.g. "12V") rather than a sentence.
+                # We must find a sentence in the context that contains both
+                # the answer and the subject to prove the relationship.
+                found_binding = False
+                for s in _split_sentences(context):
+                    if answer.casefold() in s.casefold():
+                        if _anchor_entity_present(s, subject, subquestion):
+                            found_binding = True
+                            break
+                if not found_binding:
+                    return None, False
+
         subanswers.append(answer.rstrip(". "))
 
     unique_answers = []
@@ -1656,7 +1720,6 @@ def _extract_multi_part_factual_answer(question, context):
         return None, False
 
     composed = "; ".join(unique_answers) + "."
-    subject = _multi_part_subject_label(subquestions)
     if subject and not _answer_addresses_question(question, composed):
         composed = f"For {subject}, {composed}"
     if not cheap_grounding_check(composed, context):
@@ -2012,7 +2075,6 @@ def _is_causal_query(question):
         "If X, can Y?" (conditional/Category H)
     """
     q = question.strip().lower()
-
     # Must start with "why"
     if not re.match(r"^(?:why|explain why)\b", q):
         return False
@@ -2555,7 +2617,6 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
             return causal_answer, True
 
     q = question.strip().lower()
-
     if _has_false_required_safety_action(question):
         return None, False
 
@@ -2675,7 +2736,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                 return match.group(0), True
         return None, False
 
-    if q.startswith("who "):
+    elif q.startswith("who "):
         import re as _re
 
         # "Who" questions need the ANSWER person to be tied to the
@@ -2752,6 +2813,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
 
     if q.startswith("what is ") or q.startswith("what was "):
         import re as _re
+        print(f"DEBUG: Entering what-is block for {q}")
 
         # "What is/was X?" answers should reference X. Grabbing the first
         # sentence of the context produces false answers (a Snow White
@@ -2773,7 +2835,22 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                 "of", "and", "for", "with",
             }
         }
-        subject_anchor = subject.split()[-1] if subject.split() else ""
+        # Determine core entity anchor: prefer explicit identifiers.
+        _raw_idents = re.findall(
+            r"\b(?:[A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
+            question,
+            flags=re.IGNORECASE,
+        )
+        if _raw_idents:
+            subject_anchor = _raw_idents[-1].lower()
+        else:
+            # Fallback to last word, stripping common trailing modifiers.
+            words = subject.split()
+            _mod = {"operation", "condition", "state", "mode", "environment"}
+            while words and words[-1].lower() in _mod:
+                words.pop()
+            subject_anchor = words[-1] if words else ""
+        print(f"DEBUG: subject={subject}, words={subject_words}, anchor={subject_anchor}")
         sentences = _split_sentences(context)
         for s in sentences:
             if not subject_words:
@@ -2796,13 +2873,17 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                     question,
                 )
             ):
+                print(f"DEBUG: Found candidate sentence: {s}")
                 if not _predicate_answers_question(
                     question, s, s
                 ):
+                    print(f"DEBUG: FAILED predicate check for: {s}")
                     continue
                 if _named_fact_anchors_match(question, s) is False:
+                    print(f"DEBUG: FAILED anchor match for: {s}")
                     continue
                 return s, True
+        print(f"DEBUG: No sentence survived the what-is block.")
         # No sentence survived the compound-entity/subject anchor checks.
         # Fall through to the generic operational branch below, which can
         # still ground identifier-less attribute questions on windowed
@@ -2829,7 +2910,8 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
     # carrying at least one matched term. The two-tier anchor prevents
     # an unrelated sentence about a phone number or price from being
     # treated as support.
-    if q.startswith(("what ", "which ", "how ")):
+    elif q.startswith(("what ", "which ", "how ")):
+        print(f"DEBUG: Entering general block for {q}")
         sentences = _split_sentences(context)
         _PROCEDURAL_PREFIXES = frozenset({
             "pre", "post", "re", "de", "dis", "un", "non",
@@ -2901,6 +2983,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                     for term in terms
                     if _contains_term(evidence_window.lower(), term)
                 )
+                print(f"DEBUG: window_matched={window_matched}, matched_terms={matched_terms}")
                 if window_matched < 2 or matched_terms < 1:
                     continue
                 # Entity-anchored counting: a question term that occurs
@@ -2913,6 +2996,7 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                     if _contains_term(low, term)
                     and _anchor_entity_present(sentence, term, question)
                 )
+                print(f"DEBUG: valid_matches={valid_matches}")
                 if valid_matches < 1:
                     continue
                 # Compound-entity guard: for entity-asking question forms
@@ -2932,10 +3016,12 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True):
                     if not _anchor_entity_present(
                         sentence, entity_anchor, question
                     ):
+                        print(f"DEBUG: FAILED entity_anchor check for {entity_anchor}")
                         continue
                 if not _predicate_answers_question(
                     question, sentence, evidence_window
                 ):
+                    print(f"DEBUG: FAILED predicate check for: {sentence}")
                     continue
                 candidates.append((score, -index, sentence))
         eligible = [
