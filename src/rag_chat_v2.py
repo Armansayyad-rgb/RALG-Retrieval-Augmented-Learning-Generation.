@@ -2903,16 +2903,8 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True, _lenien
                 ):
                     print(f"DEBUG: FAILED predicate check for: {s}")
                     continue
-<<<<<<< HEAD
-                if _named_fact_anchors_match(question, s) is False:
-<<<<<<< HEAD
-                    print(f"DEBUG: FAILED anchor match for: {s}")
-=======
-=======
                 if not _lenient_anchor and _named_fact_anchors_match(question, s) is False:
                     print(f"DEBUG: FAILED anchor match for: {s}")
->>>>>>> b67d65a (fix: require complete grounding for multi-part factual answers)
->>>>>>> d497cc0 (fix: require complete grounding for multi-part factual answers)
                     continue
                 return s, True
         print(f"DEBUG: No sentence survived the what-is block.")
@@ -3047,16 +3039,8 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True, _lenien
                 ):
                     if not (_lenient_anchor or _anchor_entity_present(
                         sentence, entity_anchor, question
-<<<<<<< HEAD
-                    ):
-<<<<<<< HEAD
-                        print(f"DEBUG: FAILED entity_anchor check for {entity_anchor}")
-=======
-=======
                     )):
                         print(f"DEBUG: FAILED entity_anchor check for {entity_anchor}")
->>>>>>> b67d65a (fix: require complete grounding for multi-part factual answers)
->>>>>>> d497cc0 (fix: require complete grounding for multi-part factual answers)
                         continue
                 if not _predicate_answers_question(
                     question, sentence, evidence_window
