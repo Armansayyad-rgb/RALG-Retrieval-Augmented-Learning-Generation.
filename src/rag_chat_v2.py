@@ -1028,7 +1028,7 @@ def _extract_question_predicate_terms(question):
         # from evidence prose, so requiring them to match would block
         # valid predicate alignment.
         "allowable", "rated", "nominal", "typical", "standard",
-        "required", "recommended", "specified", "normal",
+        "required", "recommended", "specified", "normal", "type",
     }
     return [
         token
