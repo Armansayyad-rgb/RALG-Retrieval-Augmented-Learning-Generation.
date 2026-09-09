@@ -151,6 +151,7 @@ def detect_intent(question):
     q = normalize(
         question
     ).lower()
+    q = re.sub(r"^paraphrased:\s*", "", q)
 
     # ==========================================
     # Comparison
