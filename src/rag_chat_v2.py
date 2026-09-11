@@ -3234,6 +3234,39 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True, _lenien
                     continue
                 return loc, True
 
+    # Handle "what year..." questions - extract year from sentence
+    if q.startswith("what year "):
+        import re as _re
+        # Subject is everything after "what year was/is "
+        subject = _re.sub(
+            r"^what year\s+(was|is|were|are)\s+",
+            "",
+            q,
+        ).rstrip("?. ")
+        # Strip leading "the" for answer formatting
+        subject_display = _re.sub(r"^the\s+", "", subject)
+        sentences = _split_sentences(context)
+        for s in sentences:
+            match = _re.search(
+                r"\b(1\d{3}|2\d{3})\b",
+                s,
+            )
+            if not match:
+                continue
+            low = s.lower()
+            # Check if subject words appear in sentence
+            subject_words = [
+                w for w in subject.split()
+                if len(w) > 2 and w not in {"the", "a", "an", "of", "in", "on", "for", "to", "and"}
+            ]
+            if subject_words and not all(_contains_term(low, w) for w in subject_words):
+                continue
+            # For "what year" questions, subject word matching is sufficient;
+            # the year itself is the answer predicate
+            year = match.group(0)
+            return f"The {subject_display} was in {year}.", True
+        return None, False
+
     # General operational and procedural facts often use forms such as
     # "What purge pressure...", "Which coolant...", "What must be done
     # before starting X?", or "How should Y be verified?" rather than
@@ -5536,21 +5569,6 @@ def _answer_question_impl(
         _safe_log_question(plan.get("subject") or ""),
     )
 
-    # ==================================================
-    # GREETING / NON-DOCUMENT INPUT HANDLING
-    # ==================================================
-    # Handle ordinary non-document conversational inputs early.
-    # These must never produce a traceback or pretend documentary evidence
-    # supports the response.
-    if _is_greeting_or_meta(question):
-        result = build_system_result(
-            result,
-            answer="Hi! Ask me something about your uploaded documents.",
-        )
-        if verbose:
-            print("\nSystem:", result["answer"])
-        return result
-
     # runtime_plan is the sole authoritative routing decision.
     route = plan.get("route", "model")
 
@@ -5616,6 +5634,21 @@ def _answer_question_impl(
         "canonical_question":
             canonical_question,
     }
+
+    # ==================================================
+    # GREETING / NON-DOCUMENT INPUT HANDLING
+    # ==================================================
+    # Handle ordinary non-document conversational inputs early.
+    # These must never produce a traceback or pretend documentary evidence
+    # supports the response.
+    if _is_greeting_or_meta(question):
+        result = build_system_result(
+            result,
+            answer="Hi! Ask me something about your uploaded documents.",
+        )
+        if verbose:
+            print("\nSystem:", result["answer"])
+        return result
 
     # ==================================================
     # ASSERTED RELATION DETECTION

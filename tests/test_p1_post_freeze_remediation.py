@@ -318,5 +318,73 @@ class TestRelationLevelGrounding:
         assert supported is False
 
 
+class TestGreetingSystemResponse:
+    """Test greeting handling returns system response without crash."""
+
+    def test_hello_returns_system_response(self):
+        """hello should return system response with supported=False."""
+        from src.rag_chat_v2 import initialize_pipeline, answer_question
+        pipeline = initialize_pipeline(verbose=False)
+        result = answer_question(pipeline, "hello", verbose=False)
+        assert result["supported"] is False
+        assert result["answer_type"] == "system"
+        assert "uploaded documents" in result["answer"].lower()
+
+    def test_thanks_returns_system_response(self):
+        """thanks should return system response with supported=False."""
+        from src.rag_chat_v2 import initialize_pipeline, answer_question
+        pipeline = initialize_pipeline(verbose=False)
+        result = answer_question(pipeline, "thanks", verbose=False)
+        assert result["supported"] is False
+        assert result["answer_type"] == "system"
+
+    def test_help_returns_system_response(self):
+        """help should return system response with supported=False."""
+        from src.rag_chat_v2 import initialize_pipeline, answer_question
+        pipeline = initialize_pipeline(verbose=False)
+        result = answer_question(pipeline, "help", verbose=False)
+        assert result["supported"] is False
+        assert result["answer_type"] == "system"
+
+    def test_what_can_you_do_returns_system_response(self):
+        """what can you do should return system response with supported=False."""
+        from src.rag_chat_v2 import initialize_pipeline, answer_question
+        pipeline = initialize_pipeline(verbose=False)
+        result = answer_question(pipeline, "what can you do", verbose=False)
+        assert result["supported"] is False
+        assert result["answer_type"] == "system"
+
+
+class TestYearExtraction:
+    """Test year extraction for 'what year' questions."""
+
+    def test_what_year_with_valid_evidence_returns_year(self):
+        """What year question with valid evidence should return the year."""
+        # Fresh fictional evidence - not from V4/post_v4_dev
+        context = "The Battle of Zephyria occurred in 1492 during the Great Migration."
+        answer, supported = extract_factual_answer(
+            "What year was the Battle of Zephyria?", context
+        )
+        assert supported is True, f"Expected supported but got False: {answer}"
+        assert "1492" in answer
+
+    def test_what_year_no_year_in_evidence_abstains(self):
+        """What year question with no year in evidence should abstain."""
+        context = "The Battle of Zephyria was a major conflict in ancient history."
+        answer, supported = extract_factual_answer(
+            "What year was the Battle of Zephyria?", context
+        )
+        assert supported is False
+
+    def test_what_year_wrong_subject_in_evidence_abstains(self):
+        """What year question where evidence has year but wrong subject should abstain."""
+        context = "The Treaty of Zephyria was signed in 1492. The Battle of Zephyria happened later."
+        answer, supported = extract_factual_answer(
+            "What year was the Battle of Zephyria?", context
+        )
+        # Should not return 1492 (treaty year) for battle year question
+        assert supported is False or "1492" not in (answer or "")
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
