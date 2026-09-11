@@ -32,6 +32,9 @@ EXTRACTIVE_PATTERNS = [
     # Population
     r"\bwhat\s+is\s+the\s+population\s+of\b",
 
+    # What year / date
+    r"\bwhat\s+year\b",
+
     # Direct event-cause extraction.
     #
     # Important:
