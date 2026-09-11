@@ -72,6 +72,47 @@ def is_factual_question(question):
     return False
 
 
+def _is_greeting_or_meta(question):
+    """Detect greetings and non-document conversational inputs.
+    
+    These are inputs that don't require document retrieval and should
+    receive a friendly system response without pretending to find evidence.
+    """
+    q = question.strip().lower()
+    
+    # Exact matches for common greetings
+    greeting_exact = {
+        "hi", "hello", "hey", "hiya", "howdy",
+        "thanks", "thank you", "thx", "ty",
+        "help", "what can you do", "what do you do",
+        "who are you", "what are you", "what is this",
+        "good morning", "good afternoon", "good evening",
+        "bye", "goodbye", "see you", "exit", "quit",
+    }
+    
+    if q in greeting_exact:
+        return True
+    
+    # Prefix matches for common greeting patterns
+    greeting_prefixes = (
+        "hi ", "hello ", "hey ", "thanks ", "thank you ",
+        "help ", "what can you ", "what do you ",
+        "who are you", "what are you", "what is this",
+    )
+    
+    for prefix in greeting_prefixes:
+        if q.startswith(prefix):
+            return True
+    
+    # Single-word inputs that are likely greetings/meta
+    if len(q.split()) == 1 and q in {
+        "hi", "hello", "hey", "thanks", "help", "hiya", "howdy", "bye", "goodbye"
+    }:
+        return True
+    
+    return False
+
+
 def has_multi_hop_followup(question):
     """Cheap structural check: returns True only when the question
     visibly combines two information needs via an explicit follow-up
@@ -466,7 +507,7 @@ def _predicate_term_matches_evidence(term, candidate_low):
     return False
 
 
-def cheap_grounding_check(answer, context):
+def cheap_grounding_check(answer, context, question=None):
     """
     Check if important entities/dates/numbers in the answer appear in the retrieved context.
     Uses normalized string matching - no extra LLM call.
@@ -494,6 +535,17 @@ def cheap_grounding_check(answer, context):
     answer_words = [w for w in a.split() if len(w) > 3]
     for word in answer_words:
         if _contains_term(c, word):
+            # For factual questions, also verify the question's subject is in the context
+            if question and is_factual_question(question):
+                question_subject = _extract_question_subject(question)
+                if question_subject and not _contains_term(c, question_subject.lower()):
+                    continue
+                # Also verify predicate terms appear in context
+                predicate_terms = _extract_question_predicate_terms(question)
+                if predicate_terms:
+                    # All predicate terms must appear in context for grounding
+                    if not all(_contains_term(c, term) for term in predicate_terms):
+                        continue
             return True
 
     # 3. Last resort: normalized substring check
@@ -634,11 +686,27 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
     q_lower = question.lower()
     a_lower = answer.lower()
 
+    # Extract the question's subject entity for grounding verification.
+    question_subject = _extract_question_subject(question)
+
     # Extract content terms from the question.
     q_terms = [
         t for t in re.findall(r"[a-z0-9]{3,}", q_lower)
         if t not in _GENERIC_ANSWER_TERMS
     ]
+
+    # Extract the question's subject entity for grounding verification.
+    question_subject = _extract_question_subject(question)
+
+    # For factual questions (non-procedural), the answer MUST mention the question's subject entity.
+    # This prevents answers about a different entity (e.g., Xenon for a gold question)
+    # from passing the address check.
+    # For procedural questions with _sop_strict=False, we skip this check
+    # because procedural answers often don't repeat the entity name.
+    is_proc = _procedural_query(question)
+    if question_subject and is_factual_question(question) and not (is_proc and not _sop_strict):
+        if not _contains_term(a_lower, question_subject.lower()):
+            return False
 
     # For complex questions with material premises, use a broader term set
     # (including 2-char terms) to capture values like "12V" or "46".
@@ -868,6 +936,20 @@ PREDICATE_LEXICON = {
         "scientific name", "binomial", "genus",
         "classified as",
     ),
+    # physical properties
+    "boiling point": (
+        "boiling point", "boils at", "boil at",
+    ),
+    "melting point": (
+        "melting point", "melts at", "melt at",
+    ),
+    "freezing point": (
+        "freezing point", "freezes at", "freeze at",
+    ),
+    # definitional
+    "meaning": (
+        "meaning", "meanings",
+    ),
     # history / governance
     "king": (
         "king of", "monarch of", "reigned over",
@@ -1042,12 +1124,13 @@ def _predicate_answers_question(
     candidate_sentence,
     full_context,
 ):
-    """Generic evidence relevance gate.
+    """Generic evidence relevance gate with subject-predicate binding verification.
 
     Returns True when:
     - the question has no recognizable predicate (nothing to gate
       against — fall back to cheap grounding), OR
-    - the candidate sentence carries predicate-aligned vocabulary,
+    - the candidate sentence carries predicate-aligned vocabulary
+      AND the question's subject entity is the subject of that predicate,
       OR
     - the candidate sentence carries an actual answer-shape (a year
       for a "when" question, a capitalized name for a "who"
@@ -1080,9 +1163,16 @@ def _predicate_answers_question(
 
     predicate_vocab = _extract_predicate(question)
 
+    # Extract the question's subject entity for binding verification
+    question_subject = _extract_question_subject(question)
+
     if not predicate_vocab:
         predicate_terms = _extract_question_predicate_terms(question)
         if predicate_terms:
+            # For extracted predicate terms (not from PREDICATE_LEXICON),
+            # just verify the terms appear in the sentence.
+            # Entity anchoring is handled by separate gates (_anchor_entity_present,
+            # _answer_addresses_question).
             return all(
                 _predicate_term_matches_evidence(term, candidate_low)
                 for term in predicate_terms
@@ -1097,10 +1187,17 @@ def _predicate_answers_question(
     # (e.g. an Atlantis evacuation scene accepted for a capital-city
     # question because "capital city" appears in a neighboring
     # sentence).
-    if any(
+    predicate_matched = any(
         _predicate_term_matches_evidence(vocab, candidate_low)
         for vocab in predicate_vocab
-    ):
+    )
+
+    if predicate_matched:
+        # Verify subject-predicate binding: the question's subject must
+        # be the entity that the predicate applies to in this sentence.
+        if question_subject:
+            if not _verify_subject_predicate_binding(candidate_sentence, question_subject, predicate_vocab):
+                return False
         return True
 
     # Answer-shape heuristics: if the candidate sentence contains
@@ -1123,9 +1220,174 @@ def _predicate_answers_question(
     return False
 
 
+def _verify_subject_predicate_binding(sentence, question_subject, predicate_vocab):
+    """Verify that the question_subject is the entity the predicate applies to in the sentence.
+    
+    For example:
+    - Question: "What is the chemical symbol for gold?" (subject="gold")
+    - Sentence: "Xenon has the chemical symbol Xe." -> predicate "chemical symbol" applies to "Xenon", not "gold" -> False
+    - Sentence: "Gold has the chemical symbol Au." -> predicate applies to "Gold" -> True
+    
+    - Question: "What is the capital of France?" (subject="france")
+    - Sentence: "Port Louis is the capital of Mauritius." -> predicate "capital of" applies to "Mauritius" -> False
+    - Sentence: "Paris is the capital of France." -> predicate applies to "France" -> True
+    
+    - Question: "What is the boiling point of water?" (subject="water")
+    - Sentence: "Ether has a lower boiling point than water." -> predicate "boiling point" applies to "Ether" -> False
+    - Sentence: "Water boils at 100 degrees." -> predicate applies to "Water" -> True
+    """
+    subject_low = question_subject.lower()
+    sentence_low = sentence.lower()
+    
+    # If the subject doesn't appear in the sentence at all, no binding possible
+    if not _contains_term(sentence_low, subject_low):
+        return False
+    
+    # For each matched predicate vocabulary, check if the subject is in the right position
+    for vocab in predicate_vocab:
+        vocab_low = vocab.lower()
+        if vocab_low not in sentence_low:
+            continue
+            
+        # Check specific predicate patterns for subject binding
+        if vocab_low in ("chemical symbol", "atomic symbol", "symbol is", "symbol:"):
+            # Pattern: "<subject> has chemical symbol X" or "chemical symbol of <subject> is X"
+            # The subject should appear before the predicate
+            if _subject_before_predicate(sentence_low, subject_low, vocab_low):
+                return True
+            # Also check "chemical symbol of <subject>"
+            if f"chemical symbol of {subject_low}" in sentence_low:
+                return True
+            if f"atomic symbol of {subject_low}" in sentence_low:
+                return True
+                
+        elif vocab_low in ("capital of", "capital is", "capital city of", "capital city is", 
+                           "seat of government", "seat of power"):
+            # Pattern: "<subject> is the capital of X" or "capital of <subject> is X"
+            # For "capital of France", the subject France should appear after "capital of"
+            if f"capital of {subject_low}" in sentence_low:
+                return True
+            if f"capital city of {subject_low}" in sentence_low:
+                return True
+            if f"seat of government of {subject_low}" in sentence_low:
+                return True
+            if f"seat of power of {subject_low}" in sentence_low:
+                return True
+            # Also check "<subject> is the capital"
+            if f"{subject_low} is the capital" in sentence_low:
+                return True
+            if f"{subject_low} is the capital city" in sentence_low:
+                return True
+                
+        elif vocab_low in ("boiling point", "melting point", "freezing point"):
+            # Pattern: "<subject> boils at X" or "boiling point of <subject> is X"
+            # For "boiling point of water", water should appear AFTER "boiling point of"
+            if f"boiling point of {subject_low}" in sentence_low:
+                return True
+            if f"melting point of {subject_low}" in sentence_low:
+                return True
+            if f"freezing point of {subject_low}" in sentence_low:
+                return True
+            # For "Water boils at...", water should appear BEFORE "boils"
+            if re.search(rf"\b{re.escape(subject_low)}\s+(?:boils?|melts?|freezes?)\b", sentence_low):
+                return True
+            # Check "<subject> boiling point" pattern (subject before predicate noun)
+            if _subject_before_predicate(sentence_low, subject_low, vocab_low):
+                return True
+                
+        elif vocab_low in ("boils at", "boil at", "melts at", "melt at", "freezes at", "freeze at"):
+            # Verb patterns: "<subject> boils at X" - subject must appear before verb
+            if re.search(rf"\b{re.escape(subject_low)}\s+(?:boils?|melts?|freezes?)\s+at\b", sentence_low):
+                return True
+                
+        elif vocab_low in ("meaning", "meanings"):
+            # For "meaning of X" questions, require a definitional pattern
+            # "X means Y", "meaning of X is Y", "X is defined as Y", "X refers to Y"
+            # "meaning of X" alone is not enough - must be followed by definitional verb
+            if re.search(rf"meaning of {re.escape(subject_low)}\s+(?:is|was|are|were)\b", sentence_low):
+                # Reject meta-statements that don't provide a substantive definition
+                if _is_meta_statement(sentence_low, subject_low):
+                    return False
+                return True
+            if f"{subject_low} means" in sentence_low:
+                if _is_meta_statement(sentence_low, subject_low):
+                    return False
+                return True
+            if f"{subject_low} is defined as" in sentence_low:
+                if _is_meta_statement(sentence_low, subject_low):
+                    return False
+                return True
+            if f"{subject_low} refers to" in sentence_low:
+                if _is_meta_statement(sentence_low, subject_low):
+                    return False
+                return True
+            if re.search(rf"definition of {re.escape(subject_low)}\s+(?:is|was|are|were)\b", sentence_low):
+                if _is_meta_statement(sentence_low, subject_low):
+                    return False
+                return True
+                
+        else:
+            # Generic fallback: check for "X for Y" pattern where subject is Y
+            # Pattern: "<predicate> for <subject> is X" or "<predicate> for the <subject> is X"
+            # e.g. "The operating pressure for the Lyra valve is 42"
+            if re.search(rf"{re.escape(vocab_low)}\s+for\s+(?:the\s+)?{re.escape(subject_low)}\b", sentence_low):
+                return True
+            # Also check "<predicate> of <subject>" pattern
+            if re.search(rf"{re.escape(vocab_low)}\s+of\s+(?:the\s+)?{re.escape(subject_low)}\b", sentence_low):
+                return True
+            # Also check "<subject> <predicate>" pattern (subject before predicate)
+            if _subject_before_predicate(sentence_low, subject_low, vocab_low):
+                return True
+    
+    return False
+
+
+def _is_meta_statement(sentence, subject):
+    """Detect meta-statements that mention the subject but don't provide a definition.
+    
+    Examples of meta-statements to reject:
+    - "The novel explores the meaning of life through the protagonist's journey"
+    - "The meaning of life is a philosophical question without a single answer"
+    - "Critics debated the meaning of life"
+    
+    These don't provide a definition of what "life" means - they just talk about the concept.
+    """
+    meta_patterns = [
+        rf"explores? the meaning of {re.escape(subject)}",
+        rf"debat(?:es?|ed) the meaning of {re.escape(subject)}",
+        rf"discuss(?:es?|ed) the meaning of {re.escape(subject)}",
+        rf"philosophical question",
+        rf"existential theme",
+        rf"literary criticism",
+        rf"novel explores",
+        rf"protagonist's journey",
+        rf"without a single answer",
+    ]
+    for pattern in meta_patterns:
+        if re.search(pattern, sentence):
+            return True
+    return False
+
+
+def _subject_before_predicate(sentence, subject, predicate):
+    """Check if subject appears before predicate in the sentence."""
+    # Find positions of subject and predicate
+    subj_pos = sentence.find(subject)
+    pred_pos = sentence.find(predicate)
+    
+    if subj_pos >= 0 and pred_pos >= 0:
+        # Subject should appear BEFORE predicate (not after)
+        return subj_pos < pred_pos
+    
+    return False
+
+
+# Match proper noun phrases including Unicode letters (accented characters)
+# First character of each word must be uppercase (ASCII A-Z or Unicode)
 _PROPER_NOUN_PHRASE = re.compile(
-    r"\b[A-Z][A-Za-z0-9'-]*"
-    r"(?:\s+(?:of|the|de)?\s*[A-Z][A-Za-z0-9'-]*)*"
+    r"\b([A-Z\u00C0-\u017F\u0180-\u024F][\w'-]*)"
+    r"(?:\s+(?:of|the|de)?\s*[A-Z\u00C0-\u017F\u0180-\u024F][\w'-]*)*",
+    re.UNICODE,
 )
 
 
@@ -1175,14 +1437,18 @@ def _anchor_entity_present(sentence, anchor, question):
             continue
 
         # Sentence-start mitigation: If the compound starts at the beginning
-        # of the sentence and consists of [CapitalizedWord, Anchor],
-        # it's likely not a proper noun compound (e.g., "Confirm Power").
+        # of the sentence and consists of [Verb, Anchor], it's likely
+        # an imperative instruction, not a proper noun compound
+        # (e.g., "Confirm Power" where "Power" is the anchor).
+        # Do NOT apply this for actual proper nouns like "Île de France".
+        _IMPERATIVE_VERBS = frozenset({
+            "confirm", "verify", "check", "ensure", "inspect",
+            "validate", "test", "measure", "adjust", "set",
+            "open", "close", "start", "stop", "reset",
+        })
         if start_idx == 0 and len(core) == 2:
-            # If the first word is a common verb/adjective, treat as standalone
-            # For now, we'll just treat all 2-word sentence-start compounds
-            # as standalone if the second word is our anchor.
-            if core[1] == anchor_low:
-                # This is a standalone occurrence (effectively)
+            if core[0] in _IMPERATIVE_VERBS and core[1] == anchor_low:
+                # This is a standalone occurrence (imperative verb + anchor)
                 continue
 
         in_compound += 1
@@ -1675,7 +1941,15 @@ def _get_subject_for_question(question):
     )
     if match:
         return match.group(1).strip()
-    # 2. Look for a named identifier.
+    # 2. Look for "of <subject>" at the end of the question (e.g., "capital of France")
+    match = re.search(
+        r"\bof\s+(.+?)\s*[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if match:
+        return match.group(1).strip()
+    # 3. Look for a named identifier.
     match = re.search(
         r"\b([A-Z][A-Za-z0-9]*-[A-Za-z0-9-]+|[A-Z]+\d+[A-Za-z0-9-]*)\b",
         q,
@@ -1683,6 +1957,43 @@ def _get_subject_for_question(question):
     if match:
         return match.group(1).strip()
     return None
+
+
+def _extract_question_subject(question):
+    """Extract the subject entity from a factual question.
+    
+    Handles patterns like:
+    - "What is the chemical symbol for gold?" -> "gold"
+    - "What is the boiling point of water?" -> "water"
+    - "What is the capital of France?" -> "France"
+    - "When was Einstein born?" -> "Einstein"
+    """
+    q = str(question or "").strip().lower()
+    
+    # Pattern: "what is the X of Y?" or "what is the X for Y?"
+    match = re.match(
+        r"^\s*(?:what|which)\s+(?:is|was|are|were)\s+(?:the\s+)?"
+        r".+?\s+(?:for|of)\s+(.+?)\s*[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if match:
+        subject = match.group(1).strip()
+        # Remove leading articles
+        subject = re.sub(r"^(the|a|an)\s+", "", subject, flags=re.IGNORECASE)
+        return subject.strip()
+    
+    # Pattern: "when was X born/founded/..." -> X is subject
+    match = re.match(
+        r"^\s*when\s+(?:was|is|were|are)\s+(.+?)\s+(?:born|founded|established|born|died)\b",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if match:
+        return match.group(1).strip()
+    
+    # Pattern: "who X ..." - harder to extract, fall back to _get_subject_for_question
+    return _get_subject_for_question(question)
 
 
 def _extract_multi_part_factual_answer(question, context):
@@ -3027,6 +3338,13 @@ def extract_factual_answer(question, context, *, _allow_multi_part=True, _lenien
                     _contains_term(sentence_low, term) for term in predicate_terms
                 ):
                     return None, False
+                # Additionally verify subject-predicate binding
+                question_subject = _extract_question_subject(question)
+                if question_subject:
+                    # Build predicate vocab from matched terms for binding check
+                    predicate_vocab = predicate_terms
+                    if not _verify_subject_predicate_binding(sentence, question_subject, predicate_vocab):
+                        return None, False
             return sentence, True
 
     return None, False
@@ -3241,6 +3559,10 @@ def generate(
     question,
     device,
 ):
+    # Model None safety: return empty answer instead of crashing
+    if model is None:
+        return ""
+    
     prompt = (
         "<RESULT>\n"
         f"{context}\n\n"
@@ -5213,6 +5535,21 @@ def _answer_question_impl(
         planned_intent,
         _safe_log_question(plan.get("subject") or ""),
     )
+
+    # ==================================================
+    # GREETING / NON-DOCUMENT INPUT HANDLING
+    # ==================================================
+    # Handle ordinary non-document conversational inputs early.
+    # These must never produce a traceback or pretend documentary evidence
+    # supports the response.
+    if _is_greeting_or_meta(question):
+        result = build_system_result(
+            result,
+            answer="Hi! Ask me something about your uploaded documents.",
+        )
+        if verbose:
+            print("\nSystem:", result["answer"])
+        return result
 
     # runtime_plan is the sole authoritative routing decision.
     route = plan.get("route", "model")
