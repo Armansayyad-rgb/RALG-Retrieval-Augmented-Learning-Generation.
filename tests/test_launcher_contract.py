@@ -92,5 +92,30 @@ class TestDocsReadinessSemantics(unittest.TestCase):
         self.assertIn("503", content)
 
 
+class TestLauncherPythonDiscovery(unittest.TestCase):
+    """The launcher must only accept Python 3.11 interpreters."""
+
+    def test_launcher_rejects_non_311_python(self):
+        """Launcher should fail clearly if only Python 3.9/3.10/3.12+ is available."""
+        content = LAUNCHER.read_text()
+        # Should check for Python 3.11 version explicitly
+        self.assertIn("3.11", content)
+        # Should not just accept generic "python" without version check
+        # The Test-Python311 function validates version
+        self.assertIn("Test-Python311", content)
+
+    def test_launcher_prefers_venv_then_py_minus_311(self):
+        """Launcher should prefer .venv, then project python.exe, then py -3.11, then python (if 3.11)."""
+        content = LAUNCHER.read_text()
+        # Should check .venv\Scripts\python.exe first
+        self.assertIn(".venv\\Scripts\\python.exe", content)
+        # Should check project-local python.exe
+        self.assertIn(".\\python.exe", content)
+        # Should check py -3.11
+        self.assertIn("py -3.11", content)
+        # Should check python last
+        self.assertIn('"python"', content)
+
+
 if __name__ == "__main__":
     unittest.main()

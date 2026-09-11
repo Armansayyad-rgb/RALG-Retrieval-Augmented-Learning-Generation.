@@ -69,25 +69,27 @@ def check_python() -> dict:
     return {"name": "python_version", "pass": ok, "detail": detail, "action": action}
 
 
-def check_files(root: Path = ROOT) -> list[dict]:
-    results = []
+def check_files(root: Path = ROOT) -> tuple[list[dict], list[dict]]:
+    """Return (required_results, recommended_results). Required failures are fatal; recommended are informational."""
+    required_results = []
     for rel in REQUIRED_FILES:
         path = root / rel
-        results.append({
+        required_results.append({
             "name": f"file_exists:{rel}",
             "pass": path.is_file(),
             "detail": str(path),
             "action": None if path.is_file() else f"Missing required file. Verify the repository checkout provides {rel}.",
         })
+    recommended_results = []
     for rel in RECOMMENDED_FILES:
         path = root / rel
-        results.append({
-            "name": f"file_present:{rel}",
+        recommended_results.append({
+            "name": f"file_recommended:{rel}",
             "pass": path.is_file(),
             "detail": str(path),
             "action": None if path.is_file() else f"Recommended file not found: {rel}. Not required for extractive operation; see README for checkpoint licensing details.",
         })
-    return results
+    return required_results, recommended_results
 
 
 def check_docker() -> dict:
@@ -140,10 +142,15 @@ def main() -> int:
     parser.add_argument("--docker", action="store_true", help="also report Docker availability")
     args = parser.parse_args()
 
-    results = [check_python()] + check_files(ROOT) + [check_webui_port()]
+    python_check = check_python()
+    required_file_checks, recommended_file_checks = check_files(ROOT)
+    port_check = check_webui_port()
+    results = [python_check] + required_file_checks + [port_check] + recommended_file_checks
     if args.docker:
         results.append(check_docker())
-    failures = [result for result in results if not result["pass"]]
+    # Only required checks and python/port failures count as fatal
+    fatal_checks = [python_check] + required_file_checks + [port_check]
+    failures = [result for result in fatal_checks if not result["pass"]]
     port_result = next(result for result in results if result["name"] == "webui_port_available")
     report = {
         "preflight": "demo",

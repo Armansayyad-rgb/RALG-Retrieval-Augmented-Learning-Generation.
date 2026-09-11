@@ -10,28 +10,38 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $ProjectRoot
 
-Write-Host "--- Stage 1: Python discovery ---"
+Write-Host "--- Stage 1: Python discovery (Python 3.11 required) ---"
+
+function Test-Python311 {
+    param([string]$PythonPath)
+    if (-not $PythonPath) { return $false }
+    try {
+        $version = & $PythonPath -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+        return $version.Trim() -eq "3.11"
+    } catch {
+        return $false
+    }
+}
+
 $pyCandidates = @(
     (Join-Path $ProjectRoot ".venv\Scripts\python.exe"),
     (Join-Path $ProjectRoot ".\python.exe"),
+    "py -3.11",
     "python"
 )
 $py = $null
 foreach ($candidate in $pyCandidates) {
-    if (Test-Path $candidate) {
+    if (Test-Python311 $candidate) {
         $py = $candidate
-        Write-Host "Using Python: $py"
-        break
-    }
-    elseif (Get-Command $candidate -ErrorAction SilentlyContinue) {
-        $py = $candidate
-        Write-Host "Using system Python: $py"
+        Write-Host "Using Python 3.11: $py"
         break
     }
 }
 if (-not $py) {
-    Write-Host "[FAIL] No Python found. Install Python 3.11, or create .venv first:" -ForegroundColor Red
-    Write-Host "       python -m venv .venv; .venv\Scripts\Activate.ps1; python -m pip install -r requirements.txt"
+    Write-Host "[FAIL] No Python 3.11 interpreter found." -ForegroundColor Red
+    Write-Host "       This release requires Python 3.11 exactly (not 3.9, 3.10, or 3.12+)." -ForegroundColor Red
+    Write-Host "       Install Python 3.11, or create .venv with Python 3.11:" -ForegroundColor Red
+    Write-Host "       python3.11 -m venv .venv; .venv\Scripts\Activate.ps1; python -m pip install -r requirements.txt" -ForegroundColor Red
     exit 1
 }
 
