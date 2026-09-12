@@ -505,7 +505,9 @@ def ready() -> JSONResponse:
     chunk_count = len(pipeline.get("chunks", []) or [])
     retrieval_ready = bool(index_loaded and chunk_count > 0)
     model_ready = bool(model_loaded and tokenizer_loaded)
-    ready_state = bool(retrieval_ready and model_ready and not _INIT_ERROR)
+    # Ready if extractive/retrieval mode is usable: tokenizer + retrieval/index + chunks
+    # Model-backed generation is optional; keep separate model_ready for callers
+    ready_state = bool(tokenizer_loaded and retrieval_ready and not _INIT_ERROR)
     payload = {
         "ready": ready_state,
         "model_loaded": model_loaded,

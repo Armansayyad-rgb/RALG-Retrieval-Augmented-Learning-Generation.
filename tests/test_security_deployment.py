@@ -8,6 +8,8 @@ See: test_api_input_hardening.py for the original input hardening test
 suite that these complement.
 """
 
+import sys
+import importlib.util
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
@@ -16,9 +18,26 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 
+# Load and patch runtime_guard before importing api_server
+def _load_and_patch_runtime_guard():
+    """Load runtime_guard module and patch its version check to pass."""
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    RUNTIME_GUARD = PROJECT_ROOT / "src" / "runtime_guard.py"
+    spec = importlib.util.spec_from_file_location("runtime_guard", RUNTIME_GUARD)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    # Patch the enforce_python_311 to do nothing
+    module.enforce_python_311 = lambda: None
+    # Put it in sys.modules so api_server imports our patched version
+    sys.modules["runtime_guard"] = module
+    return module
+
+
+_load_and_patch_runtime_guard()
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-if str(PROJECT_ROOT) not in __import__("sys").path:
-    __import__("sys").path.insert(0, str(PROJECT_ROOT))
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from src import api_server
 from src.retriever_v2 import build_index
@@ -331,6 +350,116 @@ class TestSecurityDeploymentProfile(unittest.TestCase):
             )
             self.assertEqual(resp.status_code, 200)
             self.assertIn("document_id", resp.json())
+
+    # ------------------------------------------------------------------
+    # 9. /ready endpoint readiness semantics for extractive-only runtime
+    # ------------------------------------------------------------------
+    def test_ready_extractive_only_without_model(self):
+        """/ready should return 200 when tokenizer + retrieval are usable, even without model."""
+        with self._no_auth():
+            mock_pipeline = {
+                "device": "cpu",
+                "model": None,
+                "tokenizer": "mock-tokenizer",
+                "chunks": ["test chunk"],
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+                "retrieval_index": build_index(["test chunk"])[0],
+                "document_frequency": build_index(["test chunk"])[1],
+            }
+            with patch.object(api_server, "get_pipeline", return_value=mock_pipeline):
+                resp = self.client.get("/ready")
+                self.assertEqual(resp.status_code, 200, f"/ready should be 200 for extractive-only: {resp.json()}")
+                data = resp.json()
+                self.assertTrue(data["ready"])
+                self.assertTrue(data["tokenizer_loaded"])
+                self.assertTrue(data["retrieval_ready"])
+                self.assertFalse(data["model_loaded"])
+                self.assertFalse(data["model_ready"])
+                self.assertEqual(data["chunk_count"], 1)
+
+    def test_ready_fails_when_tokenizer_missing(self):
+        """/ready should return 503 when tokenizer is not loaded."""
+        with self._no_auth():
+            mock_pipeline = {
+                "device": "cpu",
+                "model": None,
+                "tokenizer": None,
+                "chunks": ["test chunk"],
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+                "retrieval_index": build_index(["test chunk"])[0],
+                "document_frequency": build_index(["test chunk"])[1],
+            }
+            with patch.object(api_server, "get_pipeline", return_value=mock_pipeline):
+                resp = self.client.get("/ready")
+                self.assertEqual(resp.status_code, 503)
+                data = resp.json()
+                self.assertFalse(data["ready"])
+                self.assertFalse(data["tokenizer_loaded"])
+
+    def test_ready_fails_when_retrieval_missing(self):
+        """/ready should return 503 when retrieval index is not loaded."""
+        with self._no_auth():
+            mock_pipeline = {
+                "device": "cpu",
+                "model": None,
+                "tokenizer": "mock-tokenizer",
+                "chunks": [],
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+                "retrieval_index": None,
+                "document_frequency": None,
+            }
+            with patch.object(api_server, "get_pipeline", return_value=mock_pipeline):
+                resp = self.client.get("/ready")
+                self.assertEqual(resp.status_code, 503)
+                data = resp.json()
+                self.assertFalse(data["ready"])
+                self.assertFalse(data["retrieval_ready"])
+
+    def test_ready_fails_when_chunks_empty(self):
+        """/ready should return 503 when there are no chunks (empty index)."""
+        with self._no_auth():
+            mock_pipeline = {
+                "device": "cpu",
+                "model": None,
+                "tokenizer": "mock-tokenizer",
+                "chunks": [],
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+                "retrieval_index": build_index([])[0],
+                "document_frequency": build_index([])[1],
+            }
+            with patch.object(api_server, "get_pipeline", return_value=mock_pipeline):
+                resp = self.client.get("/ready")
+                self.assertEqual(resp.status_code, 503)
+                data = resp.json()
+                self.assertFalse(data["ready"])
+                self.assertEqual(data["chunk_count"], 0)
+                self.assertFalse(data["retrieval_ready"])
+
+    def test_ready_with_model_still_works(self):
+        """/ready should return 200 when both extractive and model are available."""
+        with self._no_auth():
+            mock_pipeline = {
+                "device": "cpu",
+                "model": "mock-model",
+                "tokenizer": "mock-tokenizer",
+                "chunks": ["test chunk"],
+                "uploaded_docs": [],
+                "runtime_persistence": False,
+                "retrieval_index": build_index(["test chunk"])[0],
+                "document_frequency": build_index(["test chunk"])[1],
+            }
+            with patch.object(api_server, "get_pipeline", return_value=mock_pipeline):
+                resp = self.client.get("/ready")
+                self.assertEqual(resp.status_code, 200)
+                data = resp.json()
+                self.assertTrue(data["ready"])
+                self.assertTrue(data["model_loaded"])
+                self.assertTrue(data["model_ready"])
+                self.assertTrue(data["retrieval_ready"])
 
 
 if __name__ == "__main__":

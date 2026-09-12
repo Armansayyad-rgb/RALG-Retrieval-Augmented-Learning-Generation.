@@ -154,6 +154,75 @@ class TestPreflightMissingCheckpoint(TestCase):
             self.assertGreater(len(present_cp), 0)
 
 
+class TestPreflightRecommendedNotFatal(TestCase):
+    """Missing recommended files (checkpoint, legacy tokenizer) must NOT make preflight fail."""
+
+    def _run_preflight_in_temp(self, tmp_path, include_checkpoint=False, include_legacy_tokenizer=False):
+        demo_preflight.ROOT = tmp_path
+        for rel in demo_preflight.REQUIRED_FILES:
+            path = tmp_path / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+        for rel in demo_preflight.RECOMMENDED_FILES:
+            path = tmp_path / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if not include_checkpoint and "reasoning_model" in rel:
+                continue
+            if not include_legacy_tokenizer and rel == "data/tokenizer.json":
+                continue
+            path.touch()
+        stdout = StringIO()
+        with contextlib.redirect_stdout(stdout):
+            with patch.object(demo_preflight, "select_port", return_value=7860):
+                with patch.object(sys, "version_info", _FakeVersion(3, 11)):
+                    old_argv = sys.argv
+                    sys.argv = [str(SCRIPTS / "demo_preflight.py")]
+                    try:
+                        demo_preflight.main()
+                    finally:
+                        sys.argv = old_argv
+        return json.loads(stdout.getvalue())
+
+    def test_preflight_passes_without_checkpoint(self):
+        """Preflight must pass when only required files and tokenizer_v2.json are present."""
+        with tempfile.TemporaryDirectory() as tmp:
+            data = self._run_preflight_in_temp(Path(tmp), include_checkpoint=False, include_legacy_tokenizer=False)
+            self.assertTrue(data["pass"], f"Preflight should pass without checkpoint: {data}")
+            self.assertEqual(data["failures"], 0, f"Recommended file failures should not count: {data['failures']}")
+            checkpoint_checks = [c for c in data["checks"] if "checkpoint" in c["name"].lower()]
+            missing_cp = [c for c in checkpoint_checks if not c["pass"]]
+            self.assertGreater(len(missing_cp), 0, "Checkpoint should be reported as missing")
+
+    def test_preflight_passes_without_legacy_tokenizer(self):
+        """Preflight must pass when only required files and tokenizer_v2.json are present (no legacy tokenizer)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            data = self._run_preflight_in_temp(Path(tmp), include_checkpoint=True, include_legacy_tokenizer=False)
+            self.assertTrue(data["pass"], f"Preflight should pass without legacy tokenizer: {data}")
+            self.assertEqual(data["failures"], 0)
+            legacy_checks = [c for c in data["checks"] if "tokenizer.json" in c["name"].lower() and "v2" not in c["name"]]
+            missing_legacy = [c for c in legacy_checks if not c["pass"]]
+            self.assertGreater(len(missing_legacy), 0, "Legacy tokenizer should be reported as missing")
+
+    def test_preflight_fails_on_missing_required_file(self):
+        """Preflight must still fail when a REQUIRED file is missing."""
+        with tempfile.TemporaryDirectory() as tmp:
+            demo_preflight.ROOT = Path(tmp)
+            # Don't create required files
+            stdout = StringIO()
+            with contextlib.redirect_stdout(stdout):
+                with patch.object(demo_preflight, "select_port", return_value=7860):
+                    with patch.object(sys, "version_info", _FakeVersion(3, 11)):
+                        old_argv = sys.argv
+                        sys.argv = [str(SCRIPTS / "demo_preflight.py")]
+                        try:
+                            demo_preflight.main()
+                        finally:
+                            sys.argv = old_argv
+            data = json.loads(stdout.getvalue())
+            self.assertFalse(data["pass"], "Preflight must fail when required files are missing")
+            self.assertGreater(data["failures"], 0)
+
+
 class TestPreflightPortRange(TestCase):
     """Preflight selects a port from the bounded range 7860-7870."""
 
