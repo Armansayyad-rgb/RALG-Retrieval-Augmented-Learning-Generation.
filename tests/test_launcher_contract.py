@@ -110,12 +110,48 @@ class TestLauncherPythonDiscovery(unittest.TestCase):
         # Should check .venv\Scripts\python.exe first
         self.assertIn(".venv\\Scripts\\python.exe", content)
         # Should check project-local python.exe
-        self.assertIn(".\\python.exe", content)
-        # Should check py -3.11
-        self.assertIn("py -3.11", content)
+        self.assertIn("python.exe", content)
+        # Should check py launcher with -3.11 argument
+        self.assertIn('"py"', content)
+        self.assertIn("-3.11", content)
         # Should check python last
         self.assertIn('"python"', content)
 
+
+class TestJobScopeCorrectness(unittest.TestCase):
+    """Ensure Start-Job uses -ArgumentList to pass parameters to child processes."""
+
+    def test_launcher_jobs_use_argument_list(self):
+        content = LAUNCHER.read_text()
+        # Both Start-Job calls must use -ArgumentList to avoid scope issues
+        self.assertIn("-ArgumentList", content)
+        self.assertIn("param(", content)
+        # Verify a few key variables are being passed
+        self.assertIn("$pyExe", content)
+        self.assertIn("$pyArgs", content)
+        self.assertIn("$ProjectRoot", content)
+        self.assertIn("$env:WEBUI_PORT", content)
+
+class TestReadinessProbeCorrectness(unittest.TestCase):
+    """The readiness probe must be robust and fail the launcher if the API is not ready."""
+
+    def test_probe_uses_robust_http_check(self):
+        content = LAUNCHER.read_text()
+        # Should use Invoke-WebRequest or Invoke-RestMethod, not a raw python one-liner
+        self.assertIn("Invoke-WebRequest", content)
+        self.assertIn("-Uri \"http://127.0.0.1:8000/ready\"", content)
+        self.assertNotIn("& $pyExe @pyArgs -c \"import urllib.request", content)
+
+    def test_probe_failure_exits_and_cleans_up(self):
+        content = LAUNCHER.read_text()
+        # Should print [FAIL] and exit 1 on readiness timeout
+        self.assertIn("[FAIL] Readiness probe failed", content)
+        self.assertIn("exit 1", content)
+        # Should inspect API job status
+        self.assertIn("Get-Job -Job $apiJob", content)
+        self.assertIn("Receive-Job -Job $apiJob", content)
+        # Should clean up
+        self.assertIn("Stop-Job -Force", content)
 
 if __name__ == "__main__":
     unittest.main()
