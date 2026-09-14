@@ -13,7 +13,15 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from rag_chat_v2 import answer_question
+from rag_chat_v2 import (
+    answer_question,
+    _extract_question_subject,
+    _extract_question_predicate_terms,
+    _get_core_subject,
+    _has_definitional_relation,
+    _is_simple_definitional_question,
+)
+
 from runtime_architecture import execute_runtime
 from retriever_v2 import retrieve as retrieve_v2_fn, RuntimeChunk, _procedural_query
 from retriever_hybrid import retrieve as retrieve_hybrid_fn
@@ -169,26 +177,59 @@ def _subject_predicate_grounded(question, sources, answer_type, route, intent=""
     if len(q_terms) < 2:
         return True
 
-    entity_re = re.compile(r"\b[A-Z][a-zA-Z]*(?:[-_][A-Za-z]+)*\b")
-    question_entities = {
-        m.group(0).casefold()
-        for m in entity_re.finditer(question or "")
-        if m.group(0).casefold() not in _TRACEABILITY_STOPWORDS
-    }
+    # 1. Get subject terms
+    subject = _extract_question_subject(question)
+    subject_terms = [
+        t for t in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)?", (_get_core_subject(subject) or "").lower())
+        if t not in _TRACEABILITY_STOPWORDS
+    ]
 
-    split = max(1, len(q_terms) // 2)
-    subject_terms = q_terms[:split]
-    predicate_terms = [
-        t for t in q_terms[split:]
-        if t not in {
+    # Fallback: look for capitalized entities in the question
+    if not subject_terms:
+        entity_re = re.compile(r"\b[A-Z][a-zA-Z]*(?:[-_][A-Za-z]+)*\b")
+        question_entities = {
+            m.group(0).casefold()
+            for m in entity_re.finditer(question or "")
+            if m.group(0).casefold() not in _TRACEABILITY_STOPWORDS
+        }
+        if question_entities:
+            subject_terms = list(question_entities)
+
+    # 2. Get predicate terms
+    predicate_terms = _extract_question_predicate_terms(question)
+
+    # For definitional questions ("What is X?") where no structural
+    # predicate was extracted, require an actual definitional relation
+    # in the evidence. This prevents headings, titles, and mere
+    # mentions from passing as definitions, and avoids the fallback
+    # which splits subject fragments (e.g. "git" from "git rebase")
+    # into pseudo-predicates that never match evidence.
+    # Reuses _has_definitional_relation — word-boundary patterns
+    # (e.g. "X is a ...", "X refers to ...", "X means ...") — the
+    # safest existing mechanism. Partial-token matches like "matrix"
+    # matching inside "Zephra Control Matrix" are inherently
+    # excluded because the full core subject must appear in a
+    # definitional pattern.
+    if not predicate_terms and _is_simple_definitional_question(question):
+        for source in sources:
+            source_text = _source_evidence(source)
+            if source_text and _has_definitional_relation(source_text, question):
+                return True
+        return False
+
+    # If structural extraction failed, fallback to terms in question that aren't the subject
+    if not predicate_terms:
+        subject_low = (subject or "").lower()
+        _COMMON_VERBS = {
             "set", "get", "use", "make", "do", "does", "did",
             "done", "using", "making", "doing", "sets", "gets",
             "uses", "made", "apply", "applies", "applied",
             "work", "works", "working", "worked",
         }
-    ]
-    if not predicate_terms:
-        predicate_terms = q_terms[split:]
+        predicate_terms = [
+            t for t in q_terms
+            if t not in subject_terms and t not in _COMMON_VERBS
+        ]
 
     for source in sources:
         source_text = _source_evidence(source)
@@ -196,10 +237,9 @@ def _subject_predicate_grounded(question, sources, answer_type, route, intent=""
             continue
         source_lower = source_text.casefold()
 
-        if question_entities:
-            subject_ok = any(e in source_lower for e in question_entities)
-        else:
-            subject_ok = any(t in source_lower for t in subject_terms)
+        # Subject must be fully present to avoid partial-token false positives
+        # (e.g. "gearbox" matching "NX-77 gearbox" when question asks for "NX-88")
+        subject_ok = all(t in source_lower for t in subject_terms) if subject_terms else False
 
         predicate_ok = any(t in source_lower for t in predicate_terms)
 
@@ -520,15 +560,9 @@ def build_answer_contract(
         _synth_type.startswith(t)
         for t in _deterministic_types
     )
-    conflict = (
-        supported
-        and not _synth_is_deterministic
-        and detect_evidence_conflict(question, sources)
-    )
-    confidence = result.get("confidence")
-    if not isinstance(confidence, (int, float)):
-        confidence = None
-
+    # Grounding check must run BEFORE conflict detection.
+    # A grounding failure must NOT produce CONFLICT_RESPONSE.
+    # Conflict is only valid when supported is still True here.
     _answer_type = str(result.get("answer_type", ""))
     _plan = result.get("runtime_plan") or {}
     _route = _plan.get("route") or "model"
@@ -538,10 +572,15 @@ def build_answer_contract(
             question, sources, _answer_type, _route, _intent,
         ):
             supported = False
-            conflict = True
-            answer = CONFLICT_RESPONSE
-            answer_type = "conflict"
-            confidence = None
+
+    conflict = (
+        supported
+        and not _synth_is_deterministic
+        and detect_evidence_conflict(question, sources)
+    )
+    confidence = result.get("confidence")
+    if not isinstance(confidence, (int, float)):
+        confidence = None
 
     answer_type = str(result.get("answer_type", "unknown"))
     if conflict:

@@ -245,6 +245,8 @@ def unified_support_gate(raw: dict[str, Any], contract: Any) -> tuple[bool, list
     reasons: list[str] = []
     if not bool(raw.get("supported")):
         reasons.append("raw_unsupported")
+    if not bool(contract.supported):
+        reasons.append("contract_unsupported")
     if not contract.evidence and not contract.sources:
         reasons.append("missing_evidence")
     if not bool(contract.traceable):

@@ -698,14 +698,20 @@ def _answer_addresses_question(question, answer, *, _sop_strict=True):
     # Extract the question's subject entity for grounding verification.
     question_subject = _extract_question_subject(question)
 
-    # For factual questions (non-procedural), the answer MUST mention the question's subject entity.
-    # This prevents answers about a different entity (e.g., Xenon for a gold question)
-    # from passing the address check.
-    # For procedural questions with _sop_strict=False, we skip this check
-    # because procedural answers often don't repeat the entity name.
+    # For factual questions (non-procedural), the answer MUST mention
+    # the question's subject entity. Use _get_core_subject to strip
+    # common prefixes (e.g. "git" from "git rebase") so aliases and
+    # short forms are accepted when the core entity is grounded —
+    # matching the extractor's own entity/anchor interpretation.
+    # This prevents answers about a different entity (e.g., Xenon
+    # for a gold question) from passing the address check.
+    # For procedural questions with _sop_strict=False, we skip this
+    # check because procedural answers often don't repeat the entity
+    # name.
     is_proc = _procedural_query(question)
     if question_subject and is_factual_question(question) and not (is_proc and not _sop_strict):
-        if not _contains_term(a_lower, question_subject.lower()):
+        core_subject = _get_core_subject(question_subject)
+        if core_subject and not _contains_term(a_lower, core_subject.lower()):
             return False
 
     # For complex questions with material premises, use a broader term set
@@ -1119,11 +1125,71 @@ def _extract_question_predicate_terms(question):
     ]
 
 
+def _get_core_subject(subject):
+    """Extract the core identifying part of a subject by stripping generic prefixes."""
+    if not subject:
+        return ""
+    s = subject.lower().strip()
+    # Strip common generic tool/category prefixes
+    # "git rebase" -> "rebase", "the matrix" -> "matrix"
+    s = re.sub(r"^(?:git|the|a|an)\s+", "", s, flags=re.IGNORECASE)
+    return s.strip()
+
+
+def _is_simple_definitional_question(question):
+    """Check if a question is a simple 'What is X?' definitional request.
+
+    Excludes questions where the subject appears to be a technical attribute
+    (e.g., 'pressure band', 'temperature') rather than a unique entity.
+    """
+    q = question.strip().lower()
+    match = re.match(
+        r"^\s*(?:what|which)\s+(?:is|was|are|were)\s+(?:the\s+)?(.+?)[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return False
+
+    subject = match.group(1).strip()
+    # If the subject is a technical attribute, it's a factual value question, not definitional.
+    attribute_keywords = {"pressure", "band", "range", "temperature", "voltage", "current", "flow"}
+    if any(kw in subject for kw in attribute_keywords):
+        return False
+
+    return True
+
+
+def _has_definitional_relation(sentence, question):
+    """Check if the sentence contains a definitional relation for the question's subject."""
+    subject = _extract_question_subject(question)
+    if not subject:
+        return False
+
+    s_low = sentence.lower()
+    core = _get_core_subject(subject)
+    if not core:
+        return False
+
+    # Definitional patterns using the core subject.
+    # We use \b to ensure we match whole words and avoid partial-token false positives.
+    patterns = [
+        rf"\b{re.escape(core)}\s+is\s+(?:a\s+|an\s+|the\s+)",
+        rf"\b{re.escape(core)}\s+is\s+(?!used|available|located|found|present|required|needed|necessary)",
+        rf"\b{re.escape(core)}\s+(?:refers\s+to|means|describes|defines|represents|constitutes|denotes|rewrites)\b",
+        rf"\bdefinition\s+of\s+{re.escape(core)}\s+(?:is|was|are|were)\b",
+        rf"\bmeaning\s+of\s+{re.escape(core)}\s+(?:is|was|are|were)\b",
+    ]
+
+    return any(re.search(p, s_low, flags=re.IGNORECASE) for p in patterns)
+
+
 def _predicate_answers_question(
     question,
     candidate_sentence,
     full_context,
 ):
+
     """Generic evidence relevance gate with subject-predicate binding verification.
 
     Returns True when:
@@ -1162,6 +1228,13 @@ def _predicate_answers_question(
             return False
 
     predicate_vocab = _extract_predicate(question)
+
+    # Special gate for "What is X?" definitional questions.
+    # If it's a simple definitional request and no specialized predicate
+    # was found, we require an explicit definitional relation.
+    if not predicate_vocab and _is_simple_definitional_question(question):
+        if not _has_definitional_relation(candidate_sentence, question):
+            return False
 
     # Extract the question's subject entity for binding verification
     question_subject = _extract_question_subject(question)
@@ -1961,15 +2034,20 @@ def _get_subject_for_question(question):
 
 def _extract_question_subject(question):
     """Extract the subject entity from a factual question.
-    
+
     Handles patterns like:
+    - "What is X?" -> "X"
     - "What is the chemical symbol for gold?" -> "gold"
     - "What is the boiling point of water?" -> "water"
     - "What is the capital of France?" -> "France"
     - "When was Einstein born?" -> "Einstein"
     """
     q = str(question or "").strip().lower()
-    
+
+    # Pattern: "what is X?"
+    # This is the most general pattern. We check it after "for/of" to avoid
+    # capturing "the chemical symbol for gold" as the subject.
+
     # Pattern: "what is the X of Y?" or "what is the X for Y?"
     match = re.match(
         r"^\s*(?:what|which)\s+(?:is|was|are|were)\s+(?:the\s+)?"
@@ -1982,7 +2060,19 @@ def _extract_question_subject(question):
         # Remove leading articles
         subject = re.sub(r"^(the|a|an)\s+", "", subject, flags=re.IGNORECASE)
         return subject.strip()
-    
+
+    # Pattern: "what is X?" (Simple definitional)
+    match = re.match(
+        r"^\s*(?:what|which)\s+(?:is|was|are|were)\s+(?:the\s+)?(.+?)[?.]?\s*$",
+        q,
+        flags=re.IGNORECASE,
+    )
+    if match:
+        subject = match.group(1).strip()
+        # Remove leading articles
+        subject = re.sub(r"^(the|a|an)\s+", "", subject, flags=re.IGNORECASE)
+        return subject.strip()
+
     # Pattern: "when was X born/founded/..." -> X is subject
     match = re.match(
         r"^\s*when\s+(?:was|is|were|are)\s+(.+?)\s+(?:born|founded|established|born|died)\b",
@@ -1991,7 +2081,7 @@ def _extract_question_subject(question):
     )
     if match:
         return match.group(1).strip()
-    
+
     # Pattern: "who X ..." - harder to extract, fall back to _get_subject_for_question
     return _get_subject_for_question(question)
 
