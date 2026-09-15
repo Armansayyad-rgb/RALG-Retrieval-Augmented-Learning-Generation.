@@ -5418,6 +5418,37 @@ PLANNED_REASONING_INTENTS = {
 }
 
 
+def _explanation_topic(question):
+    """Separate explicit presentation instructions from an explanation topic.
+
+    Bare definitions and attribute questions have no presentation marker and
+    retain their existing factual route. No domain vocabulary is assumed.
+    """
+    text = question.strip().rstrip(".?!").strip()
+    suffix = re.fullmatch(
+        r"(.+?)[,;\s]+explain (?:it to me(?: in detail)?|in detail|it in detail)",
+        text, re.IGNORECASE,
+    )
+    if suffix:
+        core = suffix.group(1).strip()
+        # Preserve strict attribute questions such as "what is the
+        # lubricant in the gearbox ...".  A broad topic may contain an
+        # unqualified relation ("research in Zerion"), while the narrow
+        # attribute form identifies the target with a determiner.
+        if re.search(r"\b(?:in|of|for|on|at)\s+the\s+", core, re.IGNORECASE):
+            return None
+        topic = re.sub(r"^what (?:is|are)\s+", "", core, flags=re.IGNORECASE)
+    else:
+        prefix = re.fullmatch(
+            r"(?:tell me about|describe in detail|explain in detail)\s+(.+)",
+            text, re.IGNORECASE,
+        )
+        if not prefix:
+            return None
+        topic = prefix.group(1)
+    return topic.strip(" ,;") or None
+
+
 def runtime_plan(
     question,
 ):
@@ -5529,11 +5560,19 @@ def runtime_plan(
                 f"between {left} and {right}?"
             )
 
+    topic = _explanation_topic(question)
+    if topic and plan.get("intent") == "general":
+        plan.update(
+            intent="explanation", subject=topic,
+            canonical_question=f"Explain {topic}.",
+            queries=[topic],
+        )
+
     # The semantic plan owns routing. The legacy router is consulted only
     # for otherwise-unclassified questions, preserving extractor behavior
     # without allowing a second routing decision downstream.
     intent = (plan.get("intent") or "general").strip()
-    if intent in PLANNED_REASONING_INTENTS:
+    if intent in PLANNED_REASONING_INTENTS or intent == "explanation":
         plan["route"] = "model"
     else:
         try:
@@ -7387,6 +7426,7 @@ def _answer_question_impl(
     # ------------------------------------------
 
     elif intent in {
+        "explanation",
         "process",
         "significance",
         "features",

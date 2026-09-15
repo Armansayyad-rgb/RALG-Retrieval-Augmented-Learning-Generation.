@@ -70,6 +70,14 @@ _CONFLICT_IDENTIFIER_ATTRIBUTE_TERMS = {
     "asset", "document", "identifier", "installed", "model", "revision",
     "serial", "terminal", "unit", "version",
 }
+_IDENTIFIER_CLAIM_RE = re.compile(
+    r"(?P<subject>.{0,100}?)\b"
+    r"(?P<attribute>asset\s+identifier|document\s+identifier|document\s+id|"
+    r"serial\s+number|serial|terminal|model|revision|version|identifier)\b"
+    r"\s*(?:is|was|are|were|equals?|=|:)\s*"
+    r"(?P<value>" + _CONFLICT_IDENTIFIER_RE.pattern + r")",
+    re.IGNORECASE,
+)
 CONFLICT_RESPONSE = (
     "I found conflicting evidence in the retrieved sources and cannot state "
     "a single settled answer."
@@ -312,29 +320,32 @@ def _numeric_conflict(left: str, right: str) -> bool:
 
 
 def _identifier_conflict(left: str, right: str) -> bool:
-    left_matches = list(_CONFLICT_IDENTIFIER_RE.finditer(left))
-    right_matches = list(_CONFLICT_IDENTIFIER_RE.finditer(right))
-    left_ids = {match.group().casefold() for match in left_matches}
-    right_ids = {match.group().casefold() for match in right_matches}
-    differing_left = left_ids - right_ids
-    differing_right = right_ids - left_ids
-    if not differing_left or not differing_right:
-        return False
-    left_context = set().union(
-        *(_context_terms(left, match.start(), match.end())
-          for match in left_matches
-          if match.group().casefold() in differing_left)
-    )
-    right_context = set().union(
-        *(_context_terms(right, match.start(), match.end())
-          for match in right_matches
-          if match.group().casefold() in differing_right)
-    )
-    return bool(
-        left_context
-        & right_context
-        & _CONFLICT_IDENTIFIER_ATTRIBUTE_TERMS
-    )
+    def claims(text: str) -> list[tuple[str, set[str], str]]:
+        found = []
+        for match in _IDENTIFIER_CLAIM_RE.finditer(text):
+            attribute = re.sub(r"\s+", " ", match.group("attribute").casefold())
+            subject = _context_terms(
+                match.group("subject"),
+                0,
+                len(match.group("subject")),
+            )
+            value = match.group("value").casefold()
+            found.append((attribute, subject, value))
+        return found
+
+    left_claims = claims(left)
+    right_claims = claims(right)
+    for left_attribute, left_subject, left_value in left_claims:
+        for right_attribute, right_subject, right_value in right_claims:
+            if left_attribute != right_attribute or left_value == right_value:
+                continue
+            shared_subject = left_subject & right_subject
+            if len(shared_subject) >= 2 or (
+                len(shared_subject) >= 1
+                and left_attribute in {"serial", "serial number"}
+            ):
+                return True
+    return False
 
 
 def _directive_conflict(left: str, right: str) -> bool:
@@ -372,6 +383,8 @@ def _directive_conflict(left: str, right: str) -> bool:
 def detect_evidence_conflict(question: str, sources: list[dict]) -> bool:
     """Detect materially conflicting claims among high-relevance evidence."""
     for left, right in _relevant_source_pairs(question, sources):
+        if re.sub(r"\s+", " ", left).strip() == re.sub(r"\s+", " ", right).strip():
+            continue
         if _numeric_conflict(left, right):
             return True
         if _identifier_conflict(left, right):
