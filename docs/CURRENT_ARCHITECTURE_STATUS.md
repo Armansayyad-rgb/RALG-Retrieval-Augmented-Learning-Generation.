@@ -1,100 +1,244 @@
-# Current Architecture Status
+# Current Production Architecture
 
-This document summarizes the production architecture on current `master` after the hybrid-retrieval and core-runtime consolidation work merged in PRs #49 and #47.
+This document describes the current RALG production runtime on `master`. It supersedes the older architecture snapshot that ended at the hybrid-retrieval consolidation stage.
 
-## Current `/query` runtime
+## Product boundary
+
+RALG is a local-first, evidence-grounded technical-document intelligence engine. It is designed for trusted/local deployments over bounded document collections. It is not currently a hardened public multi-tenant SaaS.
+
+The defining architectural rule is:
+
+> Retrieval can propose evidence; only the grounding and support pipeline can authorize an answer.
+
+## End-to-end runtime
 
 ```text
-POST /query
-  -> api_server.query()
-  -> execute_runtime()
-     -> ExecutionPlan
-        -> semantic intent + one authoritative route decision
-     -> answer_question()
-        -> factual extractor OR grounded reasoning path
-        -> retriever_hybrid for grounded reasoning retrieval
-        -> bounded optional secondary queries
-        -> explicit evidence / multi-hop trace
-     -> build_answer_contract()
-     -> unified_support_gate()
-        -> evidence identity
-        -> traceability
-        -> conflict status
-        -> provenance
-     -> supported answer OR abstention
-  -> QueryResponse
+Documents
+PDF / DOCX / TXT
+      |
+      v
+parse -> normalize -> chunk -> persistent runtime corpus/index
+                                      |
+                                      v
+User question -> FastAPI / WebUI -> execute_runtime()
+                                      |
+                                      v
+                               ExecutionPlan
+                    intent / route / document scope /
+                    retrieval strategy / model role
+                                      |
+                    +-----------------+-----------------+
+                    |                                   |
+                    v                                   v
+            extractor route                    reasoning route
+            retriever_v2                       retriever_hybrid
+            cheap factual pass                 full-question-first
+                    |                                   |
+                    +-----------------+-----------------+
+                                      |
+                                      v
+                           answer construction
+              factual / definition / procedure / causal /
+              comparison / bounded broad synthesis / etc.
+                                      |
+                                      v
+                         build_answer_contract()
+                   relation + definition + subject checks
+                   source/evidence + conflict + provenance
+                                      |
+                                      v
+                         unified_support_gate()
+                  raw.supported AND contract.supported
+                   evidence/source AND traceability
+                   no unresolved conflict + provenance
+                                      |
+                         +------------+------------+
+                         |                         |
+                         v                         v
+                 supported answer              abstention
+                 with traceability             fail closed
 ```
 
-The FastAPI and WebUI surfaces now share the same `execute_runtime()` orchestration boundary for grounded RALG behavior.
+FastAPI and WebUI share the same `execute_runtime()` orchestration boundary, so grounded support policy is not supposed to diverge between interfaces.
 
-## Authoritative retrieval
+## 1. Runtime orchestration
 
-`src/retriever_hybrid.py` is the authoritative grounded reasoning retriever.
+### `src/runtime_architecture.py`
 
-It uses a full-question-first strategy:
+This is the authoritative orchestration boundary. It owns:
 
-1. run the complete user question through the fast V2 lexical/index path;
-2. preserve strong full-question candidates;
-3. optionally run a bounded number of secondary/sub-query passes when useful;
-4. deduplicate by canonical candidate identity;
-5. fuse candidates deterministically using general full-question coverage/rank signals;
-6. preserve provenance through the final evidence path.
+- `ExecutionPlan`;
+- model-role resolution and registry guardrails;
+- route/retrieval strategy representation;
+- `MultiHopTrace` construction;
+- `ExecutionResult`;
+- `unified_support_gate()`;
+- `execute_runtime()` shared by API and UI.
 
-The factual extractor route still uses a cheaper single-pass V2 lookup. This is intentional route specialization, not a separate user-facing retrieval stack.
+The final gate is intentionally additive. A weak upstream `raw.supported=True` cannot override a contract that was rejected after grounding. `contract.supported=False` contributes `contract_unsupported` and causes the final support decision to fail.
 
-## Current preliminary Stage 5 retrieval checkpoint
+## 2. Question routing and answer construction
 
-Stage 5 contains 50 independently sourced IETF RFC documents and 300 automatically generated, still-unreviewed benchmark cases.
+### `src/rag_chat_v2.py`
 
-After the hybrid-retrieval change, the untouched preliminary evaluator recorded:
+`rag_chat_v2` is the active answer pipeline. It performs question classification/routing, invokes the appropriate retrieval path, and constructs candidate answers.
 
-| Metric | Lexical | RALG hybrid |
-| --- | ---: | ---: |
-| Recall@1 | 40.48% | **50.95%** |
-| Recall@3 | 87.62% | **90.95%** |
-| Recall@5 | 100.00% | **100.00%** |
-| MRR | 0.6485 | **0.7098** |
-| Unsupported rejection | 100% | **100%** |
-| False-support rate | 0% | **0%** |
+Current behavior includes specialized handling for factual, definitional, procedural, causal/effect/change, comparison, entity/structure/summary-style, multi-hop, and broad explanatory questions.
 
-The runtime-integration validation preserved those quality metrics. Retrieval latency in the integration run was approximately 6.9 ms p50 / 14.6 ms p95 in the recorded local environment.
+The recent broad-grounded-synthesis path addresses a specific architectural limitation: a broad explanatory request may be supported across several passages even when no single chunk contains the entire answer. The system may synthesize those individually grounded claims without globally lowering the support threshold.
 
-These numbers are **preliminary engineering evidence, not final independent validation** because the benchmark cases have not been independently human-reviewed.
+Narrow factual/attribute questions remain subject to stronger relation binding than broad explanatory synthesis.
 
-## Runtime architecture now implemented
+## 3. Retrieval architecture
 
-- one shared `ExecutionPlan` / `execute_runtime()` orchestration boundary;
-- one authoritative route value produced by runtime planning;
-- shared API/WebUI grounded execution behavior;
-- hybrid full-question-first grounded reasoning retrieval;
-- unified answer-level support gate;
-- provenance/traceability requirements before `supported=true`;
-- conflict-aware abstention;
-- explicit `MultiHopTrace` state;
-- declarative model registry with runtime model-selection guardrails;
-- active/compatible/superseded/legacy artifact classification;
-- focused architecture and integration tests.
+### `src/retriever_hybrid.py` — grounded reasoning
 
-## Model registry
+The authoritative reasoning retriever is full-question-first:
 
-The current active grounded model role is mapped to `checkpoints/v2/reasoning_model_v1.pt` through configuration. Other known artifacts are explicitly classified rather than silently auto-loaded.
+1. run the complete question through the fast V2 retrieval path;
+2. protect strong full-question candidates;
+3. measure full-question evidence coverage;
+4. only when useful, run a bounded number of secondary/sub-query passes;
+5. deduplicate by candidate identity;
+6. fuse candidates deterministically using full-question coverage and rank signals;
+7. preserve candidate identity/provenance into the answer path.
 
-The optional Qwen polish role remains non-grounded and opt-in. It must not establish evidence support.
+Secondary retrieval is deliberately bounded and cannot displace a stronger primary candidate merely because a heuristic sub-query matched it.
 
-## Remaining architecture / production gaps
+### `src/retriever_v2.py` — factual extraction
 
-The main remaining gaps are no longer duplicate routing or API/UI divergence. Current material gaps are:
+The factual extractor intentionally retains the cheaper V2 retrieval path. This is route specialization inside the same grounded runtime, not an independent user-facing architecture.
 
-1. **Independent review:** Stage 5 cases remain automatically generated and unreviewed.
-2. **Public-production security:** no built-in authentication, TLS termination, tenant isolation, or production-grade rate limiting.
-3. **Multi-process lifecycle safety:** document mutation locking is process-local; controlled pilots should use one application worker.
-4. **Docker runtime qualification:** Compose is maintained, but a complete clean Docker lifecycle still needs current end-to-end evidence.
-5. **Large-scale validation:** 250k/500k corpus runs remain deferred pending suitable memory headroom.
-6. **Retrieval headroom:** some rank-1 ties remain among documents sharing the same terminology; phrase/proximity signals are a possible future general improvement, but should be validated independently before adoption.
-7. **Artifact/dependency diligence:** historical training utilities and model artifacts remain for reproducibility and should be inventoried rather than deleted blindly.
+Document IDs can constrain retrieval. Invalid or empty scope must fail safely rather than silently reverting to unrelated global evidence.
+
+## 4. Grounding contract
+
+### `src/webui/chat_handler.py`
+
+The answer contract is the post-answer grounding boundary. It is responsible for source collection and checks used by the final support gate.
+
+Current grounding behavior includes:
+
+- structured subject extraction;
+- subject/entity anchor validation;
+- predicate/relation grounding;
+- definition-specific relation checks;
+- answer-addressing validation;
+- identifier-sensitive grounding;
+- multi-part completeness protections;
+- conflict detection;
+- evidence/source traceability;
+- provenance propagation.
+
+A title/header or lexical mention alone is not enough to support a simple definition. Generic overlapping words are not intended to establish an unrelated technical relation.
+
+Conflict detection is applied after basic grounding. Evidence that does not ground the requested relation should not be mislabeled as a genuine contradiction.
+
+## 5. Broad grounded synthesis
+
+Broad explanatory questions use a different evidence shape from narrow attribute lookups.
+
+The permitted pattern is:
+
+```text
+broad question
+   -> retrieve several relevant passages
+   -> keep passages grounded to the requested subject/topic
+   -> extract supported claims
+   -> combine only supported claims
+   -> run normal contract/support checks
+   -> answer or abstain
+```
+
+The forbidden pattern is:
+
+```text
+broad question -> lower global threshold -> free generation
+```
+
+This preserves conservative behavior for unsupported, false-premise, misleading-overlap, narrow factual, and definition questions while allowing evidence distributed across multiple chunks to form a bounded explanation.
+
+## 6. Model architecture and optional generation
+
+`src/model_v2.py` defines the active `SmallLMV2` architecture. Runtime configuration maps the grounded model role to:
+
+```text
+checkpoints/v2/reasoning_model_v1.pt
+```
+
+The checkpoint is external to Git. Its absence must fail safely; it does not justify an exception in the grounding policy.
+
+The runtime can operate in extractive/retrieval-only mode without the checkpoint when the required tokenizer/index/retrieval components are healthy.
+
+The optional Qwen polish role is explicitly non-grounded. It may rewrite/polish text when enabled, but it cannot establish support or substitute for retrieved evidence.
+
+## 7. Document ingestion and persistence
+
+The active ingestion path accepts PDF, DOCX, and TXT documents through the API/WebUI document processor. Runtime documents are assigned stable identities and stored with provenance metadata. The index is updated for newly ingested chunks and runtime documents can be listed/deleted and restored after restart.
+
+Document lifecycle and query scope are part of the same production system rather than demo-only state.
+
+## 8. API and UI
+
+### FastAPI
+
+The service includes the core endpoints:
+
+```text
+/health
+/ready
+/stats
+/ingest
+/query
+/documents
+```
+
+`/ready` represents usable runtime readiness, including the validated extractive/retrieval-only mode; an absent optional generation checkpoint is reported separately rather than automatically making the core retrieval system unusable.
+
+### WebUI
+
+The Gradio interface uses the same grounded runtime boundary and supports document upload, querying, source display, document scope, and related user-facing workflow.
+
+## 9. Startup and deployment tooling
+
+`scripts/run_demo.ps1` is the canonical Windows demo launcher. Current launch behavior:
+
+- discovers a Python 3.11 interpreter, including `py -3.11` correctly;
+- runs preflight validation;
+- treats recommended/optional model artifacts as nonfatal when extractive mode is viable;
+- starts API and WebUI jobs with explicit interpreter arguments/environment;
+- probes readiness using an HTTP-success check;
+- retries until ready or fails cleanly with job diagnostics/cleanup;
+- selects the WebUI from the bounded `7860-7870` port range.
+
+## 10. Evidence and evaluation boundary
+
+The repository contains historical development benchmarks, several holdout generations, frozen blind artifacts, adjudication outputs, and regression suites. Architecture documentation must not collapse these into one accuracy number.
+
+Frozen blind evaluations remain immutable after execution. Later semantic adjudication and derived scorecards are separate evidence layers. Production fixes made after a frozen evaluation require fresh evaluation before making a new global correctness claim.
+
+The current architecture therefore prioritizes reproducibility and evidence labeling as well as runtime correctness.
+
+## 11. Security/deployment boundary
+
+RALG is suitable for controlled local/trusted technical evaluation. A public untrusted multi-tenant deployment still requires additional hardening, including tenant isolation, hardened authentication/authorization, TLS termination, production rate limiting, secrets/operations controls, and multi-process-safe mutation semantics.
+
+## 12. Key production files
+
+| Path | Role |
+| --- | --- |
+| `src/runtime_architecture.py` | authoritative runtime orchestration and final support gate |
+| `src/rag_chat_v2.py` | active question/answer pipeline |
+| `src/retriever_hybrid.py` | reasoning retrieval |
+| `src/retriever_v2.py` | fast lexical/factual retrieval |
+| `src/webui/chat_handler.py` | answer contract, grounding, conflicts, source/provenance handling |
+| `src/api_server.py` | FastAPI service |
+| `src/webui/app.py` | Gradio UI |
+| `src/webui/document_processor.py` | document parsing/ingestion support |
+| `src/model_v2.py` | SmallLM V2 model definition |
+| `src/config.py` | central runtime paths/configuration |
+| `scripts/run_demo.ps1` | canonical Windows demo launcher |
 
 ## Interpretation
 
-RALG is appropriate for controlled technical evaluation in a trusted environment. It is not yet an untrusted multi-tenant public service.
-
-The highest-value next work is independent review, deployment/security diligence, reproducible Docker validation, and a clean technical-diligence package rather than another synthetic benchmark stage.
+The current architecture is best described as an **evidence-gated document intelligence runtime**, not simply retrieval followed by an LLM. Retrieval, answer construction, grounding, conflict handling, provenance, and the final support decision are distinct stages so that a plausible-looking answer does not automatically become a supported answer.
