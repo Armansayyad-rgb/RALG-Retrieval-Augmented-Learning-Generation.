@@ -3,7 +3,9 @@
 # RALG Engine
 ### Retrieval-Augmented Learning & Generation
 
-A local-first, evidence-grounded technical-document intelligence engine focused on retrieval quality, provenance, document-scoped reasoning, conservative abstention, and reproducible evaluation.
+**Private, evidence-grounded technical-document intelligence.**
+
+RALG ingests bounded document collections, retrieves evidence, answers only when support survives grounding checks, and preserves source/provenance information for inspection.
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-Source--Available-orange)
@@ -15,148 +17,140 @@ A local-first, evidence-grounded technical-document intelligence engine focused 
 
 ## What RALG is
 
-RALG is built for question answering over bounded technical-document collections such as manuals, SOPs, maintenance notes, service bulletins, policies, standards, and internal knowledge bases.
+RALG is a local-first document-intelligence engine for manuals, SOPs, maintenance and engineering documentation, service bulletins, safety/compliance material, policies, standards, and private enterprise knowledge.
 
-The project is deliberately not positioned as a general-purpose chatbot. Its core design goal is to produce inspectable answers that are tied to retrieved evidence, preserve provenance, respect document scope, detect unsupported or misleading requests, and abstain when the available evidence is insufficient.
+It is deliberately **not a general-purpose chatbot**. The production runtime is organized around evidence identity, subject/relation grounding, provenance, traceability, document scope, conflict handling, and conservative abstention. If the retrieved corpus does not support the requested claim, the intended behavior is to reject the answer rather than fill the gap from model memory.
 
-## Current state
+## Current production state
 
-Prototype 1 RC1 is preserved as a historical release milestone at tag `0.1.0-rc1`. Current `master` contains subsequent engineering work across:
+Current `master` contains the post-freeze reliability, launch-readiness, manual-upload grounding, and broad grounded-synthesis work completed after the historical RC1 milestone.
 
-- unified API/WebUI grounded execution;
-- document-scoped retrieval;
-- persistent runtime documents and restart recovery;
-- stable document IDs, provenance, listing, deletion, and scoped querying;
-- support-gate hardening against false support and misleading overlap;
-- conflict-aware evidence handling;
-- retrieval performance and reproducibility work;
-- portability and third-party attribution cleanup;
-- deterministic demonstration and technical-review tooling;
-- frozen independent holdout methodology and immutable blind-result preservation.
+Current capabilities include:
 
-RALG remains a controlled technical-evaluation system rather than a hardened public SaaS deployment.
+- shared FastAPI/WebUI execution through `execute_runtime()`;
+- full-question-first hybrid retrieval for grounded reasoning paths;
+- fast V2 retrieval for factual extraction;
+- subject, predicate/relation, entity, identifier, and answer-addressing checks;
+- broad explanatory synthesis from multiple independently grounded passages;
+- conservative rejection of unsupported, false-premise, and misleading-overlap questions;
+- conflict-aware abstention;
+- document-scoped querying with safe failure for invalid/empty scopes;
+- evidence, provenance, and traceability carried into the final support decision;
+- persistent runtime documents, stable document IDs, restart recovery, listing, deletion, and provenance metadata;
+- PDF, DOCX, and TXT ingestion;
+- FastAPI, Gradio WebUI, lightweight Python client, Docker/Compose, and deterministic demo tooling.
 
-## Current independent holdout evidence
-
-The strongest frozen blind evidence currently committed on `master` is **Holdout V2**, a 70-case internal independent holdout spanning seven technical domains.
-
-### Retrieval-supported cases
-
-40 cases were retrieval-supported.
-
-| Metric | Lexical | RALG |
-| --- | ---: | ---: |
-| Recall@1 | 100% | **100%** |
-| Recall@3 | 100% | **100%** |
-| Recall@5 | 100% | **100%** |
-| MRR | 1.000 | **1.000** |
-
-### Rejection / support-gate cases
-
-30 cases tested unsupported/adversarial behavior.
-
-| Metric | RALG |
-| --- | ---: |
-| Unsupported rejection | **93.33% (28/30)** |
-| False-support rate | **6.67% (2/30)** |
-
-The original blind result is intentionally preserved unchanged in:
-
-```text
-evaluation/results/holdout_v2_blind_once.json
-```
-
-Two false-support failures were diagnosed only **after** the blind run and led to a generalized calculation-support gate fix plus new development regressions. The original V2 result was not rerun or rewritten after that fix.
-
-**Important evidence boundary:** Holdout V2 is strong internal independent evidence, but its seven source notes were authored validation material derived from public technical documentation. It should not be represented as third-party or external validation.
-
-## Reliability development benchmark
-
-A separate 50-case reliability benchmark is used as development/regression evidence. In the validated hardening run it reached:
-
-- supported correctness: **100%**;
-- unsupported rejection: **100%**;
-- false-support rate: **0%**;
-- false-rejection rate: **0%**;
-- API errors: **0**.
-
-This is useful engineering evidence, but it is a development benchmark and must not be described as an untouched independent holdout.
+RALG remains intended for **local/trusted controlled deployment**, not as a hardened public multi-tenant internet SaaS.
 
 ## Architecture
 
-Grounded API and WebUI behavior share one runtime orchestration boundary:
+API and WebUI converge on the same authoritative grounded runtime:
 
 ```text
-Question
-   ↓
-execute_runtime()
-   ↓
-ExecutionPlan
-   ├─ intent / route
-   ├─ document scope
-   ├─ retrieval strategy
-   └─ reasoning state
-   ↓
-Retrieval + factual extraction / grounded reasoning
-   ↓
-Evidence contract
-   ↓
-Support gate
-   ├─ predicate / subject validation
-   ├─ conflict handling
-   ├─ traceability
-   └─ provenance
-   ↓
-Supported answer or abstention
+PDF / DOCX / TXT
+      |
+      v
+Document parsing -> chunking -> persistent runtime corpus/index
+                                      |
+User question                          |
+      |                               |
+      v                               v
+FastAPI / WebUI ----------------> execute_runtime()
+                                      |
+                                      v
+                               ExecutionPlan
+                         intent / route / scope / model
+                                      |
+                    +-----------------+-----------------+
+                    |                                   |
+                    v                                   v
+          factual extractor route             grounded reasoning route
+          V2 single-pass retrieval             full-question-first hybrid
+                    |                                   |
+                    +-----------------+-----------------+
+                                      |
+                                      v
+                         answer construction
+                factual / procedural / causal / comparison /
+                 definitional / broad grounded synthesis
+                                      |
+                                      v
+                         Answer/Evidence contract
+                                      |
+                                      v
+                         unified_support_gate()
+                  raw support + contract support + evidence
+                    + traceability + conflict + provenance
+                                      |
+                         +------------+------------+
+                         |                         |
+                         v                         v
+                supported answer              abstention
+                + source trace             (fail closed)
 ```
 
-Document scope is threaded end-to-end through the API and runtime retrieval path. Invalid or empty document scopes fail safely rather than falling back to unrelated global evidence.
+### Core production modules
 
-`API_TOKEN` authentication is optional under the current single-tenant deployment profile.
+| Module | Responsibility |
+| --- | --- |
+| `src/runtime_architecture.py` | Shared `ExecutionPlan`, `execute_runtime()`, model registry, multi-hop trace, final unified support gate |
+| `src/rag_chat_v2.py` | Question classification/routing, retrieval orchestration, extraction and grounded answer construction |
+| `src/retriever_hybrid.py` | Full-question-first hybrid retrieval with bounded secondary queries and deterministic fusion |
+| `src/retriever_v2.py` | Fast lexical/index retrieval and factual-relation scoring |
+| `src/webui/chat_handler.py` | Answer contract, relation/definition grounding, conflict checks, source/provenance collection |
+| `src/api_server.py` | FastAPI service and document lifecycle endpoints |
+| `src/webui/app.py` | Gradio user interface |
+| `src/webui/document_processor.py` | PDF/DOCX/TXT upload parsing and ingestion support |
+| `src/model_v2.py` | SmallLM V2 architecture used by the optional model-backed grounded path |
 
-## Key capabilities
+See [`docs/CURRENT_ARCHITECTURE_STATUS.md`](docs/CURRENT_ARCHITECTURE_STATUS.md) for the detailed runtime description.
 
-- local/private technical-document question answering;
-- evidence-backed answers and conservative abstention;
-- document-scoped retrieval and multi-document querying;
-- provenance and answer/evidence traceability;
-- misleading-overlap and false-premise resistance;
-- conflict-aware support gating;
-- factual extraction, comparison, procedural, and bounded reasoning paths;
-- TXT, PDF, and DOCX ingestion;
-- persistent runtime documents and restart recovery;
-- stable document IDs, listing, deletion, and provenance metadata;
-- FastAPI service with health/readiness, ingest, query, statistics, and document lifecycle endpoints;
-- Gradio web UI using the same grounded runtime boundary;
-- lightweight Python client/SDK;
-- CPU and CUDA support;
-- Docker / Docker Compose configuration;
-- benchmark, regression, persistence, provenance, portability, performance, and integrity tooling.
+## Grounding and answer policy
+
+RALG separates retrieval from permission to answer. A relevant-looking chunk is not sufficient by itself.
+
+For narrow factual and attribute questions, the runtime applies strong subject/relation/value-style grounding and answer-addressing checks. For definitions, title/header mentions alone do not establish a definition. For broad explanatory questions, the runtime can combine several relevant passages, but the synthesized claims must remain grounded in the retrieved evidence. The final contract cannot be overridden by a weaker raw support signal.
+
+A final supported answer therefore requires the support gate to retain evidence/traceability/provenance and to find no unresolved conflict. Otherwise RALG abstains.
+
+## Retrieval
+
+Grounded reasoning uses `src/retriever_hybrid.py`. It always begins with the complete user question, preserves strong full-question candidates, and only adds a bounded number of secondary/sub-query passes when useful. Candidate fusion uses deterministic full-question coverage/rank signals and prevents secondary-query heuristics from displacing strong primary evidence.
+
+Factual extraction intentionally uses the cheaper V2 retrieval path. This is route specialization inside one user-facing runtime, not a second product stack.
+
+## Model behavior
+
+The active model architecture is `SmallLMV2`. The configured checkpoint is:
+
+```text
+checkpoints/v2/reasoning_model_v1.pt
+```
+
+The checkpoint is external to Git. RALG can still operate in extractive/retrieval-only mode when it is absent; model-backed generation is optional. Optional Qwen polishing is non-grounded and must never establish evidence support.
+
+## API surface
+
+The local FastAPI service exposes the core runtime and document lifecycle through:
+
+```text
+GET  /health
+GET  /ready
+GET  /stats
+POST /ingest
+POST /query
+GET  /documents
+```
+
+Document lifecycle operations also support persistent runtime ingestion/deletion behavior used by the WebUI and API.
 
 ## Quick start
 
-The following starts the local technical demonstration with minimal commands. All paths
-are repository-root-relative; no machine-specific absolute paths are encoded.
+### Requirements
 
-### 1. OS assumption
-
-Windows 10/11 with PowerShell 5.1+ (the provided `run_demo.ps1` and
-`demo_preflight.py` are Windows-native; Linux/macOS users can adapt the
-PowerShell logic to bash or run the Python preflight directly).
-
-### 2. Python version
-
-Python **3.11** is required. The preflight check (`scripts/demo_preflight.py`)
-validates this and reports `[FAIL] python_version` if the installed version is
-not exactly 3.11. If a different Python version is installed, create a venv with
-Python 3.11 before proceeding.
-
-```powershell
-python --version
-# Expected: 3.11.x
-```
-
-### 3. Dependency install
+- Windows 10/11 + PowerShell for the provided demo launcher
+- Python **3.11**
+- dependencies from `requirements.txt`
 
 ```powershell
 python -m venv .venv
@@ -165,90 +159,39 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### 4. Local model requirements
+The tracked tokenizer is required. The model checkpoint is optional unless model-backed answers are specifically required.
 
-The checkpoint bundle `checkpoints/v2/reasoning_model_v1.pt` is **external to
-Git** and governed by the RALG Source-Available Non-Commercial License v1.0.
-It is not auto-downloaded. Place the checkpoint under `checkpoints/v2/` before
-running the demonstration if model-backed (generative) answers are required. The core
-pipeline supports extractive/lookup answers without it.
-
-The tokenizer `data/tokenizer_v2.json` is tracked in Git and always required.
-
-### 5. Optional model behavior
-
-The polish LLM (Qwen2.5-1.5B-Instruct) is optional. If available, it enables
-generative and hybrid answer modes. If not available, the system produces
-extractive grounded answers only. The preflight reports this as a warning, not
-a failure.
-
-### 6. CPU/GPU assumptions
-
-The default Docker image is CPU-only (`python:3.11-slim` with CPU PyTorch).
-GPU execution is supported if CUDA is available and the appropriate PyTorch
-wheel is installed, but the demonstration workflow is validated on CPU.
-
-### 7. Startup command
+### Launch
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1
 ```
 
-This script:
-1. Discovers Python (venv or system)
-2. Runs preflight checks (Python version, required files, checkpoint status,
-   bounded port selection 7860-7870)
-3. Launches FastAPI on 127.0.0.1:8000
-4. Launches the Gradio WebUI on the preflight-selected port 7860-7870
-5. Probes FastAPI `/ready` on port 8000 after startup (up to 30s timeout)
+The launcher discovers a Python 3.11 interpreter, runs preflight checks, starts FastAPI on `127.0.0.1:8000`, starts the Gradio WebUI on an available port in `7860-7870`, and waits for an HTTP-successful readiness response before declaring startup successful.
 
-If preflight fails, the script prints actionable messages and exits with code 1.
+The readiness contract supports the validated extractive/retrieval-only operating mode: absence of the optional model checkpoint is reported, but does not by itself make the service unusable when the tokenizer/index/retrieval runtime is healthy.
 
-### 8. Demonstration workflow
+For the deterministic demonstration flow, see [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 
-After the service starts, open the WebUI URL printed by the launcher (selected from 127.0.0.1:7860-7870) in a browser and follow
-the deterministic demonstration scenario (Section 5 of `docs/DEMO_GUIDE.md`):
+## Validation and evidence boundaries
 
-- Ingest `data/technical_docs_sample.txt` (or a subset via the WebUI or API)
-- Ask a supported question → verify grounded answer with cited sources
-- Ask an unsupported question → verify visible abstention
-- Inspect evidence/provenance traces for accepted answers
-- Try document-scoped queries via the WebUI scope dropdown
+The repository contains several generations of benchmarks, holdouts, regression suites, and frozen evaluation artifacts. They do **not** all have the same evidentiary status.
 
-### 9. Expected high-level behavior
+In particular:
 
-| Step | Expected outcome |
-|---|---|
-| Service health (`/health`) | `{"status":"ok"}` |
-| Service readiness (`/ready`) | `{"ready":true, ...}` when the model/checkpoint is present and initialization is healthy; extractive-only mode without the checkpoint may return `503` |
-| Document ingestion | Document parsed, chunked, indexed; KB table updates |
-| Supported question | Direct answer with cited sources; answer_type="supported" |
-| Unsupported question | System reports corpus does not contain the answer (abstention) |
-| Evidence trace | Each accepted answer traces to specific spans in named documents |
-| Persistence (Docker) | Document survives `docker restart` via named volume `ralg_data` |
+- historical development/regression benchmarks are engineering evidence, not untouched external validation;
+- frozen blind holdout artifacts must remain immutable and must not be rerun or rewritten after seeing results;
+- post-run semantic adjudication/derived scorecards must not be relabeled as the original official blind metric;
+- current production fixes after a frozen holdout require fresh independent evaluation before making a new global accuracy claim.
 
-### 10. Troubleshooting
+See the `evaluation/` tree and claims/evidence documentation for the exact frozen artifacts and methodology boundaries.
 
-| Symptom | Fix |
-|---|---|
-| `[FAIL] python_version` | Install Python 3.11 and re-run; or create a venv with Python 3.11 |
-| `[FAIL] file_exists:checkpoints/v2` | Place the external checkpoint bundle under `checkpoints/v2/` or run in extractive mode without it |
-| `[FAIL] webui_port_available` | Free one of ports 7860-7870 on 127.0.0.1; the launcher never terminates other processes |
-| Service starts but `/ready` returns 503 | Wait a few seconds for initialization; check logs for initialization errors |
-| Answer appears without citations | Verify the document was successfully ingested (check KB table) |
-| Ctrl+C does not stop the server | Press Ctrl+C again; the Gradio process may need a moment to shut down gracefully |
+## Deployment boundary
 
-### Canonical path summary
+RALG is designed for local or trusted single-tenant deployment. It should not currently be represented as a hardened public multi-tenant SaaS. Public internet deployment would require additional security/operations work such as tenant isolation, hardened authentication/authorization, TLS termination, production rate limiting, and multi-process mutation safety.
 
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
+## License
 
-# Place checkpoint if model-backed answers are required:
-# checkpoints/v2/reasoning_model_v1.pt
+RALG is distributed under the **RALG Source-Available Non-Commercial License v1.0**. It is source-available, not OSI open source. Commercial use, sale, paid SaaS/API operation, or commercial rebranding requires permission from the copyright holder.
 
-powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1
-
-# Follow Section 5 of docs/DEMO_GUIDE.md
-```
+See [`LICENSE`](LICENSE) for the controlling terms.
