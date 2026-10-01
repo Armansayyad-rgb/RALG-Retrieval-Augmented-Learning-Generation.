@@ -282,6 +282,8 @@ the local data volume.
 
 ## 6 — Release candidate checklist
 
+This checklist is a documentation aid, not evidence that every gate has already passed. For the current consolidated status and remaining external gates, see [`docs/RELEASE_READINESS.md`](RELEASE_READINESS.md).
+
 Use this checklist to verify demonstration release readiness. Tick each item before
 considering the demonstration a release candidate.
 
@@ -321,7 +323,7 @@ considering the demonstration a release candidate.
 
 - [ ] Service started via `powershell -ExecutionPolicy Bypass -File scripts\run_demo.ps1`
 - [ ] `/health` returns `{"status":"ok"}`
-- [ ] `/ready` returns `{"ready":true, ...}` when the model/checkpoint is present and initialization is healthy (extractive-only mode without the checkpoint may correctly return `503`)
+- [ ] `/ready` returns a successful readiness response for the documented operating mode; if the optional checkpoint is absent, the response reports that condition without treating it as a retrieval-runtime failure
 - [ ] Readiness probe completes within 30 seconds
 
 ### Health / readiness
