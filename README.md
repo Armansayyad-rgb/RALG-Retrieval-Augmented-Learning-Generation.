@@ -23,7 +23,7 @@ It is deliberately **not a general-purpose chatbot**. The production runtime is 
 
 ## Current production state
 
-Current `master` contains the post-freeze reliability, launch-readiness, manual-upload grounding, and broad grounded-synthesis work completed after the historical RC1 milestone.
+Current `master` contains the post-freeze reliability, launch-readiness, manual-upload grounding, broad grounded-synthesis, and documentation work completed after the historical RC1 milestone. The latest merged documentation refresh is PR #104; this follow-up documentation PR keeps the public README, demonstration guide, and release-readiness material aligned as the repository moves toward fresh independent evaluation.
 
 Current capabilities include:
 
@@ -184,7 +184,21 @@ In particular:
 - post-run semantic adjudication/derived scorecards must not be relabeled as the original official blind metric;
 - current production fixes after a frozen holdout require fresh independent evaluation before making a new global accuracy claim.
 
-See the `evaluation/` tree and claims/evidence documentation for the exact frozen artifacts and methodology boundaries.
+See [`docs/CLAIMS_EVIDENCE_MATRIX.md`](docs/CLAIMS_EVIDENCE_MATRIX.md) and the `evaluation/` tree for the exact frozen artifacts, evidence classes, and methodology boundaries.
+
+## Documentation map
+
+| Document | Purpose |
+| --- | --- |
+| [`docs/CURRENT_ARCHITECTURE_STATUS.md`](docs/CURRENT_ARCHITECTURE_STATUS.md) | Authoritative description of the current runtime architecture |
+| [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md) | Reproducible local demonstration and evaluator walkthrough |
+| [`docs/CLAIMS_EVIDENCE_MATRIX.md`](docs/CLAIMS_EVIDENCE_MATRIX.md) | Conservative source of truth for technical claims and evidence boundaries |
+| [`docs/RELEASE_READINESS.md`](docs/RELEASE_READINESS.md) | Current release/technical-diligence checklist and remaining gates |
+| [`docs/IP_PROVENANCE_AND_RELEASE_BOUNDARIES.md`](docs/IP_PROVENANCE_AND_RELEASE_BOUNDARIES.md) | IP, data, model, and commercial-release boundaries |
+| [`docs/DATA_RIGHTS_INVENTORY.md`](docs/DATA_RIGHTS_INVENTORY.md) | Data provenance and rights inventory |
+| [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) | Third-party attribution and licensing notices |
+
+The architecture, demonstration, claims, and release-readiness documents are intentionally separated so implementation behavior, demonstration procedure, evidence status, and commercial-release diligence are not conflated.
 
 ## Deployment boundary
 
